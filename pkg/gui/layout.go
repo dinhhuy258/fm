@@ -121,6 +121,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		}
 
 		gui.GuiLoadedChan <- struct{}{}
+		close(gui.GuiLoadedChan)
 		gui.ViewsSetup = true
 	}
 
