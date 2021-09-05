@@ -121,9 +121,5 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		}
 	}
 
-	if err := gui.setViewDimentions(); err != nil {
-		return err
-	}
-
-	return nil
+	return gui.setViewDimentions()
 }

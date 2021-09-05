@@ -1,7 +1,6 @@
 package fs
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -17,21 +16,6 @@ type Node struct {
 type Directory struct {
 	Nodes []*Node
 	Path  string
-}
-
-func NewDirectory(path string) *Directory {
-	dir := &Directory{
-		Path: path,
-	}
-
-	go func() {
-		err := dir.ReadDir()
-		if err != nil {
-			log.Printf("failed to read directory %v", err)
-		}
-	}()
-
-	return dir
 }
 
 func (dir *Directory) ReadDir() error {

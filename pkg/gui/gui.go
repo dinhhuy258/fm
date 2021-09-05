@@ -15,14 +15,16 @@ type Views struct {
 }
 
 type Gui struct {
-	g          *gocui.Gui
-	ViewsSetup bool
-	Views      Views
+	g             *gocui.Gui
+	ViewsSetup    bool
+	Views         Views
+	GuiLoadedChan chan struct{}
 }
 
 func NewGui() (*Gui, error) {
 	gui := &Gui{
-		ViewsSetup: false,
+		ViewsSetup:    false,
+		GuiLoadedChan: make(chan struct{}, 1),
 	}
 
 	return gui, nil
@@ -44,6 +46,8 @@ func (gui *Gui) Run() error {
 		return err
 	}
 
+	gui.GuiLoadedChan <- struct{}{}
+	close(gui.GuiLoadedChan)
 	err = gui.g.MainLoop()
 
 	if err != nil && !errors.Is(err, gocui.ErrQuit) {

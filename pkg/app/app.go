@@ -30,6 +30,19 @@ func NewApp() (*App, error) {
 	return app, nil
 }
 
-func (app App) Run() error {
+func (app *App) Run() error {
+	go app.loop()
+
 	return app.Gui.Run()
+}
+
+func (app *App) loop() {
+	// Wait until Gui is loaded
+	<-app.Gui.GuiLoadedChan
+
+	for {
+		for range app.FileManager.DirLoadedChan {
+			app.Gui.SetViewContent(app.Gui.Views.Main, []string{"Directory loaded"})
+		}
+	}
 }

@@ -1,11 +1,13 @@
 package fs
 
 import (
+	"log"
 	"os"
 )
 
 type FileManager struct {
-	directory *Directory
+	Dir           *Directory
+	DirLoadedChan chan struct{}
 }
 
 func NewFileManager() (*FileManager, error) {
@@ -14,12 +16,24 @@ func NewFileManager() (*FileManager, error) {
 		return nil, err
 	}
 
-	fileManager := &FileManager{}
+	fileManager := &FileManager{
+		DirLoadedChan: make(chan struct{}, 1),
+	}
 	fileManager.loadDirectory(wd)
 
 	return fileManager, nil
 }
 
 func (fm *FileManager) loadDirectory(path string) {
-	fm.directory = NewDirectory(path)
+	fm.Dir = &Directory{
+		Path: path,
+	}
+
+	go func() {
+		err := fm.Dir.ReadDir()
+		if err != nil {
+			log.Printf("failed to read directory %v", err)
+		}
+		fm.DirLoadedChan <- struct{}{}
+	}()
 }
