@@ -20,6 +20,7 @@ func main() {
 	}
 
 	fmt.Println("Running fm...")
+
 	app, err := app.NewApp()
 	if err != nil {
 		os.Exit(1)

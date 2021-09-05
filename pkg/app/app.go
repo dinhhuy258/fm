@@ -14,11 +14,12 @@ func NewApp() (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	app.Gui = gui
 
 	return app, nil
 }
 
 func (app App) Run() error {
-  return app.Gui.Run()
+	return app.Gui.Run()
 }

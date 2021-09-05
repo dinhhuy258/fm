@@ -1,0 +1,14 @@
+run:
+  timeout: 120s
+linters:
+  enable-all: true
+  disable:
+    - exhaustivestruct
+    - testpackage
+    - funlen
+    - godot
+    - paralleltest
+    - gochecknoglobals
+    - forbidigo
+    - wrapcheck
+    - gomnd
