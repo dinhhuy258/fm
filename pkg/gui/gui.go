@@ -46,8 +46,6 @@ func (gui *Gui) Run() error {
 		return err
 	}
 
-	gui.GuiLoadedChan <- struct{}{}
-	close(gui.GuiLoadedChan)
 	err = gui.g.MainLoop()
 
 	if err != nil && !errors.Is(err, gocui.ErrQuit) {

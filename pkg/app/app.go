@@ -1,6 +1,8 @@
 package app
 
 import (
+	"strconv"
+
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
@@ -42,7 +44,15 @@ func (app *App) loop() {
 
 	for {
 		for range app.FileManager.DirLoadedChan {
-			app.Gui.SetViewContent(app.Gui.Views.Main, []string{"Directory loaded"})
+			app.Gui.Views.Main.Title = " " + app.FileManager.Dir.Path +
+				" (" + strconv.Itoa(len(app.FileManager.Dir.Nodes)) + ") "
+			lines := make([]string, len(app.FileManager.Dir.Nodes))
+
+			for i, node := range app.FileManager.Dir.Nodes {
+				lines[i] = node.RelativePath
+			}
+
+			app.Gui.SetViewContent(app.Gui.Views.Main, lines)
 		}
 	}
 }

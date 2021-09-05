@@ -37,11 +37,14 @@ func (gui *Gui) createAllViews() error {
 		}
 	}
 
-	gui.Views.Selection.Title = "Main"
+	gui.Views.Main.Title = ""
+	// gui.Views.Main.Anchor = ""
 	gui.Views.Selection.Title = "Selection"
 	gui.Views.SortAndFilter.Title = "Sort & filter"
 	gui.Views.HelpMenu.Title = "Help"
 	gui.Views.InputAndLogs.Title = "Input"
+
+	gui.GuiLoadedChan <- struct{}{}
 
 	return nil
 }
