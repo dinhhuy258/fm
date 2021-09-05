@@ -24,14 +24,16 @@ func (gui *Gui) Run() error {
 	}
 
 	gui.g = g
+
 	defer gui.g.Close()
 
-	if err = gui.g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
+	gui.g.SetManagerFunc(layout)
+
+	if err := gui.g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
 		return err
 	}
 
-	gui.g.SetManagerFunc(layout)
-	err = g.MainLoop()
+	err = gui.g.MainLoop()
 
 	if err != nil && !errors.Is(err, gocui.ErrQuit) {
 		return err
