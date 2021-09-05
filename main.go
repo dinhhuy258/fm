@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/dinhhuy258/fm/pkg/app"
@@ -23,11 +24,11 @@ func main() {
 
 	app, err := app.NewApp()
 	if err != nil {
-		os.Exit(1)
+		log.Fatal(err.Error())
 	}
 
 	err = app.Run()
 	if err != nil {
-		os.Exit(1)
+		log.Fatal(err.Error())
 	}
 }

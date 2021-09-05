@@ -33,7 +33,7 @@ func (gui *Gui) Run() error {
 	gui.g.SetManagerFunc(layout)
 	err = g.MainLoop()
 
-	if err != nil && errors.Is(err, gocui.ErrQuit) {
+	if err != nil && !errors.Is(err, gocui.ErrQuit) {
 		return err
 	}
 
@@ -43,7 +43,7 @@ func (gui *Gui) Run() error {
 func layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
 	if v, err := g.SetView("hello", maxX/2-7, maxY/2, maxX/2+7, maxY/2+2); err != nil {
-		if errors.Is(err, gocui.ErrUnknownView) {
+		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
 		}
 
