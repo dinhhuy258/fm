@@ -2,17 +2,28 @@ package gui
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/jroimartin/gocui"
 )
 
+type Views struct {
+	Main          *gocui.View
+	Selection     *gocui.View
+	HelpMenu      *gocui.View
+	SortAndFilter *gocui.View
+	InputAndLogs  *gocui.View
+}
+
 type Gui struct {
-	g *gocui.Gui
+	g          *gocui.Gui
+	ViewsSetup bool
+	Views      Views
 }
 
 func NewGui() (*Gui, error) {
-	gui := &Gui{}
+	gui := &Gui{
+		ViewsSetup: false,
+	}
 
 	return gui, nil
 }
@@ -27,7 +38,7 @@ func (gui *Gui) Run() error {
 
 	defer gui.g.Close()
 
-	gui.g.SetManagerFunc(layout)
+	gui.g.SetManager(gocui.ManagerFunc(gui.layout))
 
 	if err := gui.g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
 		return err
@@ -37,19 +48,6 @@ func (gui *Gui) Run() error {
 
 	if err != nil && !errors.Is(err, gocui.ErrQuit) {
 		return err
-	}
-
-	return nil
-}
-
-func layout(g *gocui.Gui) error {
-	maxX, maxY := g.Size()
-	if v, err := g.SetView("hello", maxX/2-7, maxY/2, maxX/2+7, maxY/2+2); err != nil {
-		if !errors.Is(err, gocui.ErrUnknownView) {
-			return err
-		}
-
-		fmt.Fprintln(v, "Hello world!")
 	}
 
 	return nil
