@@ -38,13 +38,10 @@ func (gui *Gui) createAllViews() error {
 	}
 
 	gui.Views.Main.Title = ""
-	// gui.Views.Main.Anchor = ""
 	gui.Views.Selection.Title = "Selection"
 	gui.Views.SortAndFilter.Title = "Sort & filter"
 	gui.Views.HelpMenu.Title = "Help"
 	gui.Views.InputAndLogs.Title = "Input"
-
-	gui.GuiLoadedChan <- struct{}{}
 
 	return nil
 }
@@ -122,6 +119,9 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		if err := gui.createAllViews(); err != nil {
 			return err
 		}
+
+		gui.GuiLoadedChan <- struct{}{}
+		gui.ViewsSetup = true
 	}
 
 	return gui.setViewDimentions()
