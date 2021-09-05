@@ -6,6 +6,13 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
+const (
+	horizontalMargin  = 1
+	verticalMargin    = 1
+	sortAndFilterSize = 2
+	inputAndLogsSize  = 2
+)
+
 type viewDimension struct {
 	x0, y0, x1, y1 int
 }
@@ -52,9 +59,9 @@ func (gui *Gui) setViewDimentions() error {
 			name: "main",
 			dimension: viewDimension{
 				x0: 0,
-				y0: 2,
-				x1: int(float32(width) * 0.7),
-				y1: height - 2,
+				y0: sortAndFilterSize + verticalMargin,
+				x1: int(float32(width)*0.7) - horizontalMargin,
+				y1: height - inputAndLogsSize - verticalMargin,
 			},
 		},
 		{
@@ -62,16 +69,16 @@ func (gui *Gui) setViewDimentions() error {
 			dimension: viewDimension{
 				x0: 0,
 				y0: 0,
-				x1: int(float32(width) * 0.7),
-				y1: 2,
+				x1: int(float32(width)*0.7) - horizontalMargin,
+				y1: sortAndFilterSize,
 			},
 		},
 		{
 			name: "inputAndLogs",
 			dimension: viewDimension{
 				x0: 0,
-				y0: height - 2,
-				x1: int(float32(width) * 0.7),
+				y0: height - inputAndLogsSize,
+				x1: int(float32(width)*0.7) - horizontalMargin,
 				y1: height,
 			},
 		},
@@ -80,8 +87,8 @@ func (gui *Gui) setViewDimentions() error {
 			dimension: viewDimension{
 				x0: int(float32(width) * 0.7),
 				y0: 0,
-				x1: width - 1,
-				y1: height / 2,
+				x1: width,
+				y1: height/2 - verticalMargin,
 			},
 		},
 		{
