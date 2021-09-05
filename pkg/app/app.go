@@ -44,12 +44,20 @@ func (app *App) loop() {
 
 	for {
 		for range app.FileManager.DirLoadedChan {
+			nodeSize := len(app.FileManager.Dir.Nodes)
+
 			app.Gui.Views.Main.Title = " " + app.FileManager.Dir.Path +
-				" (" + strconv.Itoa(len(app.FileManager.Dir.Nodes)) + ") "
-			lines := make([]string, len(app.FileManager.Dir.Nodes))
+				" (" + strconv.Itoa(nodeSize) + ") "
+			lines := make([]string, nodeSize+1)
+
+			lines[0] = "╭──── path"
 
 			for i, node := range app.FileManager.Dir.Nodes {
-				lines[i] = node.RelativePath
+				if i == nodeSize-1 {
+					lines[i+1] = "╰─" + "  " + node.RelativePath
+				} else {
+					lines[i+1] = "├─" + "  " + node.RelativePath
+				}
 			}
 
 			app.Gui.SetViewContent(app.Gui.Views.Main, lines)
