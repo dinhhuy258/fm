@@ -38,9 +38,15 @@ func (gui *Gui) createAllViews() error {
 	}
 
 	gui.Views.Main.Title = ""
+	gui.Views.Main.Highlight = true
+	gui.Views.Main.SelFgColor = gocui.ColorBlue
+
 	gui.Views.Selection.Title = "Selection"
+
 	gui.Views.SortAndFilter.Title = "Sort & filter"
+
 	gui.Views.HelpMenu.Title = "Help"
+
 	gui.Views.InputAndLogs.Title = "Input"
 
 	return nil

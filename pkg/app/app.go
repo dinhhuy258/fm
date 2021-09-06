@@ -1,6 +1,7 @@
 package app
 
 import (
+	"log"
 	"strconv"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
@@ -44,7 +45,13 @@ func (app *App) loop() {
 
 	for {
 		for range app.FileManager.DirLoadedChan {
+			if err := app.Gui.Views.Main.SetCursor(0, 1); err != nil {
+				log.Printf("failed to set cursor directory %v", err)
+			}
+
 			nodeSize := len(app.FileManager.Dir.Nodes)
+			app.Gui.State.Main.SelectedIdx = 1
+			app.Gui.State.Main.NumberOfFiles = nodeSize
 
 			app.Gui.Views.Main.Title = " " + app.FileManager.Dir.Path +
 				" (" + strconv.Itoa(nodeSize) + ") "

@@ -14,16 +14,27 @@ type Views struct {
 	InputAndLogs  *gocui.View
 }
 
+type State struct {
+	Main *MainPanelState
+}
+
 type Gui struct {
 	g             *gocui.Gui
 	ViewsSetup    bool
 	Views         Views
+	State         *State
 	GuiLoadedChan chan struct{}
 }
 
 func NewGui() (*Gui, error) {
 	gui := &Gui{
-		ViewsSetup:    false,
+		ViewsSetup: false,
+		State: &State{
+			Main: &MainPanelState{
+				SelectedIdx:   0,
+				NumberOfFiles: 0,
+			},
+		},
 		GuiLoadedChan: make(chan struct{}, 1),
 	}
 
@@ -42,7 +53,7 @@ func (gui *Gui) Run() error {
 
 	gui.g.SetManager(gocui.ManagerFunc(gui.layout))
 
-	if err := gui.g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
+	if err = gui.setKeyBindings(); err != nil {
 		return err
 	}
 
@@ -53,8 +64,4 @@ func (gui *Gui) Run() error {
 	}
 
 	return nil
-}
-
-func quit(g *gocui.Gui, v *gocui.View) error {
-	return gocui.ErrQuit
 }
