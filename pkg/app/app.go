@@ -42,12 +42,24 @@ func (app *App) Run() error {
 	return app.Gui.Run(app.onKey)
 }
 
+func (app *App) onModeChanged() {
+	helps := make([]string, len(app.Mode.keyBindings.onKeys))
+	idx := 0
+
+	for k, a := range app.Mode.keyBindings.onKeys {
+		helps[idx] = k + " " + a.help
+		idx++
+	}
+
+	app.Gui.SetViewContent(app.Gui.Views.HelpMenu, helps)
+}
+
 func (app *App) onKey(key string) error {
 	if action, hasKey := app.Mode.keyBindings.onKeys[key]; hasKey {
 		for _, message := range action.messages {
-			// TODO: Remove this line
-			log.Println(action.help)
-			message(app.Gui)
+			if err := message(app.Gui); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -57,6 +69,8 @@ func (app *App) onKey(key string) error {
 func (app *App) loop() {
 	// Wait until Gui is loaded
 	<-app.Gui.GuiLoadedChan
+	// Load help menu
+	app.onModeChanged()
 
 	for {
 		for range app.FileManager.DirLoadedChan {
@@ -94,13 +108,13 @@ func createDefaultMode() *Mode {
 			onKeys: map[string]*Action{
 				"j": {
 					help: "down",
-					messages: []func(gui *gui.Gui){
+					messages: []func(gui *gui.Gui) error{
 						focusNext,
 					},
 				},
 				"k": {
 					help: "up",
-					messages: []func(gui *gui.Gui){
+					messages: []func(gui *gui.Gui) error{
 						focusPrevious,
 					},
 				},
