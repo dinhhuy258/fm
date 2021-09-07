@@ -6,18 +6,19 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
-	"github.com/dinhhuy258/fm/pkg/mode"
 )
 
 type App struct {
 	Gui         *gui.Gui
-	Mode        *mode.Mode
+	Mode        *Mode
 	FileManager *fs.FileManager
 }
 
 // NewApp bootstrap a new application
 func NewApp() (*App, error) {
-	app := &App{}
+	app := &App{
+		Mode: createDefaultMode(),
+	}
 
 	gui, err := gui.NewGui()
 	if err != nil {
@@ -42,7 +43,13 @@ func (app *App) Run() error {
 }
 
 func (app *App) onKey(key string) error {
-	app.Gui.SetViewContent(app.Gui.Views.Main, []string{key})
+	if action, hasKey := app.Mode.keyBindings.onKeys[key]; hasKey {
+		for _, message := range action.messages {
+			// TODO: Remove this line
+			log.Println(action.help)
+			message(app.Gui)
+		}
+	}
 
 	return nil
 }
@@ -77,5 +84,27 @@ func (app *App) loop() {
 
 			app.Gui.SetViewContent(app.Gui.Views.Main, lines)
 		}
+	}
+}
+
+func createDefaultMode() *Mode {
+	return &Mode{
+		name: "default",
+		keyBindings: &KeyBindings{
+			onKeys: map[string]*Action{
+				"j": {
+					help: "down",
+					messages: []func(gui *gui.Gui){
+						focusNext,
+					},
+				},
+				"k": {
+					help: "up",
+					messages: []func(gui *gui.Gui){
+						focusPrevious,
+					},
+				},
+			},
+		},
 	}
 }

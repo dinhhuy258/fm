@@ -12,3 +12,4 @@ linters:
     - forbidigo
     - wrapcheck
     - gomnd
+    - godox
