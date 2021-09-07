@@ -6,10 +6,12 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
+	"github.com/dinhhuy258/fm/pkg/mode"
 )
 
 type App struct {
 	Gui         *gui.Gui
+	Mode        *mode.Mode
 	FileManager *fs.FileManager
 }
 
@@ -36,7 +38,13 @@ func NewApp() (*App, error) {
 func (app *App) Run() error {
 	go app.loop()
 
-	return app.Gui.Run()
+	return app.Gui.Run(app.onKey)
+}
+
+func (app *App) onKey(key string) error {
+	app.Gui.SetViewContent(app.Gui.Views.Main, []string{key})
+
+	return nil
 }
 
 func (app *App) loop() {
