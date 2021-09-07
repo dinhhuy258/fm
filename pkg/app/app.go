@@ -57,7 +57,7 @@ func (app *App) onModeChanged() {
 func (app *App) onKey(key string) error {
 	if action, hasKey := app.Mode.keyBindings.onKeys[key]; hasKey {
 		for _, message := range action.messages {
-			if err := message(app.Gui); err != nil {
+			if err := message(app); err != nil {
 				return err
 			}
 		}
@@ -74,8 +74,12 @@ func (app *App) loop() {
 
 	for {
 		for range app.FileManager.DirLoadedChan {
+			if err := app.Gui.Views.Main.SetOrigin(0, 0); err != nil {
+				log.Fatalf("failed to set origin %v", err)
+			}
+
 			if err := app.Gui.Views.Main.SetCursor(0, 1); err != nil {
-				log.Printf("failed to set cursor directory %v", err)
+				log.Fatalf("failed to set cursor %v", err)
 			}
 
 			nodeSize := len(app.FileManager.Dir.Nodes)
@@ -108,14 +112,26 @@ func createDefaultMode() *Mode {
 			onKeys: map[string]*Action{
 				"j": {
 					help: "down",
-					messages: []func(gui *gui.Gui) error{
+					messages: []func(app *App) error{
 						focusNext,
 					},
 				},
 				"k": {
 					help: "up",
-					messages: []func(gui *gui.Gui) error{
+					messages: []func(app *App) error{
 						focusPrevious,
+					},
+				},
+				"l": {
+					help: "enter",
+					messages: []func(app *App) error{
+						enter,
+					},
+				},
+				"h": {
+					help: "back",
+					messages: []func(app *App) error{
+						back,
 					},
 				},
 			},

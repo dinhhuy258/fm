@@ -18,6 +18,10 @@ type Directory struct {
 	Path  string
 }
 
+func (dir *Directory) Parent() string {
+	return filepath.Dir(dir.Path)
+}
+
 func (dir *Directory) ReadDir() error {
 	f, err := os.Open(dir.Path)
 	if err != nil {

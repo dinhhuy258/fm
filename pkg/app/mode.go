@@ -1,10 +1,8 @@
 package app
 
-import "github.com/dinhhuy258/fm/pkg/gui"
-
 type Action struct {
 	help     string
-	messages []func(gui *gui.Gui) error
+	messages []func(app *App) error
 }
 
 type KeyBindings struct {

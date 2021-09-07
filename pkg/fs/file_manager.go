@@ -19,12 +19,12 @@ func NewFileManager() (*FileManager, error) {
 	fileManager := &FileManager{
 		DirLoadedChan: make(chan struct{}, 1),
 	}
-	fileManager.loadDirectory(wd)
+	fileManager.LoadDirectory(wd)
 
 	return fileManager, nil
 }
 
-func (fm *FileManager) loadDirectory(path string) {
+func (fm *FileManager) LoadDirectory(path string) {
 	fm.Dir = &Directory{
 		Path: path,
 	}
