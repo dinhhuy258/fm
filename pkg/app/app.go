@@ -46,7 +46,7 @@ func NewApp() (*App, error) {
 func (app *App) Run() error {
 	go app.loop()
 
-	return app.Gui.Run(app.onKey)
+	return app.Gui.Run()
 }
 
 func (app *App) onModeChanged() {
@@ -78,6 +78,8 @@ func (app *App) loop() {
 	<-app.Gui.GuiLoadedChan
 	// Load help menu
 	app.onModeChanged()
+	// Set on key handler
+	app.Gui.SetOnKeyFunc(app.onKey)
 
 	for {
 		for range app.FileManager.DirLoadedChan {
@@ -137,6 +139,12 @@ func createDefaultMode() *Mode {
 					help: "back",
 					messages: []func(app *App) error{
 						back,
+					},
+				},
+				"q": {
+					help: "quit",
+					messages: []func(app *App) error{
+						quit,
 					},
 				},
 			},

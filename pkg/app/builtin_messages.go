@@ -1,5 +1,7 @@
 package app
 
+import "github.com/dinhhuy258/gocui"
+
 func focusNext(app *App) error {
 	if app.State.Main.SelectedIdx == app.State.Main.NumberOfFiles-1 {
 		return nil
@@ -59,4 +61,8 @@ func back(app *App) error {
 	app.FileManager.LoadDirectory(parent)
 
 	return nil
+}
+
+func quit(app *App) error {
+	return gocui.ErrQuit
 }

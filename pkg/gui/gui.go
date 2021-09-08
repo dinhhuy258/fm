@@ -31,7 +31,7 @@ func NewGui() (*Gui, error) {
 	return gui, nil
 }
 
-func (gui *Gui) Run(onKey func(string) error) error {
+func (gui *Gui) Run() error {
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		return err
@@ -43,10 +43,6 @@ func (gui *Gui) Run(onKey func(string) error) error {
 
 	gui.g.SetManager(gocui.ManagerFunc(gui.layout))
 
-	if err = gui.setKeyBindings(onKey); err != nil {
-		return err
-	}
-
 	err = gui.g.MainLoop()
 
 	if err != nil && !errors.Is(err, gocui.ErrQuit) {
@@ -54,4 +50,8 @@ func (gui *Gui) Run(onKey func(string) error) error {
 	}
 
 	return nil
+}
+
+func (gui *Gui) SetOnKeyFunc(onKey func(string) error) {
+	gui.g.SetOnKeyFunc(onKey)
 }
