@@ -3,7 +3,7 @@ package gui
 import (
 	"errors"
 
-	"github.com/jroimartin/gocui"
+	"github.com/dinhhuy258/gocui"
 )
 
 type Views struct {

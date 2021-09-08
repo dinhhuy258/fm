@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jroimartin/gocui"
+	"github.com/dinhhuy258/gocui"
 )
 
 const (

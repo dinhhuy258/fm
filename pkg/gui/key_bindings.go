@@ -1,7 +1,7 @@
 package gui
 
 import (
-	"github.com/jroimartin/gocui"
+	"github.com/dinhhuy258/gocui"
 )
 
 func (gui *Gui) setKeyBindings(onKey func(string) error) error {
