@@ -9,13 +9,11 @@ func focusNext(app *App) error {
 
 	v := app.Gui.Views.Main
 
-	if v != nil {
-		cx, cy := v.Cursor()
-		if err := v.SetCursor(cx, cy+1); err != nil {
-			ox, oy := v.Origin()
-			if err := v.SetOrigin(ox, oy+1); err != nil {
-				return err
-			}
+	cx, cy := v.Cursor()
+	if err := v.SetCursor(cx, cy+1); err != nil {
+		ox, oy := v.Origin()
+		if err := v.SetOrigin(ox, oy+1); err != nil {
+			return err
 		}
 	}
 
@@ -31,10 +29,10 @@ func focusPrevious(app *App) error {
 
 	v := app.Gui.Views.Main
 
-	ox, oy := v.Origin()
 	cx, cy := v.Cursor()
 
-	if err := v.SetCursor(cx, cy-1); err != nil && oy > 0 {
+	if err := v.SetCursor(cx, cy-1); err != nil {
+		ox, oy := v.Origin()
 		if err := v.SetOrigin(ox, oy-1); err != nil {
 			return err
 		}

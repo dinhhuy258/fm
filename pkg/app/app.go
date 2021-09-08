@@ -92,10 +92,10 @@ func (app *App) loop() {
 			}
 
 			nodeSize := len(app.FileManager.Dir.Nodes)
-			app.State.Main.SelectedIdx = 1
+			app.State.Main.SelectedIdx = 0
 			app.State.Main.NumberOfFiles = nodeSize
 
-			app.Gui.Views.Main.Title = " " + app.FileManager.Dir.Path +
+			app.Gui.Views.MainHeader.Title = " " + app.FileManager.Dir.Path +
 				" (" + strconv.Itoa(nodeSize) + ") "
 			lines := make([]string, nodeSize)
 
