@@ -10,6 +10,7 @@ import (
 
 type App struct {
 	Gui         *gui.Gui
+	State       *State
 	Mode        *Mode
 	FileManager *fs.FileManager
 }
@@ -18,6 +19,12 @@ type App struct {
 func NewApp() (*App, error) {
 	app := &App{
 		Mode: createDefaultMode(),
+		State: &State{
+			Main: &MainState{
+				SelectedIdx:   0,
+				NumberOfFiles: 0,
+			},
+		},
 	}
 
 	gui, err := gui.NewGui()
@@ -83,8 +90,8 @@ func (app *App) loop() {
 			}
 
 			nodeSize := len(app.FileManager.Dir.Nodes)
-			app.Gui.State.Main.SelectedIdx = 1
-			app.Gui.State.Main.NumberOfFiles = nodeSize
+			app.State.Main.SelectedIdx = 1
+			app.State.Main.NumberOfFiles = nodeSize
 
 			app.Gui.Views.Main.Title = " " + app.FileManager.Dir.Path +
 				" (" + strconv.Itoa(nodeSize) + ") "

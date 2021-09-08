@@ -14,27 +14,16 @@ type Views struct {
 	InputAndLogs  *gocui.View
 }
 
-type State struct {
-	Main *MainPanelState
-}
-
 type Gui struct {
 	g             *gocui.Gui
 	ViewsSetup    bool
 	Views         Views
-	State         *State
 	GuiLoadedChan chan struct{}
 }
 
 func NewGui() (*Gui, error) {
 	gui := &Gui{
-		ViewsSetup: false,
-		State: &State{
-			Main: &MainPanelState{
-				SelectedIdx:   0,
-				NumberOfFiles: 0,
-			},
-		},
+		ViewsSetup:    false,
 		GuiLoadedChan: make(chan struct{}, 1),
 	}
 
