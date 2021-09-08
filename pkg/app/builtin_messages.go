@@ -1,32 +1,46 @@
 package app
 
-import (
-	"math"
-)
-
 func focusNext(app *App) error {
-	ox, oy := app.Gui.Views.Main.Origin()
-	scrollHeight := app.Gui.LinesToScrollDown(app.Gui.Views.Main)
-
-	if scrollHeight > 0 {
-		if err := app.Gui.Views.Main.SetOrigin(ox, oy+scrollHeight); err != nil {
-			return err
-		}
-
-		app.Gui.State.Main.SelectedIdx++
+	if app.Gui.State.Main.SelectedIdx == app.Gui.State.Main.NumberOfFiles {
+		return nil
 	}
+
+	v := app.Gui.Views.Main
+
+	if v != nil {
+		cx, cy := v.Cursor()
+		if err := v.SetCursor(cx, cy+1); err != nil {
+			ox, oy := v.Origin()
+			if err := v.SetOrigin(ox, oy+1); err != nil {
+				return err
+			}
+		}
+	}
+
+	app.Gui.State.Main.SelectedIdx++
 
 	return nil
 }
 
 func focusPrevious(app *App) error {
-	ox, oy := app.Gui.Views.Main.Origin()
-	scrollHeight := 1
-	newOy := int(math.Max(0, float64(oy-scrollHeight)))
-	app.Gui.State.Main.SelectedIdx--
-	app.Gui.State.Main.SelectedIdx = int(math.Max(float64(app.Gui.State.Main.SelectedIdx), 1))
+	if app.Gui.State.Main.SelectedIdx == 1 {
+		return nil
+	}
 
-	return app.Gui.Views.Main.SetOrigin(ox, newOy)
+	v := app.Gui.Views.Main
+
+	ox, oy := v.Origin()
+	cx, cy := v.Cursor()
+
+	if err := v.SetCursor(cx, cy-1); err != nil && oy > 0 {
+		if err := v.SetOrigin(ox, oy-1); err != nil {
+			return err
+		}
+	}
+
+	app.Gui.State.Main.SelectedIdx--
+
+	return nil
 }
 
 func enter(app *App) error {
