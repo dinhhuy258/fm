@@ -3,7 +3,7 @@ package gui
 import (
 	"errors"
 
-	"github.com/jesseduffield/gocui"
+	"github.com/jroimartin/gocui"
 )
 
 type Views struct {
@@ -42,7 +42,7 @@ func NewGui() (*Gui, error) {
 }
 
 func (gui *Gui) Run(onKey func(string) error) error {
-	g, err := gocui.NewGui(gocui.OutputNormal, false, gocui.NORMAL, false)
+	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		return err
 	}

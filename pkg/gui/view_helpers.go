@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jesseduffield/gocui"
+	"github.com/jroimartin/gocui"
 )
 
 func (gui *Gui) SetViewContent(v *gocui.View, displayStrings []string) {
