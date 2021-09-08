@@ -85,7 +85,7 @@ func (app *App) loop() {
 				log.Fatalf("failed to set origin %v", err)
 			}
 
-			if err := app.Gui.Views.Main.SetCursor(0, 1); err != nil {
+			if err := app.Gui.Views.Main.SetCursor(0, 0); err != nil {
 				log.Fatalf("failed to set cursor %v", err)
 			}
 
@@ -95,15 +95,13 @@ func (app *App) loop() {
 
 			app.Gui.Views.Main.Title = " " + app.FileManager.Dir.Path +
 				" (" + strconv.Itoa(nodeSize) + ") "
-			lines := make([]string, nodeSize+1)
-
-			lines[0] = "╭──── path"
+			lines := make([]string, nodeSize)
 
 			for i, node := range app.FileManager.Dir.Nodes {
 				if i == nodeSize-1 {
-					lines[i+1] = "╰─" + "  " + node.RelativePath
+					lines[i] = "╰─" + "  " + node.RelativePath
 				} else {
-					lines[i+1] = "├─" + "  " + node.RelativePath
+					lines[i] = "├─" + "  " + node.RelativePath
 				}
 			}
 

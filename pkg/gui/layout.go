@@ -2,6 +2,7 @@ package gui
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/jroimartin/gocui"
 )
@@ -22,6 +23,7 @@ func (gui *Gui) createAllViews() error {
 		viewPtr **gocui.View
 		name    string
 	}{
+		{viewPtr: &gui.Views.MainHeader, name: "main-header"},
 		{viewPtr: &gui.Views.Main, name: "main"},
 		{viewPtr: &gui.Views.Selection, name: "selection"},
 		{viewPtr: &gui.Views.SortAndFilter, name: "sortAndFilter"},
@@ -37,7 +39,9 @@ func (gui *Gui) createAllViews() error {
 		}
 	}
 
-	gui.Views.Main.Title = ""
+	fmt.Fprintf(gui.Views.MainHeader, "╭──── path")
+
+	gui.Views.Main.Frame = false
 	gui.Views.Main.Highlight = true
 	gui.Views.Main.SelFgColor = gocui.ColorBlue
 
@@ -62,10 +66,19 @@ func (gui *Gui) setViewDimentions() error {
 		dimension viewDimension
 	}{
 		{
-			name: "main",
+			name: "main-header",
 			dimension: viewDimension{
 				x0: 0,
 				y0: sortAndFilterSize + verticalMargin,
+				x1: int(float32(width)*0.7) - horizontalMargin,
+				y1: height - inputAndLogsSize - verticalMargin,
+			},
+		},
+		{
+			name: "main",
+			dimension: viewDimension{
+				x0: 0,
+				y0: sortAndFilterSize + verticalMargin + 1, // plus 1 for header
 				x1: int(float32(width)*0.7) - horizontalMargin,
 				y1: height - inputAndLogsSize - verticalMargin,
 			},

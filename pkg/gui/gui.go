@@ -7,6 +7,7 @@ import (
 )
 
 type Views struct {
+	MainHeader    *gocui.View
 	Main          *gocui.View
 	Selection     *gocui.View
 	HelpMenu      *gocui.View

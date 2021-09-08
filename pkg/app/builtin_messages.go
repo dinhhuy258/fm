@@ -1,7 +1,7 @@
 package app
 
 func focusNext(app *App) error {
-	if app.State.Main.SelectedIdx == app.State.Main.NumberOfFiles {
+	if app.State.Main.SelectedIdx == app.State.Main.NumberOfFiles-1 {
 		return nil
 	}
 
@@ -23,7 +23,7 @@ func focusNext(app *App) error {
 }
 
 func focusPrevious(app *App) error {
-	if app.State.Main.SelectedIdx == 1 {
+	if app.State.Main.SelectedIdx == 0 {
 		return nil
 	}
 
@@ -44,7 +44,7 @@ func focusPrevious(app *App) error {
 }
 
 func enter(app *App) error {
-	currentNode := app.FileManager.Dir.Nodes[app.State.Main.SelectedIdx-1]
+	currentNode := app.FileManager.Dir.Nodes[app.State.Main.SelectedIdx]
 
 	if currentNode.IsDir {
 		app.FileManager.LoadDirectory(currentNode.AbsolutePath)
