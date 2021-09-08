@@ -10,6 +10,7 @@ import (
 
 type App struct {
 	Gui         *gui.Gui
+	History     *History
 	State       *State
 	Mode        *Mode
 	FileManager *fs.FileManager
@@ -36,6 +37,8 @@ func NewApp() (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	app.History = NewHistory(fm.Dir.Path)
 
 	app.Gui = gui
 	app.FileManager = fm
