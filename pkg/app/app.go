@@ -151,6 +151,18 @@ func createDefaultMode() *Mode {
 						back,
 					},
 				},
+				"ctrl+i": {
+					help: "next visited path",
+					messages: []func(app *App) error{
+						nextVisitedPath,
+					},
+				},
+				"ctrl+o": {
+					help: "last visited path",
+					messages: []func(app *App) error{
+						lastVisitedPath,
+					},
+				},
 				"q": {
 					help: "quit",
 					messages: []func(app *App) error{

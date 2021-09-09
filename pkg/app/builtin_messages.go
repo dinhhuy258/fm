@@ -49,7 +49,7 @@ func enter(app *App) error {
 	currentNode := app.FileManager.Dir.Nodes[app.State.Main.FocusIdx]
 
 	if currentNode.IsDir {
-		changeDirectory(app, currentNode.AbsolutePath)
+		changeDirectory(app, currentNode.AbsolutePath, true)
 	}
 
 	return nil
@@ -58,13 +58,30 @@ func enter(app *App) error {
 func back(app *App) error {
 	parent := app.FileManager.Dir.Parent()
 
-	changeDirectory(app, parent)
+	changeDirectory(app, parent, true)
 
 	return nil
 }
 
-func changeDirectory(app *App, path string) {
-	app.History.Push(app.FileManager.Dir.Path)
+func lastVisitedPath(app *App) error {
+	app.History.VisitLast()
+	changeDirectory(app, app.History.Peek(), false)
+
+	return nil
+}
+
+func nextVisitedPath(app *App) error {
+	app.History.VisitNext()
+	changeDirectory(app, app.History.Peek(), false)
+
+	return nil
+}
+
+func changeDirectory(app *App, path string, saveHistory bool) {
+	if saveHistory {
+		app.History.Push(app.FileManager.Dir.Path)
+	}
+
 	app.FileManager.LoadDirectory(path)
 }
 
