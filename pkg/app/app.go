@@ -111,9 +111,10 @@ func (app *App) loop() {
 						break
 					}
 
-					if err := focusNext(app); err != nil {
+					if err := app.Gui.NextCursor(app.Gui.Views.Main); err != nil {
 						log.Fatalf("failed to focus next %v", err)
 					}
+					app.State.Main.FocusIdx++
 				}
 			}
 

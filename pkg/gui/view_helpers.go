@@ -16,27 +16,26 @@ func (gui *Gui) SetViewContent(v *gocui.View, displayStrings []string) {
 	})
 }
 
-func (gui *Gui) LinesToScrollDown(view *gocui.View) int {
-	_, oy := view.Origin()
-	y := oy
-
-	scrollHeight := 1
-	viewLinesHeight := strings.Count(view.ViewBuffer(), "\n")
-	scrollableLines := viewLinesHeight - y
-
-	if scrollableLines < 0 {
-		return 0
+func (gui *Gui) NextCursor(v *gocui.View) error {
+	cx, cy := v.Cursor()
+	if err := v.SetCursor(cx, cy+1); err != nil {
+		ox, oy := v.Origin()
+		if err := v.SetOrigin(ox, oy+1); err != nil {
+			return err
+		}
 	}
 
-	margin := 1
+	return nil
+}
 
-	if scrollableLines-margin < scrollHeight {
-		scrollHeight = scrollableLines - margin
+func (gui *Gui) PreviousCursor(v *gocui.View) error {
+	cx, cy := v.Cursor()
+	if err := v.SetCursor(cx, cy-1); err != nil {
+		ox, oy := v.Origin()
+		if err := v.SetOrigin(ox, oy-1); err != nil {
+			return err
+		}
 	}
 
-	if oy+scrollHeight < 0 {
-		return 0
-	}
-
-	return scrollHeight
+	return nil
 }
