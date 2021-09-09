@@ -27,6 +27,10 @@ func (gui *Gui) RenderDir(dir *fs.Directory, selectedIdx int) {
 		} else {
 			lines[i] = config.TreePrefix + lines[i]
 		}
+
+		if node.IsDir {
+			lines[i] = config.DirectoryStyle.Sprint(lines[i])
+		}
 	}
 
 	gui.SetViewContent(gui.Views.Main, lines)
