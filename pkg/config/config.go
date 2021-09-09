@@ -10,6 +10,8 @@ type Config struct {
 	FocusSuffix string
 	FocusBg     gocui.Attribute
 	FocusFg     gocui.Attribute
+	FolderIcon  string
+	FileIcon    string
 }
 
 var AppConfig *Config
@@ -23,5 +25,7 @@ func LoadConfig() {
 		FocusSuffix: "]",
 		FocusBg:     gocui.ColorDefault,
 		FocusFg:     gocui.ColorBlue,
+		FolderIcon:  "",
+		FileIcon:    "",
 	}
 }

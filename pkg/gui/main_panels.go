@@ -11,10 +11,15 @@ func (gui *Gui) RenderDir(dir *fs.Directory, selectedIdx int) {
 	config := config.AppConfig
 
 	for i, node := range dir.Nodes {
+		fileIcon := config.FileIcon + " "
+		if node.IsDir {
+			fileIcon = config.FolderIcon + " "
+		}
+
 		if i == selectedIdx {
-			lines[i] = config.FocusPrefix + node.RelativePath + config.FocusSuffix
+			lines[i] = config.FocusPrefix + fileIcon + node.RelativePath + config.FocusSuffix
 		} else {
-			lines[i] = " " + node.RelativePath
+			lines[i] = "  " + fileIcon + node.RelativePath
 		}
 
 		if i == nodeSize-1 {
