@@ -2,6 +2,7 @@ package app
 
 import (
 	"log"
+	"path/filepath"
 	"strconv"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
@@ -22,7 +23,7 @@ func NewApp() (*App, error) {
 		Mode: createDefaultMode(),
 		State: &State{
 			Main: &MainState{
-				SelectedIdx:   0,
+				FocusIdx:      0,
 				NumberOfFiles: 0,
 			},
 		},
@@ -95,13 +96,28 @@ func (app *App) loop() {
 			}
 
 			nodeSize := len(app.FileManager.Dir.Nodes)
-			app.State.Main.SelectedIdx = 0
+			app.State.Main.FocusIdx = 0
 			app.State.Main.NumberOfFiles = nodeSize
 
 			app.Gui.Views.MainHeader.Title = " " + app.FileManager.Dir.Path +
 				" (" + strconv.Itoa(nodeSize) + ") "
 
-			app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.SelectedIdx)
+			lastPath := app.History.Peek()
+			if filepath.Dir(lastPath) == app.FileManager.Dir.Path {
+				// back
+				base := filepath.Base(lastPath)
+				for _, node := range app.FileManager.Dir.Nodes {
+					if node.IsDir && node.RelativePath == base {
+						break
+					}
+
+					if err := focusNext(app); err != nil {
+						log.Fatalf("failed to focus next %v", err)
+					}
+				}
+			}
+
+			app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.FocusIdx)
 		}
 	}
 }

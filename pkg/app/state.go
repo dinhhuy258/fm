@@ -5,7 +5,6 @@ type State struct {
 }
 
 type MainState struct {
-	Paths         []string
-	SelectedIdx   int
+	FocusIdx      int
 	NumberOfFiles int
 }

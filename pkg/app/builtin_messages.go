@@ -3,7 +3,7 @@ package app
 import "github.com/dinhhuy258/gocui"
 
 func focusNext(app *App) error {
-	if app.State.Main.SelectedIdx == app.State.Main.NumberOfFiles-1 {
+	if app.State.Main.FocusIdx == app.State.Main.NumberOfFiles-1 {
 		return nil
 	}
 
@@ -17,14 +17,14 @@ func focusNext(app *App) error {
 		}
 	}
 
-	app.State.Main.SelectedIdx++
-	app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.SelectedIdx)
+	app.State.Main.FocusIdx++
+	app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.FocusIdx)
 
 	return nil
 }
 
 func focusPrevious(app *App) error {
-	if app.State.Main.SelectedIdx == 0 {
+	if app.State.Main.FocusIdx == 0 {
 		return nil
 	}
 
@@ -39,17 +39,17 @@ func focusPrevious(app *App) error {
 		}
 	}
 
-	app.State.Main.SelectedIdx--
-	app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.SelectedIdx)
+	app.State.Main.FocusIdx--
+	app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.FocusIdx)
 
 	return nil
 }
 
 func enter(app *App) error {
-	currentNode := app.FileManager.Dir.Nodes[app.State.Main.SelectedIdx]
+	currentNode := app.FileManager.Dir.Nodes[app.State.Main.FocusIdx]
 
 	if currentNode.IsDir {
-		app.FileManager.LoadDirectory(currentNode.AbsolutePath)
+		changeDirectory(app, currentNode.AbsolutePath)
 	}
 
 	return nil
@@ -58,9 +58,14 @@ func enter(app *App) error {
 func back(app *App) error {
 	parent := app.FileManager.Dir.Parent()
 
-	app.FileManager.LoadDirectory(parent)
+	changeDirectory(app, parent)
 
 	return nil
+}
+
+func changeDirectory(app *App, path string) {
+	app.History.Push(app.FileManager.Dir.Path)
+	app.FileManager.LoadDirectory(path)
 }
 
 func quit(app *App) error {
