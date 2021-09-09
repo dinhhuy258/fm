@@ -100,17 +100,8 @@ func (app *App) loop() {
 
 			app.Gui.Views.MainHeader.Title = " " + app.FileManager.Dir.Path +
 				" (" + strconv.Itoa(nodeSize) + ") "
-			lines := make([]string, nodeSize)
 
-			for i, node := range app.FileManager.Dir.Nodes {
-				if i == nodeSize-1 {
-					lines[i] = "╰─" + "  " + node.RelativePath
-				} else {
-					lines[i] = "├─" + "  " + node.RelativePath
-				}
-			}
-
-			app.Gui.SetViewContent(app.Gui.Views.Main, lines)
+			app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.SelectedIdx)
 		}
 	}
 }

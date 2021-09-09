@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -39,11 +40,12 @@ func (gui *Gui) createAllViews() error {
 		}
 	}
 
-	fmt.Fprintf(gui.Views.MainHeader, "╭──── path")
+	fmt.Fprintf(gui.Views.MainHeader, config.AppConfig.PathHeader)
 
 	gui.Views.Main.Frame = false
 	gui.Views.Main.Highlight = true
-	gui.Views.Main.SelFgColor = gocui.ColorBlue
+	gui.Views.Main.SelBgColor = config.AppConfig.FocusBg
+	gui.Views.Main.SelFgColor = config.AppConfig.FocusFg
 
 	gui.Views.Selection.Title = "Selection"
 

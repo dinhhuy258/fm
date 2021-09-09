@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/dinhhuy258/fm/pkg/app"
+	"github.com/dinhhuy258/fm/pkg/config"
 )
 
 var version = "unversioned"
@@ -24,6 +25,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+
+	config.LoadConfig()
 
 	err = app.Run()
 	if err != nil {

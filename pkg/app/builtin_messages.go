@@ -18,6 +18,7 @@ func focusNext(app *App) error {
 	}
 
 	app.State.Main.SelectedIdx++
+	app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.SelectedIdx)
 
 	return nil
 }
@@ -39,6 +40,7 @@ func focusPrevious(app *App) error {
 	}
 
 	app.State.Main.SelectedIdx--
+	app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.SelectedIdx)
 
 	return nil
 }
