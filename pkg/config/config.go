@@ -43,7 +43,7 @@ func LoadConfig() {
 		FocusFg:         gocui.ColorBlue,
 		FolderIcon:      "",
 		FileIcon:        "",
-		DirectoryStyle:  style.New().SetFg(style.NewBasicColor(color.Cyan)),
-		SizeStyle:       style.New().SetFg(style.NewBasicColor(color.White)),
+		DirectoryStyle:  style.FromBasicFg(color.Cyan),
+		SizeStyle:       style.FromBasicFg(color.White),
 	}
 }
