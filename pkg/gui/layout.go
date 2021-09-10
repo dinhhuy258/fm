@@ -152,7 +152,9 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 	gui.MainRow.FileRow.SetWidth(x)
 	gui.MainRow.DirectoryRow.SetWidth(x)
 
-	rowString, err := gui.MainRow.HeaderRow.Sprint([]string{config.AppConfig.PathHeader, config.AppConfig.SizeHeader})
+	rowString, err := gui.MainRow.HeaderRow.Sprint(
+		[]string{config.AppConfig.IndexHeader, config.AppConfig.PathHeader, config.AppConfig.SizeHeader},
+	)
 	if err != nil {
 		return err
 	}

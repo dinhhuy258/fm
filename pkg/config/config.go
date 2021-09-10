@@ -7,39 +7,43 @@ import (
 )
 
 type Config struct {
-	PathHeader     string
-	PathPercentage int
-	SizeHeader     string
-	SizePercentage int
-	TreePrefix     string
-	TreeSuffix     string
-	FocusPrefix    string
-	FocusSuffix    string
-	FocusBg        gocui.Attribute
-	FocusFg        gocui.Attribute
-	FolderIcon     string
-	FileIcon       string
-	DirectoryStyle style.TextStyle
-	SizeStyle      style.TextStyle
+	IndexHeader     string
+	IndexPercentage int
+	PathHeader      string
+	PathPercentage  int
+	SizeHeader      string
+	SizePercentage  int
+	TreePrefix      string
+	TreeSuffix      string
+	FocusPrefix     string
+	FocusSuffix     string
+	FocusBg         gocui.Attribute
+	FocusFg         gocui.Attribute
+	FolderIcon      string
+	FileIcon        string
+	DirectoryStyle  style.TextStyle
+	SizeStyle       style.TextStyle
 }
 
 var AppConfig *Config
 
 func LoadConfig() {
 	AppConfig = &Config{
-		PathHeader:     "╭──── path",
-		PathPercentage: 80,
-		SizeHeader:     "size",
-		SizePercentage: 20,
-		TreePrefix:     "├─",
-		TreeSuffix:     "╰─",
-		FocusPrefix:    "▸[",
-		FocusSuffix:    "]",
-		FocusBg:        gocui.ColorDefault,
-		FocusFg:        gocui.ColorBlue,
-		FolderIcon:     "",
-		FileIcon:       "",
-		DirectoryStyle: style.New().SetFg(style.NewBasicColor(color.Cyan)),
-		SizeStyle:      style.New().SetFg(style.NewBasicColor(color.White)),
+		IndexHeader:     "index",
+		IndexPercentage: 10,
+		PathHeader:      "╭──── path",
+		PathPercentage:  70,
+		SizeHeader:      "size",
+		SizePercentage:  20,
+		TreePrefix:      "├─",
+		TreeSuffix:      "╰─",
+		FocusPrefix:     "▸[",
+		FocusSuffix:     "]",
+		FocusBg:         gocui.ColorDefault,
+		FocusFg:         gocui.ColorBlue,
+		FolderIcon:      "",
+		FileIcon:        "",
+		DirectoryStyle:  style.New().SetFg(style.NewBasicColor(color.Cyan)),
+		SizeStyle:       style.New().SetFg(style.NewBasicColor(color.White)),
 	}
 }

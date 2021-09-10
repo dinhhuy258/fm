@@ -1,6 +1,8 @@
 package gui
 
 import (
+	"strconv"
+
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 )
@@ -35,8 +37,9 @@ func (gui *Gui) RenderDir(dir *fs.Directory, focusIdx int) error {
 		}
 
 		size := fs.Humanize(node.Size)
+		index := strconv.Itoa(i-focusIdx) + "|" + strconv.Itoa(i)
 
-		line, err := row.Sprint([]string{path, size})
+		line, err := row.Sprint([]string{index, path, size})
 		if err != nil {
 			return err
 		}

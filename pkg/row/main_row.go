@@ -13,14 +13,15 @@ type MainRow struct {
 
 func NewMainRow() *MainRow {
 	return &MainRow{
-		HeaderRow:    newRow(nil, nil),
-		FileRow:      newRow(nil, nil),
-		DirectoryRow: newRow(&config.AppConfig.DirectoryStyle, nil),
+		HeaderRow:    newRow(nil, nil, nil),
+		FileRow:      newRow(nil, nil, nil),
+		DirectoryRow: newRow(nil, &config.AppConfig.DirectoryStyle, nil),
 	}
 }
 
-func newRow(pathStyle *style.TextStyle, sizeStyle *style.TextStyle) *Row {
+func newRow(indexStyle *style.TextStyle, pathStyle *style.TextStyle, sizeStyle *style.TextStyle) *Row {
 	r := &Row{}
+	r.AddCell(config.AppConfig.IndexPercentage, true, indexStyle)
 	r.AddCell(config.AppConfig.PathPercentage, true, pathStyle)
 	r.AddCell(config.AppConfig.SizePercentage, false, sizeStyle)
 
