@@ -5,7 +5,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/fs"
 )
 
-func (gui *Gui) RenderDir(dir *fs.Directory, selectedIdx int) {
+func (gui *Gui) RenderDir(dir *fs.Directory, focusIdx int) error {
 	nodeSize := len(dir.Nodes)
 	lines := make([]string, nodeSize)
 	config := config.AppConfig
@@ -16,22 +16,35 @@ func (gui *Gui) RenderDir(dir *fs.Directory, selectedIdx int) {
 			fileIcon = config.FolderIcon + " "
 		}
 
-		if i == selectedIdx {
-			lines[i] = config.FocusPrefix + fileIcon + node.RelativePath + config.FocusSuffix
+		var path string
+		if i == focusIdx {
+			path = config.FocusPrefix + fileIcon + node.RelativePath + config.FocusSuffix
 		} else {
-			lines[i] = "  " + fileIcon + node.RelativePath
+			path = "  " + fileIcon + node.RelativePath
 		}
 
 		if i == nodeSize-1 {
-			lines[i] = config.TreeSuffix + lines[i]
+			path = config.TreeSuffix + path
 		} else {
-			lines[i] = config.TreePrefix + lines[i]
+			path = config.TreePrefix + path
 		}
 
+		row := gui.MainRow.FileRow
 		if node.IsDir {
-			lines[i] = config.DirectoryStyle.Sprint(lines[i])
+			row = gui.MainRow.DirectoryRow
 		}
+
+		size := fs.Humanize(node.Size)
+
+		line, err := row.Sprint([]string{path, size})
+		if err != nil {
+			return err
+		}
+
+		lines[i] = line
 	}
 
 	gui.SetViewContent(gui.Views.Main, lines)
+
+	return nil
 }

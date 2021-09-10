@@ -2,7 +2,6 @@ package gui
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/gocui"
@@ -39,8 +38,6 @@ func (gui *Gui) createAllViews() error {
 			return err
 		}
 	}
-
-	fmt.Fprintf(gui.Views.MainHeader, config.AppConfig.PathHeader)
 
 	gui.Views.Main.Frame = false
 	gui.Views.Main.Highlight = true
@@ -146,5 +143,21 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		gui.ViewsSetup = true
 	}
 
-	return gui.setViewDimentions()
+	if err := gui.setViewDimentions(); err != nil {
+		return err
+	}
+
+	x, _ := gui.Views.Main.Size()
+	gui.MainRow.HeaderRow.SetWidth(x)
+	gui.MainRow.FileRow.SetWidth(x)
+	gui.MainRow.DirectoryRow.SetWidth(x)
+
+	rowString, err := gui.MainRow.HeaderRow.Sprint([]string{config.AppConfig.PathHeader, config.AppConfig.SizeHeader})
+	if err != nil {
+		return err
+	}
+
+	gui.SetViewContent(gui.Views.MainHeader, []string{rowString})
+
+	return nil
 }

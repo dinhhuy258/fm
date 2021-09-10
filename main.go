@@ -21,12 +21,12 @@ func main() {
 		os.Exit(0)
 	}
 
+	config.LoadConfig()
+
 	app, err := app.NewApp()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-
-	config.LoadConfig()
 
 	err = app.Run()
 	if err != nil {

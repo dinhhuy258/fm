@@ -105,20 +105,14 @@ func (app *App) loop() {
 			lastPath := app.History.Peek()
 			if filepath.Dir(lastPath) == app.FileManager.Dir.Path {
 				// back
-				base := filepath.Base(lastPath)
-				for _, node := range app.FileManager.Dir.Nodes {
-					if node.IsDir && node.RelativePath == base {
-						break
-					}
-
-					if err := app.Gui.NextCursor(app.Gui.Views.Main); err != nil {
-						log.Fatalf("failed to focus next %v", err)
-					}
-					app.State.Main.FocusIdx++
+				if err := focus(app, lastPath); err != nil {
+					log.Fatalf("failed to focus path %v", err)
 				}
 			}
 
-			app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.FocusIdx)
+			if err := app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.FocusIdx); err != nil {
+				log.Fatalf("failed to render dir %v", err)
+			}
 		}
 	}
 }

@@ -12,9 +12,8 @@ func focusNext(app *App) error {
 	}
 
 	app.State.Main.FocusIdx++
-	app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.FocusIdx)
 
-	return nil
+	return app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.FocusIdx)
 }
 
 func focusPrevious(app *App) error {
@@ -27,9 +26,8 @@ func focusPrevious(app *App) error {
 	}
 
 	app.State.Main.FocusIdx--
-	app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.FocusIdx)
 
-	return nil
+	return app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.FocusIdx)
 }
 
 func enter(app *App) error {
@@ -60,6 +58,32 @@ func lastVisitedPath(app *App) error {
 func nextVisitedPath(app *App) error {
 	app.History.VisitNext()
 	changeDirectory(app, app.History.Peek(), false)
+
+	return nil
+}
+
+func focus(app *App, path string) error {
+	count := 0
+
+	for _, node := range app.FileManager.Dir.Nodes {
+		if node.IsDir && node.AbsolutePath == path {
+			break
+		}
+
+		count++
+	}
+
+	if count == len(app.FileManager.Dir.Nodes) {
+		return nil
+	}
+
+	for i := 0; i < count; i++ {
+		if err := app.Gui.NextCursor(app.Gui.Views.Main); err != nil {
+			return err
+		}
+
+		app.State.Main.FocusIdx++
+	}
 
 	return nil
 }

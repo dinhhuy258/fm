@@ -8,6 +8,9 @@ import (
 
 type Config struct {
 	PathHeader     string
+	PathPercentage int
+	SizeHeader     string
+	SizePercentage int
 	TreePrefix     string
 	TreeSuffix     string
 	FocusPrefix    string
@@ -17,6 +20,7 @@ type Config struct {
 	FolderIcon     string
 	FileIcon       string
 	DirectoryStyle style.TextStyle
+	SizeStyle      style.TextStyle
 }
 
 var AppConfig *Config
@@ -24,6 +28,9 @@ var AppConfig *Config
 func LoadConfig() {
 	AppConfig = &Config{
 		PathHeader:     "╭──── path",
+		PathPercentage: 80,
+		SizeHeader:     "size",
+		SizePercentage: 20,
 		TreePrefix:     "├─",
 		TreeSuffix:     "╰─",
 		FocusPrefix:    "▸[",
@@ -33,5 +40,6 @@ func LoadConfig() {
 		FolderIcon:     "",
 		FileIcon:       "",
 		DirectoryStyle: style.New().SetFg(style.NewBasicColor(color.Cyan)),
+		SizeStyle:      style.New().SetFg(style.NewBasicColor(color.White)),
 	}
 }

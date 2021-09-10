@@ -3,6 +3,7 @@ package gui
 import (
 	"errors"
 
+	"github.com/dinhhuy258/fm/pkg/row"
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -19,6 +20,7 @@ type Gui struct {
 	g             *gocui.Gui
 	ViewsSetup    bool
 	Views         Views
+	MainRow       *row.MainRow
 	GuiLoadedChan chan struct{}
 }
 
@@ -26,6 +28,7 @@ func NewGui() (*Gui, error) {
 	gui := &Gui{
 		ViewsSetup:    false,
 		GuiLoadedChan: make(chan struct{}, 1),
+		MainRow:       row.NewMainRow(),
 	}
 
 	return gui, nil
