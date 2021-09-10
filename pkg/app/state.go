@@ -1,7 +1,8 @@
 package app
 
 type State struct {
-	Main *MainState
+	Main       *MainState
+	Selections map[string]struct{}
 }
 
 type MainState struct {

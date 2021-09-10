@@ -88,6 +88,18 @@ func focus(app *App, path string) error {
 	return nil
 }
 
+func toggleSelection(app *App) error {
+	path := app.FileManager.Dir.Nodes[app.State.Main.FocusIdx].AbsolutePath
+
+	if _, hasPath := app.State.Selections[path]; hasPath {
+		delete(app.State.Selections, path)
+	} else {
+		app.State.Selections[path] = struct{}{}
+	}
+
+	return app.Gui.RenderSelections(app.State.Selections)
+}
+
 func changeDirectory(app *App, path string, saveHistory bool) {
 	if saveHistory {
 		app.History.Push(app.FileManager.Dir.Path)

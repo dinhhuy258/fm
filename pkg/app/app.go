@@ -26,6 +26,7 @@ func NewApp() (*App, error) {
 				FocusIdx:      0,
 				NumberOfFiles: 0,
 			},
+			Selections: map[string]struct{}{},
 		},
 	}
 
@@ -156,6 +157,12 @@ func createDefaultMode() *Mode {
 					help: "last visited path",
 					messages: []func(app *App) error{
 						lastVisitedPath,
+					},
+				},
+				"space": {
+					help: "toggle selection",
+					messages: []func(app *App) error{
+						toggleSelection,
 					},
 				},
 				"q": {
