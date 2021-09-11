@@ -12,15 +12,17 @@ import (
 
 type MainView struct {
 	v            *View
+	hv           *View
 	headerRow    *row.Row
 	fileRow      *row.Row
 	directoryRow *row.Row
 	selectionRow *row.Row
 }
 
-func newMainView(g *gocui.Gui, v *gocui.View) *MainView {
+func newMainView(g *gocui.Gui, v *gocui.View, hv *gocui.View) *MainView {
 	mv := &MainView{
 		v:            newView(g, v),
+		hv:           newView(g, hv),
 		headerRow:    newRow(nil),
 		fileRow:      newRow(nil),
 		directoryRow: newRow(&config.AppConfig.DirectoryStyle),
@@ -44,12 +46,23 @@ func newRow(pathStyle *style.TextStyle) *row.Row {
 	return r
 }
 
-func (mv *MainView) OnResize() {
+func (mv *MainView) Layout() error {
 	x, _ := mv.v.v.Size()
 	mv.headerRow.SetWidth(x)
 	mv.directoryRow.SetWidth(x)
 	mv.fileRow.SetWidth(x)
 	mv.selectionRow.SetWidth(x)
+
+	rowString, err := mv.headerRow.Sprint(
+		[]string{config.AppConfig.IndexHeader, config.AppConfig.PathHeader, config.AppConfig.SizeHeader},
+	)
+	if err != nil {
+		return err
+	}
+
+	mv.hv.SetViewContent([]string{rowString})
+
+	return nil
 }
 
 func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{}, focusIdx int) error {
@@ -103,6 +116,10 @@ func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{},
 	mv.v.SetViewContent(lines)
 
 	return nil
+}
+
+func (mv *MainView) SetTitle(header string) {
+	mv.hv.v.Title = header
 }
 
 func (mv *MainView) SetOrigin(x, y int) error {

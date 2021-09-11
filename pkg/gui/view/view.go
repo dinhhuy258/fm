@@ -9,7 +9,6 @@ import (
 )
 
 type Views struct {
-	MainHeader    *View
 	Main          *MainView
 	Selection     *SelectionView
 	Help          *HelpView
@@ -56,17 +55,8 @@ func CreateAllViews(g *gocui.Gui) (*Views, error) {
 		}
 	}
 
-	// 	gui.TestViews.SortAndFilter.Title = " Sort & filter "
-
-	// 	gui.TestViews.Log.Title = " Logs "
-
-	// if _, err := gui.g.SetViewOnTop(gui.TestViews.Log.Name()); err != nil {
-	// 	return err
-	// }
-
 	return &Views{
-		MainHeader:    newView(g, mainHeader),
-		Main:          newMainView(g, main),
+		Main:          newMainView(g, main, mainHeader),
 		Selection:     newSelectionView(g, selection),
 		SortAndFilter: newView(g, sortAndFilter),
 		Help:          newHelpView(g, help),

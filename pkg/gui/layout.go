@@ -148,16 +148,5 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		return err
 	}
 
-	gui.Views.Main.OnResize()
-
-	// rowString, err := gui.MainRow.HeaderRow.Sprint(
-	// 	[]string{config.AppConfig.IndexHeader, config.AppConfig.PathHeader, config.AppConfig.SizeHeader},
-	// )
-	// if err != nil {
-	// 	return err
-	// }
-
-	// gui.Views.MainHeader.SetViewContent([]string{rowString})
-
-	return nil
+	return gui.Views.Main.Layout()
 }

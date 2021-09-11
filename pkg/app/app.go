@@ -100,7 +100,7 @@ func (app *App) loop() {
 			app.State.Main.FocusIdx = 0
 			app.State.Main.NumberOfFiles = nodeSize
 
-			app.Gui.Views.MainHeader.SetTitle(" " + app.FileManager.Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
+			app.Gui.Views.Main.SetTitle(" " + app.FileManager.Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
 
 			lastPath := app.History.Peek()
 			if filepath.Dir(lastPath) == app.FileManager.Dir.Path {
