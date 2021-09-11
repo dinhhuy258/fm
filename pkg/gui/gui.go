@@ -3,27 +3,14 @@ package gui
 import (
 	"errors"
 
-	"github.com/dinhhuy258/fm/pkg/row"
+	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/gocui"
 )
-
-type Views struct {
-	MainHeader    *gocui.View
-	Main          *gocui.View
-	Selection     *gocui.View
-	HelpMenu      *gocui.View
-	SortAndFilter *gocui.View
-	Input         *gocui.View
-	Log           *gocui.View
-	Confirm       *gocui.View
-	Progress      *gocui.View
-}
 
 type Gui struct {
 	g             *gocui.Gui
 	ViewsSetup    bool
-	Views         Views
-	MainRow       *row.MainRow
+	Views         *view.Views
 	GuiLoadedChan chan struct{}
 }
 
@@ -31,7 +18,6 @@ func NewGui() (*Gui, error) {
 	gui := &Gui{
 		ViewsSetup:    false,
 		GuiLoadedChan: make(chan struct{}, 1),
-		MainRow:       row.NewMainRow(),
 	}
 
 	return gui, nil

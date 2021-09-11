@@ -63,7 +63,7 @@ func (app *App) onModeChanged() {
 		idx++
 	}
 
-	app.Gui.SetViewContent(app.Gui.Views.HelpMenu, helps)
+	app.Gui.Views.Help.SetViewContent(helps)
 }
 
 func (app *App) onKey(key string) error {
@@ -100,8 +100,7 @@ func (app *App) loop() {
 			app.State.Main.FocusIdx = 0
 			app.State.Main.NumberOfFiles = nodeSize
 
-			app.Gui.Views.MainHeader.Title = " " + app.FileManager.Dir.Path +
-				" (" + strconv.Itoa(nodeSize) + ") "
+			app.Gui.Views.MainHeader.SetTitle(" " + app.FileManager.Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
 
 			lastPath := app.History.Peek()
 			if filepath.Dir(lastPath) == app.FileManager.Dir.Path {
@@ -111,7 +110,11 @@ func (app *App) loop() {
 				}
 			}
 
-			if err := app.Gui.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx); err != nil {
+			if err := app.Gui.Views.Main.RenderDir(
+				app.FileManager.Dir,
+				app.State.Selections,
+				app.State.Main.FocusIdx,
+			); err != nil {
 				log.Fatalf("failed to render dir %v", err)
 			}
 		}

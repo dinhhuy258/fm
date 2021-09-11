@@ -3,7 +3,7 @@ package gui
 import (
 	"errors"
 
-	"github.com/dinhhuy258/fm/pkg/config"
+	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -19,41 +19,12 @@ type viewDimension struct {
 }
 
 func (gui *Gui) createAllViews() error {
-	viewNameMappings := []struct {
-		viewPtr **gocui.View
-		name    string
-	}{
-		{viewPtr: &gui.Views.MainHeader, name: "main-header"},
-		{viewPtr: &gui.Views.Main, name: "main"},
-		{viewPtr: &gui.Views.Selection, name: "selection"},
-		{viewPtr: &gui.Views.SortAndFilter, name: "sortAndFilter"},
-		{viewPtr: &gui.Views.HelpMenu, name: "helpMenu"},
-		{viewPtr: &gui.Views.Input, name: "input"},
-		{viewPtr: &gui.Views.Log, name: "log"},
-		{viewPtr: &gui.Views.Confirm, name: "confirm"},
-		{viewPtr: &gui.Views.Progress, name: "progress"},
-	}
-
-	var err error
-	for _, mapping := range viewNameMappings {
-		*mapping.viewPtr, err = gui.g.SetView(mapping.name, 0, 0, 10, 10)
-		if err != nil && !errors.Is(err, gocui.ErrUnknownView) {
-			return err
-		}
-	}
-
-	gui.initMainPanels()
-	gui.initSelectionPanels()
-
-	gui.Views.SortAndFilter.Title = " Sort & filter "
-
-	gui.Views.HelpMenu.Title = " Help "
-
-	gui.Views.Log.Title = " Logs "
-
-	if _, err := gui.g.SetViewOnTop(gui.Views.Log.Name()); err != nil {
+	views, err := view.CreateAllViews(gui.g)
+	if err != nil {
 		return err
 	}
+
+	gui.Views = views
 
 	return nil
 }
@@ -140,7 +111,7 @@ func (gui *Gui) setViewDimentions() error {
 			},
 		},
 		{
-			name: "helpMenu",
+			name: "help",
 			dimension: viewDimension{
 				x0: int(float32(width) * 0.7),
 				y0: height / 2,
@@ -177,17 +148,16 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		return err
 	}
 
-	x, _ := gui.Views.Main.Size()
-	gui.MainRow.SetWidth(x)
+	gui.Views.Main.OnResize()
 
-	rowString, err := gui.MainRow.HeaderRow.Sprint(
-		[]string{config.AppConfig.IndexHeader, config.AppConfig.PathHeader, config.AppConfig.SizeHeader},
-	)
-	if err != nil {
-		return err
-	}
+	// rowString, err := gui.MainRow.HeaderRow.Sprint(
+	// 	[]string{config.AppConfig.IndexHeader, config.AppConfig.PathHeader, config.AppConfig.SizeHeader},
+	// )
+	// if err != nil {
+	// 	return err
+	// }
 
-	gui.SetViewContent(gui.Views.MainHeader, []string{rowString})
+	// gui.Views.MainHeader.SetViewContent([]string{rowString})
 
 	return nil
 }

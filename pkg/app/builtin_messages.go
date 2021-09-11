@@ -9,13 +9,13 @@ func focusNext(app *App) error {
 		return nil
 	}
 
-	if err := app.Gui.NextCursor(app.Gui.Views.Main); err != nil {
+	if err := app.Gui.Views.Main.NextCursor(); err != nil {
 		return err
 	}
 
 	app.State.Main.FocusIdx++
 
-	return app.Gui.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
+	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
 }
 
 func focusPrevious(app *App) error {
@@ -23,13 +23,13 @@ func focusPrevious(app *App) error {
 		return nil
 	}
 
-	if err := app.Gui.PreviousCursor(app.Gui.Views.Main); err != nil {
+	if err := app.Gui.Views.Main.PreviousCursor(); err != nil {
 		return err
 	}
 
 	app.State.Main.FocusIdx--
 
-	return app.Gui.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
+	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
 }
 
 func enter(app *App) error {
@@ -80,7 +80,7 @@ func focus(app *App, path string) error {
 	}
 
 	for i := 0; i < count; i++ {
-		if err := app.Gui.NextCursor(app.Gui.Views.Main); err != nil {
+		if err := app.Gui.Views.Main.NextCursor(); err != nil {
 			return err
 		}
 
@@ -99,25 +99,25 @@ func toggleSelection(app *App) error {
 		app.State.Selections[path] = struct{}{}
 	}
 
-	app.Gui.SetSelectionTitle(len(app.State.Selections))
+	app.Gui.Views.Selection.SetTitle(len(app.State.Selections))
 
-	if err := app.Gui.RenderSelections(app.State.Selections); err != nil {
+	if err := app.Gui.Views.Selection.RenderSelections(app.State.Selections); err != nil {
 		return err
 	}
 
-	return app.Gui.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
+	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
 }
 
 func clearSelection(app *App) error {
 	app.State.Selections = make(map[string]struct{})
 
-	app.Gui.SetSelectionTitle(len(app.State.Selections))
+	app.Gui.Views.Selection.SetTitle(len(app.State.Selections))
 
-	if err := app.Gui.RenderSelections(app.State.Selections); err != nil {
+	if err := app.Gui.Views.Selection.RenderSelections(app.State.Selections); err != nil {
 		return err
 	}
 
-	return app.Gui.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
+	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
 }
 
 func changeDirectory(app *App, path string, saveHistory bool) {

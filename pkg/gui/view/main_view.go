@@ -1,20 +1,39 @@
-package gui
+package view
 
 import (
 	"strconv"
 
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
+	"github.com/dinhhuy258/fm/pkg/row"
+	"github.com/dinhhuy258/gocui"
 )
 
-func (gui *Gui) initMainPanels() {
-	gui.Views.Main.Frame = false
-	gui.Views.Main.Highlight = true
-	gui.Views.Main.SelBgColor = config.AppConfig.FocusBg
-	gui.Views.Main.SelFgColor = config.AppConfig.FocusFg
+type MainView struct {
+	v       *View
+	mainRow *row.MainRow
 }
 
-func (gui *Gui) RenderDir(dir *fs.Directory, selections map[string]struct{}, focusIdx int) error {
+func newMainView(g *gocui.Gui, v *gocui.View) *MainView {
+	mv := &MainView{
+		v:       newView(g, v),
+		mainRow: row.NewMainRow(),
+	}
+
+	mv.v.v.Frame = false
+	mv.v.v.Highlight = true
+	mv.v.v.SelBgColor = config.AppConfig.FocusBg
+	mv.v.v.SelFgColor = config.AppConfig.FocusFg
+
+	return mv
+}
+
+func (mv *MainView) OnResize() {
+	x, _ := mv.v.v.Size()
+	mv.mainRow.SetWidth(x)
+}
+
+func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{}, focusIdx int) error {
 	nodeSize := len(dir.Nodes)
 	lines := make([]string, nodeSize)
 	config := config.AppConfig
@@ -44,11 +63,11 @@ func (gui *Gui) RenderDir(dir *fs.Directory, selections map[string]struct{}, foc
 			path = config.PathPrefix + path
 		}
 
-		row := gui.MainRow.FileRow
+		row := mv.mainRow.FileRow
 		if isSelected {
-			row = gui.MainRow.SelectionRow
+			row = mv.mainRow.SelectionRow
 		} else if node.IsDir {
-			row = gui.MainRow.DirectoryRow
+			row = mv.mainRow.DirectoryRow
 		}
 
 		size := fs.Humanize(node.Size)
@@ -62,7 +81,23 @@ func (gui *Gui) RenderDir(dir *fs.Directory, selections map[string]struct{}, foc
 		lines[i] = line
 	}
 
-	gui.SetViewContent(gui.Views.Main, lines)
+	mv.v.SetViewContent(lines)
 
 	return nil
+}
+
+func (mv *MainView) SetOrigin(x, y int) error {
+	return mv.v.SetOrigin(x, y)
+}
+
+func (mv *MainView) SetCursor(x, y int) error {
+	return mv.v.SetCursor(x, y)
+}
+
+func (mv *MainView) NextCursor() error {
+	return mv.v.NextCursor()
+}
+
+func (mv *MainView) PreviousCursor() error {
+	return mv.v.PreviousCursor()
 }
