@@ -26,7 +26,7 @@ func (gui *Gui) createAllViews() error {
 
 	gui.Views = views
 
-	return nil
+	return gui.Views.Log.SetViewOnTop()
 }
 
 func (gui *Gui) setViewDimentions() error {

@@ -28,6 +28,7 @@ func (gui *Gui) Run() error {
 	}
 
 	gui.g = g
+	gui.g.Cursor = true
 
 	defer gui.g.Close()
 

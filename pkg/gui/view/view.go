@@ -14,8 +14,8 @@ type Views struct {
 	Help          *HelpView
 	SortAndFilter *View
 	Input         *View
-	Log           *View
-	Confirm       *View
+	Log           *LogView
+	Confirm       *ConfirmView
 	Progress      *View
 }
 
@@ -61,8 +61,8 @@ func CreateAllViews(g *gocui.Gui) (*Views, error) {
 		SortAndFilter: newView(g, sortAndFilter),
 		Help:          newHelpView(g, help),
 		Input:         newView(g, input),
-		Log:           newView(g, log),
-		Confirm:       newView(g, confirm),
+		Log:           newLogView(g, log),
+		Confirm:       newConfirmView(g, confirm),
 		Progress:      newView(g, progress),
 	}, nil
 }
