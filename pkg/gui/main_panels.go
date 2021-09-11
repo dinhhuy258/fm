@@ -7,7 +7,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/fs"
 )
 
-func (gui *Gui) RenderDir(dir *fs.Directory, focusIdx int) error {
+func (gui *Gui) RenderDir(dir *fs.Directory, selections map[string]struct{}, focusIdx int) error {
 	nodeSize := len(dir.Nodes)
 	lines := make([]string, nodeSize)
 	config := config.AppConfig
@@ -18,21 +18,29 @@ func (gui *Gui) RenderDir(dir *fs.Directory, focusIdx int) error {
 			fileIcon = config.FolderIcon + " "
 		}
 
+		_, isSelected := selections[node.AbsolutePath]
+
 		var path string
-		if i == focusIdx {
+
+		switch {
+		case i == focusIdx:
 			path = config.FocusPrefix + fileIcon + node.RelativePath + config.FocusSuffix
-		} else {
+		case isSelected:
+			path = config.SelectionPrefix + fileIcon + node.RelativePath + config.SelectionSuffix
+		default:
 			path = "  " + fileIcon + node.RelativePath
 		}
 
 		if i == nodeSize-1 {
-			path = config.TreeSuffix + path
+			path = config.PathSuffix + path
 		} else {
-			path = config.TreePrefix + path
+			path = config.PathPrefix + path
 		}
 
 		row := gui.MainRow.FileRow
-		if node.IsDir {
+		if isSelected {
+			row = gui.MainRow.SelectionRow
+		} else if node.IsDir {
 			row = gui.MainRow.DirectoryRow
 		}
 

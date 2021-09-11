@@ -13,12 +13,15 @@ type Config struct {
 	PathPercentage  int
 	SizeHeader      string
 	SizePercentage  int
-	TreePrefix      string
-	TreeSuffix      string
+	PathPrefix      string
+	PathSuffix      string
 	FocusPrefix     string
 	FocusSuffix     string
 	FocusBg         gocui.Attribute
 	FocusFg         gocui.Attribute
+	SelectionPrefix string
+	SelectionSuffix string
+	SelectionStyle  style.TextStyle
 	FolderIcon      string
 	FileIcon        string
 	DirectoryStyle  style.TextStyle
@@ -35,12 +38,15 @@ func LoadConfig() {
 		PathPercentage:  70,
 		SizeHeader:      "size",
 		SizePercentage:  20,
-		TreePrefix:      "├─",
-		TreeSuffix:      "╰─",
+		PathPrefix:      "├─",
+		PathSuffix:      "╰─",
 		FocusPrefix:     "▸[",
 		FocusSuffix:     "]",
 		FocusBg:         gocui.ColorDefault,
 		FocusFg:         gocui.ColorBlue,
+		SelectionPrefix: "{",
+		SelectionSuffix: "}",
+		SelectionStyle:  style.FromBasicFg(color.Green),
 		FolderIcon:      "",
 		FileIcon:        "",
 		DirectoryStyle:  style.FromBasicFg(color.Cyan),

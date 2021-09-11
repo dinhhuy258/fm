@@ -111,7 +111,7 @@ func (app *App) loop() {
 				}
 			}
 
-			if err := app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.FocusIdx); err != nil {
+			if err := app.Gui.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx); err != nil {
 				log.Fatalf("failed to render dir %v", err)
 			}
 		}

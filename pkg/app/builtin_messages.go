@@ -13,7 +13,7 @@ func focusNext(app *App) error {
 
 	app.State.Main.FocusIdx++
 
-	return app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.FocusIdx)
+	return app.Gui.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
 }
 
 func focusPrevious(app *App) error {
@@ -27,7 +27,7 @@ func focusPrevious(app *App) error {
 
 	app.State.Main.FocusIdx--
 
-	return app.Gui.RenderDir(app.FileManager.Dir, app.State.Main.FocusIdx)
+	return app.Gui.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
 }
 
 func enter(app *App) error {

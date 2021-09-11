@@ -148,9 +148,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 	}
 
 	x, _ := gui.Views.Main.Size()
-	gui.MainRow.HeaderRow.SetWidth(x)
-	gui.MainRow.FileRow.SetWidth(x)
-	gui.MainRow.DirectoryRow.SetWidth(x)
+	gui.MainRow.SetWidth(x)
 
 	rowString, err := gui.MainRow.HeaderRow.Sprint(
 		[]string{config.AppConfig.IndexHeader, config.AppConfig.PathHeader, config.AppConfig.SizeHeader},

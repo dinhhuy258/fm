@@ -9,21 +9,30 @@ type MainRow struct {
 	HeaderRow    *Row
 	FileRow      *Row
 	DirectoryRow *Row
+	SelectionRow *Row
+}
+
+func (mr *MainRow) SetWidth(width int) {
+	mr.HeaderRow.SetWidth(width)
+	mr.FileRow.SetWidth(width)
+	mr.DirectoryRow.SetWidth(width)
+	mr.SelectionRow.SetWidth(width)
 }
 
 func NewMainRow() *MainRow {
 	return &MainRow{
-		HeaderRow:    newRow(nil, nil, nil),
-		FileRow:      newRow(nil, nil, nil),
-		DirectoryRow: newRow(nil, &config.AppConfig.DirectoryStyle, nil),
+		HeaderRow:    newRow(nil),
+		FileRow:      newRow(nil),
+		DirectoryRow: newRow(&config.AppConfig.DirectoryStyle),
+		SelectionRow: newRow(&config.AppConfig.SelectionStyle),
 	}
 }
 
-func newRow(indexStyle *style.TextStyle, pathStyle *style.TextStyle, sizeStyle *style.TextStyle) *Row {
+func newRow(pathStyle *style.TextStyle) *Row {
 	r := &Row{}
-	r.AddCell(config.AppConfig.IndexPercentage, true, indexStyle)
+	r.AddCell(config.AppConfig.IndexPercentage, true, nil)
 	r.AddCell(config.AppConfig.PathPercentage, true, pathStyle)
-	r.AddCell(config.AppConfig.SizePercentage, false, sizeStyle)
+	r.AddCell(config.AppConfig.SizePercentage, false, nil)
 
 	return r
 }
