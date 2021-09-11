@@ -6,18 +6,25 @@ import (
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/row"
+	"github.com/dinhhuy258/fm/pkg/style"
 	"github.com/dinhhuy258/gocui"
 )
 
 type MainView struct {
-	v       *View
-	mainRow *row.MainRow
+	v            *View
+	headerRow    *row.Row
+	fileRow      *row.Row
+	directoryRow *row.Row
+	selectionRow *row.Row
 }
 
 func newMainView(g *gocui.Gui, v *gocui.View) *MainView {
 	mv := &MainView{
-		v:       newView(g, v),
-		mainRow: row.NewMainRow(),
+		v:            newView(g, v),
+		headerRow:    newRow(nil),
+		fileRow:      newRow(nil),
+		directoryRow: newRow(&config.AppConfig.DirectoryStyle),
+		selectionRow: newRow(&config.AppConfig.SelectionStyle),
 	}
 
 	mv.v.v.Frame = false
@@ -28,9 +35,21 @@ func newMainView(g *gocui.Gui, v *gocui.View) *MainView {
 	return mv
 }
 
+func newRow(pathStyle *style.TextStyle) *row.Row {
+	r := &row.Row{}
+	r.AddCell(config.AppConfig.IndexPercentage, true, nil)
+	r.AddCell(config.AppConfig.PathPercentage, true, pathStyle)
+	r.AddCell(config.AppConfig.SizePercentage, false, nil)
+
+	return r
+}
+
 func (mv *MainView) OnResize() {
 	x, _ := mv.v.v.Size()
-	mv.mainRow.SetWidth(x)
+	mv.headerRow.SetWidth(x)
+	mv.directoryRow.SetWidth(x)
+	mv.fileRow.SetWidth(x)
+	mv.selectionRow.SetWidth(x)
 }
 
 func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{}, focusIdx int) error {
@@ -63,11 +82,11 @@ func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{},
 			path = config.PathPrefix + path
 		}
 
-		row := mv.mainRow.FileRow
+		row := mv.fileRow
 		if isSelected {
-			row = mv.mainRow.SelectionRow
+			row = mv.selectionRow
 		} else if node.IsDir {
-			row = mv.mainRow.DirectoryRow
+			row = mv.directoryRow
 		}
 
 		size := fs.Humanize(node.Size)
