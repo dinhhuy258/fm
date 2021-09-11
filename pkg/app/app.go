@@ -82,7 +82,7 @@ func (app *App) onKey(key string) error {
 
 func (app *App) loop() {
 	// Wait until Gui is loaded
-	<-app.Gui.GuiLoadedChan
+	<-app.Gui.ViewsCreatedChan
 	// Load help menu
 	app.onModeChanged()
 	// Set on key handler

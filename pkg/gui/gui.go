@@ -8,16 +8,14 @@ import (
 )
 
 type Gui struct {
-	g             *gocui.Gui
-	ViewsSetup    bool
-	Views         *view.Views
-	GuiLoadedChan chan struct{}
+	g                *gocui.Gui
+	Views            *view.Views
+	ViewsCreatedChan chan struct{}
 }
 
 func NewGui() (*Gui, error) {
 	gui := &Gui{
-		ViewsSetup:    false,
-		GuiLoadedChan: make(chan struct{}, 1),
+		ViewsCreatedChan: make(chan struct{}, 1),
 	}
 
 	return gui, nil

@@ -134,14 +134,13 @@ func (gui *Gui) setViewDimentions() error {
 }
 
 func (gui *Gui) layout(g *gocui.Gui) error {
-	if !gui.ViewsSetup {
+	if gui.Views == nil {
 		if err := gui.createAllViews(); err != nil {
 			return err
 		}
 
-		gui.GuiLoadedChan <- struct{}{}
-		close(gui.GuiLoadedChan)
-		gui.ViewsSetup = true
+		gui.ViewsCreatedChan <- struct{}{}
+		close(gui.ViewsCreatedChan)
 	}
 
 	if err := gui.setViewDimentions(); err != nil {
