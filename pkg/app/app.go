@@ -55,15 +55,17 @@ func (app *App) Run() error {
 }
 
 func (app *App) onModeChanged() {
-	helps := make([]string, len(app.Mode.keyBindings.onKeys))
-	idx := 0
+	keys := make([]string, 0, len(app.Mode.keyBindings.onKeys))
+	helps := make([]string, 0, len(app.Mode.keyBindings.onKeys))
 
 	for k, a := range app.Mode.keyBindings.onKeys {
-		helps[idx] = k + " " + a.help
-		idx++
+		keys = append(keys, k)
+		helps = append(helps, a.help)
 	}
 
-	app.Gui.Views.Help.SetViewContent(helps)
+	if err := app.Gui.Views.Help.SetViewContent(keys, helps); err != nil {
+		log.Fatalf("failed to set content for help view %v", err)
+	}
 }
 
 func (app *App) onKey(key string) error {

@@ -67,6 +67,12 @@ func CreateAllViews(g *gocui.Gui) (*Views, error) {
 	}, nil
 }
 
+func (v *Views) Layout() error {
+	v.Help.layout()
+
+	return v.Main.layout()
+}
+
 type View struct {
 	g *gocui.Gui
 	v *gocui.View

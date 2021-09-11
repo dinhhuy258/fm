@@ -46,7 +46,7 @@ func newRow(pathStyle *style.TextStyle) *row.Row {
 	return r
 }
 
-func (mv *MainView) Layout() error {
+func (mv *MainView) layout() error {
 	x, _ := mv.v.v.Size()
 	mv.headerRow.SetWidth(x)
 	mv.directoryRow.SetWidth(x)

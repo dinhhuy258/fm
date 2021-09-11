@@ -148,5 +148,5 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		return err
 	}
 
-	return gui.Views.Main.Layout()
+	return gui.Views.Layout()
 }
