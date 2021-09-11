@@ -39,12 +39,8 @@ func (gui *Gui) createAllViews() error {
 		}
 	}
 
-	gui.Views.Main.Frame = false
-	gui.Views.Main.Highlight = true
-	gui.Views.Main.SelBgColor = config.AppConfig.FocusBg
-	gui.Views.Main.SelFgColor = config.AppConfig.FocusFg
-
-	gui.Views.Selection.Title = "Selection"
+	gui.initMainPanels()
+	gui.initSelectionPanels()
 
 	gui.Views.SortAndFilter.Title = "Sort & filter"
 

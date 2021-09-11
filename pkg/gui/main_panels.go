@@ -7,6 +7,13 @@ import (
 	"github.com/dinhhuy258/fm/pkg/fs"
 )
 
+func (gui *Gui) initMainPanels() {
+	gui.Views.Main.Frame = false
+	gui.Views.Main.Highlight = true
+	gui.Views.Main.SelBgColor = config.AppConfig.FocusBg
+	gui.Views.Main.SelFgColor = config.AppConfig.FocusFg
+}
+
 func (gui *Gui) RenderDir(dir *fs.Directory, selections map[string]struct{}, focusIdx int) error {
 	nodeSize := len(dir.Nodes)
 	lines := make([]string, nodeSize)

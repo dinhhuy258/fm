@@ -165,6 +165,12 @@ func createDefaultMode() *Mode {
 						toggleSelection,
 					},
 				},
+				"ctrl+space": {
+					help: "clear selection",
+					messages: []func(app *App) error{
+						clearSelection,
+					},
+				},
 				"q": {
 					help: "quit",
 					messages: []func(app *App) error{

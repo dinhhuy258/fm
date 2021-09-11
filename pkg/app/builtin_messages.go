@@ -1,6 +1,8 @@
 package app
 
-import "github.com/dinhhuy258/gocui"
+import (
+	"github.com/dinhhuy258/gocui"
+)
 
 func focusNext(app *App) error {
 	if app.State.Main.FocusIdx == app.State.Main.NumberOfFiles-1 {
@@ -97,7 +99,25 @@ func toggleSelection(app *App) error {
 		app.State.Selections[path] = struct{}{}
 	}
 
-	return app.Gui.RenderSelections(app.State.Selections)
+	app.Gui.SetSelectionTitle(len(app.State.Selections))
+
+	if err := app.Gui.RenderSelections(app.State.Selections); err != nil {
+		return err
+	}
+
+	return app.Gui.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
+}
+
+func clearSelection(app *App) error {
+	app.State.Selections = make(map[string]struct{})
+
+	app.Gui.SetSelectionTitle(len(app.State.Selections))
+
+	if err := app.Gui.RenderSelections(app.State.Selections); err != nil {
+		return err
+	}
+
+	return app.Gui.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
 }
 
 func changeDirectory(app *App, path string, saveHistory bool) {
