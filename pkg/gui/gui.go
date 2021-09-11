@@ -13,7 +13,10 @@ type Views struct {
 	Selection     *gocui.View
 	HelpMenu      *gocui.View
 	SortAndFilter *gocui.View
-	InputAndLogs  *gocui.View
+	Input         *gocui.View
+	Log           *gocui.View
+	Confirm       *gocui.View
+	Progress      *gocui.View
 }
 
 type Gui struct {

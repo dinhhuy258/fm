@@ -11,7 +11,7 @@ const (
 	horizontalMargin  = 1
 	verticalMargin    = 1
 	sortAndFilterSize = 2
-	inputAndLogsSize  = 2
+	logSize           = 2
 )
 
 type viewDimension struct {
@@ -28,7 +28,10 @@ func (gui *Gui) createAllViews() error {
 		{viewPtr: &gui.Views.Selection, name: "selection"},
 		{viewPtr: &gui.Views.SortAndFilter, name: "sortAndFilter"},
 		{viewPtr: &gui.Views.HelpMenu, name: "helpMenu"},
-		{viewPtr: &gui.Views.InputAndLogs, name: "inputAndLogs"},
+		{viewPtr: &gui.Views.Input, name: "input"},
+		{viewPtr: &gui.Views.Log, name: "log"},
+		{viewPtr: &gui.Views.Confirm, name: "confirm"},
+		{viewPtr: &gui.Views.Progress, name: "progress"},
 	}
 
 	var err error
@@ -42,11 +45,15 @@ func (gui *Gui) createAllViews() error {
 	gui.initMainPanels()
 	gui.initSelectionPanels()
 
-	gui.Views.SortAndFilter.Title = "Sort & filter"
+	gui.Views.SortAndFilter.Title = " Sort & filter "
 
-	gui.Views.HelpMenu.Title = "Help"
+	gui.Views.HelpMenu.Title = " Help "
 
-	gui.Views.InputAndLogs.Title = "Input"
+	gui.Views.Log.Title = " Logs "
+
+	if _, err := gui.g.SetViewOnTop(gui.Views.Log.Name()); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -66,7 +73,7 @@ func (gui *Gui) setViewDimentions() error {
 				x0: 0,
 				y0: sortAndFilterSize + verticalMargin,
 				x1: int(float32(width)*0.7) - horizontalMargin,
-				y1: height - inputAndLogsSize - verticalMargin,
+				y1: height - logSize - verticalMargin,
 			},
 		},
 		{
@@ -75,7 +82,7 @@ func (gui *Gui) setViewDimentions() error {
 				x0: 0,
 				y0: sortAndFilterSize + verticalMargin + 1, // plus 1 for header
 				x1: int(float32(width)*0.7) - horizontalMargin,
-				y1: height - inputAndLogsSize - verticalMargin,
+				y1: height - logSize - verticalMargin,
 			},
 		},
 		{
@@ -88,10 +95,37 @@ func (gui *Gui) setViewDimentions() error {
 			},
 		},
 		{
-			name: "inputAndLogs",
+			name: "log",
 			dimension: viewDimension{
 				x0: 0,
-				y0: height - inputAndLogsSize,
+				y0: height - logSize,
+				x1: int(float32(width)*0.7) - horizontalMargin,
+				y1: height,
+			},
+		},
+		{
+			name: "input",
+			dimension: viewDimension{
+				x0: 0,
+				y0: height - logSize,
+				x1: int(float32(width)*0.7) - horizontalMargin,
+				y1: height,
+			},
+		},
+		{
+			name: "confirm",
+			dimension: viewDimension{
+				x0: 0,
+				y0: height - logSize,
+				x1: int(float32(width)*0.7) - horizontalMargin,
+				y1: height,
+			},
+		},
+		{
+			name: "progress",
+			dimension: viewDimension{
+				x0: 0,
+				y0: height - logSize,
 				x1: int(float32(width)*0.7) - horizontalMargin,
 				y1: height,
 			},
