@@ -1,6 +1,8 @@
 package view
 
 import (
+	"fmt"
+
 	"github.com/dinhhuy258/fm/pkg/row"
 	"github.com/dinhhuy258/gocui"
 )
@@ -19,8 +21,6 @@ func newHelpView(g *gocui.Gui, v *gocui.View) *HelpView {
 	hv.helpRow.AddCell(35, true, nil)
 	hv.helpRow.AddCell(65, true, nil)
 
-	hv.v.v.Title = " Help "
-
 	return hv
 }
 
@@ -29,7 +29,11 @@ func (hv *HelpView) layout() {
 	hv.helpRow.SetWidth(x)
 }
 
-func (hv *HelpView) SetViewContent(keys []string, helps []string) error {
+func (hv *HelpView) SetTitle(mode string) {
+	hv.v.v.Title = fmt.Sprintf(" Help [%s] ", mode)
+}
+
+func (hv *HelpView) SetHelp(keys []string, helps []string) error {
 	lines := make([]string, 0, len(keys))
 
 	for i := 0; i < len(keys); i++ {

@@ -68,14 +68,14 @@ func (app *App) onModeChanged() {
 		helps = append(helps, a.help)
 	}
 
-	if err := app.Gui.Views.Help.SetViewContent(keys, helps); err != nil {
+	app.Gui.Views.Help.SetTitle(app.Modes.Peek().name)
+
+	if err := app.Gui.Views.Help.SetHelp(keys, helps); err != nil {
 		log.Fatalf("failed to set content for help view %v", err)
 	}
 }
 
 func (app *App) onKey(key string) error {
-	app.Gui.Views.Log.SetLog(key)
-
 	if action, hasKey := app.Modes.Peek().keyBindings.onKeys[key]; hasKey {
 		for _, message := range action.messages {
 			if err := message.f(app, message.args...); err != nil {
