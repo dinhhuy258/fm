@@ -16,7 +16,7 @@ type Views struct {
 	Input         *View
 	Log           *LogView
 	Confirm       *ConfirmView
-	Progress      *View
+	Progress      *ProgressView
 }
 
 func CreateAllViews(g *gocui.Gui) (*Views, error) {
@@ -63,7 +63,7 @@ func CreateAllViews(g *gocui.Gui) (*Views, error) {
 		Input:         newView(g, input),
 		Log:           newLogView(g, log),
 		Confirm:       newConfirmView(g, confirm),
-		Progress:      newView(g, progress),
+		Progress:      newProgressView(g, progress),
 	}, nil
 }
 
@@ -129,6 +129,14 @@ func (view *View) PreviousCursor() error {
 		if err := view.v.SetOrigin(ox, oy-1); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (view *View) SetViewOnTop() error {
+	if _, err := view.g.SetViewOnTop(view.v.Name()); err != nil {
+		return err
 	}
 
 	return nil

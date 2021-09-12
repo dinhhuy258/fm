@@ -17,13 +17,11 @@ func newLogView(g *gocui.Gui, v *gocui.View) *LogView {
 }
 
 func (lv *LogView) SetViewOnTop() error {
-	if _, err := lv.v.g.SetViewOnTop(lv.v.v.Name()); err != nil {
-		return err
-	}
-
-	return nil
+	return lv.v.SetViewOnTop()
 }
 
-func (lv *LogView) SetLog(log string) {
+func (lv *LogView) SetLog(log string) error {
 	lv.v.SetViewContent([]string{log})
+
+	return lv.SetViewOnTop()
 }

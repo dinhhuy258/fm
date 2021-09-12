@@ -96,6 +96,14 @@ func createDefaultMode() *Mode {
 						},
 					},
 				},
+				"ctrl+r": {
+					help: "refresh",
+					messages: []Message{
+						{
+							f: refresh,
+						},
+					},
+				},
 				"space": {
 					help: "toggle selection",
 					messages: []Message{
