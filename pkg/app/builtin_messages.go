@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"log"
 
 	"github.com/dinhhuy258/gocui"
 )
@@ -140,6 +141,52 @@ func switchMode(app *App, params ...interface{}) error {
 
 func popMode(app *App, params ...interface{}) error {
 	if err := app.Modes.Pop(); err != nil {
+		return err
+	}
+
+	app.onModeChanged()
+
+	return nil
+}
+
+func deleteCurrent(app *App, params ...interface{}) error {
+	onYes := func() {
+		if err := popMode(app); err != nil {
+			log.Fatalf("failed to pop mode %v", err)
+		}
+
+		if err := app.Gui.Views.Main.SetAsCurrentView(); err != nil {
+			log.Fatalf("failed to set main as the current view %v", err)
+		}
+
+		if err := app.Gui.Views.Log.SetViewOnTop(); err != nil {
+			log.Fatalf("failed to set log view on top %v", err)
+		}
+
+		app.Gui.Views.Log.SetLog("Deleting the current file/folder...")
+	}
+
+	onNo := func() {
+		if err := popMode(app); err != nil {
+			log.Fatalf("failed to pop mode %v", err)
+		}
+
+		if err := app.Gui.Views.Main.SetAsCurrentView(); err != nil {
+			log.Fatalf("failed to set main as the current view %v", err)
+		}
+
+		if err := app.Gui.Views.Log.SetViewOnTop(); err != nil {
+			log.Fatalf("failed to set log view on top %v", err)
+		}
+
+		app.Gui.Views.Log.SetLog("Canceled deleting the current file/folder")
+	}
+
+	if err := app.Gui.Views.Confirm.SetConfirmation(
+		"Do you want to delete the current file/folder?",
+		onYes,
+		onNo,
+	); err != nil {
 		return err
 	}
 

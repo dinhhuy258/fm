@@ -9,7 +9,7 @@ func createDeleteMode() *Mode {
 					help: "delete",
 					messages: []Message{
 						{
-							f: quit,
+							f: deleteCurrent,
 						},
 					},
 				},

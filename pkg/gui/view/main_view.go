@@ -137,3 +137,9 @@ func (mv *MainView) NextCursor() error {
 func (mv *MainView) PreviousCursor() error {
 	return mv.v.PreviousCursor()
 }
+
+func (mv *MainView) SetAsCurrentView() error {
+	_, err := mv.v.g.SetCurrentView(mv.v.v.Name())
+
+	return err
+}
