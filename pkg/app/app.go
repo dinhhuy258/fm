@@ -13,14 +13,13 @@ type App struct {
 	Gui         *gui.Gui
 	History     *History
 	State       *State
-	Mode        *Mode
+	Modes       *Modes
 	FileManager *fs.FileManager
 }
 
 // NewApp bootstrap a new application
 func NewApp() (*App, error) {
 	app := &App{
-		Mode: createDefaultMode(),
 		State: &State{
 			Main: &MainState{
 				FocusIdx:      0,
@@ -28,6 +27,12 @@ func NewApp() (*App, error) {
 			},
 			Selections: map[string]struct{}{},
 		},
+	}
+
+	app.Modes = NewModes()
+
+	if err := app.Modes.Push("default"); err != nil {
+		return nil, err
 	}
 
 	gui, err := gui.NewGui()
@@ -55,10 +60,10 @@ func (app *App) Run() error {
 }
 
 func (app *App) onModeChanged() {
-	keys := make([]string, 0, len(app.Mode.keyBindings.onKeys))
-	helps := make([]string, 0, len(app.Mode.keyBindings.onKeys))
+	keys := make([]string, 0, len(app.Modes.Peek().keyBindings.onKeys))
+	helps := make([]string, 0, len(app.Modes.Peek().keyBindings.onKeys))
 
-	for k, a := range app.Mode.keyBindings.onKeys {
+	for k, a := range app.Modes.Peek().keyBindings.onKeys {
 		keys = append(keys, k)
 		helps = append(helps, a.help)
 	}
@@ -69,9 +74,11 @@ func (app *App) onModeChanged() {
 }
 
 func (app *App) onKey(key string) error {
-	if action, hasKey := app.Mode.keyBindings.onKeys[key]; hasKey {
+	app.Gui.Views.Log.SetLog(key)
+
+	if action, hasKey := app.Modes.Peek().keyBindings.onKeys[key]; hasKey {
 		for _, message := range action.messages {
-			if err := message(app); err != nil {
+			if err := message.f(app, message.args...); err != nil {
 				return err
 			}
 		}
@@ -120,69 +127,5 @@ func (app *App) loop() {
 				log.Fatalf("failed to render dir %v", err)
 			}
 		}
-	}
-}
-
-func createDefaultMode() *Mode {
-	return &Mode{
-		name: "default",
-		keyBindings: &KeyBindings{
-			onKeys: map[string]*Action{
-				"j": {
-					help: "down",
-					messages: []func(app *App) error{
-						focusNext,
-					},
-				},
-				"k": {
-					help: "up",
-					messages: []func(app *App) error{
-						focusPrevious,
-					},
-				},
-				"l": {
-					help: "enter",
-					messages: []func(app *App) error{
-						enter,
-					},
-				},
-				"h": {
-					help: "back",
-					messages: []func(app *App) error{
-						back,
-					},
-				},
-				"ctrl+i": {
-					help: "next visited path",
-					messages: []func(app *App) error{
-						nextVisitedPath,
-					},
-				},
-				"ctrl+o": {
-					help: "last visited path",
-					messages: []func(app *App) error{
-						lastVisitedPath,
-					},
-				},
-				"space": {
-					help: "toggle selection",
-					messages: []func(app *App) error{
-						toggleSelection,
-					},
-				},
-				"ctrl+space": {
-					help: "clear selection",
-					messages: []func(app *App) error{
-						clearSelection,
-					},
-				},
-				"q": {
-					help: "quit",
-					messages: []func(app *App) error{
-						quit,
-					},
-				},
-			},
-		},
 	}
 }

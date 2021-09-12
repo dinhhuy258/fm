@@ -1,10 +1,14 @@
 package app
 
 import (
+	"errors"
+
 	"github.com/dinhhuy258/gocui"
 )
 
-func focusNext(app *App) error {
+var ErrInvalidMessageParams = errors.New("invalid message params")
+
+func focusNext(app *App, params ...interface{}) error {
 	if app.State.Main.FocusIdx == app.State.Main.NumberOfFiles-1 {
 		return nil
 	}
@@ -18,7 +22,7 @@ func focusNext(app *App) error {
 	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
 }
 
-func focusPrevious(app *App) error {
+func focusPrevious(app *App, params ...interface{}) error {
 	if app.State.Main.FocusIdx == 0 {
 		return nil
 	}
@@ -32,7 +36,7 @@ func focusPrevious(app *App) error {
 	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
 }
 
-func enter(app *App) error {
+func enter(app *App, params ...interface{}) error {
 	currentNode := app.FileManager.Dir.Nodes[app.State.Main.FocusIdx]
 
 	if currentNode.IsDir {
@@ -42,7 +46,7 @@ func enter(app *App) error {
 	return nil
 }
 
-func back(app *App) error {
+func back(app *App, params ...interface{}) error {
 	parent := app.FileManager.Dir.Parent()
 
 	changeDirectory(app, parent, true)
@@ -50,14 +54,14 @@ func back(app *App) error {
 	return nil
 }
 
-func lastVisitedPath(app *App) error {
+func lastVisitedPath(app *App, params ...interface{}) error {
 	app.History.VisitLast()
 	changeDirectory(app, app.History.Peek(), false)
 
 	return nil
 }
 
-func nextVisitedPath(app *App) error {
+func nextVisitedPath(app *App, params ...interface{}) error {
 	app.History.VisitNext()
 	changeDirectory(app, app.History.Peek(), false)
 
@@ -90,7 +94,7 @@ func focus(app *App, path string) error {
 	return nil
 }
 
-func toggleSelection(app *App) error {
+func toggleSelection(app *App, params ...interface{}) error {
 	path := app.FileManager.Dir.Nodes[app.State.Main.FocusIdx].AbsolutePath
 
 	if _, hasPath := app.State.Selections[path]; hasPath {
@@ -108,7 +112,7 @@ func toggleSelection(app *App) error {
 	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
 }
 
-func clearSelection(app *App) error {
+func clearSelection(app *App, params ...interface{}) error {
 	app.State.Selections = make(map[string]struct{})
 
 	app.Gui.Views.Selection.SetTitle(len(app.State.Selections))
@@ -120,14 +124,38 @@ func clearSelection(app *App) error {
 	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
 }
 
+func switchMode(app *App, params ...interface{}) error {
+	if len(params) != 1 {
+		return ErrInvalidMessageParams
+	}
+
+	if err := app.Modes.Push(params[0].(string)); err != nil {
+		return err
+	}
+
+	app.onModeChanged()
+
+	return nil
+}
+
+func popMode(app *App, params ...interface{}) error {
+	if err := app.Modes.Pop(); err != nil {
+		return err
+	}
+
+	app.onModeChanged()
+
+	return nil
+}
+
+func quit(app *App, params ...interface{}) error {
+	return gocui.ErrQuit
+}
+
 func changeDirectory(app *App, path string, saveHistory bool) {
 	if saveHistory {
 		app.History.Push(app.FileManager.Dir.Path)
 	}
 
 	app.FileManager.LoadDirectory(path)
-}
-
-func quit(app *App) error {
-	return gocui.ErrQuit
 }

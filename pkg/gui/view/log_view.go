@@ -23,3 +23,7 @@ func (lv *LogView) SetViewOnTop() error {
 
 	return nil
 }
+
+func (lv *LogView) SetLog(log string) {
+	lv.v.SetViewContent([]string{log})
+}

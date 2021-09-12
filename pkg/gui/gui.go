@@ -29,6 +29,7 @@ func (gui *Gui) Run() error {
 
 	gui.g = g
 	gui.g.Cursor = true
+	gui.g.InputEsc = true
 
 	defer gui.g.Close()
 
