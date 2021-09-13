@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -189,9 +190,10 @@ func deletePaths(app *App, paths []string) error {
 		if errCount != 0 {
 			err = app.Gui.Views.Log.SetLog(
 				fmt.Sprintf("Finished to delete %v. Error count: %d", paths, errCount),
+				view.LogLevel(view.INFO),
 			)
 		} else {
-			err = app.Gui.Views.Log.SetLog(fmt.Sprintf("Finished to delete file %v", paths))
+			err = app.Gui.Views.Log.SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
 		}
 
 		if err != nil {
@@ -208,7 +210,7 @@ func deletePaths(app *App, paths []string) error {
 
 func deleteSelections(app *App, params ...interface{}) error {
 	if len(app.State.Selections) == 0 {
-		err := app.Gui.Views.Log.SetLog("Select nothing!!!")
+		err := app.Gui.Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 		if err != nil {
 			return err
 		}
@@ -241,7 +243,9 @@ func deleteSelections(app *App, params ...interface{}) error {
 			log.Fatalf("failed to set main as the current view %v", err)
 		}
 
-		if err := app.Gui.Views.Log.SetLog("Canceled deleting the current file/folder"); err != nil {
+		if err := app.Gui.Views.Log.SetLog(
+			"Canceled deleting the current file/folder",
+			view.LogLevel(view.WARNING)); err != nil {
 			log.Fatalf("failed to set log %v", err)
 		}
 	}
@@ -277,7 +281,8 @@ func deleteCurrent(app *App, params ...interface{}) error {
 			log.Fatalf("failed to set main as the current view %v", err)
 		}
 
-		if err := app.Gui.Views.Log.SetLog("Canceled deleting the current file/folder"); err != nil {
+		if err := app.Gui.Views.Log.SetLog("Canceled deleting the current file/folder",
+			view.LogLevel(view.WARNING)); err != nil {
 			log.Fatalf("failed to set log %v", err)
 		}
 	}
