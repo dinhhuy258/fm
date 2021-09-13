@@ -58,15 +58,15 @@ func back(app *App, params ...interface{}) error {
 }
 
 func lastVisitedPath(app *App, params ...interface{}) error {
-	app.History.VisitLast()
-	changeDirectory(app, app.History.Peek(), false)
+	app.State.History.VisitLast()
+	changeDirectory(app, app.State.History.Peek(), false)
 
 	return nil
 }
 
 func nextVisitedPath(app *App, params ...interface{}) error {
-	app.History.VisitNext()
-	changeDirectory(app, app.History.Peek(), false)
+	app.State.History.VisitNext()
+	changeDirectory(app, app.State.History.Peek(), false)
 
 	return nil
 }
@@ -306,7 +306,7 @@ func quit(app *App, params ...interface{}) error {
 
 func changeDirectory(app *App, path string, saveHistory bool) {
 	if saveHistory {
-		app.History.Push(app.FileManager.Dir.Path)
+		app.State.History.Push(app.FileManager.Dir.Path)
 	}
 
 	app.FileManager.LoadDirectory(path)

@@ -7,20 +7,20 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
+	"github.com/dinhhuy258/fm/pkg/state"
 )
 
 type App struct {
 	Gui         *gui.Gui
-	History     *History
-	State       *State
-	Modes       *Modes
 	FileManager *fs.FileManager
+	State       *state.State
+	Modes       *Modes
 }
 
 // NewApp bootstrap a new application
 func NewApp() (*App, error) {
 	app := &App{
-		State: &State{
+		State: &state.State{
 			FocusIdx:      0,
 			NumberOfFiles: 0,
 			Selections:    map[string]struct{}{},
@@ -43,7 +43,7 @@ func NewApp() (*App, error) {
 		return nil, err
 	}
 
-	app.History = NewHistory(fm.Dir.Path)
+	app.State.History = state.NewHistory(fm.Dir.Path)
 
 	app.Gui = gui
 	app.FileManager = fm
@@ -109,7 +109,7 @@ func (app *App) loop() {
 
 			app.Gui.Views.Main.SetTitle(" " + app.FileManager.Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
 
-			lastPath := app.History.Peek()
+			lastPath := app.State.History.Peek()
 			if filepath.Dir(lastPath) == app.FileManager.Dir.Path {
 				// back
 				if err := focus(app, lastPath); err != nil {
