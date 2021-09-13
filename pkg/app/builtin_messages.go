@@ -206,6 +206,59 @@ func deletePaths(app *App, paths []string) error {
 	return nil
 }
 
+func deleteSelections(app *App, params ...interface{}) error {
+	if len(app.State.Selections) == 0 {
+		err := app.Gui.Views.Log.SetLog("Select nothing!!!")
+		if err != nil {
+			return err
+		}
+
+		return popMode(app)
+	}
+
+	onYes := func() {
+		paths := make([]string, 0, len(app.State.Selections))
+		for k := range app.State.Selections {
+			paths = append(paths, k)
+		}
+
+		if err := deletePaths(app, paths); err != nil {
+			log.Fatalf("failed to delete paths log %v", err)
+		}
+
+		// Clear selections
+		for k := range app.State.Selections {
+			delete(app.State.Selections, k)
+		}
+	}
+
+	onNo := func() {
+		if err := popMode(app); err != nil {
+			log.Fatalf("failed to pop mode %v", err)
+		}
+
+		if err := app.Gui.Views.Main.SetAsCurrentView(); err != nil {
+			log.Fatalf("failed to set main as the current view %v", err)
+		}
+
+		if err := app.Gui.Views.Log.SetLog("Canceled deleting the current file/folder"); err != nil {
+			log.Fatalf("failed to set log %v", err)
+		}
+	}
+
+	if err := app.Gui.Views.Confirm.SetConfirmation(
+		"Do you want to delete selected paths?",
+		onYes,
+		onNo,
+	); err != nil {
+		return err
+	}
+
+	app.onModeChanged()
+
+	return nil
+}
+
 func deleteCurrent(app *App, params ...interface{}) error {
 	currentNode := app.FileManager.Dir.Nodes[app.State.Main.FocusIdx]
 

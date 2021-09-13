@@ -13,6 +13,14 @@ func createDeleteMode() *Mode {
 						},
 					},
 				},
+				"s": {
+					help: "delete selections",
+					messages: []Message{
+						{
+							f: deleteSelections,
+						},
+					},
+				},
 				"esc": {
 					help: "cancel",
 					messages: []Message{
