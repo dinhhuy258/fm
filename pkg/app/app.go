@@ -21,11 +21,9 @@ type App struct {
 func NewApp() (*App, error) {
 	app := &App{
 		State: &State{
-			Main: &MainState{
-				FocusIdx:      0,
-				NumberOfFiles: 0,
-			},
-			Selections: map[string]struct{}{},
+			FocusIdx:      0,
+			NumberOfFiles: 0,
+			Selections:    map[string]struct{}{},
 		},
 	}
 
@@ -106,8 +104,8 @@ func (app *App) loop() {
 			}
 
 			nodeSize := len(app.FileManager.Dir.Nodes)
-			app.State.Main.FocusIdx = 0
-			app.State.Main.NumberOfFiles = nodeSize
+			app.State.FocusIdx = 0
+			app.State.NumberOfFiles = nodeSize
 
 			app.Gui.Views.Main.SetTitle(" " + app.FileManager.Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
 
@@ -122,7 +120,7 @@ func (app *App) loop() {
 			if err := app.Gui.Views.Main.RenderDir(
 				app.FileManager.Dir,
 				app.State.Selections,
-				app.State.Main.FocusIdx,
+				app.State.FocusIdx,
 			); err != nil {
 				log.Fatalf("failed to render dir %v", err)
 			}

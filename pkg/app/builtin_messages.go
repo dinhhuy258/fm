@@ -12,7 +12,7 @@ import (
 var ErrInvalidMessageParams = errors.New("invalid message params")
 
 func focusNext(app *App, params ...interface{}) error {
-	if app.State.Main.FocusIdx == app.State.Main.NumberOfFiles-1 {
+	if app.State.FocusIdx == app.State.NumberOfFiles-1 {
 		return nil
 	}
 
@@ -20,13 +20,13 @@ func focusNext(app *App, params ...interface{}) error {
 		return err
 	}
 
-	app.State.Main.FocusIdx++
+	app.State.FocusIdx++
 
-	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
+	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.FocusIdx)
 }
 
 func focusPrevious(app *App, params ...interface{}) error {
-	if app.State.Main.FocusIdx == 0 {
+	if app.State.FocusIdx == 0 {
 		return nil
 	}
 
@@ -34,13 +34,13 @@ func focusPrevious(app *App, params ...interface{}) error {
 		return err
 	}
 
-	app.State.Main.FocusIdx--
+	app.State.FocusIdx--
 
-	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
+	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.FocusIdx)
 }
 
 func enter(app *App, params ...interface{}) error {
-	currentNode := app.FileManager.Dir.Nodes[app.State.Main.FocusIdx]
+	currentNode := app.FileManager.Dir.Nodes[app.State.FocusIdx]
 
 	if currentNode.IsDir {
 		changeDirectory(app, currentNode.AbsolutePath, true)
@@ -91,14 +91,14 @@ func focus(app *App, path string) error {
 			return err
 		}
 
-		app.State.Main.FocusIdx++
+		app.State.FocusIdx++
 	}
 
 	return nil
 }
 
 func toggleSelection(app *App, params ...interface{}) error {
-	path := app.FileManager.Dir.Nodes[app.State.Main.FocusIdx].AbsolutePath
+	path := app.FileManager.Dir.Nodes[app.State.FocusIdx].AbsolutePath
 
 	if _, hasPath := app.State.Selections[path]; hasPath {
 		delete(app.State.Selections, path)
@@ -112,7 +112,7 @@ func toggleSelection(app *App, params ...interface{}) error {
 		return err
 	}
 
-	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
+	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.FocusIdx)
 }
 
 func clearSelection(app *App, params ...interface{}) error {
@@ -124,7 +124,7 @@ func clearSelection(app *App, params ...interface{}) error {
 		return err
 	}
 
-	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.Main.FocusIdx)
+	return app.Gui.Views.Main.RenderDir(app.FileManager.Dir, app.State.Selections, app.State.FocusIdx)
 }
 
 func switchMode(app *App, params ...interface{}) error {
@@ -264,7 +264,7 @@ func deleteSelections(app *App, params ...interface{}) error {
 }
 
 func deleteCurrent(app *App, params ...interface{}) error {
-	currentNode := app.FileManager.Dir.Nodes[app.State.Main.FocusIdx]
+	currentNode := app.FileManager.Dir.Nodes[app.State.FocusIdx]
 
 	onYes := func() {
 		if err := deletePaths(app, []string{currentNode.AbsolutePath}); err != nil {
