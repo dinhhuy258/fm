@@ -39,7 +39,7 @@ func FocusPrevious(ctx *ctx.Context, params ...interface{}) error {
 }
 
 func Enter(ctx *ctx.Context, params ...interface{}) error {
-	currentNode := (*ctx).GetFileManager().Dir.Nodes[(*ctx).GetState().FocusIdx]
+	currentNode := (*ctx).GetFileManager().Dir.VisibleNodes[(*ctx).GetState().FocusIdx]
 
 	if currentNode.IsDir {
 		changeDirectory(ctx, currentNode.AbsolutePath, true)

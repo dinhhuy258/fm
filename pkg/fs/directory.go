@@ -16,8 +16,9 @@ type Node struct {
 }
 
 type Directory struct {
-	Nodes []*Node
-	Path  string
+	Nodes        []*Node
+	VisibleNodes []*Node
+	Path         string
 }
 
 func (dir *Directory) Parent() string {
@@ -39,12 +40,13 @@ func (dir *Directory) ReadDir() error {
 
 	config := config.AppConfig
 	nodes := make([]*Node, 0, len(names))
+	visibleNodes := make([]*Node, 0, len(names))
 
 	for _, relativePath := range names {
 		absolutePath := filepath.Join(dir.Path, relativePath)
 		lstat, err := os.Lstat(absolutePath)
 
-		if os.IsNotExist(err) || (!config.ShowHidden && isHidden(relativePath)) {
+		if os.IsNotExist(err) {
 			continue
 		}
 
@@ -52,17 +54,22 @@ func (dir *Directory) ReadDir() error {
 			return err
 		}
 
-		nodes = append(nodes,
-			&Node{
-				RelativePath: relativePath,
-				AbsolutePath: absolutePath,
-				IsDir:        lstat.IsDir(),
-				Size:         lstat.Size(),
-				Extension:    filepath.Ext(absolutePath),
-			},
-		)
+		node := &Node{
+			RelativePath: relativePath,
+			AbsolutePath: absolutePath,
+			IsDir:        lstat.IsDir(),
+			Size:         lstat.Size(),
+			Extension:    filepath.Ext(absolutePath),
+		}
+
+		if config.ShowHidden || !isHidden(relativePath) {
+			visibleNodes = append(visibleNodes, node)
+		}
+
+		nodes = append(nodes, node)
 	}
 
+	dir.VisibleNodes = visibleNodes
 	dir.Nodes = nodes
 
 	return nil

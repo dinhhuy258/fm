@@ -58,7 +58,7 @@ func DeleteSelections(ctx *ctx.Context, params ...interface{}) error {
 }
 
 func DeleteCurrent(ctx *ctx.Context, params ...interface{}) error {
-	currentNode := (*ctx).GetFileManager().Dir.Nodes[(*ctx).GetState().FocusIdx]
+	currentNode := (*ctx).GetFileManager().Dir.VisibleNodes[(*ctx).GetState().FocusIdx]
 
 	onYes := func() {
 		if err := deletePaths(ctx, []string{currentNode.AbsolutePath}); err != nil {

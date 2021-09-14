@@ -139,7 +139,7 @@ func (app *App) loop() {
 				log.Fatalf("failed to set cursor %v", err)
 			}
 
-			nodeSize := len(app.FileManager.Dir.Nodes)
+			nodeSize := len(app.FileManager.Dir.VisibleNodes)
 			app.State.FocusIdx = 0
 			app.State.NumberOfFiles = nodeSize
 

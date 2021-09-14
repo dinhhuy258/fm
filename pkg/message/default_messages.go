@@ -10,7 +10,7 @@ import (
 var ErrInvalidMessageParams = errors.New("invalid message params")
 
 func ToggleSelection(ctx *ctx.Context, params ...interface{}) error {
-	path := (*ctx).GetFileManager().Dir.Nodes[(*ctx).GetState().FocusIdx].AbsolutePath
+	path := (*ctx).GetFileManager().Dir.VisibleNodes[(*ctx).GetState().FocusIdx].AbsolutePath
 
 	if _, hasPath := (*ctx).GetState().Selections[path]; hasPath {
 		delete((*ctx).GetState().Selections, path)
@@ -50,7 +50,7 @@ func ClearSelection(ctx *ctx.Context, params ...interface{}) error {
 func Focus(ctx *ctx.Context, path string) error {
 	count := 0
 
-	for _, node := range (*ctx).GetFileManager().Dir.Nodes {
+	for _, node := range (*ctx).GetFileManager().Dir.VisibleNodes {
 		if node.IsDir && node.AbsolutePath == path {
 			break
 		}
@@ -58,7 +58,7 @@ func Focus(ctx *ctx.Context, path string) error {
 		count++
 	}
 
-	if count == len((*ctx).GetFileManager().Dir.Nodes) {
+	if count == len((*ctx).GetFileManager().Dir.VisibleNodes) {
 		return nil
 	}
 

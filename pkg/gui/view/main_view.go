@@ -66,11 +66,11 @@ func (mv *MainView) layout() error {
 }
 
 func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{}, focusIdx int) error {
-	nodeSize := len(dir.Nodes)
-	lines := make([]string, nodeSize)
+	visibleNodeSize := len(dir.VisibleNodes)
+	lines := make([]string, visibleNodeSize)
 	config := config.AppConfig
 
-	for i, node := range dir.Nodes {
+	for i, node := range dir.VisibleNodes {
 		fileIcon := config.FileIcon + " "
 		if node.IsDir {
 			fileIcon = config.FolderIcon + " "
@@ -89,7 +89,7 @@ func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{},
 			path = "  " + fileIcon + node.RelativePath
 		}
 
-		if i == nodeSize-1 {
+		if i == visibleNodeSize-1 {
 			path = config.PathSuffix + path
 		} else {
 			path = config.PathPrefix + path
