@@ -1,34 +1,33 @@
-package app
+package mode
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/dinhhuy258/fm/pkg/message"
+)
 
 var (
 	ErrModeNotFound = errors.New("mode not found")
 	ErrEmptyModes   = errors.New("empty modes")
 )
 
-type Message struct {
-	f    func(app *App, params ...interface{}) error
-	args []interface{}
-}
-
 type Action struct {
-	help     string
-	messages []Message
+	Help     string
+	Messages []message.Message
 }
 
 type KeyBindings struct {
-	onKeys map[string]*Action
+	OnKeys map[string]*Action
 }
 
 type Mode struct {
-	name        string
-	keyBindings *KeyBindings
+	Name        string
+	KeyBindings *KeyBindings
 }
 
 type Modes struct {
-	modes        []*Mode
-	builtinModes map[string]*Mode
+	Modes        []*Mode
+	BuiltinModes map[string]*Mode
 }
 
 func NewModes() *Modes {
@@ -37,32 +36,32 @@ func NewModes() *Modes {
 	builtinModes["delete"] = createDeleteMode()
 
 	return &Modes{
-		modes:        make([]*Mode, 0, 5),
-		builtinModes: builtinModes,
+		Modes:        make([]*Mode, 0, 5),
+		BuiltinModes: builtinModes,
 	}
 }
 
 func (m *Modes) Push(mode string) error {
-	builtinMode, hasMode := m.builtinModes[mode]
+	builtinMode, hasMode := m.BuiltinModes[mode]
 	if !hasMode {
 		return ErrModeNotFound
 	}
 
-	m.modes = append(m.modes, builtinMode)
+	m.Modes = append(m.Modes, builtinMode)
 
 	return nil
 }
 
 func (m *Modes) Pop() error {
-	if len(m.modes) <= 1 {
+	if len(m.Modes) <= 1 {
 		return ErrEmptyModes
 	}
 
-	m.modes = m.modes[:len(m.modes)-1]
+	m.Modes = m.Modes[:len(m.Modes)-1]
 
 	return nil
 }
 
 func (m *Modes) Peek() *Mode {
-	return m.modes[len(m.modes)-1]
+	return m.Modes[len(m.Modes)-1]
 }
