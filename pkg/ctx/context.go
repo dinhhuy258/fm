@@ -10,4 +10,6 @@ type Context interface {
 	GetState() *state.State
 	GetGui() *gui.Gui
 	GetFileManager() *fs.FileManager
+	PopMode() error
+	PushMode(mode string) error
 }

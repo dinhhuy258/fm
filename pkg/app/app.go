@@ -88,6 +88,26 @@ func (app *App) GetFileManager() *fs.FileManager {
 	return app.FileManager
 }
 
+func (app *App) PopMode() error {
+	if err := app.Modes.Pop(); err != nil {
+		return err
+	}
+
+	app.onModeChanged()
+
+	return nil
+}
+
+func (app *App) PushMode(mode string) error {
+	if err := app.Modes.Push(mode); err != nil {
+		return err
+	}
+
+	app.onModeChanged()
+
+	return nil
+}
+
 func (app *App) onKey(key string) error {
 	if action, hasKey := app.Modes.Peek().KeyBindings.OnKeys[key]; hasKey {
 		var ctx ctx.Context = app

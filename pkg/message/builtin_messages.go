@@ -149,23 +149,11 @@ func SwitchMode(ctx *ctx.Context, params ...interface{}) error {
 		return ErrInvalidMessageParams
 	}
 
-	// if err := ctx.Modes.Push(params[0].(string)); err != nil {
-	// 	return err
-	// }
-
-	// ctx.onModeChanged()
-
-	return nil
+	return (*ctx).PushMode(params[0].(string))
 }
 
 func PopMode(ctx *ctx.Context, params ...interface{}) error {
-	// if err := ctx.Modes.Pop(); err != nil {
-	// 	return err
-	// }
-
-	// ctx.onModeChanged()
-
-	return nil
+	return (*ctx).PopMode()
 }
 
 func Refresh(ctx *ctx.Context, params ...interface{}) error {
@@ -267,17 +255,11 @@ func DeleteSelections(ctx *ctx.Context, params ...interface{}) error {
 		}
 	}
 
-	if err := (*ctx).GetGui().Views.Confirm.SetConfirmation(
+	return (*ctx).GetGui().Views.Confirm.SetConfirmation(
 		"Do you want to delete selected paths?",
 		onYes,
 		onNo,
-	); err != nil {
-		return err
-	}
-
-	// ctx.onModeChanged()
-
-	return nil
+	)
 }
 
 func DeleteCurrent(ctx *ctx.Context, params ...interface{}) error {
@@ -304,17 +286,11 @@ func DeleteCurrent(ctx *ctx.Context, params ...interface{}) error {
 		}
 	}
 
-	if err := (*ctx).GetGui().Views.Confirm.SetConfirmation(
+	return (*ctx).GetGui().Views.Confirm.SetConfirmation(
 		"Do you want to delete "+currentNode.RelativePath+"?",
 		onYes,
 		onNo,
-	); err != nil {
-		return err
-	}
-
-	// ctx.onModeChanged()
-
-	return nil
+	)
 }
 
 func Quit(ctx *ctx.Context, params ...interface{}) error {
