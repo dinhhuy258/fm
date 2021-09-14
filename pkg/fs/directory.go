@@ -3,6 +3,8 @@ package fs
 import (
 	"os"
 	"path/filepath"
+
+	"github.com/dinhhuy258/fm/pkg/config"
 )
 
 type Node struct {
@@ -35,13 +37,14 @@ func (dir *Directory) ReadDir() error {
 		return err
 	}
 
-	nodes := make([]*Node, len(names))
+	config := config.AppConfig
+	nodes := make([]*Node, 0, len(names))
 
-	for i, relativePath := range names {
+	for _, relativePath := range names {
 		absolutePath := filepath.Join(dir.Path, relativePath)
 		lstat, err := os.Lstat(absolutePath)
 
-		if os.IsNotExist(err) {
+		if os.IsNotExist(err) || (!config.ShowHidden && isHidden(relativePath)) {
 			continue
 		}
 
@@ -49,13 +52,15 @@ func (dir *Directory) ReadDir() error {
 			return err
 		}
 
-		nodes[i] = &Node{
-			RelativePath: relativePath,
-			AbsolutePath: absolutePath,
-			IsDir:        lstat.IsDir(),
-			Size:         lstat.Size(),
-			Extension:    filepath.Ext(absolutePath),
-		}
+		nodes = append(nodes,
+			&Node{
+				RelativePath: relativePath,
+				AbsolutePath: absolutePath,
+				IsDir:        lstat.IsDir(),
+				Size:         lstat.Size(),
+				Extension:    filepath.Ext(absolutePath),
+			},
+		)
 	}
 
 	dir.Nodes = nodes

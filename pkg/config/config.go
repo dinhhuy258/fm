@@ -7,6 +7,7 @@ import (
 )
 
 type Config struct {
+	ShowHidden       bool
 	IndexHeader      string
 	IndexPercentage  int
 	PathHeader       string
@@ -38,6 +39,7 @@ var AppConfig *Config
 
 func LoadConfig() {
 	AppConfig = &Config{
+		ShowHidden:       false,
 		IndexHeader:      "index",
 		IndexPercentage:  10,
 		PathHeader:       "╭──── path",

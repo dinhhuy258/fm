@@ -2,6 +2,10 @@ package fs
 
 import "fmt"
 
+func isHidden(filename string) bool {
+	return filename[0:1] == "."
+}
+
 func Humanize(size int64) string {
 	if size < 1000 {
 		return fmt.Sprintf("%d B", size)
