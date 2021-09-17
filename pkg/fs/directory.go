@@ -74,3 +74,16 @@ func (dir *Directory) ReadDir() error {
 
 	return nil
 }
+
+func (dir *Directory) Reload() {
+	visibleNodes := make([]*Node, 0, len(dir.Nodes))
+	config := config.AppConfig
+
+	for _, node := range dir.Nodes {
+		if config.ShowHidden || !isHidden(node.RelativePath) {
+			visibleNodes = append(visibleNodes, node)
+		}
+	}
+
+	dir.VisibleNodes = visibleNodes
+}

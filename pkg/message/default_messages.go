@@ -2,7 +2,9 @@ package message
 
 import (
 	"errors"
+	"strconv"
 
+	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/ctx"
 	"github.com/dinhhuy258/gocui"
 )
@@ -23,6 +25,22 @@ func ToggleSelection(ctx *ctx.Context, params ...interface{}) error {
 	if err := (*ctx).GetGui().Views.Selection.RenderSelections((*ctx).GetState().Selections); err != nil {
 		return err
 	}
+
+	return (*ctx).GetGui().Views.Main.RenderDir(
+		(*ctx).GetFileManager().Dir,
+		(*ctx).GetState().Selections,
+		(*ctx).GetState().FocusIdx,
+	)
+}
+
+func ToggleHidden(ctx *ctx.Context, params ...interface{}) error {
+	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
+
+	(*ctx).GetFileManager().Dir.Reload()
+
+	nodeSize := len((*ctx).GetFileManager().Dir.VisibleNodes)
+	(*ctx).GetGui().Views.Main.SetTitle(" " + (*ctx).GetFileManager().Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
+	(*ctx).GetGui().Views.SortAndFilter.SetSortAndFilter()
 
 	return (*ctx).GetGui().Views.Main.RenderDir(
 		(*ctx).GetFileManager().Dir,

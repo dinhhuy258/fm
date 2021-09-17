@@ -130,6 +130,14 @@ func createDefaultMode() *Mode {
 						},
 					},
 				},
+				".": {
+					Help: "Toggle hidden",
+					Messages: []message.Message{
+						{
+							Func: message.ToggleHidden,
+						},
+					},
+				},
 				"q": {
 					Help: "quit",
 					Messages: []message.Message{
