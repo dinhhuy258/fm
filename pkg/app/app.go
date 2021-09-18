@@ -35,7 +35,7 @@ func NewApp() (*App, error) {
 		return nil, err
 	}
 
-	gui, err := gui.NewGui()
+	g, err := gui.NewGui()
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func NewApp() (*App, error) {
 
 	app.state.History = state.NewHistory(fm.Dir.Path)
 
-	app.gui = gui
+	app.gui = g
 	app.fileManager = fm
 
 	return app, nil
@@ -109,8 +109,8 @@ func (app *App) PushMode(mode string) error {
 
 func (app *App) onKey(key string) error {
 	if action, hasKey := app.modes.Peek().KeyBindings.OnKeys[key]; hasKey {
-		for _, message := range action.Messages {
-			if err := message.Func(app, message.Args...); err != nil {
+		for _, m := range action.Messages {
+			if err := m.Func(app, m.Args...); err != nil {
 				return err
 			}
 		}

@@ -20,7 +20,7 @@ func newConfirmView(g *gocui.Gui, v *gocui.View) *ConfirmView {
 	return cv
 }
 
-func (cv *ConfirmView) confirmEditor(v *gocui.View, key gocui.Key, ch rune, mod gocui.Modifier) {
+func (cv *ConfirmView) confirmEditor(_ *gocui.View, _ gocui.Key, ch rune, _ gocui.Modifier) {
 	if ch != 0 {
 		key := string(ch)
 		if key == "Y" || key == "y" {

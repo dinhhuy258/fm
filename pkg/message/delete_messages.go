@@ -8,7 +8,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
-func DeleteSelections(ctx ctx.Context, params ...interface{}) error {
+func DeleteSelections(ctx ctx.Context, _ ...interface{}) error {
 	if len(ctx.State().Selections) == 0 {
 		err := ctx.Gui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 		if err != nil {
@@ -57,7 +57,7 @@ func DeleteSelections(ctx ctx.Context, params ...interface{}) error {
 	)
 }
 
-func DeleteCurrent(ctx ctx.Context, params ...interface{}) error {
+func DeleteCurrent(ctx ctx.Context, _ ...interface{}) error {
 	currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 
 	onYes := func() {

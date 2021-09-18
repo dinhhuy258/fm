@@ -48,7 +48,9 @@ func copyFile(src, dst string, info os.FileInfo) error {
 	if err != nil {
 		return err
 	}
-	defer r.Close()
+	defer func(r *os.File) {
+		_ = r.Close()
+	}(r)
 
 	w, err := os.Create(dst)
 	if err != nil {
@@ -58,8 +60,8 @@ func copyFile(src, dst string, info os.FileInfo) error {
 	for {
 		n, err := r.Read(buf)
 		if err != nil && err != io.EOF {
-			w.Close()
-			os.Remove(dst)
+			_ = w.Close()
+			_ = os.Remove(dst)
 
 			return err
 		}
@@ -74,13 +76,13 @@ func copyFile(src, dst string, info os.FileInfo) error {
 	}
 
 	if err := w.Close(); err != nil {
-		os.Remove(dst)
+		_ = os.Remove(dst)
 
 		return err
 	}
 
 	if err := os.Chmod(dst, info.Mode()); err != nil {
-		os.Remove(dst)
+		_ = os.Remove(dst)
 
 		return err
 	}

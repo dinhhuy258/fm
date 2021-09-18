@@ -8,7 +8,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
-func CopySelections(ctx ctx.Context, params ...interface{}) error {
+func CopySelections(ctx ctx.Context, _ ...interface{}) error {
 	if len(ctx.State().Selections) == 0 {
 		return ctx.Gui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 	}

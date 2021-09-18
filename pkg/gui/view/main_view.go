@@ -68,12 +68,12 @@ func (mv *MainView) layout() error {
 func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{}, focusIdx int) error {
 	visibleNodeSize := len(dir.VisibleNodes)
 	lines := make([]string, visibleNodeSize)
-	config := config.AppConfig
+	cfg := config.AppConfig
 
 	for i, node := range dir.VisibleNodes {
-		fileIcon := config.FileIcon + " "
+		fileIcon := cfg.FileIcon + " "
 		if node.IsDir {
-			fileIcon = config.FolderIcon + " "
+			fileIcon = cfg.FolderIcon + " "
 		}
 
 		_, isSelected := selections[node.AbsolutePath]
@@ -82,30 +82,30 @@ func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{},
 
 		switch {
 		case i == focusIdx:
-			path = config.FocusPrefix + fileIcon + node.RelativePath + config.FocusSuffix
+			path = cfg.FocusPrefix + fileIcon + node.RelativePath + cfg.FocusSuffix
 		case isSelected:
-			path = config.SelectionPrefix + fileIcon + node.RelativePath + config.SelectionSuffix
+			path = cfg.SelectionPrefix + fileIcon + node.RelativePath + cfg.SelectionSuffix
 		default:
 			path = "  " + fileIcon + node.RelativePath
 		}
 
 		if i == visibleNodeSize-1 {
-			path = config.PathSuffix + path
+			path = cfg.PathSuffix + path
 		} else {
-			path = config.PathPrefix + path
+			path = cfg.PathPrefix + path
 		}
 
-		row := mv.fileRow
+		r := mv.fileRow
 		if isSelected {
-			row = mv.selectionRow
+			r = mv.selectionRow
 		} else if node.IsDir {
-			row = mv.directoryRow
+			r = mv.directoryRow
 		}
 
 		size := fs.Humanize(node.Size)
 		index := strconv.Itoa(i-focusIdx) + "|" + strconv.Itoa(i)
 
-		line, err := row.Sprint([]string{index, path, size})
+		line, err := r.Sprint([]string{index, path, size})
 		if err != nil {
 			return err
 		}

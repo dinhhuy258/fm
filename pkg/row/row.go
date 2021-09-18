@@ -14,10 +14,6 @@ type Row struct {
 	cells []*rowCell
 }
 
-func New() *Row {
-	return &Row{}
-}
-
 func (r *Row) SetWidth(width int) {
 	r.width = width
 }

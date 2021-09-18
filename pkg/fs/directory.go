@@ -32,13 +32,15 @@ func (dir *Directory) ReadDir() error {
 	}
 
 	names, err := f.Readdirnames(-1)
-	f.Close()
+	if err := f.Close(); err != nil {
+		return err
+	}
 
 	if err != nil {
 		return err
 	}
 
-	config := config.AppConfig
+	cfg := config.AppConfig
 	nodes := make([]*Node, 0, len(names))
 	visibleNodes := make([]*Node, 0, len(names))
 
@@ -62,7 +64,7 @@ func (dir *Directory) ReadDir() error {
 			Extension:    filepath.Ext(absolutePath),
 		}
 
-		if config.ShowHidden || !isHidden(relativePath) {
+		if cfg.ShowHidden || !isHidden(relativePath) {
 			visibleNodes = append(visibleNodes, node)
 		}
 
@@ -77,10 +79,10 @@ func (dir *Directory) ReadDir() error {
 
 func (dir *Directory) Reload() {
 	visibleNodes := make([]*Node, 0, len(dir.Nodes))
-	config := config.AppConfig
+	cfg := config.AppConfig
 
 	for _, node := range dir.Nodes {
-		if config.ShowHidden || !isHidden(node.RelativePath) {
+		if cfg.ShowHidden || !isHidden(node.RelativePath) {
 			visibleNodes = append(visibleNodes, node)
 		}
 	}

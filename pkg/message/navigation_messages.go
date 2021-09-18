@@ -2,7 +2,7 @@ package message
 
 import "github.com/dinhhuy258/fm/pkg/ctx"
 
-func FocusNext(ctx ctx.Context, params ...interface{}) error {
+func FocusNext(ctx ctx.Context, _ ...interface{}) error {
 	if ctx.State().FocusIdx == ctx.State().NumberOfFiles-1 {
 		return nil
 	}
@@ -20,7 +20,7 @@ func FocusNext(ctx ctx.Context, params ...interface{}) error {
 	)
 }
 
-func FocusPrevious(ctx ctx.Context, params ...interface{}) error {
+func FocusPrevious(ctx ctx.Context, _ ...interface{}) error {
 	if ctx.State().FocusIdx == 0 {
 		return nil
 	}
@@ -38,7 +38,7 @@ func FocusPrevious(ctx ctx.Context, params ...interface{}) error {
 	)
 }
 
-func Enter(ctx ctx.Context, params ...interface{}) error {
+func Enter(ctx ctx.Context, _ ...interface{}) error {
 	currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 
 	if currentNode.IsDir {
@@ -48,7 +48,7 @@ func Enter(ctx ctx.Context, params ...interface{}) error {
 	return nil
 }
 
-func Back(ctx ctx.Context, params ...interface{}) error {
+func Back(ctx ctx.Context, _ ...interface{}) error {
 	parent := ctx.FileManager().Dir.Parent()
 
 	changeDirectory(ctx, parent, true)
@@ -56,14 +56,14 @@ func Back(ctx ctx.Context, params ...interface{}) error {
 	return nil
 }
 
-func LastVisitedPath(ctx ctx.Context, params ...interface{}) error {
+func LastVisitedPath(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().History.VisitLast()
 	changeDirectory(ctx, ctx.State().History.Peek(), false)
 
 	return nil
 }
 
-func NextVisitedPath(ctx ctx.Context, params ...interface{}) error {
+func NextVisitedPath(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().History.VisitNext()
 	changeDirectory(ctx, ctx.State().History.Peek(), false)
 

@@ -29,7 +29,7 @@ func (gui *Gui) createAllViews() error {
 	return gui.Views.Log.SetViewOnTop()
 }
 
-func (gui *Gui) setViewDimentions() error {
+func (gui *Gui) setViewDimensions() error {
 	width, height := gui.g.Size()
 	width--
 	height--
@@ -133,7 +133,7 @@ func (gui *Gui) setViewDimentions() error {
 	return nil
 }
 
-func (gui *Gui) layout(g *gocui.Gui) error {
+func (gui *Gui) layout(_ *gocui.Gui) error {
 	if gui.Views == nil {
 		if err := gui.createAllViews(); err != nil {
 			return err
@@ -143,7 +143,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		close(gui.ViewsCreatedChan)
 	}
 
-	if err := gui.setViewDimentions(); err != nil {
+	if err := gui.setViewDimensions(); err != nil {
 		return err
 	}
 

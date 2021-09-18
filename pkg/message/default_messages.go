@@ -9,9 +9,9 @@ import (
 	"github.com/dinhhuy258/gocui"
 )
 
-var ErrInvalidMessageParams = errors.New("invalid message params")
+var ErrInvalidMessage_ = errors.New("invalid message _")
 
-func ToggleSelection(ctx ctx.Context, params ...interface{}) error {
+func ToggleSelection(ctx ctx.Context, _ ...interface{}) error {
 	path := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx].AbsolutePath
 
 	if _, hasPath := ctx.State().Selections[path]; hasPath {
@@ -33,7 +33,7 @@ func ToggleSelection(ctx ctx.Context, params ...interface{}) error {
 	)
 }
 
-func ToggleHidden(ctx ctx.Context, params ...interface{}) error {
+func ToggleHidden(ctx ctx.Context, _ ...interface{}) error {
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
 	ctx.FileManager().Dir.Reload()
@@ -49,7 +49,7 @@ func ToggleHidden(ctx ctx.Context, params ...interface{}) error {
 	)
 }
 
-func ClearSelection(ctx ctx.Context, params ...interface{}) error {
+func ClearSelection(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().Selections = make(map[string]struct{})
 
 	ctx.Gui().Views.Selection.SetTitle(len(ctx.State().Selections))
@@ -93,22 +93,22 @@ func Focus(ctx ctx.Context, path string) error {
 
 func SwitchMode(ctx ctx.Context, params ...interface{}) error {
 	if len(params) != 1 {
-		return ErrInvalidMessageParams
+		return ErrInvalidMessage_
 	}
 
 	return ctx.PushMode(params[0].(string))
 }
 
-func PopMode(ctx ctx.Context, params ...interface{}) error {
+func PopMode(ctx ctx.Context, _ ...interface{}) error {
 	return ctx.PopMode()
 }
 
-func Refresh(ctx ctx.Context, params ...interface{}) error {
+func Refresh(ctx ctx.Context, _ ...interface{}) error {
 	ctx.FileManager().Reload()
 
 	return nil
 }
 
-func Quit(ctx ctx.Context, params ...interface{}) error {
+func Quit(_ ctx.Context, _ ...interface{}) error {
 	return gocui.ErrQuit
 }

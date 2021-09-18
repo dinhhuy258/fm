@@ -88,9 +88,9 @@ func newView(g *gocui.Gui, v *gocui.View) *View {
 func (view *View) SetViewContent(displayStrings []string) {
 	view.g.Update(func(g *gocui.Gui) error {
 		view.v.Clear()
-		fmt.Fprint(view.v, strings.Join(displayStrings, "\n"))
+		_, err := fmt.Fprint(view.v, strings.Join(displayStrings, "\n"))
 
-		return nil
+		return err
 	})
 }
 
