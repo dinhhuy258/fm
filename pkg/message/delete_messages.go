@@ -8,9 +8,9 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
-func DeleteSelections(ctx *ctx.Context, params ...interface{}) error {
-	if len((*ctx).GetState().Selections) == 0 {
-		err := (*ctx).GetGui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
+func DeleteSelections(ctx ctx.Context, params ...interface{}) error {
+	if len(ctx.State().Selections) == 0 {
+		err := ctx.Gui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 		if err != nil {
 			return err
 		}
@@ -19,8 +19,8 @@ func DeleteSelections(ctx *ctx.Context, params ...interface{}) error {
 	}
 
 	onYes := func() {
-		paths := make([]string, 0, len((*ctx).GetState().Selections))
-		for k := range (*ctx).GetState().Selections {
+		paths := make([]string, 0, len(ctx.State().Selections))
+		for k := range ctx.State().Selections {
 			paths = append(paths, k)
 		}
 
@@ -29,8 +29,8 @@ func DeleteSelections(ctx *ctx.Context, params ...interface{}) error {
 		}
 
 		// Clear selections
-		for k := range (*ctx).GetState().Selections {
-			delete((*ctx).GetState().Selections, k)
+		for k := range ctx.State().Selections {
+			delete(ctx.State().Selections, k)
 		}
 	}
 
@@ -39,26 +39,26 @@ func DeleteSelections(ctx *ctx.Context, params ...interface{}) error {
 			log.Fatalf("failed to pop mode %v", err)
 		}
 
-		if err := (*ctx).GetGui().Views.Main.SetAsCurrentView(); err != nil {
+		if err := ctx.Gui().Views.Main.SetAsCurrentView(); err != nil {
 			log.Fatalf("failed to set main as the current view %v", err)
 		}
 
-		if err := (*ctx).GetGui().Views.Log.SetLog(
+		if err := ctx.Gui().Views.Log.SetLog(
 			"Canceled deleting the current file/folder",
 			view.LogLevel(view.WARNING)); err != nil {
 			log.Fatalf("failed to set log %v", err)
 		}
 	}
 
-	return (*ctx).GetGui().Views.Confirm.SetConfirmation(
+	return ctx.Gui().Views.Confirm.SetConfirmation(
 		"Do you want to delete selected paths?",
 		onYes,
 		onNo,
 	)
 }
 
-func DeleteCurrent(ctx *ctx.Context, params ...interface{}) error {
-	currentNode := (*ctx).GetFileManager().Dir.VisibleNodes[(*ctx).GetState().FocusIdx]
+func DeleteCurrent(ctx ctx.Context, params ...interface{}) error {
+	currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 
 	onYes := func() {
 		if err := deletePaths(ctx, []string{currentNode.AbsolutePath}); err != nil {
@@ -71,60 +71,60 @@ func DeleteCurrent(ctx *ctx.Context, params ...interface{}) error {
 			log.Fatalf("failed to pop mode %v", err)
 		}
 
-		if err := (*ctx).GetGui().Views.Main.SetAsCurrentView(); err != nil {
+		if err := ctx.Gui().Views.Main.SetAsCurrentView(); err != nil {
 			log.Fatalf("failed to set main as the current view %v", err)
 		}
 
-		if err := (*ctx).GetGui().Views.Log.SetLog("Canceled deleting the current file/folder",
+		if err := ctx.Gui().Views.Log.SetLog("Canceled deleting the current file/folder",
 			view.LogLevel(view.WARNING)); err != nil {
 			log.Fatalf("failed to set log %v", err)
 		}
 	}
 
-	return (*ctx).GetGui().Views.Confirm.SetConfirmation(
+	return ctx.Gui().Views.Confirm.SetConfirmation(
 		"Do you want to delete "+currentNode.RelativePath+"?",
 		onYes,
 		onNo,
 	)
 }
 
-func deletePaths(ctx *ctx.Context, paths []string) error {
+func deletePaths(ctx ctx.Context, paths []string) error {
 	if err := PopMode(ctx); err != nil {
 		return err
 	}
 
-	if err := (*ctx).GetGui().Views.Main.SetAsCurrentView(); err != nil {
+	if err := ctx.Gui().Views.Main.SetAsCurrentView(); err != nil {
 		return err
 	}
 
-	if err := (*ctx).GetGui().Views.Progress.StartProgress(1); err != nil {
+	if err := ctx.Gui().Views.Progress.StartProgress(1); err != nil {
 		return err
 	}
 
-	(*ctx).GetFileManager().Delete(paths)
+	ctx.FileManager().Delete(paths)
 
 	go func() {
 		errCount := 0
 	loop:
 		for {
 			select {
-			case <-(*ctx).GetFileManager().OpCountChan:
-				(*ctx).GetGui().Views.Progress.AddCurrent(1)
+			case <-ctx.FileManager().OpCountChan:
+				ctx.Gui().Views.Progress.AddCurrent(1)
 
 				break loop
-			case <-(*ctx).GetFileManager().OpErrChan:
+			case <-ctx.FileManager().OpErrChan:
 				errCount++
 			}
 		}
 
 		var err error
 		if errCount != 0 {
-			err = (*ctx).GetGui().Views.Log.SetLog(
+			err = ctx.Gui().Views.Log.SetLog(
 				fmt.Sprintf("Finished to delete %v. Error count: %d", paths, errCount),
 				view.LogLevel(view.INFO),
 			)
 		} else {
-			err = (*ctx).GetGui().Views.Log.SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
+			err = ctx.Gui().Views.Log.SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
 		}
 
 		if err != nil {

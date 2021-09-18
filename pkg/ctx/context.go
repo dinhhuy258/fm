@@ -7,9 +7,9 @@ import (
 )
 
 type Context interface {
-	GetState() *state.State
-	GetGui() *gui.Gui
-	GetFileManager() *fs.FileManager
+	State() *state.State
+	Gui() *gui.Gui
+	FileManager() *fs.FileManager
 	PopMode() error
 	PushMode(mode string) error
 }

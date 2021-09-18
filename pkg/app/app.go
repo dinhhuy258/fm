@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/dinhhuy258/fm/pkg/ctx"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/message"
@@ -14,25 +13,25 @@ import (
 )
 
 type App struct {
-	Gui         *gui.Gui
-	FileManager *fs.FileManager
-	State       *state.State
-	Modes       *mode.Modes
+	gui         *gui.Gui
+	fileManager *fs.FileManager
+	state       *state.State
+	modes       *mode.Modes
 }
 
 // NewApp bootstrap a new application
 func NewApp() (*App, error) {
 	app := &App{
-		State: &state.State{
+		state: &state.State{
 			FocusIdx:      0,
 			NumberOfFiles: 0,
 			Selections:    map[string]struct{}{},
 		},
 	}
 
-	app.Modes = mode.NewModes()
+	app.modes = mode.NewModes()
 
-	if err := app.Modes.Push("default"); err != nil {
+	if err := app.modes.Push("default"); err != nil {
 		return nil, err
 	}
 
@@ -46,10 +45,10 @@ func NewApp() (*App, error) {
 		return nil, err
 	}
 
-	app.State.History = state.NewHistory(fm.Dir.Path)
+	app.state.History = state.NewHistory(fm.Dir.Path)
 
-	app.Gui = gui
-	app.FileManager = fm
+	app.gui = gui
+	app.fileManager = fm
 
 	return app, nil
 }
@@ -57,39 +56,39 @@ func NewApp() (*App, error) {
 func (app *App) Run() error {
 	go app.loop()
 
-	return app.Gui.Run()
+	return app.gui.Run()
 }
 
 func (app *App) onModeChanged() {
-	keys := make([]string, 0, len(app.Modes.Peek().KeyBindings.OnKeys))
-	helps := make([]string, 0, len(app.Modes.Peek().KeyBindings.OnKeys))
+	keys := make([]string, 0, len(app.modes.Peek().KeyBindings.OnKeys))
+	helps := make([]string, 0, len(app.modes.Peek().KeyBindings.OnKeys))
 
-	for k, a := range app.Modes.Peek().KeyBindings.OnKeys {
+	for k, a := range app.modes.Peek().KeyBindings.OnKeys {
 		keys = append(keys, k)
 		helps = append(helps, a.Help)
 	}
 
-	app.Gui.Views.Help.SetTitle(app.Modes.Peek().Name)
+	app.gui.Views.Help.SetTitle(app.modes.Peek().Name)
 
-	if err := app.Gui.Views.Help.SetHelp(keys, helps); err != nil {
+	if err := app.gui.Views.Help.SetHelp(keys, helps); err != nil {
 		log.Fatalf("failed to set content for help view %v", err)
 	}
 }
 
-func (app *App) GetState() *state.State {
-	return app.State
+func (app *App) State() *state.State {
+	return app.state
 }
 
-func (app *App) GetGui() *gui.Gui {
-	return app.Gui
+func (app *App) Gui() *gui.Gui {
+	return app.gui
 }
 
-func (app *App) GetFileManager() *fs.FileManager {
-	return app.FileManager
+func (app *App) FileManager() *fs.FileManager {
+	return app.fileManager
 }
 
 func (app *App) PopMode() error {
-	if err := app.Modes.Pop(); err != nil {
+	if err := app.modes.Pop(); err != nil {
 		return err
 	}
 
@@ -99,7 +98,7 @@ func (app *App) PopMode() error {
 }
 
 func (app *App) PushMode(mode string) error {
-	if err := app.Modes.Push(mode); err != nil {
+	if err := app.modes.Push(mode); err != nil {
 		return err
 	}
 
@@ -109,10 +108,9 @@ func (app *App) PushMode(mode string) error {
 }
 
 func (app *App) onKey(key string) error {
-	if action, hasKey := app.Modes.Peek().KeyBindings.OnKeys[key]; hasKey {
-		var ctx ctx.Context = app
+	if action, hasKey := app.modes.Peek().KeyBindings.OnKeys[key]; hasKey {
 		for _, message := range action.Messages {
-			if err := message.Func(&ctx, message.Args...); err != nil {
+			if err := message.Func(app, message.Args...); err != nil {
 				return err
 			}
 		}
@@ -123,41 +121,40 @@ func (app *App) onKey(key string) error {
 
 func (app *App) loop() {
 	// Wait until Gui is loaded
-	<-app.Gui.ViewsCreatedChan
+	<-app.gui.ViewsCreatedChan
 	// Load help menu
 	app.onModeChanged()
 	// Set on key handler
-	app.Gui.SetOnKeyFunc(app.onKey)
+	app.gui.SetOnKeyFunc(app.onKey)
 
 	for {
-		for range app.FileManager.DirLoadedChan {
-			if err := app.Gui.Views.Main.SetOrigin(0, 0); err != nil {
+		for range app.fileManager.DirLoadedChan {
+			if err := app.gui.Views.Main.SetOrigin(0, 0); err != nil {
 				log.Fatalf("failed to set origin %v", err)
 			}
 
-			if err := app.Gui.Views.Main.SetCursor(0, 0); err != nil {
+			if err := app.gui.Views.Main.SetCursor(0, 0); err != nil {
 				log.Fatalf("failed to set cursor %v", err)
 			}
 
-			nodeSize := len(app.FileManager.Dir.VisibleNodes)
-			app.State.FocusIdx = 0
-			app.State.NumberOfFiles = nodeSize
+			nodeSize := len(app.fileManager.Dir.VisibleNodes)
+			app.state.FocusIdx = 0
+			app.state.NumberOfFiles = nodeSize
 
-			app.Gui.Views.Main.SetTitle(" " + app.FileManager.Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
+			app.gui.Views.Main.SetTitle(" " + app.fileManager.Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
 
-			lastPath := app.State.History.Peek()
-			if filepath.Dir(lastPath) == app.FileManager.Dir.Path {
+			lastPath := app.state.History.Peek()
+			if filepath.Dir(lastPath) == app.fileManager.Dir.Path {
 				// back
-				var ctx ctx.Context = app
-				if err := message.Focus(&ctx, lastPath); err != nil {
+				if err := message.Focus(app, lastPath); err != nil {
 					log.Fatalf("failed to focus path %v", err)
 				}
 			}
 
-			if err := app.Gui.Views.Main.RenderDir(
-				app.FileManager.Dir,
-				app.State.Selections,
-				app.State.FocusIdx,
+			if err := app.gui.Views.Main.RenderDir(
+				app.fileManager.Dir,
+				app.state.Selections,
+				app.state.FocusIdx,
 			); err != nil {
 				log.Fatalf("failed to render dir %v", err)
 			}

@@ -43,4 +43,3 @@ func createDeleteMode() *Mode {
 		},
 	}
 }
-

@@ -11,64 +11,64 @@ import (
 
 var ErrInvalidMessageParams = errors.New("invalid message params")
 
-func ToggleSelection(ctx *ctx.Context, params ...interface{}) error {
-	path := (*ctx).GetFileManager().Dir.VisibleNodes[(*ctx).GetState().FocusIdx].AbsolutePath
+func ToggleSelection(ctx ctx.Context, params ...interface{}) error {
+	path := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx].AbsolutePath
 
-	if _, hasPath := (*ctx).GetState().Selections[path]; hasPath {
-		delete((*ctx).GetState().Selections, path)
+	if _, hasPath := ctx.State().Selections[path]; hasPath {
+		delete(ctx.State().Selections, path)
 	} else {
-		(*ctx).GetState().Selections[path] = struct{}{}
+		ctx.State().Selections[path] = struct{}{}
 	}
 
-	(*ctx).GetGui().Views.Selection.SetTitle(len((*ctx).GetState().Selections))
+	ctx.Gui().Views.Selection.SetTitle(len(ctx.State().Selections))
 
-	if err := (*ctx).GetGui().Views.Selection.RenderSelections((*ctx).GetState().Selections); err != nil {
+	if err := ctx.Gui().Views.Selection.RenderSelections(ctx.State().Selections); err != nil {
 		return err
 	}
 
-	return (*ctx).GetGui().Views.Main.RenderDir(
-		(*ctx).GetFileManager().Dir,
-		(*ctx).GetState().Selections,
-		(*ctx).GetState().FocusIdx,
+	return ctx.Gui().Views.Main.RenderDir(
+		ctx.FileManager().Dir,
+		ctx.State().Selections,
+		ctx.State().FocusIdx,
 	)
 }
 
-func ToggleHidden(ctx *ctx.Context, params ...interface{}) error {
+func ToggleHidden(ctx ctx.Context, params ...interface{}) error {
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
-	(*ctx).GetFileManager().Dir.Reload()
+	ctx.FileManager().Dir.Reload()
 
-	nodeSize := len((*ctx).GetFileManager().Dir.VisibleNodes)
-	(*ctx).GetGui().Views.Main.SetTitle(" " + (*ctx).GetFileManager().Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
-	(*ctx).GetGui().Views.SortAndFilter.SetSortAndFilter()
+	nodeSize := len(ctx.FileManager().Dir.VisibleNodes)
+	ctx.Gui().Views.Main.SetTitle(" " + ctx.FileManager().Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
+	ctx.Gui().Views.SortAndFilter.SetSortAndFilter()
 
-	return (*ctx).GetGui().Views.Main.RenderDir(
-		(*ctx).GetFileManager().Dir,
-		(*ctx).GetState().Selections,
-		(*ctx).GetState().FocusIdx,
+	return ctx.Gui().Views.Main.RenderDir(
+		ctx.FileManager().Dir,
+		ctx.State().Selections,
+		ctx.State().FocusIdx,
 	)
 }
 
-func ClearSelection(ctx *ctx.Context, params ...interface{}) error {
-	(*ctx).GetState().Selections = make(map[string]struct{})
+func ClearSelection(ctx ctx.Context, params ...interface{}) error {
+	ctx.State().Selections = make(map[string]struct{})
 
-	(*ctx).GetGui().Views.Selection.SetTitle(len((*ctx).GetState().Selections))
+	ctx.Gui().Views.Selection.SetTitle(len(ctx.State().Selections))
 
-	if err := (*ctx).GetGui().Views.Selection.RenderSelections((*ctx).GetState().Selections); err != nil {
+	if err := ctx.Gui().Views.Selection.RenderSelections(ctx.State().Selections); err != nil {
 		return err
 	}
 
-	return (*ctx).GetGui().Views.Main.RenderDir(
-		(*ctx).GetFileManager().Dir,
-		(*ctx).GetState().Selections,
-		(*ctx).GetState().FocusIdx,
+	return ctx.Gui().Views.Main.RenderDir(
+		ctx.FileManager().Dir,
+		ctx.State().Selections,
+		ctx.State().FocusIdx,
 	)
 }
 
-func Focus(ctx *ctx.Context, path string) error {
+func Focus(ctx ctx.Context, path string) error {
 	count := 0
 
-	for _, node := range (*ctx).GetFileManager().Dir.VisibleNodes {
+	for _, node := range ctx.FileManager().Dir.VisibleNodes {
 		if node.IsDir && node.AbsolutePath == path {
 			break
 		}
@@ -76,39 +76,39 @@ func Focus(ctx *ctx.Context, path string) error {
 		count++
 	}
 
-	if count == len((*ctx).GetFileManager().Dir.VisibleNodes) {
+	if count == len(ctx.FileManager().Dir.VisibleNodes) {
 		return nil
 	}
 
 	for i := 0; i < count; i++ {
-		if err := (*ctx).GetGui().Views.Main.NextCursor(); err != nil {
+		if err := ctx.Gui().Views.Main.NextCursor(); err != nil {
 			return err
 		}
 
-		(*ctx).GetState().FocusIdx++
+		ctx.State().FocusIdx++
 	}
 
 	return nil
 }
 
-func SwitchMode(ctx *ctx.Context, params ...interface{}) error {
+func SwitchMode(ctx ctx.Context, params ...interface{}) error {
 	if len(params) != 1 {
 		return ErrInvalidMessageParams
 	}
 
-	return (*ctx).PushMode(params[0].(string))
+	return ctx.PushMode(params[0].(string))
 }
 
-func PopMode(ctx *ctx.Context, params ...interface{}) error {
-	return (*ctx).PopMode()
+func PopMode(ctx ctx.Context, params ...interface{}) error {
+	return ctx.PopMode()
 }
 
-func Refresh(ctx *ctx.Context, params ...interface{}) error {
-	(*ctx).GetFileManager().Reload()
+func Refresh(ctx ctx.Context, params ...interface{}) error {
+	ctx.FileManager().Reload()
 
 	return nil
 }
 
-func Quit(ctx *ctx.Context, params ...interface{}) error {
+func Quit(ctx ctx.Context, params ...interface{}) error {
 	return gocui.ErrQuit
 }
