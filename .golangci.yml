@@ -13,3 +13,4 @@ linters:
     - wrapcheck
     - gomnd
     - godox
+    - nilerr

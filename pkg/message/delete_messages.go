@@ -25,7 +25,7 @@ func DeleteSelections(ctx *ctx.Context, params ...interface{}) error {
 		}
 
 		if err := deletePaths(ctx, paths); err != nil {
-			log.Fatalf("failed to delete paths log %v", err)
+			log.Fatalf("failed to delete paths %v", err)
 		}
 
 		// Clear selections
@@ -108,11 +108,11 @@ func deletePaths(ctx *ctx.Context, paths []string) error {
 	loop:
 		for {
 			select {
-			case <-(*ctx).GetFileManager().DeleteCountChan:
+			case <-(*ctx).GetFileManager().OpCountChan:
 				(*ctx).GetGui().Views.Progress.AddCurrent(1)
 
 				break loop
-			case <-(*ctx).GetFileManager().DeleteErrChan:
+			case <-(*ctx).GetFileManager().OpErrChan:
 				errCount++
 			}
 		}

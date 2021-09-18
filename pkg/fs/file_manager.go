@@ -1,15 +1,17 @@
 package fs
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 type FileManager struct {
-	Dir             *Directory
-	DirLoadedChan   chan struct{}
-	DeleteCountChan chan int
-	DeleteErrChan   chan error
+	Dir           *Directory
+	DirLoadedChan chan struct{}
+	OpCountChan   chan int
+	OpErrChan     chan error
 }
 
 func NewFileManager() (*FileManager, error) {
@@ -19,9 +21,9 @@ func NewFileManager() (*FileManager, error) {
 	}
 
 	fileManager := &FileManager{
-		DirLoadedChan:   make(chan struct{}, 1),
-		DeleteCountChan: make(chan int, 1024),
-		DeleteErrChan:   make(chan error),
+		DirLoadedChan: make(chan struct{}, 1),
+		OpCountChan:   make(chan int, 1024),
+		OpErrChan:     make(chan error),
 	}
 	fileManager.LoadDirectory(wd)
 
@@ -50,10 +52,58 @@ func (fm *FileManager) Delete(paths []string) {
 	go func() {
 		for _, path := range paths {
 			if err := os.RemoveAll(path); err != nil {
-				fm.DeleteErrChan <- err
+				fm.OpErrChan <- err
 			}
 
-			fm.DeleteCountChan <- 1
+			fm.OpCountChan <- 1
 		}
 	}()
+}
+
+func (fm *FileManager) Copy(
+	paths []string,
+	destDir string,
+) (countChan chan int64, errChan chan error) {
+	countChan = make(chan int64, len(paths))
+	errChan = make(chan error, len(paths))
+
+	go func() {
+		for _, path := range paths {
+			dst := filepath.Join(destDir, filepath.Base(path))
+			_, err := os.Lstat(dst)
+
+			if !os.IsNotExist(err) {
+				var newPath string
+
+				for i := 1; !os.IsNotExist(err); i++ {
+					newPath = fmt.Sprintf("%s.~%d~", dst, i)
+					_, err = os.Lstat(newPath)
+				}
+
+				dst = newPath
+			}
+
+			walkFunc := func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					errChan <- err
+
+					return nil
+				}
+
+				if err := copyPath(path, dst, info); err != nil {
+					errChan <- err
+				}
+
+				return nil
+			}
+
+			if err := filepath.Walk(path, walkFunc); err != nil {
+				errChan <- fmt.Errorf("walk: %w", err)
+			}
+
+			countChan <- 1
+		}
+	}()
+
+	return countChan, errChan
 }

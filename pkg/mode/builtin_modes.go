@@ -90,6 +90,14 @@ func createDefaultMode() *Mode {
 						},
 					},
 				},
+				"p": {
+					Help: "copy",
+					Messages: []message.Message{
+						{
+							Func: message.CopySelections,
+						},
+					},
+				},
 				"ctrl+i": {
 					Help: "next visited path",
 					Messages: []message.Message{
@@ -131,7 +139,7 @@ func createDefaultMode() *Mode {
 					},
 				},
 				".": {
-					Help: "Toggle hidden",
+					Help: "toggle hidden",
 					Messages: []message.Message{
 						{
 							Func: message.ToggleHidden,
