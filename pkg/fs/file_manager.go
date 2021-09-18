@@ -10,8 +10,6 @@ import (
 type FileManager struct {
 	Dir           *Directory
 	DirLoadedChan chan struct{}
-	OpCountChan   chan int
-	OpErrChan     chan error
 }
 
 func NewFileManager() (*FileManager, error) {
@@ -22,8 +20,6 @@ func NewFileManager() (*FileManager, error) {
 
 	fileManager := &FileManager{
 		DirLoadedChan: make(chan struct{}, 1),
-		OpCountChan:   make(chan int, 1024),
-		OpErrChan:     make(chan error),
 	}
 	fileManager.LoadDirectory(wd)
 
@@ -48,24 +44,29 @@ func (fm *FileManager) Reload() {
 	}()
 }
 
-func (fm *FileManager) Delete(paths []string) {
+func (fm *FileManager) Delete(paths []string) (countChan chan int, errChan chan error) {
+	countChan = make(chan int, len(paths))
+	errChan = make(chan error)
+
 	go func() {
 		for _, path := range paths {
 			if err := os.RemoveAll(path); err != nil {
-				fm.OpErrChan <- err
+				errChan <- err
 			}
 
-			fm.OpCountChan <- 1
+			countChan <- 1
 		}
 	}()
+
+	return countChan, errChan
 }
 
 func (fm *FileManager) Copy(
 	paths []string,
 	destDir string,
-) (countChan chan int64, errChan chan error) {
-	countChan = make(chan int64, len(paths))
-	errChan = make(chan error, len(paths))
+) (countChan chan int, errChan chan error) {
+	countChan = make(chan int, len(paths))
+	errChan = make(chan error)
 
 	go func() {
 		for _, path := range paths {
@@ -98,7 +99,7 @@ func (fm *FileManager) Copy(
 			}
 
 			if err := filepath.Walk(path, walkFunc); err != nil {
-				errChan <- fmt.Errorf("walk: %w", err)
+				errChan <- err
 			}
 
 			countChan <- 1

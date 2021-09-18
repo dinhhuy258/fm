@@ -101,18 +101,18 @@ func deletePaths(ctx ctx.Context, paths []string) error {
 		return err
 	}
 
-	ctx.FileManager().Delete(paths)
+	countChan, errChan := ctx.FileManager().Delete(paths)
 
 	go func() {
 		errCount := 0
 	loop:
 		for {
 			select {
-			case <-ctx.FileManager().OpCountChan:
+			case <-countChan:
 				ctx.Gui().Views.Progress.AddCurrent(1)
 
 				break loop
-			case <-ctx.FileManager().OpErrChan:
+			case <-errChan:
 				errCount++
 			}
 		}
