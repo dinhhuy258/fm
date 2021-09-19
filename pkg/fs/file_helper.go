@@ -48,6 +48,7 @@ func copyFile(src, dst string, info os.FileInfo) error {
 	if err != nil {
 		return err
 	}
+
 	defer func(r *os.File) {
 		_ = r.Close()
 	}(r)
@@ -90,8 +91,8 @@ func copyFile(src, dst string, info os.FileInfo) error {
 	return nil
 }
 
-func copyPath(path, dst string, info os.FileInfo) error {
-	rel, err := filepath.Rel(path, path)
+func copyPath(src, path, dst string, info os.FileInfo) error {
+	rel, err := filepath.Rel(src, path)
 	if err != nil {
 		return err
 	}

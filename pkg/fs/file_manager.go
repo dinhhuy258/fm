@@ -62,15 +62,15 @@ func (fm *FileManager) Delete(paths []string) (countChan chan int, errChan chan 
 }
 
 func (fm *FileManager) Copy(
-	paths []string,
+	srcPaths []string,
 	destDir string,
 ) (countChan chan int, errChan chan error) {
-	countChan = make(chan int, len(paths))
+	countChan = make(chan int, len(srcPaths))
 	errChan = make(chan error)
 
 	go func() {
-		for _, path := range paths {
-			dst := filepath.Join(destDir, filepath.Base(path))
+		for _, srcPath := range srcPaths {
+			dst := filepath.Join(destDir, filepath.Base(srcPath))
 			_, err := os.Lstat(dst)
 
 			if !os.IsNotExist(err) {
@@ -84,6 +84,7 @@ func (fm *FileManager) Copy(
 				dst = newPath
 			}
 
+			src := srcPath // This will make scopelint happy
 			walkFunc := func(path string, info os.FileInfo, err error) error {
 				if err != nil {
 					errChan <- err
@@ -91,14 +92,14 @@ func (fm *FileManager) Copy(
 					return nil
 				}
 
-				if err := copyPath(path, dst, info); err != nil {
+				if err := copyPath(src, path, dst, info); err != nil {
 					errChan <- err
 				}
 
 				return nil
 			}
 
-			if err := filepath.Walk(path, walkFunc); err != nil {
+			if err := filepath.Walk(srcPath, walkFunc); err != nil {
 				errChan <- err
 			}
 

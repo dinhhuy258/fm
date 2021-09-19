@@ -9,7 +9,7 @@ import (
 	"github.com/dinhhuy258/gocui"
 )
 
-var ErrInvalidMessage_ = errors.New("invalid message _")
+var ErrInvalidMessage = errors.New("invalid message")
 
 func ToggleSelection(ctx ctx.Context, _ ...interface{}) error {
 	path := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx].AbsolutePath
@@ -93,7 +93,7 @@ func Focus(ctx ctx.Context, path string) error {
 
 func SwitchMode(ctx ctx.Context, params ...interface{}) error {
 	if len(params) != 1 {
-		return ErrInvalidMessage_
+		return ErrInvalidMessage
 	}
 
 	return ctx.PushMode(params[0].(string))
