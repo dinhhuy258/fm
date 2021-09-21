@@ -8,14 +8,14 @@ import (
 )
 
 type Gui struct {
-	g                *gocui.Gui
-	Views            *view.Views
-	ViewsCreatedChan chan struct{}
+	g              *gocui.Gui
+	Views          *view.Views
+	onViewsCreated func()
 }
 
-func NewGui() (*Gui, error) {
+func NewGui(onViewsCreated func()) (*Gui, error) {
 	gui := &Gui{
-		ViewsCreatedChan: make(chan struct{}, 1),
+		onViewsCreated: onViewsCreated,
 	}
 
 	return gui, nil

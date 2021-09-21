@@ -38,6 +38,51 @@ func FocusPrevious(ctx ctx.Context, _ ...interface{}) error {
 	)
 }
 
+func FocusPath(ctx ctx.Context, params ...interface{}) error {
+	if len(params) != 1 {
+		return ErrInvalidMessageParameter
+	}
+
+	path, ok := params[0].(string)
+	if !ok {
+		return ErrInvalidMessageParameter
+	}
+
+	focusIdx := 0
+
+	for _, node := range ctx.FileManager().Dir.VisibleNodes {
+		if node.AbsolutePath == path {
+			break
+		}
+
+		focusIdx++
+	}
+
+	if focusIdx == len(ctx.FileManager().Dir.VisibleNodes) {
+		return nil
+	}
+
+	if err := ctx.Gui().Views.Main.SetCursor(0, 0); err != nil {
+		return err
+	}
+
+	ctx.State().FocusIdx = 0
+
+	for i := 0; i < focusIdx; i++ {
+		if err := ctx.Gui().Views.Main.NextCursor(); err != nil {
+			return err
+		}
+
+		ctx.State().FocusIdx++
+	}
+
+	return ctx.Gui().Views.Main.RenderDir(
+		ctx.FileManager().Dir,
+		ctx.State().Selections,
+		ctx.State().FocusIdx,
+	)
+}
+
 func Enter(ctx ctx.Context, _ ...interface{}) error {
 	currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 

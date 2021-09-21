@@ -9,7 +9,7 @@ import (
 	"github.com/dinhhuy258/gocui"
 )
 
-var ErrInvalidMessage = errors.New("invalid message")
+var ErrInvalidMessageParameter = errors.New("invalid message parameter")
 
 func ToggleSelection(ctx ctx.Context, _ ...interface{}) error {
 	path := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx].AbsolutePath
@@ -39,6 +39,7 @@ func ToggleHidden(ctx ctx.Context, _ ...interface{}) error {
 	ctx.FileManager().Dir.Reload()
 
 	nodeSize := len(ctx.FileManager().Dir.VisibleNodes)
+	ctx.State().NumberOfFiles = nodeSize
 	ctx.Gui().Views.Main.SetTitle(" " + ctx.FileManager().Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
 	ctx.Gui().Views.SortAndFilter.SetSortAndFilter()
 
@@ -65,35 +66,9 @@ func ClearSelection(ctx ctx.Context, _ ...interface{}) error {
 	)
 }
 
-func Focus(ctx ctx.Context, path string) error {
-	count := 0
-
-	for _, node := range ctx.FileManager().Dir.VisibleNodes {
-		if node.IsDir && node.AbsolutePath == path {
-			break
-		}
-
-		count++
-	}
-
-	if count == len(ctx.FileManager().Dir.VisibleNodes) {
-		return nil
-	}
-
-	for i := 0; i < count; i++ {
-		if err := ctx.Gui().Views.Main.NextCursor(); err != nil {
-			return err
-		}
-
-		ctx.State().FocusIdx++
-	}
-
-	return nil
-}
-
 func SwitchMode(ctx ctx.Context, params ...interface{}) error {
 	if len(params) != 1 {
-		return ErrInvalidMessage
+		return ErrInvalidMessageParameter
 	}
 
 	return ctx.PushMode(params[0].(string))

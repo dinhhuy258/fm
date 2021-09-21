@@ -31,31 +31,17 @@ func NewApp() (*App, error) {
 
 	app.modes = mode.NewModes()
 
-	if err := app.modes.Push("default"); err != nil {
-		return nil, err
-	}
-
-	g, err := gui.NewGui()
+	g, err := gui.NewGui(app.onViewsCreated)
 	if err != nil {
 		return nil, err
 	}
-
-	fm, err := fs.NewFileManager()
-	if err != nil {
-		return nil, err
-	}
-
-	app.state.History = state.NewHistory(fm.Dir.Path)
 
 	app.gui = g
-	app.fileManager = fm
 
 	return app, nil
 }
 
 func (app *App) Run() error {
-	go app.loop()
-
 	return app.gui.Run()
 }
 
@@ -119,14 +105,28 @@ func (app *App) onKey(key string) error {
 	return nil
 }
 
-func (app *App) loop() {
-	// Wait until Gui is loaded
-	<-app.gui.ViewsCreatedChan
+func (app *App) onViewsCreated() {
 	// Load help menu
-	app.onModeChanged()
+	if err := app.PushMode("default"); err != nil {
+		log.Fatalf("failed to push default mode %v", err)
+	}
+
 	// Set on key handler
 	app.gui.SetOnKeyFunc(app.onKey)
 
+	fm, err := fs.NewFileManager()
+	if err != nil {
+		log.Fatalf("failed to create new file manager %v", err)
+	}
+
+	app.state.History = state.NewHistory(fm.Dir.Path)
+
+	app.fileManager = fm
+
+	go app.loop()
+}
+
+func (app *App) loop() {
 	for {
 		for range app.fileManager.DirLoadedChan {
 			if err := app.gui.Views.Main.SetOrigin(0, 0); err != nil {
@@ -146,7 +146,7 @@ func (app *App) loop() {
 			lastPath := app.state.History.Peek()
 			if filepath.Dir(lastPath) == app.fileManager.Dir.Path {
 				// back
-				if err := message.Focus(app, lastPath); err != nil {
+				if err := message.FocusPath(app, lastPath); err != nil {
 					log.Fatalf("failed to focus path %v", err)
 				}
 			}
