@@ -52,7 +52,17 @@ func createDefaultMode() *Mode {
 					Help: "copy",
 					Messages: []message.Message{
 						{
-							Func: message.CopySelections,
+							Func: message.PasteSelections,
+							Args: []interface{}{"copy"},
+						},
+					},
+				},
+				"x": {
+					Help: "cut",
+					Messages: []message.Message{
+						{
+							Func: message.PasteSelections,
+							Args: []interface{}{"cut"},
 						},
 					},
 				},

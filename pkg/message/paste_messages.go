@@ -8,7 +8,16 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
-func CopySelections(ctx ctx.Context, _ ...interface{}) error {
+func PasteSelections(ctx ctx.Context, params ...interface{}) error {
+	if len(params) != 1 {
+		return ErrInvalidMessageParameter
+	}
+
+	operation, ok := params[0].(string)
+	if !ok || (operation != "cut" && operation != "copy") {
+		return ErrInvalidMessageParameter
+	}
+
 	if len(ctx.State().Selections) == 0 {
 		return ctx.Gui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 	}
@@ -18,8 +27,8 @@ func CopySelections(ctx ctx.Context, _ ...interface{}) error {
 		paths = append(paths, k)
 	}
 
-	if err := copyPaths(ctx, paths, ctx.FileManager().Dir.Path); err != nil {
-		log.Fatalf("failed to copy %v", err)
+	if err := paste(ctx, paths, ctx.FileManager().Dir.Path, operation); err != nil {
+		log.Fatalf("failed to %s %v", operation, err)
 	}
 
 	// Clear selections
@@ -30,12 +39,20 @@ func CopySelections(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func copyPaths(ctx ctx.Context, paths []string, dest string) error {
+func paste(ctx ctx.Context, paths []string, dest, operation string) error {
 	if err := ctx.Gui().Views.Progress.StartProgress(len(paths)); err != nil {
 		return err
 	}
 
-	countChan, errChan := ctx.FileManager().Copy(paths, dest)
+	var countChan chan int
+
+	var errChan chan error
+
+	if operation == "copy" {
+		countChan, errChan = ctx.FileManager().Copy(paths, dest)
+	} else {
+		countChan, errChan = ctx.FileManager().Move(paths, dest)
+	}
 
 	go func() {
 		errCount := 0
@@ -54,11 +71,11 @@ func copyPaths(ctx ctx.Context, paths []string, dest string) error {
 		var err error
 		if errCount != 0 {
 			err = ctx.Gui().Views.Log.SetLog(
-				fmt.Sprintf("Finished to copy %v. Error count: %d", paths, errCount),
+				fmt.Sprintf("Finished to %s %v. Error count: %d", operation, paths, errCount),
 				view.LogLevel(view.INFO),
 			)
 		} else {
-			err = ctx.Gui().Views.Log.SetLog(fmt.Sprintf("Finished to copy %v", paths), view.LogLevel(view.INFO))
+			err = ctx.Gui().Views.Log.SetLog(fmt.Sprintf("Finished to %s %v", operation, paths), view.LogLevel(view.INFO))
 		}
 
 		if err != nil {

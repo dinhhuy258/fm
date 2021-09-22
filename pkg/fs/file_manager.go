@@ -109,3 +109,42 @@ func (fm *FileManager) Copy(
 
 	return countChan, errChan
 }
+
+func (fm *FileManager) Move(
+	srcPaths []string,
+	destDir string,
+) (countChan chan int, errChan chan error) {
+	countChan = make(chan int, len(srcPaths))
+	errChan = make(chan error)
+
+	go func() {
+		for _, src := range srcPaths {
+			dst := filepath.Join(destDir, filepath.Base(src))
+			if dst == src {
+				countChan <- 1
+
+				continue
+			}
+
+			_, err := os.Stat(dst)
+			if !os.IsNotExist(err) {
+				var newPath string
+
+				for i := 1; !os.IsNotExist(err); i++ {
+					newPath = fmt.Sprintf("%s.~%d~", dst, i)
+					_, err = os.Lstat(newPath)
+				}
+
+				dst = newPath
+			}
+
+			if err := os.Rename(src, dst); err != nil {
+				errChan <- err
+			}
+
+			countChan <- 1
+		}
+	}()
+
+	return countChan, errChan
+}
