@@ -24,15 +24,12 @@ func newLogView(g *gocui.Gui, v *gocui.View) *LogView {
 	}
 
 	lv.v.v.Title = " Logs "
+	lv.v.SetViewOnTop()
 
 	return lv
 }
 
-func (lv *LogView) SetViewOnTop() error {
-	return lv.v.SetViewOnTop()
-}
-
-func (lv *LogView) SetLog(log string, level LogLevel) error {
+func (lv *LogView) SetLog(log string, level LogLevel) {
 	var logStyle style.TextStyle
 
 	switch {
@@ -48,6 +45,5 @@ func (lv *LogView) SetLog(log string, level LogLevel) error {
 	}
 
 	lv.v.SetViewContent([]string{logStyle.Sprint(log)})
-
-	return lv.SetViewOnTop()
+	lv.v.SetViewOnTop()
 }

@@ -19,7 +19,9 @@ func PasteSelections(ctx ctx.Context, params ...interface{}) error {
 	}
 
 	if len(ctx.State().Selections) == 0 {
-		return ctx.Gui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
+		ctx.Gui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
+
+		return nil
 	}
 
 	paths := make([]string, 0, len(ctx.State().Selections))
@@ -68,18 +70,13 @@ func paste(ctx ctx.Context, paths []string, dest, operation string) error {
 			}
 		}
 
-		var err error
 		if errCount != 0 {
-			err = ctx.Gui().Views.Log.SetLog(
+			ctx.Gui().Views.Log.SetLog(
 				fmt.Sprintf("Finished to %s %v. Error count: %d", operation, paths, errCount),
 				view.LogLevel(view.INFO),
 			)
 		} else {
-			err = ctx.Gui().Views.Log.SetLog(fmt.Sprintf("Finished to %s %v", operation, paths), view.LogLevel(view.INFO))
-		}
-
-		if err != nil {
-			log.Fatalf("failed to set log %v", err)
+			ctx.Gui().Views.Log.SetLog(fmt.Sprintf("Finished to %s %v", operation, paths), view.LogLevel(view.INFO))
 		}
 
 		if err := Refresh(ctx); err != nil {

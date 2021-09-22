@@ -10,10 +10,7 @@ import (
 
 func DeleteSelections(ctx ctx.Context, _ ...interface{}) error {
 	if len(ctx.State().Selections) == 0 {
-		err := ctx.Gui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
-		if err != nil {
-			return err
-		}
+		ctx.Gui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 
 		return PopMode(ctx)
 	}
@@ -43,11 +40,7 @@ func DeleteSelections(ctx ctx.Context, _ ...interface{}) error {
 			log.Fatalf("failed to set main as the current view %v", err)
 		}
 
-		if err := ctx.Gui().Views.Log.SetLog(
-			"Canceled deleting the current file/folder",
-			view.LogLevel(view.WARNING)); err != nil {
-			log.Fatalf("failed to set log %v", err)
-		}
+		ctx.Gui().Views.Log.SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
 	}
 
 	return ctx.Gui().Views.Confirm.SetConfirmation(
@@ -75,10 +68,7 @@ func DeleteCurrent(ctx ctx.Context, _ ...interface{}) error {
 			log.Fatalf("failed to set main as the current view %v", err)
 		}
 
-		if err := ctx.Gui().Views.Log.SetLog("Canceled deleting the current file/folder",
-			view.LogLevel(view.WARNING)); err != nil {
-			log.Fatalf("failed to set log %v", err)
-		}
+		ctx.Gui().Views.Log.SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
 	}
 
 	return ctx.Gui().Views.Confirm.SetConfirmation(
@@ -117,18 +107,13 @@ func deletePaths(ctx ctx.Context, paths []string) error {
 			}
 		}
 
-		var err error
 		if errCount != 0 {
-			err = ctx.Gui().Views.Log.SetLog(
+			ctx.Gui().Views.Log.SetLog(
 				fmt.Sprintf("Finished to delete %v. Error count: %d", paths, errCount),
 				view.LogLevel(view.INFO),
 			)
 		} else {
-			err = ctx.Gui().Views.Log.SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
-		}
-
-		if err != nil {
-			log.Fatalf("failed to set log %v", err)
+			ctx.Gui().Views.Log.SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
 		}
 
 		if err := Refresh(ctx); err != nil {

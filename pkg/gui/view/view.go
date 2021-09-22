@@ -3,6 +3,7 @@ package view
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/dinhhuy258/gocui"
@@ -134,10 +135,8 @@ func (view *View) PreviousCursor() error {
 	return nil
 }
 
-func (view *View) SetViewOnTop() error {
+func (view *View) SetViewOnTop() {
 	if _, err := view.g.SetViewOnTop(view.v.Name()); err != nil {
-		return err
+		log.Fatalf("failed to set view %s on top. Error: %v", view.v.Name(), err)
 	}
-
-	return nil
 }

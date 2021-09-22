@@ -29,7 +29,7 @@ func (gui *Gui) createAllViews() error {
 
 	gui.Views = views
 
-	return gui.Views.Log.SetViewOnTop()
+	return nil
 }
 
 func (gui *Gui) setViewDimensions() error {

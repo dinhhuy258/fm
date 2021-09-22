@@ -29,7 +29,9 @@ func (pv *ProgressView) StartProgress(total int) error {
 	pv.total = total
 	pv.AddCurrent(0)
 
-	return pv.v.SetViewOnTop()
+	pv.v.SetViewOnTop()
+
+	return nil
 }
 
 func (pv *ProgressView) AddCurrent(current int) {
