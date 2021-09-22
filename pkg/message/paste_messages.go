@@ -29,9 +29,7 @@ func PasteSelections(ctx ctx.Context, params ...interface{}) error {
 		paths = append(paths, k)
 	}
 
-	if err := paste(ctx, paths, ctx.FileManager().Dir.Path, operation); err != nil {
-		log.Fatalf("failed to %s %v", operation, err)
-	}
+	paste(ctx, paths, ctx.FileManager().Dir.Path, operation)
 
 	// Clear selections
 	for k := range ctx.State().Selections {
@@ -41,10 +39,8 @@ func PasteSelections(ctx ctx.Context, params ...interface{}) error {
 	return nil
 }
 
-func paste(ctx ctx.Context, paths []string, dest, operation string) error {
-	if err := ctx.Gui().Views.Progress.StartProgress(len(paths)); err != nil {
-		return err
-	}
+func paste(ctx ctx.Context, paths []string, dest, operation string) {
+	ctx.Gui().Views.Progress.StartProgress(len(paths))
 
 	var countChan chan int
 
@@ -83,6 +79,4 @@ func paste(ctx ctx.Context, paths []string, dest, operation string) error {
 			log.Fatalf("failed to refresh %v", err)
 		}
 	}()
-
-	return nil
 }

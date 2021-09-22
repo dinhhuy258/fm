@@ -87,9 +87,7 @@ func deletePaths(ctx ctx.Context, paths []string) error {
 		return err
 	}
 
-	if err := ctx.Gui().Views.Progress.StartProgress(1); err != nil {
-		return err
-	}
+	ctx.Gui().Views.Progress.StartProgress(len(paths))
 
 	countChan, errChan := ctx.FileManager().Delete(paths)
 
