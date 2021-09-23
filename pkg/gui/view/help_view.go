@@ -2,6 +2,7 @@ package view
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/dinhhuy258/fm/pkg/row"
 	"github.com/dinhhuy258/gocui"
@@ -33,7 +34,7 @@ func (hv *HelpView) SetTitle(mode string) {
 	hv.v.v.Title = fmt.Sprintf(" Help [%s] ", mode)
 }
 
-func (hv *HelpView) SetHelp(keys []string, helps []string) error {
+func (hv *HelpView) SetHelp(keys []string, helps []string) {
 	lines := make([]string, 0, len(keys))
 
 	for i := 0; i < len(keys); i++ {
@@ -42,13 +43,11 @@ func (hv *HelpView) SetHelp(keys []string, helps []string) error {
 
 		line, err := hv.helpRow.Sprint([]string{key, help})
 		if err != nil {
-			return err
+			log.Fatalf("failed to set content for help view %v", err)
 		}
 
 		lines = append(lines, line)
 	}
 
 	hv.v.SetViewContent(lines)
-
-	return nil
 }

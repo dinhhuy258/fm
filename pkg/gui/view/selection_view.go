@@ -24,13 +24,11 @@ func (sv *SelectionView) SetTitle(selectionsNum int) {
 	sv.v.v.Title = fmt.Sprintf(" Selection (%d) ", selectionsNum)
 }
 
-func (sv *SelectionView) RenderSelections(selections map[string]struct{}) error {
+func (sv *SelectionView) RenderSelections(selections map[string]struct{}) {
 	s := make([]string, 0, len(selections))
 	for k := range selections {
 		s = append(s, k)
 	}
 
 	sv.v.SetViewContent(s)
-
-	return nil
 }

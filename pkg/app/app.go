@@ -56,9 +56,7 @@ func (app *App) onModeChanged() {
 
 	app.gui.Views.Help.SetTitle(app.modes.Peek().Name)
 
-	if err := app.gui.Views.Help.SetHelp(keys, helps); err != nil {
-		log.Fatalf("failed to set content for help view %v", err)
-	}
+	app.gui.Views.Help.SetHelp(keys, helps)
 }
 
 func (app *App) State() *state.State {
@@ -151,13 +149,11 @@ func (app *App) loop() {
 				}
 			}
 
-			if err := app.gui.Views.Main.RenderDir(
+			app.gui.Views.Main.RenderDir(
 				app.fileManager.Dir,
 				app.state.Selections,
 				app.state.FocusIdx,
-			); err != nil {
-				log.Fatalf("failed to render dir %v", err)
-			}
+			)
 		}
 	}
 }

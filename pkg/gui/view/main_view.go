@@ -1,6 +1,7 @@
 package view
 
 import (
+	"log"
 	"strconv"
 
 	"github.com/dinhhuy258/fm/pkg/config"
@@ -65,7 +66,7 @@ func (mv *MainView) layout() error {
 	return nil
 }
 
-func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{}, focusIdx int) error {
+func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{}, focusIdx int) {
 	visibleNodeSize := len(dir.VisibleNodes)
 	lines := make([]string, visibleNodeSize)
 	cfg := config.AppConfig
@@ -107,15 +108,13 @@ func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{},
 
 		line, err := r.Sprint([]string{index, path, size})
 		if err != nil {
-			return err
+			log.Fatalf("failed to sprint row %v", err)
 		}
 
 		lines[i] = line
 	}
 
 	mv.v.SetViewContent(lines)
-
-	return nil
 }
 
 func (mv *MainView) SetTitle(header string) {
@@ -138,8 +137,9 @@ func (mv *MainView) PreviousCursor() error {
 	return mv.v.PreviousCursor()
 }
 
-func (mv *MainView) SetAsCurrentView() error {
+func (mv *MainView) SetAsCurrentView() {
 	_, err := mv.v.g.SetCurrentView(mv.v.v.Name())
-
-	return err
+	if err != nil {
+		log.Fatalf("failed to set main view as the current view %v", err)
+	}
 }

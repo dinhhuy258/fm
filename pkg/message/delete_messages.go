@@ -36,18 +36,18 @@ func DeleteSelections(ctx ctx.Context, _ ...interface{}) error {
 			log.Fatalf("failed to pop mode %v", err)
 		}
 
-		if err := ctx.Gui().Views.Main.SetAsCurrentView(); err != nil {
-			log.Fatalf("failed to set main as the current view %v", err)
-		}
+		ctx.Gui().Views.Main.SetAsCurrentView()
 
 		ctx.Gui().Views.Log.SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
 	}
 
-	return ctx.Gui().Views.Confirm.SetConfirmation(
+	ctx.Gui().Views.Confirm.SetConfirmation(
 		"Do you want to delete selected paths?",
 		onYes,
 		onNo,
 	)
+
+	return nil
 }
 
 func DeleteCurrent(ctx ctx.Context, _ ...interface{}) error {
@@ -64,18 +64,17 @@ func DeleteCurrent(ctx ctx.Context, _ ...interface{}) error {
 			log.Fatalf("failed to pop mode %v", err)
 		}
 
-		if err := ctx.Gui().Views.Main.SetAsCurrentView(); err != nil {
-			log.Fatalf("failed to set main as the current view %v", err)
-		}
-
+		ctx.Gui().Views.Main.SetAsCurrentView()
 		ctx.Gui().Views.Log.SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
 	}
 
-	return ctx.Gui().Views.Confirm.SetConfirmation(
+	ctx.Gui().Views.Confirm.SetConfirmation(
 		"Do you want to delete "+currentNode.RelativePath+"?",
 		onYes,
 		onNo,
 	)
+
+	return nil
 }
 
 func deletePaths(ctx ctx.Context, paths []string) error {
@@ -83,10 +82,7 @@ func deletePaths(ctx ctx.Context, paths []string) error {
 		return err
 	}
 
-	if err := ctx.Gui().Views.Main.SetAsCurrentView(); err != nil {
-		return err
-	}
-
+	ctx.Gui().Views.Main.SetAsCurrentView()
 	ctx.Gui().Views.Progress.StartProgress(len(paths))
 
 	countChan, errChan := ctx.FileManager().Delete(paths)

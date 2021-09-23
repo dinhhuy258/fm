@@ -21,16 +21,15 @@ func ToggleSelection(ctx ctx.Context, _ ...interface{}) error {
 	}
 
 	ctx.Gui().Views.Selection.SetTitle(len(ctx.State().Selections))
+	ctx.Gui().Views.Selection.RenderSelections(ctx.State().Selections)
 
-	if err := ctx.Gui().Views.Selection.RenderSelections(ctx.State().Selections); err != nil {
-		return err
-	}
-
-	return ctx.Gui().Views.Main.RenderDir(
+	ctx.Gui().Views.Main.RenderDir(
 		ctx.FileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
 	)
+
+	return nil
 }
 
 func ToggleHidden(ctx ctx.Context, _ ...interface{}) error {
@@ -43,27 +42,28 @@ func ToggleHidden(ctx ctx.Context, _ ...interface{}) error {
 	ctx.Gui().Views.Main.SetTitle(" " + ctx.FileManager().Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
 	ctx.Gui().Views.SortAndFilter.SetSortAndFilter()
 
-	return ctx.Gui().Views.Main.RenderDir(
+	ctx.Gui().Views.Main.RenderDir(
 		ctx.FileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
 	)
+
+	return nil
 }
 
 func ClearSelection(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().Selections = make(map[string]struct{})
 
 	ctx.Gui().Views.Selection.SetTitle(len(ctx.State().Selections))
+	ctx.Gui().Views.Selection.RenderSelections(ctx.State().Selections)
 
-	if err := ctx.Gui().Views.Selection.RenderSelections(ctx.State().Selections); err != nil {
-		return err
-	}
-
-	return ctx.Gui().Views.Main.RenderDir(
+	ctx.Gui().Views.Main.RenderDir(
 		ctx.FileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
 	)
+
+	return nil
 }
 
 func SwitchMode(ctx ctx.Context, params ...interface{}) error {

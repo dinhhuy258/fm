@@ -13,11 +13,13 @@ func FocusNext(ctx ctx.Context, _ ...interface{}) error {
 
 	ctx.State().FocusIdx++
 
-	return ctx.Gui().Views.Main.RenderDir(
+	ctx.Gui().Views.Main.RenderDir(
 		ctx.FileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
 	)
+
+	return nil
 }
 
 func FocusPrevious(ctx ctx.Context, _ ...interface{}) error {
@@ -31,11 +33,13 @@ func FocusPrevious(ctx ctx.Context, _ ...interface{}) error {
 
 	ctx.State().FocusIdx--
 
-	return ctx.Gui().Views.Main.RenderDir(
+	ctx.Gui().Views.Main.RenderDir(
 		ctx.FileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
 	)
+
+	return nil
 }
 
 func FocusPath(ctx ctx.Context, params ...interface{}) error {
@@ -76,11 +80,13 @@ func FocusPath(ctx ctx.Context, params ...interface{}) error {
 		ctx.State().FocusIdx++
 	}
 
-	return ctx.Gui().Views.Main.RenderDir(
+	ctx.Gui().Views.Main.RenderDir(
 		ctx.FileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
 	)
+
+	return nil
 }
 
 func Enter(ctx ctx.Context, _ ...interface{}) error {

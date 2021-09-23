@@ -1,6 +1,10 @@
 package view
 
-import "github.com/dinhhuy258/gocui"
+import (
+	"log"
+
+	"github.com/dinhhuy258/gocui"
+)
 
 type ConfirmView struct {
 	v     *View
@@ -33,7 +37,7 @@ func (cv *ConfirmView) confirmEditor(_ *gocui.View, _ gocui.Key, ch rune, _ gocu
 	cv.onNo()
 }
 
-func (cv *ConfirmView) SetConfirmation(ask string, onYes func(), onNo func()) error {
+func (cv *ConfirmView) SetConfirmation(ask string, onYes func(), onNo func()) {
 	ask = "> " + ask + " (y/n) "
 	cv.v.SetViewContent([]string{ask})
 	cv.onYes = onYes
@@ -41,12 +45,14 @@ func (cv *ConfirmView) SetConfirmation(ask string, onYes func(), onNo func()) er
 
 	_, err := cv.v.g.SetViewOnTop(cv.v.v.Name())
 	if err != nil {
-		return err
+		log.Fatalf("failed to set confirm view on top %v", err)
 	}
 
 	if _, err := cv.v.g.SetCurrentView(cv.v.v.Name()); err != nil {
-		return err
+		log.Fatalf("failed to set confirm view as the current view %v", err)
 	}
 
-	return cv.v.v.SetCursor(len(ask), 0)
+	if err := cv.v.v.SetCursor(len(ask), 0); err != nil {
+		log.Fatalf("failed to set cursor %v", err)
+	}
 }
