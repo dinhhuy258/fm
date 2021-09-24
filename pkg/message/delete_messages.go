@@ -22,9 +22,7 @@ func DeleteSelections(ctx ctx.Context, _ ...interface{}) error {
 	go func() {
 		ans := ctx.Gui().Views.Confirm.GetAnswer()
 
-		if err := PopMode(ctx); err != nil {
-			log.Fatalf("failed to pop mode %v", err)
-		}
+		_ = PopMode(ctx)
 
 		if ans {
 			paths := make([]string, 0, len(ctx.State().Selections))
@@ -54,9 +52,7 @@ func DeleteCurrent(ctx ctx.Context, _ ...interface{}) error {
 	go func() {
 		ans := ctx.Gui().Views.Confirm.GetAnswer()
 
-		if err := PopMode(ctx); err != nil {
-			log.Fatalf("failed to pop mode %v", err)
-		}
+		_ = PopMode(ctx)
 
 		ctx.Gui().Views.Main.SetAsCurrentView()
 

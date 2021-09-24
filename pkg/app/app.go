@@ -105,9 +105,7 @@ func (app *App) onKey(key string) error {
 
 func (app *App) onViewsCreated() {
 	// Load help menu
-	if err := app.PushMode("default"); err != nil {
-		log.Fatalf("failed to push default mode %v", err)
-	}
+	_ = app.PushMode("default")
 
 	// Set on key handler
 	app.gui.SetOnKeyFunc(app.onKey)
