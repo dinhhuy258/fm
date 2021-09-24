@@ -20,14 +20,7 @@ func ToggleSelection(ctx ctx.Context, _ ...interface{}) error {
 		ctx.State().Selections[path] = struct{}{}
 	}
 
-	ctx.Gui().Views.Selection.SetTitle(len(ctx.State().Selections))
-	ctx.Gui().Views.Selection.RenderSelections(ctx.State().Selections)
-
-	ctx.Gui().Views.Main.RenderDir(
-		ctx.FileManager().Dir,
-		ctx.State().Selections,
-		ctx.State().FocusIdx,
-	)
+	refreshSelections(ctx)
 
 	return nil
 }
@@ -54,14 +47,7 @@ func ToggleHidden(ctx ctx.Context, _ ...interface{}) error {
 func ClearSelection(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().Selections = make(map[string]struct{})
 
-	ctx.Gui().Views.Selection.SetTitle(len(ctx.State().Selections))
-	ctx.Gui().Views.Selection.RenderSelections(ctx.State().Selections)
-
-	ctx.Gui().Views.Main.RenderDir(
-		ctx.FileManager().Dir,
-		ctx.State().Selections,
-		ctx.State().FocusIdx,
-	)
+	refreshSelections(ctx)
 
 	return nil
 }
@@ -82,6 +68,17 @@ func Refresh(ctx ctx.Context, _ ...interface{}) error {
 	ctx.FileManager().Reload()
 
 	return nil
+}
+
+func refreshSelections(ctx ctx.Context) {
+	ctx.Gui().Views.Selection.SetTitle(len(ctx.State().Selections))
+	ctx.Gui().Views.Selection.RenderSelections(ctx.State().Selections)
+
+	ctx.Gui().Views.Main.RenderDir(
+		ctx.FileManager().Dir,
+		ctx.State().Selections,
+		ctx.State().FocusIdx,
+	)
 }
 
 func Quit(_ ctx.Context, _ ...interface{}) error {

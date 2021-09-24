@@ -7,14 +7,14 @@ import (
 )
 
 type ConfirmView struct {
-	v     *View
-	onYes func()
-	onNo  func()
+	v           *View
+	confirmChan chan bool
 }
 
 func newConfirmView(g *gocui.Gui, v *gocui.View) *ConfirmView {
 	cv := &ConfirmView{
-		v: newView(g, v),
+		v:           newView(g, v),
+		confirmChan: make(chan bool, 1),
 	}
 
 	cv.v.v.Title = " Confirmation "
@@ -28,20 +28,18 @@ func (cv *ConfirmView) confirmEditor(_ *gocui.View, _ gocui.Key, ch rune, _ gocu
 	if ch != 0 {
 		key := string(ch)
 		if key == "Y" || key == "y" {
-			cv.onYes()
+			cv.confirmChan <- true
 
 			return
 		}
 	}
 
-	cv.onNo()
+	cv.confirmChan <- false
 }
 
-func (cv *ConfirmView) SetConfirmation(ask string, onYes func(), onNo func()) {
+func (cv *ConfirmView) SetConfirmation(ask string) {
 	ask = "> " + ask + " (y/n) "
 	cv.v.SetViewContent([]string{ask})
-	cv.onYes = onYes
-	cv.onNo = onNo
 
 	_, err := cv.v.g.SetViewOnTop(cv.v.v.Name())
 	if err != nil {
@@ -55,4 +53,8 @@ func (cv *ConfirmView) SetConfirmation(ask string, onYes func(), onNo func()) {
 	if err := cv.v.v.SetCursor(len(ask), 0); err != nil {
 		log.Fatalf("failed to set cursor %v", err)
 	}
+}
+
+func (cv *ConfirmView) GetAnswer() bool {
+	return <-cv.confirmChan
 }
