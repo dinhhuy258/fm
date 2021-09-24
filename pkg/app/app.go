@@ -22,11 +22,7 @@ type App struct {
 // NewApp bootstrap a new application
 func NewApp() (*App, error) {
 	app := &App{
-		state: &state.State{
-			FocusIdx:      0,
-			NumberOfFiles: 0,
-			Selections:    map[string]struct{}{},
-		},
+		state: state.NewState(),
 	}
 
 	app.modes = mode.NewModes()
@@ -46,10 +42,17 @@ func (app *App) Run() error {
 }
 
 func (app *App) onModeChanged() {
-	keys := make([]string, 0, len(app.modes.Peek().KeyBindings.OnKeys))
-	helps := make([]string, 0, len(app.modes.Peek().KeyBindings.OnKeys))
+	keys := make([]string, 0, len(app.modes.Peek().KeyBindings.OnKeys)+1)
+	helps := make([]string, 0, len(app.modes.Peek().KeyBindings.OnKeys)+1)
 
-	for k, a := range app.modes.Peek().KeyBindings.OnKeys {
+	keybindings := app.modes.Peek().KeyBindings
+
+	if keybindings.OnAlphabet != nil {
+		keys = append(keys, "alphabet")
+		helps = append(helps, keybindings.OnAlphabet.Help)
+	}
+
+	for k, a := range keybindings.OnKeys {
 		keys = append(keys, k)
 		helps = append(helps, a.Help)
 	}
@@ -92,9 +95,20 @@ func (app *App) PushMode(mode string) error {
 }
 
 func (app *App) onKey(key string) error {
-	if action, hasKey := app.modes.Peek().KeyBindings.OnKeys[key]; hasKey {
+	keybindings := app.modes.Peek().KeyBindings
+
+	if action, hasKey := keybindings.OnKeys[key]; hasKey {
 		for _, m := range action.Messages {
 			if err := m.Func(app, m.Args...); err != nil {
+				return err
+			}
+		}
+	} else if keybindings.OnAlphabet != nil {
+		for _, m := range keybindings.OnAlphabet.Messages {
+			args := m.Args
+			args = append(args, key)
+
+			if err := m.Func(app, args...); err != nil {
 				return err
 			}
 		}

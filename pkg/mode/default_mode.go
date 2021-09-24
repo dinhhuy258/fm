@@ -39,6 +39,15 @@ func createDefaultMode() *Mode {
 						},
 					},
 				},
+				"m": {
+					Help: "mark save",
+					Messages: []message.Message{
+						{
+							Func: message.SwitchMode,
+							Args: []interface{}{"mark-save"},
+						},
+					},
+				},
 				"d": {
 					Help: "delete",
 					Messages: []message.Message{

@@ -17,7 +17,8 @@ type Action struct {
 }
 
 type KeyBindings struct {
-	OnKeys map[string]*Action
+	OnKeys     map[string]*Action
+	OnAlphabet *Action
 }
 
 type Mode struct {
@@ -34,6 +35,7 @@ func NewModes() *Modes {
 	builtinModes := make(map[string]*Mode)
 	builtinModes["default"] = createDefaultMode()
 	builtinModes["delete"] = createDeleteMode()
+	builtinModes["mark-save"] = createMarkSaveMode()
 
 	return &Modes{
 		Modes:        make([]*Mode, 0, 5),
