@@ -3,10 +3,6 @@ package message
 import "github.com/dinhhuy258/fm/pkg/ctx"
 
 func FocusFirst(ctx ctx.Context, _ ...interface{}) error {
-	if ctx.State().FocusIdx == 0 {
-		return nil
-	}
-
 	_ = ctx.Gui().Views.Main.SetOrigin(0, 0)
 	_ = ctx.Gui().Views.Main.SetCursor(0, 0)
 	ctx.State().FocusIdx = 0
@@ -84,10 +80,7 @@ func FocusPath(ctx ctx.Context, params ...interface{}) error {
 		return nil
 	}
 
-	if err := ctx.Gui().Views.Main.SetCursor(0, 0); err != nil {
-		return err
-	}
-
+	_ = ctx.Gui().Views.Main.SetCursor(0, 0)
 	ctx.State().FocusIdx = 0
 
 	for i := 0; i < focusIdx; i++ {
@@ -111,7 +104,7 @@ func Enter(ctx ctx.Context, _ ...interface{}) error {
 	currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 
 	if currentNode.IsDir {
-		ChangeDirectory(ctx, currentNode.AbsolutePath, true)
+		ChangeDirectory(ctx, currentNode.AbsolutePath, true, nil)
 	}
 
 	return nil
@@ -120,26 +113,26 @@ func Enter(ctx ctx.Context, _ ...interface{}) error {
 func Back(ctx ctx.Context, _ ...interface{}) error {
 	parent := ctx.FileManager().Dir.Parent()
 
-	ChangeDirectory(ctx, parent, true)
+	ChangeDirectory(ctx, parent, true, &ctx.FileManager().Dir.Path)
 
 	return nil
 }
 
 func LastVisitedPath(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().History.VisitLast()
-	ChangeDirectory(ctx, ctx.State().History.Peek(), false)
+	ChangeDirectory(ctx, ctx.State().History.Peek(), false, nil)
 
 	return nil
 }
 
 func NextVisitedPath(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().History.VisitNext()
-	ChangeDirectory(ctx, ctx.State().History.Peek(), false)
+	ChangeDirectory(ctx, ctx.State().History.Peek(), false, nil)
 
 	return nil
 }
 
-func ChangeDirectory(ctx ctx.Context, path string, saveHistory bool) {
+func ChangeDirectory(ctx ctx.Context, path string, saveHistory bool, focusPath *string) {
 	if saveHistory {
 		ctx.State().History.Push(path)
 	}
@@ -152,6 +145,11 @@ func ChangeDirectory(ctx ctx.Context, path string, saveHistory bool) {
 		numberOfFiles := len(ctx.FileManager().Dir.VisibleNodes)
 		ctx.State().NumberOfFiles = numberOfFiles
 		ctx.Gui().Views.Main.SetTitle(ctx.FileManager().Dir.Path, numberOfFiles)
-		_ = FocusFirst(ctx)
+
+		if focusPath == nil {
+			_ = FocusFirst(ctx)
+		} else {
+			_ = FocusPath(ctx, *focusPath)
+		}
 	}()
 }

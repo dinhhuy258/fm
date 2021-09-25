@@ -129,5 +129,5 @@ func (app *App) onViewsCreated() {
 		log.Fatalf("failed to get current working directory %v", err)
 	}
 
-	message.ChangeDirectory(app, wd, true)
+	message.ChangeDirectory(app, wd, true, nil)
 }
