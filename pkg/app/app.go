@@ -2,8 +2,7 @@ package app
 
 import (
 	"log"
-	"path/filepath"
-	"strconv"
+	"os"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
@@ -22,7 +21,8 @@ type App struct {
 // NewApp bootstrap a new application
 func NewApp() (*App, error) {
 	app := &App{
-		state: state.NewState(),
+		state:       state.NewState(),
+		fileManager: fs.NewFileManager(),
 	}
 
 	app.modes = mode.NewModes()
@@ -124,48 +124,10 @@ func (app *App) onViewsCreated() {
 	// Set on key handler
 	app.gui.SetOnKeyFunc(app.onKey)
 
-	fm, err := fs.NewFileManager()
+	wd, err := os.Getwd()
 	if err != nil {
-		log.Fatalf("failed to create new file manager %v", err)
+		log.Fatalf("failed to get current working directory %v", err)
 	}
 
-	app.state.History = state.NewHistory(fm.Dir.Path)
-
-	app.fileManager = fm
-
-	go app.loop()
-}
-
-func (app *App) loop() {
-	for {
-		for range app.fileManager.DirLoadedChan {
-			if err := app.gui.Views.Main.SetOrigin(0, 0); err != nil {
-				log.Fatalf("failed to set origin %v", err)
-			}
-
-			if err := app.gui.Views.Main.SetCursor(0, 0); err != nil {
-				log.Fatalf("failed to set cursor %v", err)
-			}
-
-			nodeSize := len(app.fileManager.Dir.VisibleNodes)
-			app.state.FocusIdx = 0
-			app.state.NumberOfFiles = nodeSize
-
-			app.gui.Views.Main.SetTitle(" " + app.fileManager.Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
-
-			lastPath := app.state.History.Peek()
-			if filepath.Dir(lastPath) == app.fileManager.Dir.Path {
-				// back
-				if err := message.FocusPath(app, lastPath); err != nil {
-					log.Fatalf("failed to focus path %v", err)
-				}
-			}
-
-			app.gui.Views.Main.RenderDir(
-				app.fileManager.Dir,
-				app.state.Selections,
-				app.state.FocusIdx,
-			)
-		}
-	}
+	message.ChangeDirectory(app, wd, true)
 }

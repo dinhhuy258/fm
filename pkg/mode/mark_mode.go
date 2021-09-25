@@ -27,3 +27,29 @@ func createMarkSaveMode() *Mode {
 		},
 	}
 }
+
+func createMarkLoadMode() *Mode {
+	return &Mode{
+		Name: "mark load",
+		KeyBindings: &KeyBindings{
+			OnAlphabet: &Action{
+				Help: "mark load",
+				Messages: []message.Message{
+					{
+						Func: message.MarkLoad,
+					},
+				},
+			},
+			OnKeys: map[string]*Action{
+				"esc": {
+					Help: "cancel",
+					Messages: []message.Message{
+						{
+							Func: message.PopMode,
+						},
+					},
+				},
+			},
+		},
+	}
+}

@@ -5,18 +5,17 @@ type History struct {
 	paths []string
 }
 
-func NewHistory(initializePath string) *History {
+func NewHistory() *History {
 	paths := make([]string, 0, 1000)
-	paths = append(paths, initializePath)
 
 	return &History{
-		loc:   0,
+		loc:   -1,
 		paths: paths,
 	}
 }
 
 func (h *History) Push(path string) {
-	if h.Peek() != path {
+	if len(h.paths) == 0 || h.Peek() != path {
 		h.paths = append(h.paths, path)
 		h.loc++
 	}

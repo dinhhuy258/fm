@@ -18,3 +18,22 @@ func MarkSave(ctx ctx.Context, params ...interface{}) error {
 
 	return nil
 }
+
+func MarkLoad(ctx ctx.Context, params ...interface{}) error {
+	if len(params) != 1 {
+		return ErrInvalidMessageParameter
+	}
+
+	key, ok := params[0].(string)
+	if !ok {
+		return ErrInvalidMessageParameter
+	}
+
+	_ = ctx.PopMode()
+
+	if path, hasKey := ctx.State().Marks[key]; hasKey {
+		return FocusPath(ctx, path)
+	}
+
+	return nil
+}

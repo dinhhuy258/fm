@@ -2,7 +2,6 @@ package message
 
 import (
 	"errors"
-	"strconv"
 
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/ctx"
@@ -30,9 +29,9 @@ func ToggleHidden(ctx ctx.Context, _ ...interface{}) error {
 
 	ctx.FileManager().Dir.Reload()
 
-	nodeSize := len(ctx.FileManager().Dir.VisibleNodes)
-	ctx.State().NumberOfFiles = nodeSize
-	ctx.Gui().Views.Main.SetTitle(" " + ctx.FileManager().Dir.Path + " (" + strconv.Itoa(nodeSize) + ") ")
+	numberOfFiles := len(ctx.FileManager().Dir.VisibleNodes)
+	ctx.State().NumberOfFiles = numberOfFiles
+	ctx.Gui().Views.Main.SetTitle(ctx.FileManager().Dir.Path, numberOfFiles)
 	ctx.Gui().Views.SortAndFilter.SetSortAndFilter()
 
 	ctx.Gui().Views.Main.RenderDir(
@@ -65,7 +64,7 @@ func PopMode(ctx ctx.Context, _ ...interface{}) error {
 }
 
 func Refresh(ctx ctx.Context, _ ...interface{}) error {
-	ctx.FileManager().Reload()
+	ctx.FileManager().LoadDirectory(ctx.FileManager().Dir.Path)
 
 	return nil
 }

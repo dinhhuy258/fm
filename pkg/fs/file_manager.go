@@ -8,40 +8,30 @@ import (
 )
 
 type FileManager struct {
-	Dir           *Directory
-	DirLoadedChan chan struct{}
+	Dir *Directory
 }
 
-func NewFileManager() (*FileManager, error) {
-	wd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	fileManager := &FileManager{
-		DirLoadedChan: make(chan struct{}, 1),
-	}
-	fileManager.LoadDirectory(wd)
-
-	return fileManager, nil
+func NewFileManager() *FileManager {
+	return &FileManager{}
 }
 
-func (fm *FileManager) LoadDirectory(path string) {
+func (fm *FileManager) LoadDirectory(path string) chan struct{} {
 	fm.Dir = &Directory{
 		Path: path,
 	}
 
-	fm.Reload()
-}
+	dirLoadedChan := make(chan struct{}, 1)
 
-func (fm *FileManager) Reload() {
 	go func() {
 		err := fm.Dir.ReadDir()
 		if err != nil {
-			log.Printf("failed to read directory %v", err)
+			log.Fatalf("failed to read directory %s. Error: %v", fm.Dir.Path, err)
 		}
-		fm.DirLoadedChan <- struct{}{}
+
+		dirLoadedChan <- struct{}{}
 	}()
+
+	return dirLoadedChan
 }
 
 func (fm *FileManager) Delete(paths []string) (countChan chan int, errChan chan error) {

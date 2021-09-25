@@ -2,6 +2,24 @@ package message
 
 import "github.com/dinhhuy258/fm/pkg/ctx"
 
+func FocusFirst(ctx ctx.Context, _ ...interface{}) error {
+	if ctx.State().FocusIdx == 0 {
+		return nil
+	}
+
+	_ = ctx.Gui().Views.Main.SetOrigin(0, 0)
+	_ = ctx.Gui().Views.Main.SetCursor(0, 0)
+	ctx.State().FocusIdx = 0
+
+	ctx.Gui().Views.Main.RenderDir(
+		ctx.FileManager().Dir,
+		ctx.State().Selections,
+		ctx.State().FocusIdx,
+	)
+
+	return nil
+}
+
 func FocusNext(ctx ctx.Context, _ ...interface{}) error {
 	if ctx.State().FocusIdx == ctx.State().NumberOfFiles-1 {
 		return nil
@@ -93,7 +111,7 @@ func Enter(ctx ctx.Context, _ ...interface{}) error {
 	currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 
 	if currentNode.IsDir {
-		changeDirectory(ctx, currentNode.AbsolutePath, true)
+		ChangeDirectory(ctx, currentNode.AbsolutePath, true)
 	}
 
 	return nil
@@ -102,29 +120,38 @@ func Enter(ctx ctx.Context, _ ...interface{}) error {
 func Back(ctx ctx.Context, _ ...interface{}) error {
 	parent := ctx.FileManager().Dir.Parent()
 
-	changeDirectory(ctx, parent, true)
+	ChangeDirectory(ctx, parent, true)
 
 	return nil
 }
 
 func LastVisitedPath(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().History.VisitLast()
-	changeDirectory(ctx, ctx.State().History.Peek(), false)
+	ChangeDirectory(ctx, ctx.State().History.Peek(), false)
 
 	return nil
 }
 
 func NextVisitedPath(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().History.VisitNext()
-	changeDirectory(ctx, ctx.State().History.Peek(), false)
+	ChangeDirectory(ctx, ctx.State().History.Peek(), false)
 
 	return nil
 }
 
-func changeDirectory(ctx ctx.Context, path string, saveHistory bool) {
+func ChangeDirectory(ctx ctx.Context, path string, saveHistory bool) {
 	if saveHistory {
-		ctx.State().History.Push(ctx.FileManager().Dir.Path)
+		ctx.State().History.Push(path)
 	}
 
-	ctx.FileManager().LoadDirectory(path)
+	dirLoadedChan := ctx.FileManager().LoadDirectory(path)
+
+	go func() {
+		<-dirLoadedChan
+
+		numberOfFiles := len(ctx.FileManager().Dir.VisibleNodes)
+		ctx.State().NumberOfFiles = numberOfFiles
+		ctx.Gui().Views.Main.SetTitle(ctx.FileManager().Dir.Path, numberOfFiles)
+		_ = FocusFirst(ctx)
+	}()
 }

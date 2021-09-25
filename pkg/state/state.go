@@ -10,9 +10,10 @@ type State struct {
 
 func NewState() *State {
 	return &State{
-		FocusIdx:      0,
+		FocusIdx:      -1,
 		NumberOfFiles: 0,
 		Selections:    map[string]struct{}{},
 		Marks:         map[string]string{},
+		History:       NewHistory(),
 	}
 }

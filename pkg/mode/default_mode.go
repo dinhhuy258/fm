@@ -48,6 +48,15 @@ func createDefaultMode() *Mode {
 						},
 					},
 				},
+				"`": {
+					Help: "mark load",
+					Messages: []message.Message{
+						{
+							Func: message.SwitchMode,
+							Args: []interface{}{"mark-load"},
+						},
+					},
+				},
 				"d": {
 					Help: "delete",
 					Messages: []message.Message{

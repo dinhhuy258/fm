@@ -36,6 +36,7 @@ func NewModes() *Modes {
 	builtinModes["default"] = createDefaultMode()
 	builtinModes["delete"] = createDeleteMode()
 	builtinModes["mark-save"] = createMarkSaveMode()
+	builtinModes["mark-load"] = createMarkLoadMode()
 
 	return &Modes{
 		Modes:        make([]*Mode, 0, 5),
