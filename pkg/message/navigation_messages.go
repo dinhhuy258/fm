@@ -1,6 +1,10 @@
 package message
 
-import "github.com/dinhhuy258/fm/pkg/ctx"
+import (
+	"path/filepath"
+
+	"github.com/dinhhuy258/fm/pkg/ctx"
+)
 
 func FocusFirst(ctx ctx.Context, _ ...interface{}) error {
 	_ = ctx.Gui().Views.Main.SetOrigin(0, 0)
@@ -120,21 +124,24 @@ func Back(ctx ctx.Context, _ ...interface{}) error {
 
 func LastVisitedPath(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().History.VisitLast()
-	ChangeDirectory(ctx, ctx.State().History.Peek(), false, nil)
+	node := ctx.State().History.Peek()
+	ChangeDirectory(ctx, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
 
 	return nil
 }
 
 func NextVisitedPath(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().History.VisitNext()
-	ChangeDirectory(ctx, ctx.State().History.Peek(), false, nil)
+	node := ctx.State().History.Peek()
+	ChangeDirectory(ctx, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
 
 	return nil
 }
 
 func ChangeDirectory(ctx ctx.Context, path string, saveHistory bool, focusPath *string) {
-	if saveHistory {
-		ctx.State().History.Push(path)
+	if saveHistory && ctx.FileManager().Dir != nil {
+		currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
+		ctx.State().History.Push(currentNode)
 	}
 
 	dirLoadedChan := ctx.FileManager().LoadDirectory(path)
@@ -150,6 +157,11 @@ func ChangeDirectory(ctx ctx.Context, path string, saveHistory bool, focusPath *
 			_ = FocusFirst(ctx)
 		} else {
 			_ = FocusPath(ctx, *focusPath)
+		}
+
+		if saveHistory {
+			currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
+			ctx.State().History.Push(currentNode)
 		}
 	}()
 }

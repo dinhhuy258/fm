@@ -1,28 +1,30 @@
 package state
 
+import "github.com/dinhhuy258/fm/pkg/fs"
+
 type History struct {
 	loc   int
-	paths []string
+	nodes []*fs.Node
 }
 
 func NewHistory() *History {
-	paths := make([]string, 0, 1000)
+	nodes := make([]*fs.Node, 0, 1000)
 
 	return &History{
 		loc:   -1,
-		paths: paths,
+		nodes: nodes,
 	}
 }
 
-func (h *History) Push(path string) {
-	if len(h.paths) == 0 || h.Peek() != path {
-		h.paths = append(h.paths, path)
-		h.loc++
+func (h *History) Push(node *fs.Node) {
+	if len(h.nodes) == 0 || h.Peek().AbsolutePath != node.AbsolutePath {
+		h.nodes = append(h.nodes, node)
+		h.loc = len(h.nodes) - 1
 	}
 }
 
-func (h *History) Peek() string {
-	return h.paths[h.loc]
+func (h *History) Peek() *fs.Node {
+	return h.nodes[h.loc]
 }
 
 func (h *History) VisitLast() {
@@ -32,7 +34,7 @@ func (h *History) VisitLast() {
 }
 
 func (h *History) VisitNext() {
-	if h.loc < len(h.paths)-1 {
+	if h.loc < len(h.nodes)-1 {
 		h.loc++
 	}
 }
