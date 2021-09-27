@@ -29,6 +29,10 @@ func newLogView(g *gocui.Gui, v *gocui.View) *LogView {
 	return lv
 }
 
+func (lv *LogView) SetViewOnTop() {
+	lv.v.SetViewOnTop()
+}
+
 func (lv *LogView) SetLog(log string, level LogLevel) {
 	var logStyle style.TextStyle
 

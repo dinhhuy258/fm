@@ -84,6 +84,14 @@ func createDefaultMode() *Mode {
 						},
 					},
 				},
+				"n": {
+					Help: "new",
+					Messages: []message.Message{
+						{
+							Func: message.NewFile,
+						},
+					},
+				},
 				"ctrl+i": {
 					Help: "next visited path",
 					Messages: []message.Message{

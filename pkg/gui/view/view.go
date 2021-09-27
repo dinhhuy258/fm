@@ -14,7 +14,7 @@ type Views struct {
 	Selection     *SelectionView
 	Help          *HelpView
 	SortAndFilter *SortAndFilterView
-	Input         *View
+	Input         *InputView
 	Log           *LogView
 	Confirm       *ConfirmView
 	Progress      *ProgressView
@@ -61,7 +61,7 @@ func CreateAllViews(g *gocui.Gui) (*Views, error) {
 		Selection:     newSelectionView(g, selection),
 		SortAndFilter: newSortAndFilterView(g, sortAndFilter),
 		Help:          newHelpView(g, help),
-		Input:         newView(g, input),
+		Input:         newInputView(g, input),
 		Log:           newLogView(g, log),
 		Confirm:       newConfirmView(g, confirm),
 		Progress:      newProgressView(g, progress),
