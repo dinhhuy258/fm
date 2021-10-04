@@ -64,6 +64,9 @@ func PopMode(ctx ctx.Context, _ ...interface{}) error {
 }
 
 func Refresh(ctx ctx.Context, _ ...interface{}) error {
+	currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
+
+	ChangeDirectory(ctx, ctx.FileManager().Dir.Path, false, &currentNode.AbsolutePath)
 	ctx.FileManager().LoadDirectory(ctx.FileManager().Dir.Path)
 
 	return nil
