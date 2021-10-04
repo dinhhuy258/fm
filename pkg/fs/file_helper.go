@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -112,6 +113,31 @@ func copyPath(src, path, dst string, info os.FileInfo) error {
 		}
 	default:
 		if err := copyFile(path, newPath, info); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func CreateFile(name string) error {
+	f, err := os.OpenFile(name, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+
+	if err = f.Close(); err != nil {
+		return err
+	}
+
+	return err
+}
+
+// CreateDirectory creates a new directory given a name.
+func CreateDirectory(name string) error {
+	if _, err := os.Stat(name); errors.Is(err, os.ErrNotExist) {
+		err := os.Mkdir(name, os.ModePerm)
+		if err != nil {
 			return err
 		}
 	}
