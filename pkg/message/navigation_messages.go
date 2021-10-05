@@ -81,7 +81,7 @@ func FocusPath(ctx ctx.Context, params ...interface{}) error {
 	}
 
 	if focusIdx == len(ctx.FileManager().Dir.VisibleNodes) {
-		return nil
+		focusIdx = 0
 	}
 
 	_ = ctx.Gui().Views.Main.SetCursor(0, 0)

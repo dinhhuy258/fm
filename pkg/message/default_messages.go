@@ -77,7 +77,6 @@ func Refresh(ctx ctx.Context, params ...interface{}) error {
 	}
 
 	ChangeDirectory(ctx, ctx.FileManager().Dir.Path, false, &focus)
-	ctx.FileManager().LoadDirectory(ctx.FileManager().Dir.Path)
 
 	return nil
 }

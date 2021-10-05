@@ -2,7 +2,6 @@ package message
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/dinhhuy258/fm/pkg/ctx"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
@@ -94,8 +93,6 @@ func deletePaths(ctx ctx.Context, paths []string) {
 			ctx.Gui().Views.Log.SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
 		}
 
-		if err := Refresh(ctx); err != nil {
-			log.Fatalf("failed to refresh %v", err)
-		}
+		_ = Refresh(ctx)
 	}()
 }
