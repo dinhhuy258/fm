@@ -2,6 +2,7 @@ package message
 
 import (
 	"fmt"
+	"path"
 	"strings"
 
 	"github.com/dinhhuy258/fm/pkg/ctx"
@@ -36,7 +37,7 @@ func NewFile(ctx ctx.Context, _ ...interface{}) error {
 		} else {
 			ctx.Gui().Views.Log.SetLog(fmt.Sprintf("File %s were created successfully", name),
 				view.LogLevel(view.INFO))
-			_ = Refresh(ctx)
+			_ = Refresh(ctx, path.Join(ctx.FileManager().Dir.Path, name))
 		}
 	}()
 

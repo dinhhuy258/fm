@@ -63,10 +63,20 @@ func PopMode(ctx ctx.Context, _ ...interface{}) error {
 	return ctx.PopMode()
 }
 
-func Refresh(ctx ctx.Context, _ ...interface{}) error {
+func Refresh(ctx ctx.Context, params ...interface{}) error {
 	currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 
-	ChangeDirectory(ctx, ctx.FileManager().Dir.Path, false, &currentNode.AbsolutePath)
+	focus := currentNode.AbsolutePath
+
+	if len(params) == 1 {
+		forcusPath, ok := params[0].(string)
+
+		if ok {
+			focus = forcusPath
+		}
+	}
+
+	ChangeDirectory(ctx, ctx.FileManager().Dir.Path, false, &focus)
 	ctx.FileManager().LoadDirectory(ctx.FileManager().Dir.Path)
 
 	return nil
