@@ -93,6 +93,12 @@ func deletePaths(ctx ctx.Context, paths []string) {
 			ctx.Gui().Views.Log.SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
 		}
 
-		_ = Refresh(ctx)
+		visibleNodes := ctx.FileManager().Dir.VisibleNodes
+		if ctx.State().FocusIdx == len(visibleNodes)-1 {
+			_ = Refresh(ctx)
+		} else {
+			nextNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx+1]
+			_ = Refresh(ctx, nextNode.AbsolutePath)
+		}
 	}()
 }

@@ -81,10 +81,12 @@ func FocusPath(ctx ctx.Context, params ...interface{}) error {
 	}
 
 	if focusIdx == len(ctx.FileManager().Dir.VisibleNodes) {
-		focusIdx = 0
+		focusIdx = len(ctx.FileManager().Dir.VisibleNodes) - 1
 	}
 
 	_ = ctx.Gui().Views.Main.SetCursor(0, 0)
+	_ = ctx.Gui().Views.Main.SetOrigin(0, 0)
+
 	ctx.State().FocusIdx = 0
 
 	for i := 0; i < focusIdx; i++ {
