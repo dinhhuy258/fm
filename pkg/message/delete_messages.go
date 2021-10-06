@@ -78,7 +78,9 @@ func deletePaths(ctx ctx.Context, paths []string) {
 			case <-countChan:
 				ctx.Gui().Views.Progress.AddCurrent(1)
 
-				break loop
+				if ctx.Gui().Views.Progress.IsFinished() {
+					break loop
+				}
 			case <-errChan:
 				errCount++
 			}
@@ -93,12 +95,52 @@ func deletePaths(ctx ctx.Context, paths []string) {
 			ctx.Gui().Views.Log.SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
 		}
 
-		visibleNodes := ctx.FileManager().Dir.VisibleNodes
-		if ctx.State().FocusIdx == len(visibleNodes)-1 {
+		focusIdx := getFocusIdx(ctx, paths)
+
+		if focusIdx < 0 {
 			_ = Refresh(ctx)
 		} else {
-			nextNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx+1]
-			_ = Refresh(ctx, nextNode.AbsolutePath)
+			_ = Refresh(ctx, ctx.FileManager().Dir.VisibleNodes[focusIdx].AbsolutePath)
 		}
 	}()
+}
+
+func getFocusIdx(ctx ctx.Context, paths []string) int {
+	pathsMap := make(map[string]struct{})
+	for _, path := range paths {
+		pathsMap[path] = struct{}{}
+	}
+
+	visibleNodes := ctx.FileManager().Dir.VisibleNodes
+	visibleNodesSize := len(visibleNodes)
+	focusIdx := ctx.State().FocusIdx
+
+	for {
+		if _, hasKey := pathsMap[visibleNodes[focusIdx].AbsolutePath]; !hasKey {
+			break
+		}
+
+		focusIdx++
+
+		if focusIdx == visibleNodesSize {
+			break
+		}
+	}
+
+	if focusIdx == visibleNodesSize {
+		focusIdx = ctx.State().FocusIdx
+
+		for {
+			if _, hasKey := pathsMap[visibleNodes[focusIdx].AbsolutePath]; !hasKey {
+				break
+			}
+
+			focusIdx--
+			if focusIdx < 0 {
+				break
+			}
+		}
+	}
+
+	return focusIdx
 }

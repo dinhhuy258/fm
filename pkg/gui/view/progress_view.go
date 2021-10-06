@@ -27,6 +27,7 @@ func newProgressView(g *gocui.Gui, v *gocui.View) *ProgressView {
 
 func (pv *ProgressView) StartProgress(total int) {
 	pv.total = total
+	pv.current = 0
 	pv.AddCurrent(0)
 	pv.v.SetViewOnTop()
 }
