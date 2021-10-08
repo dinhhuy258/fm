@@ -23,6 +23,8 @@ func DeleteSelections(ctx ctx.Context, _ ...interface{}) error {
 
 		_ = PopMode(ctx)
 
+		ctx.Gui().Views.Main.SetAsCurrentView()
+
 		if ans {
 			paths := make([]string, 0, len(ctx.State().Selections))
 			for k := range ctx.State().Selections {
