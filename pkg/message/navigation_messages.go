@@ -70,6 +70,11 @@ func FocusPath(ctx ctx.Context, params ...interface{}) error {
 		return ErrInvalidMessageParameter
 	}
 
+	if ctx.FileManager().Dir.Path != filepath.Dir(path) {
+		dirLoadedChan := ctx.FileManager().LoadDirectory(filepath.Dir(path))
+		<-dirLoadedChan
+	}
+
 	focusIdx := 0
 
 	for _, node := range ctx.FileManager().Dir.VisibleNodes {

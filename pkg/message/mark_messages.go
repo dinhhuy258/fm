@@ -14,7 +14,7 @@ func MarkSave(ctx ctx.Context, params ...interface{}) error {
 
 	_ = ctx.PopMode()
 	currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
-	ctx.State().Marks[key] = currentNode.RelativePath
+	ctx.State().Marks[key] = currentNode.AbsolutePath
 
 	return nil
 }
