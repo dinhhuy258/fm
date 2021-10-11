@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/dinhhuy258/fm/pkg/message"
+	"github.com/dinhhuy258/fm/pkg/state"
 )
 
 var (
@@ -67,4 +68,39 @@ func (m *Modes) Pop() error {
 
 func (m *Modes) Peek() *Mode {
 	return m.Modes[len(m.Modes)-1]
+}
+
+func (m *Mode) GetHelp(state *state.State) ([]string, []string) {
+	if m.Name == "mark load" {
+		keys := make([]string, 0, len(m.KeyBindings.OnKeys)+len(state.Marks))
+		helps := make([]string, 0, len(m.KeyBindings.OnKeys)+len(state.Marks))
+
+		for k, m := range state.Marks {
+			keys = append(keys, k)
+			helps = append(helps, m)
+		}
+
+		for k, a := range m.KeyBindings.OnKeys {
+			keys = append(keys, k)
+			helps = append(helps, a.Help)
+		}
+
+		return keys, helps
+	}
+
+	keys := make([]string, 0, len(m.KeyBindings.OnKeys)+1)
+	helps := make([]string, 0, len(m.KeyBindings.OnKeys)+1)
+	keybindings := m.KeyBindings
+
+	if keybindings.OnAlphabet != nil {
+		keys = append(keys, "alphabet")
+		helps = append(helps, keybindings.OnAlphabet.Help)
+	}
+
+	for k, a := range keybindings.OnKeys {
+		keys = append(keys, k)
+		helps = append(helps, a.Help)
+	}
+
+	return keys, helps
 }

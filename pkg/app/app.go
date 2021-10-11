@@ -42,23 +42,10 @@ func (app *App) Run() error {
 }
 
 func (app *App) onModeChanged() {
-	keys := make([]string, 0, len(app.modes.Peek().KeyBindings.OnKeys)+1)
-	helps := make([]string, 0, len(app.modes.Peek().KeyBindings.OnKeys)+1)
+	currentMode := app.modes.Peek()
+	keys, helps := currentMode.GetHelp(app.state)
 
-	keybindings := app.modes.Peek().KeyBindings
-
-	if keybindings.OnAlphabet != nil {
-		keys = append(keys, "alphabet")
-		helps = append(helps, keybindings.OnAlphabet.Help)
-	}
-
-	for k, a := range keybindings.OnKeys {
-		keys = append(keys, k)
-		helps = append(helps, a.Help)
-	}
-
-	app.gui.Views.Help.SetTitle(app.modes.Peek().Name)
-
+	app.gui.Views.Help.SetTitle(currentMode.Name)
 	app.gui.Views.Help.SetHelp(keys, helps)
 }
 
