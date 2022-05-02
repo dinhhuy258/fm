@@ -8,22 +8,14 @@ func createMarkSaveMode() *Mode {
 	return &Mode{
 		Name: "mark save",
 		KeyBindings: &KeyBindings{
-			OnAlphabet: &Action{
+			OnAlphabet: &command.Command{
 				Help: "mark save",
-				Commands: []command.Command{
-					{
-						Func: command.MarkSave,
-					},
-				},
+				Func: command.MarkSave,
 			},
-			OnKeys: map[string]*Action{
+			OnKeys: map[string]*command.Command{
 				"esc": {
 					Help: "cancel",
-					Commands: []command.Command{
-						{
-							Func: command.PopMode,
-						},
-					},
+					Func: command.PopMode,
 				},
 			},
 		},
@@ -34,22 +26,14 @@ func createMarkLoadMode() *Mode {
 	return &Mode{
 		Name: "mark load",
 		KeyBindings: &KeyBindings{
-			OnAlphabet: &Action{
+			OnAlphabet: &command.Command{
 				Help: "mark load",
-				Commands: []command.Command{
-					{
-						Func: command.MarkLoad,
-					},
-				},
+				Func: command.MarkLoad,
 			},
-			OnKeys: map[string]*Action{
+			OnKeys: map[string]*command.Command{
 				"esc": {
 					Help: "cancel",
-					Commands: []command.Command{
-						{
-							Func: command.PopMode,
-						},
-					},
+					Func: command.PopMode,
 				},
 			},
 		},

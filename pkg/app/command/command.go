@@ -5,6 +5,7 @@ import (
 )
 
 type Command struct {
+	Help string
 	Func func(context context.Context, params ...interface{}) error
 	Args []interface{}
 }

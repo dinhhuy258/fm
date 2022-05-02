@@ -2,6 +2,7 @@ package mode
 
 import (
 	"errors"
+
 	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/app/context"
 )
@@ -11,14 +12,9 @@ var (
 	ErrEmptyModes   = errors.New("empty modes")
 )
 
-type Action struct {
-	Help     string
-	Commands []command.Command
-}
-
 type KeyBindings struct {
-	OnKeys     map[string]*Action
-	OnAlphabet *Action
+	OnKeys     map[string]*command.Command
+	OnAlphabet *command.Command
 }
 
 type Mode struct {

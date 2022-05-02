@@ -1,11 +1,12 @@
 package app
 
 import (
-	"github.com/dinhhuy258/fm/pkg/app/context"
-	"github.com/dinhhuy258/fm/pkg/app/command"
-	"github.com/dinhhuy258/fm/pkg/app/mode"
 	"log"
 	"os"
+
+	"github.com/dinhhuy258/fm/pkg/app/command"
+	"github.com/dinhhuy258/fm/pkg/app/context"
+	"github.com/dinhhuy258/fm/pkg/app/mode"
 
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
@@ -68,20 +69,16 @@ func (app *App) PushMode(mode string) error {
 func (app *App) onKey(key string) error {
 	keybindings := app.modes.Peek().KeyBindings
 
-	if action, hasKey := keybindings.OnKeys[key]; hasKey {
-		for _, m := range action.Commands {
-			if err := m.Func(app, m.Args...); err != nil {
-				return err
-			}
+	if command, hasKey := keybindings.OnKeys[key]; hasKey {
+		if err := command.Func(app, command.Args...); err != nil {
+			return err
 		}
 	} else if keybindings.OnAlphabet != nil {
-		for _, m := range keybindings.OnAlphabet.Commands {
-			args := m.Args
-			args = append(args, key)
+		args := keybindings.OnAlphabet.Args
+		args = append(args, key)
 
-			if err := m.Func(app, args...); err != nil {
-				return err
-			}
+		if err := keybindings.OnAlphabet.Func(app, args...); err != nil {
+			return err
 		}
 	}
 
