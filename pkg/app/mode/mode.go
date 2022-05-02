@@ -17,25 +17,40 @@ type KeyBindings struct {
 	OnAlphabet *command.Command
 }
 
+type IMode interface {
+	GetName() string
+	GetKeyBindings() *KeyBindings
+	GetHelp(state *context.State) ([]string, []string)
+}
+
 type Mode struct {
+	IMode
 	Name        string
 	KeyBindings *KeyBindings
 }
 
+func (m *Mode) GetName() string {
+	return m.Name
+}
+
+func (m *Mode) GetKeyBindings() *KeyBindings {
+	return m.KeyBindings
+}
+
 type Modes struct {
-	Modes        []*Mode
-	BuiltinModes map[string]*Mode
+	Modes        []IMode
+	BuiltinModes map[string]IMode
 }
 
 func NewModes() *Modes {
-	builtinModes := make(map[string]*Mode)
+	builtinModes := make(map[string]IMode)
 	builtinModes["default"] = createDefaultMode()
 	builtinModes["delete"] = createDeleteMode()
 	builtinModes["mark-save"] = createMarkSaveMode()
 	builtinModes["mark-load"] = createMarkLoadMode()
 
 	return &Modes{
-		Modes:        make([]*Mode, 0, 5),
+		Modes:        make([]IMode, 0, 5),
 		BuiltinModes: builtinModes,
 	}
 }
@@ -61,31 +76,14 @@ func (m *Modes) Pop() error {
 	return nil
 }
 
-func (m *Modes) Peek() *Mode {
+func (m *Modes) Peek() IMode {
 	return m.Modes[len(m.Modes)-1]
 }
 
 func (m *Mode) GetHelp(state *context.State) ([]string, []string) {
-	if m.Name == "mark load" {
-		keys := make([]string, 0, len(m.KeyBindings.OnKeys)+len(state.Marks))
-		helps := make([]string, 0, len(m.KeyBindings.OnKeys)+len(state.Marks))
-
-		for k, m := range state.Marks {
-			keys = append(keys, k)
-			helps = append(helps, m)
-		}
-
-		for k, a := range m.KeyBindings.OnKeys {
-			keys = append(keys, k)
-			helps = append(helps, a.Help)
-		}
-
-		return keys, helps
-	}
-
-	keys := make([]string, 0, len(m.KeyBindings.OnKeys)+1)
-	helps := make([]string, 0, len(m.KeyBindings.OnKeys)+1)
-	keybindings := m.KeyBindings
+	keys := make([]string, 0, len(m.GetKeyBindings().OnKeys)+1)
+	helps := make([]string, 0, len(m.GetKeyBindings().OnKeys)+1)
+	keybindings := m.GetKeyBindings()
 
 	if keybindings.OnAlphabet != nil {
 		keys = append(keys, "alphabet")
