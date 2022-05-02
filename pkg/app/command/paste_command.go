@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"github.com/dinhhuy258/fm/pkg/app/context"
 	"log"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
@@ -10,7 +9,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
-func PasteSelections(ctx context.Context, params ...interface{}) error {
+func PasteSelections(app IApp, params ...interface{}) error {
 	if len(params) != 1 {
 		return ErrInvalidCommandParameter
 	}
@@ -20,28 +19,28 @@ func PasteSelections(ctx context.Context, params ...interface{}) error {
 		return ErrInvalidCommandParameter
 	}
 
-	if len(ctx.State().Selections) == 0 {
+	if len(app.State().Selections) == 0 {
 		gui.GetGui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 
 		return nil
 	}
 
-	paths := make([]string, 0, len(ctx.State().Selections))
-	for k := range ctx.State().Selections {
+	paths := make([]string, 0, len(app.State().Selections))
+	for k := range app.State().Selections {
 		paths = append(paths, k)
 	}
 
-	paste(ctx, paths, fs.GetFileManager().Dir.Path, operation)
+	paste(app, paths, fs.GetFileManager().Dir.Path, operation)
 
 	// Clear selections
-	for k := range ctx.State().Selections {
-		delete(ctx.State().Selections, k)
+	for k := range app.State().Selections {
+		delete(app.State().Selections, k)
 	}
 
 	return nil
 }
 
-func paste(ctx context.Context, paths []string, dest, operation string) {
+func paste(app IApp, paths []string, dest, operation string) {
 	gui.GetGui().Views.Progress.StartProgress(len(paths))
 
 	var countChan chan int
@@ -77,7 +76,7 @@ func paste(ctx context.Context, paths []string, dest, operation string) {
 			gui.GetGui().Views.Log.SetLog(fmt.Sprintf("Finished to %s %v", operation, paths), view.LogLevel(view.INFO))
 		}
 
-		if err := Refresh(ctx); err != nil {
+		if err := Refresh(app); err != nil {
 			log.Fatalf("failed to refresh %v", err)
 		}
 	}()

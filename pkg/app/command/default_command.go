@@ -1,99 +1,94 @@
 package command
 
 import (
-	"errors"
-	"github.com/dinhhuy258/fm/pkg/app/context"
-
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/gocui"
 )
 
-var ErrInvalidCommandParameter = errors.New("invalid command parameter")
+func ToggleSelection(app IApp, _ ...interface{}) error {
+	path := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx].AbsolutePath
 
-func ToggleSelection(ctx context.Context, _ ...interface{}) error {
-	path := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx].AbsolutePath
-
-	if _, hasPath := ctx.State().Selections[path]; hasPath {
-		delete(ctx.State().Selections, path)
+	if _, hasPath := app.State().Selections[path]; hasPath {
+		delete(app.State().Selections, path)
 	} else {
-		ctx.State().Selections[path] = struct{}{}
+		app.State().Selections[path] = struct{}{}
 	}
 
-	refreshSelections(ctx)
+	refreshSelections(app)
 
 	return nil
 }
 
-func ToggleHidden(ctx context.Context, _ ...interface{}) error {
+func ToggleHidden(app IApp, _ ...interface{}) error {
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
 	fs.GetFileManager().Dir.Reload()
 
 	numberOfFiles := len(fs.GetFileManager().Dir.VisibleNodes)
-	ctx.State().NumberOfFiles = numberOfFiles
+	app.State().NumberOfFiles = numberOfFiles
 	gui.GetGui().Views.Main.SetTitle(fs.GetFileManager().Dir.Path, numberOfFiles)
 	gui.GetGui().Views.SortAndFilter.SetSortAndFilter()
 
 	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
-		ctx.State().Selections,
-		ctx.State().FocusIdx,
+		app.State().Selections,
+		app.State().FocusIdx,
 	)
 
 	return nil
 }
 
-func ClearSelection(ctx context.Context, _ ...interface{}) error {
-	ctx.State().Selections = make(map[string]struct{})
+func ClearSelection(app IApp, _ ...interface{}) error {
+	app.State().Selections = make(map[string]struct{})
 
-	refreshSelections(ctx)
+	refreshSelections(app)
 
 	return nil
 }
 
-func SwitchMode(ctx context.Context, params ...interface{}) error {
+func SwitchMode(app IApp, params ...interface{}) error {
 	if len(params) != 1 {
 		return ErrInvalidCommandParameter
 	}
 
-	return ctx.PushMode(params[0].(string))
+	return app.PushMode(params[0].(string))
 }
 
-func PopMode(ctx context.Context, _ ...interface{}) error {
-	return ctx.PopMode()
+func PopMode(app IApp, _ ...interface{}) error {
+	return app.PopMode()
 }
 
-func Refresh(ctx context.Context, params ...interface{}) error {
-	currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
+func Refresh(app IApp, params ...interface{}) error {
+	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx]
 
 	focus := currentNode.AbsolutePath
 
 	if len(params) == 1 {
-		forcusPath, ok := params[0].(string)
+		focusPath, ok := params[0].(string)
 
 		if ok {
-			focus = forcusPath
+			focus = focusPath
 		}
 	}
 
-	ChangeDirectory(ctx, fs.GetFileManager().Dir.Path, false, &focus)
+	ChangeDirectory(app, fs.GetFileManager().Dir.Path, false, &focus)
 
 	return nil
 }
 
-func refreshSelections(ctx context.Context) {
-	gui.GetGui().Views.Selection.SetTitle(len(ctx.State().Selections))
-	gui.GetGui().Views.Selection.RenderSelections(ctx.State().Selections)
+func refreshSelections(app IApp) {
+	gui.GetGui().Views.Selection.SetTitle(len(app.State().Selections))
+	gui.GetGui().Views.Selection.RenderSelections(app.State().Selections)
 
 	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
-		ctx.State().Selections,
-		ctx.State().FocusIdx,
+		app.State().Selections,
+		app.State().FocusIdx,
 	)
 }
 
-func Quit(_ context.Context, _ ...interface{}) error {
+func Quit(_ IApp, _ ...interface{}) error {
 	return gocui.ErrQuit
 }

@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"github.com/dinhhuy258/fm/pkg/app/context"
 	"path"
 	"strings"
 
@@ -11,7 +10,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
-func NewFile(ctx context.Context, _ ...interface{}) error {
+func NewFile(app IApp, _ ...interface{}) error {
 	gui.GetGui().Views.Input.SetInput("new file")
 
 	go func() {
@@ -38,7 +37,7 @@ func NewFile(ctx context.Context, _ ...interface{}) error {
 		} else {
 			gui.GetGui().Views.Log.SetLog(fmt.Sprintf("File %s were created successfully", name),
 				view.LogLevel(view.INFO))
-			_ = Refresh(ctx, path.Join(fs.GetFileManager().Dir.Path, name))
+			_ = Refresh(app, path.Join(fs.GetFileManager().Dir.Path, name))
 		}
 	}()
 

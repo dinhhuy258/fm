@@ -1,29 +1,28 @@
 package command
 
 import (
-	"github.com/dinhhuy258/fm/pkg/app/context"
 	"path/filepath"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
-func FocusFirst(ctx context.Context, _ ...interface{}) error {
+func FocusFirst(app IApp, _ ...interface{}) error {
 	_ = gui.GetGui().Views.Main.SetOrigin(0, 0)
 	_ = gui.GetGui().Views.Main.SetCursor(0, 0)
-	ctx.State().FocusIdx = 0
+	app.State().FocusIdx = 0
 
 	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
-		ctx.State().Selections,
-		ctx.State().FocusIdx,
+		app.State().Selections,
+		app.State().FocusIdx,
 	)
 
 	return nil
 }
 
-func FocusNext(ctx context.Context, _ ...interface{}) error {
-	if ctx.State().FocusIdx == ctx.State().NumberOfFiles-1 {
+func FocusNext(app IApp, _ ...interface{}) error {
+	if app.State().FocusIdx == app.State().NumberOfFiles-1 {
 		return nil
 	}
 
@@ -31,19 +30,19 @@ func FocusNext(ctx context.Context, _ ...interface{}) error {
 		return err
 	}
 
-	ctx.State().FocusIdx++
+	app.State().FocusIdx++
 
 	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
-		ctx.State().Selections,
-		ctx.State().FocusIdx,
+		app.State().Selections,
+		app.State().FocusIdx,
 	)
 
 	return nil
 }
 
-func FocusPrevious(ctx context.Context, _ ...interface{}) error {
-	if ctx.State().FocusIdx == 0 {
+func FocusPrevious(app IApp, _ ...interface{}) error {
+	if app.State().FocusIdx == 0 {
 		return nil
 	}
 
@@ -51,18 +50,18 @@ func FocusPrevious(ctx context.Context, _ ...interface{}) error {
 		return err
 	}
 
-	ctx.State().FocusIdx--
+	app.State().FocusIdx--
 
 	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
-		ctx.State().Selections,
-		ctx.State().FocusIdx,
+		app.State().Selections,
+		app.State().FocusIdx,
 	)
 
 	return nil
 }
 
-func FocusPath(ctx context.Context, params ...interface{}) error {
+func FocusPath(app IApp, params ...interface{}) error {
 	if len(params) != 1 {
 		return ErrInvalidCommandParameter
 	}
@@ -94,63 +93,63 @@ func FocusPath(ctx context.Context, params ...interface{}) error {
 	_ = gui.GetGui().Views.Main.SetCursor(0, 0)
 	_ = gui.GetGui().Views.Main.SetOrigin(0, 0)
 
-	ctx.State().FocusIdx = 0
+	app.State().FocusIdx = 0
 
 	for i := 0; i < focusIdx; i++ {
 		if err := gui.GetGui().Views.Main.NextCursor(); err != nil {
 			return err
 		}
 
-		ctx.State().FocusIdx++
+		app.State().FocusIdx++
 	}
 
 	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
-		ctx.State().Selections,
-		ctx.State().FocusIdx,
+		app.State().Selections,
+		app.State().FocusIdx,
 	)
 
 	return nil
 }
 
-func Enter(ctx context.Context, _ ...interface{}) error {
-	currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
+func Enter(app IApp, _ ...interface{}) error {
+	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx]
 
 	if currentNode.IsDir {
-		ChangeDirectory(ctx, currentNode.AbsolutePath, true, nil)
+		ChangeDirectory(app, currentNode.AbsolutePath, true, nil)
 	}
 
 	return nil
 }
 
-func Back(ctx context.Context, _ ...interface{}) error {
+func Back(app IApp, _ ...interface{}) error {
 	parent := fs.GetFileManager().Dir.Parent()
 
-	ChangeDirectory(ctx, parent, true, &fs.GetFileManager().Dir.Path)
+	ChangeDirectory(app, parent, true, &fs.GetFileManager().Dir.Path)
 
 	return nil
 }
 
-func LastVisitedPath(ctx context.Context, _ ...interface{}) error {
-	ctx.State().History.VisitLast()
-	node := ctx.State().History.Peek()
-	ChangeDirectory(ctx, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
+func LastVisitedPath(app IApp, _ ...interface{}) error {
+	app.State().History.VisitLast()
+	node := app.State().History.Peek()
+	ChangeDirectory(app, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
 
 	return nil
 }
 
-func NextVisitedPath(ctx context.Context, _ ...interface{}) error {
-	ctx.State().History.VisitNext()
-	node := ctx.State().History.Peek()
-	ChangeDirectory(ctx, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
+func NextVisitedPath(app IApp, _ ...interface{}) error {
+	app.State().History.VisitNext()
+	node := app.State().History.Peek()
+	ChangeDirectory(app, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
 
 	return nil
 }
 
-func ChangeDirectory(ctx context.Context, path string, saveHistory bool, focusPath *string) {
+func ChangeDirectory(app IApp, path string, saveHistory bool, focusPath *string) {
 	if saveHistory && fs.GetFileManager().Dir != nil {
-		currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
-		ctx.State().History.Push(currentNode)
+		currentNode := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx]
+		app.State().History.Push(currentNode)
 	}
 
 	dirLoadedChan := fs.GetFileManager().LoadDirectory(path)
@@ -159,18 +158,18 @@ func ChangeDirectory(ctx context.Context, path string, saveHistory bool, focusPa
 		<-dirLoadedChan
 
 		numberOfFiles := len(fs.GetFileManager().Dir.VisibleNodes)
-		ctx.State().NumberOfFiles = numberOfFiles
+		app.State().NumberOfFiles = numberOfFiles
 		gui.GetGui().Views.Main.SetTitle(fs.GetFileManager().Dir.Path, numberOfFiles)
 
 		if focusPath == nil {
-			_ = FocusFirst(ctx)
+			_ = FocusFirst(app)
 		} else {
-			_ = FocusPath(ctx, *focusPath)
+			_ = FocusPath(app, *focusPath)
 		}
 
 		if saveHistory {
-			currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
-			ctx.State().History.Push(currentNode)
+			currentNode := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx]
+			app.State().History.Push(currentNode)
 		}
 	}()
 }

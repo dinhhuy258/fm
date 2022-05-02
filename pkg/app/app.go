@@ -37,9 +37,9 @@ func (app *App) onModeChanged() {
 	currentMode := app.modes.Peek()
 	keys, helps := currentMode.GetHelp(app.state)
 
-	gui := gui.GetGui()
-	gui.Views.Help.SetTitle(currentMode.Name)
-	gui.Views.Help.SetHelp(keys, helps)
+	appGui := gui.GetGui()
+	appGui.Views.Help.SetTitle(currentMode.Name)
+	appGui.Views.Help.SetHelp(keys, helps)
 }
 
 func (app *App) State() *context.State {
@@ -69,8 +69,8 @@ func (app *App) PushMode(mode string) error {
 func (app *App) onKey(key string) error {
 	keybindings := app.modes.Peek().KeyBindings
 
-	if command, hasKey := keybindings.OnKeys[key]; hasKey {
-		if err := command.Func(app, command.Args...); err != nil {
+	if cmd, hasKey := keybindings.OnKeys[key]; hasKey {
+		if err := cmd.Func(app, cmd.Args...); err != nil {
 			return err
 		}
 	} else if keybindings.OnAlphabet != nil {
