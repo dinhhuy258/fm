@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/dinhhuy258/fm/pkg/app/context"
-	"github.com/dinhhuy258/fm/pkg/app/message"
+	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/app/mode"
 	"log"
 	"os"
@@ -69,13 +69,13 @@ func (app *App) onKey(key string) error {
 	keybindings := app.modes.Peek().KeyBindings
 
 	if action, hasKey := keybindings.OnKeys[key]; hasKey {
-		for _, m := range action.Messages {
+		for _, m := range action.Commands {
 			if err := m.Func(app, m.Args...); err != nil {
 				return err
 			}
 		}
 	} else if keybindings.OnAlphabet != nil {
-		for _, m := range keybindings.OnAlphabet.Messages {
+		for _, m := range keybindings.OnAlphabet.Commands {
 			args := m.Args
 			args = append(args, key)
 
@@ -100,5 +100,5 @@ func (app *App) onViewsCreated() {
 		log.Fatalf("failed to get current working directory %v", err)
 	}
 
-	message.ChangeDirectory(app, wd, true, nil)
+	command.ChangeDirectory(app, wd, true, nil)
 }

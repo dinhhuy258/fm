@@ -1,7 +1,7 @@
 package mode
 
 import (
-	message2 "github.com/dinhhuy258/fm/pkg/app/message"
+	"github.com/dinhhuy258/fm/pkg/app/command"
 )
 
 func createDefaultMode() *Mode {
@@ -11,142 +11,142 @@ func createDefaultMode() *Mode {
 			OnKeys: map[string]*Action{
 				"j": {
 					Help: "down",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.FocusNext,
+							Func: command.FocusNext,
 						},
 					},
 				},
 				"k": {
 					Help: "up",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.FocusPrevious,
+							Func: command.FocusPrevious,
 						},
 					},
 				},
 				"l": {
 					Help: "enter",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.Enter,
+							Func: command.Enter,
 						},
 					},
 				},
 				"h": {
 					Help: "back",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.Back,
+							Func: command.Back,
 						},
 					},
 				},
 				"m": {
 					Help: "mark save",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.SwitchMode,
+							Func: command.SwitchMode,
 							Args: []interface{}{"mark-save"},
 						},
 					},
 				},
 				"`": {
 					Help: "mark load",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.SwitchMode,
+							Func: command.SwitchMode,
 							Args: []interface{}{"mark-load"},
 						},
 					},
 				},
 				"d": {
 					Help: "delete",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.SwitchMode,
+							Func: command.SwitchMode,
 							Args: []interface{}{"delete"},
 						},
 					},
 				},
 				"p": {
 					Help: "copy",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.PasteSelections,
+							Func: command.PasteSelections,
 							Args: []interface{}{"copy"},
 						},
 					},
 				},
 				"x": {
 					Help: "cut",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.PasteSelections,
+							Func: command.PasteSelections,
 							Args: []interface{}{"cut"},
 						},
 					},
 				},
 				"n": {
 					Help: "new",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.NewFile,
+							Func: command.NewFile,
 						},
 					},
 				},
 				"ctrl+i": {
 					Help: "next visited path",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.NextVisitedPath,
+							Func: command.NextVisitedPath,
 						},
 					},
 				},
 				"ctrl+o": {
 					Help: "last visited path",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.LastVisitedPath,
+							Func: command.LastVisitedPath,
 						},
 					},
 				},
 				"ctrl+r": {
 					Help: "refresh",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.Refresh,
+							Func: command.Refresh,
 						},
 					},
 				},
 				"space": {
 					Help: "toggle selection",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.ToggleSelection,
+							Func: command.ToggleSelection,
 						},
 					},
 				},
 				"ctrl+space": {
 					Help: "clear selection",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.ClearSelection,
+							Func: command.ClearSelection,
 						},
 					},
 				},
 				".": {
 					Help: "toggle hidden",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.ToggleHidden,
+							Func: command.ToggleHidden,
 						},
 					},
 				},
 				"q": {
 					Help: "quit",
-					Messages: []message2.Message{
+					Commands: []command.Command{
 						{
-							Func: message2.Quit,
+							Func: command.Quit,
 						},
 					},
 				},

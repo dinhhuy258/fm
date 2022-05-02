@@ -1,4 +1,4 @@
-package message
+package command
 
 import (
 	"github.com/dinhhuy258/fm/pkg/app/context"
@@ -7,12 +7,12 @@ import (
 
 func MarkSave(ctx context.Context, params ...interface{}) error {
 	if len(params) != 1 {
-		return ErrInvalidMessageParameter
+		return ErrInvalidCommandParameter
 	}
 
 	key, ok := params[0].(string)
 	if !ok {
-		return ErrInvalidMessageParameter
+		return ErrInvalidCommandParameter
 	}
 
 	_ = ctx.PopMode()
@@ -24,12 +24,12 @@ func MarkSave(ctx context.Context, params ...interface{}) error {
 
 func MarkLoad(ctx context.Context, params ...interface{}) error {
 	if len(params) != 1 {
-		return ErrInvalidMessageParameter
+		return ErrInvalidCommandParameter
 	}
 
 	key, ok := params[0].(string)
 	if !ok {
-		return ErrInvalidMessageParameter
+		return ErrInvalidCommandParameter
 	}
 
 	_ = ctx.PopMode()

@@ -1,4 +1,4 @@
-package message
+package command
 
 import (
 	"fmt"
@@ -12,12 +12,12 @@ import (
 
 func PasteSelections(ctx context.Context, params ...interface{}) error {
 	if len(params) != 1 {
-		return ErrInvalidMessageParameter
+		return ErrInvalidCommandParameter
 	}
 
 	operation, ok := params[0].(string)
 	if !ok || (operation != "cut" && operation != "copy") {
-		return ErrInvalidMessageParameter
+		return ErrInvalidCommandParameter
 	}
 
 	if len(ctx.State().Selections) == 0 {

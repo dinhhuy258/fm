@@ -2,8 +2,8 @@ package mode
 
 import (
 	"errors"
+	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/app/context"
-	"github.com/dinhhuy258/fm/pkg/app/message"
 )
 
 var (
@@ -13,7 +13,7 @@ var (
 
 type Action struct {
 	Help     string
-	Messages []message.Message
+	Commands []command.Command
 }
 
 type KeyBindings struct {

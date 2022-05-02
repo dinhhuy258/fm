@@ -1,4 +1,4 @@
-package message
+package command
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	"github.com/dinhhuy258/gocui"
 )
 
-var ErrInvalidMessageParameter = errors.New("invalid message parameter")
+var ErrInvalidCommandParameter = errors.New("invalid command parameter")
 
 func ToggleSelection(ctx context.Context, _ ...interface{}) error {
 	path := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx].AbsolutePath
@@ -55,7 +55,7 @@ func ClearSelection(ctx context.Context, _ ...interface{}) error {
 
 func SwitchMode(ctx context.Context, params ...interface{}) error {
 	if len(params) != 1 {
-		return ErrInvalidMessageParameter
+		return ErrInvalidCommandParameter
 	}
 
 	return ctx.PushMode(params[0].(string))

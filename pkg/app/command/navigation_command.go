@@ -1,4 +1,4 @@
-package message
+package command
 
 import (
 	"github.com/dinhhuy258/fm/pkg/app/context"
@@ -64,12 +64,12 @@ func FocusPrevious(ctx context.Context, _ ...interface{}) error {
 
 func FocusPath(ctx context.Context, params ...interface{}) error {
 	if len(params) != 1 {
-		return ErrInvalidMessageParameter
+		return ErrInvalidCommandParameter
 	}
 
 	path, ok := params[0].(string)
 	if !ok {
-		return ErrInvalidMessageParameter
+		return ErrInvalidCommandParameter
 	}
 
 	if fs.GetFileManager().Dir.Path != filepath.Dir(path) {
