@@ -11,47 +11,38 @@ import (
 )
 
 type App struct {
-	gui         *gui.Gui
-	state       *state.State
-	modes       *mode.Modes
+	state *state.State
+	modes *mode.Modes
 }
 
 // NewApp bootstrap a new application
-func NewApp() (*App, error) {
+func NewApp() *App {
 	app := &App{
-		state:       state.NewState(),
+		state: state.NewState(),
 	}
 
 	app.modes = mode.NewModes()
 
-	g, err := gui.NewGui(app.onViewsCreated)
-	if err != nil {
-		return nil, err
-	}
+	gui.InitGui(app.onViewsCreated)
 
-	app.gui = g
-
-	return app, nil
+	return app
 }
 
 func (app *App) Run() error {
-	return app.gui.Run()
+	return gui.GetGui().Run()
 }
 
 func (app *App) onModeChanged() {
 	currentMode := app.modes.Peek()
 	keys, helps := currentMode.GetHelp(app.state)
 
-	app.gui.Views.Help.SetTitle(currentMode.Name)
-	app.gui.Views.Help.SetHelp(keys, helps)
+	gui := gui.GetGui()
+	gui.Views.Help.SetTitle(currentMode.Name)
+	gui.Views.Help.SetHelp(keys, helps)
 }
 
 func (app *App) State() *state.State {
 	return app.state
-}
-
-func (app *App) Gui() *gui.Gui {
-	return app.gui
 }
 
 func (app *App) PopMode() error {
@@ -102,7 +93,7 @@ func (app *App) onViewsCreated() {
 	_ = app.PushMode("default")
 
 	// Set on key handler
-	app.gui.SetOnKeyFunc(app.onKey)
+	gui.GetGui().SetOnKeyFunc(app.onKey)
 
 	wd, err := os.Getwd()
 	if err != nil {

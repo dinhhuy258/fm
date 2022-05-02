@@ -5,26 +5,27 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/ctx"
 	"github.com/dinhhuy258/fm/pkg/fs"
+	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
 func DeleteSelections(ctx ctx.Context, _ ...interface{}) error {
 	if len(ctx.State().Selections) == 0 {
-		ctx.Gui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
+		gui.GetGui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 
 		return PopMode(ctx)
 	}
 
-	ctx.Gui().Views.Confirm.SetConfirmation(
+	gui.GetGui().Views.Confirm.SetConfirmation(
 		"Do you want to delete selected paths?",
 	)
 
 	go func() {
-		ans := ctx.Gui().Views.Confirm.GetAnswer()
+		ans := gui.GetGui().Views.Confirm.GetAnswer()
 
 		_ = PopMode(ctx)
 
-		ctx.Gui().Views.Main.SetAsCurrentView()
+		gui.GetGui().Views.Main.SetAsCurrentView()
 
 		if ans {
 			paths := make([]string, 0, len(ctx.State().Selections))
@@ -39,7 +40,7 @@ func DeleteSelections(ctx ctx.Context, _ ...interface{}) error {
 				delete(ctx.State().Selections, k)
 			}
 		} else {
-			ctx.Gui().Views.Log.SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
+			gui.GetGui().Views.Log.SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
 		}
 	}()
 
@@ -49,19 +50,19 @@ func DeleteSelections(ctx ctx.Context, _ ...interface{}) error {
 func DeleteCurrent(ctx ctx.Context, _ ...interface{}) error {
 	currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 
-	ctx.Gui().Views.Confirm.SetConfirmation("Do you want to delete " + currentNode.RelativePath + "?")
+	gui.GetGui().Views.Confirm.SetConfirmation("Do you want to delete " + currentNode.RelativePath + "?")
 
 	go func() {
-		ans := ctx.Gui().Views.Confirm.GetAnswer()
+		ans := gui.GetGui().Views.Confirm.GetAnswer()
 
 		_ = PopMode(ctx)
 
-		ctx.Gui().Views.Main.SetAsCurrentView()
+		gui.GetGui().Views.Main.SetAsCurrentView()
 
 		if ans {
 			deletePaths(ctx, []string{currentNode.AbsolutePath})
 		} else {
-			ctx.Gui().Views.Log.SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
+			gui.GetGui().Views.Log.SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
 		}
 	}()
 
@@ -69,7 +70,7 @@ func DeleteCurrent(ctx ctx.Context, _ ...interface{}) error {
 }
 
 func deletePaths(ctx ctx.Context, paths []string) {
-	ctx.Gui().Views.Progress.StartProgress(len(paths))
+	gui.GetGui().Views.Progress.StartProgress(len(paths))
 
 	countChan, errChan := fs.GetFileManager().Delete(paths)
 
@@ -79,9 +80,9 @@ func deletePaths(ctx ctx.Context, paths []string) {
 		for {
 			select {
 			case <-countChan:
-				ctx.Gui().Views.Progress.AddCurrent(1)
+				gui.GetGui().Views.Progress.AddCurrent(1)
 
-				if ctx.Gui().Views.Progress.IsFinished() {
+				if gui.GetGui().Views.Progress.IsFinished() {
 					break loop
 				}
 			case <-errChan:
@@ -90,12 +91,12 @@ func deletePaths(ctx ctx.Context, paths []string) {
 		}
 
 		if errCount != 0 {
-			ctx.Gui().Views.Log.SetLog(
+			gui.GetGui().Views.Log.SetLog(
 				fmt.Sprintf("Finished to delete %v. Error count: %d", paths, errCount),
 				view.LogLevel(view.INFO),
 			)
 		} else {
-			ctx.Gui().Views.Log.SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
+			gui.GetGui().Views.Log.SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
 		}
 
 		focusIdx := getFocusIdx(ctx, paths)

@@ -6,6 +6,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/ctx"
 	"github.com/dinhhuy258/fm/pkg/fs"
+	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -32,10 +33,10 @@ func ToggleHidden(ctx ctx.Context, _ ...interface{}) error {
 
 	numberOfFiles := len(fs.GetFileManager().Dir.VisibleNodes)
 	ctx.State().NumberOfFiles = numberOfFiles
-	ctx.Gui().Views.Main.SetTitle(fs.GetFileManager().Dir.Path, numberOfFiles)
-	ctx.Gui().Views.SortAndFilter.SetSortAndFilter()
+	gui.GetGui().Views.Main.SetTitle(fs.GetFileManager().Dir.Path, numberOfFiles)
+	gui.GetGui().Views.SortAndFilter.SetSortAndFilter()
 
-	ctx.Gui().Views.Main.RenderDir(
+	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
@@ -83,10 +84,10 @@ func Refresh(ctx ctx.Context, params ...interface{}) error {
 }
 
 func refreshSelections(ctx ctx.Context) {
-	ctx.Gui().Views.Selection.SetTitle(len(ctx.State().Selections))
-	ctx.Gui().Views.Selection.RenderSelections(ctx.State().Selections)
+	gui.GetGui().Views.Selection.SetTitle(len(ctx.State().Selections))
+	gui.GetGui().Views.Selection.RenderSelections(ctx.State().Selections)
 
-	ctx.Gui().Views.Main.RenderDir(
+	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,

@@ -2,6 +2,7 @@ package gui
 
 import (
 	"errors"
+	"sync"
 
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/gocui"
@@ -13,12 +14,26 @@ type Gui struct {
 	onViewsCreated func()
 }
 
-func NewGui(onViewsCreated func()) (*Gui, error) {
-	gui := &Gui{
-		onViewsCreated: onViewsCreated,
+var (
+	gui                   *Gui
+	guiInitializationOnce sync.Once
+)
+
+func InitGui(onViewsCreated func()) {
+	// Make sure only one gui is created
+	guiInitializationOnce.Do(func() {
+		gui = &Gui{
+			onViewsCreated: onViewsCreated,
+		}
+	})
+}
+
+func GetGui() *Gui {
+	if gui == nil {
+		panic("gui is not initialized")
 	}
 
-	return gui, nil
+	return gui
 }
 
 func (gui *Gui) Run() error {

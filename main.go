@@ -23,12 +23,9 @@ func main() {
 
 	config.LoadConfig()
 
-	app, err := app.NewApp()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	app := app.NewApp()
 
-	err = app.Run()
+	err := app.Run()
 	if err != nil {
 		log.Fatal(err.Error())
 	}

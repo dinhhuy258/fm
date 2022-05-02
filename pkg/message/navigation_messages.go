@@ -5,14 +5,15 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/ctx"
 	"github.com/dinhhuy258/fm/pkg/fs"
+	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
 func FocusFirst(ctx ctx.Context, _ ...interface{}) error {
-	_ = ctx.Gui().Views.Main.SetOrigin(0, 0)
-	_ = ctx.Gui().Views.Main.SetCursor(0, 0)
+	_ = gui.GetGui().Views.Main.SetOrigin(0, 0)
+	_ = gui.GetGui().Views.Main.SetCursor(0, 0)
 	ctx.State().FocusIdx = 0
 
-	ctx.Gui().Views.Main.RenderDir(
+	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
@@ -26,13 +27,13 @@ func FocusNext(ctx ctx.Context, _ ...interface{}) error {
 		return nil
 	}
 
-	if err := ctx.Gui().Views.Main.NextCursor(); err != nil {
+	if err := gui.GetGui().Views.Main.NextCursor(); err != nil {
 		return err
 	}
 
 	ctx.State().FocusIdx++
 
-	ctx.Gui().Views.Main.RenderDir(
+	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
@@ -46,13 +47,13 @@ func FocusPrevious(ctx ctx.Context, _ ...interface{}) error {
 		return nil
 	}
 
-	if err := ctx.Gui().Views.Main.PreviousCursor(); err != nil {
+	if err := gui.GetGui().Views.Main.PreviousCursor(); err != nil {
 		return err
 	}
 
 	ctx.State().FocusIdx--
 
-	ctx.Gui().Views.Main.RenderDir(
+	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
@@ -90,20 +91,20 @@ func FocusPath(ctx ctx.Context, params ...interface{}) error {
 		focusIdx = len(fs.GetFileManager().Dir.VisibleNodes) - 1
 	}
 
-	_ = ctx.Gui().Views.Main.SetCursor(0, 0)
-	_ = ctx.Gui().Views.Main.SetOrigin(0, 0)
+	_ = gui.GetGui().Views.Main.SetCursor(0, 0)
+	_ = gui.GetGui().Views.Main.SetOrigin(0, 0)
 
 	ctx.State().FocusIdx = 0
 
 	for i := 0; i < focusIdx; i++ {
-		if err := ctx.Gui().Views.Main.NextCursor(); err != nil {
+		if err := gui.GetGui().Views.Main.NextCursor(); err != nil {
 			return err
 		}
 
 		ctx.State().FocusIdx++
 	}
 
-	ctx.Gui().Views.Main.RenderDir(
+	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
@@ -159,7 +160,7 @@ func ChangeDirectory(ctx ctx.Context, path string, saveHistory bool, focusPath *
 
 		numberOfFiles := len(fs.GetFileManager().Dir.VisibleNodes)
 		ctx.State().NumberOfFiles = numberOfFiles
-		ctx.Gui().Views.Main.SetTitle(fs.GetFileManager().Dir.Path, numberOfFiles)
+		gui.GetGui().Views.Main.SetTitle(fs.GetFileManager().Dir.Path, numberOfFiles)
 
 		if focusPath == nil {
 			_ = FocusFirst(ctx)

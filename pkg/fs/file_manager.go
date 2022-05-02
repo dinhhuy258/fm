@@ -23,10 +23,6 @@ func GetFileManager() *FileManager {
 	return fileManager
 }
 
-func NewFileManager() *FileManager {
-	return &FileManager{}
-}
-
 func (fm *FileManager) LoadDirectory(path string) chan struct{} {
 	fm.Dir = &Directory{
 		Path: path,
