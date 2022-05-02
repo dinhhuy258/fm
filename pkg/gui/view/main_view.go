@@ -1,14 +1,16 @@
 package view
 
 import (
+	"github.com/dinhhuy258/fm/pkg/gui/view/style"
 	"log"
 	"strconv"
 
+	"github.com/dinhhuy258/fm/pkg/gui/view/row"
+
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
-	"github.com/dinhhuy258/fm/pkg/row"
-	"github.com/dinhhuy258/fm/pkg/style"
 	"github.com/dinhhuy258/gocui"
+	"github.com/gookit/color"
 )
 
 type MainView struct {
@@ -26,8 +28,8 @@ func newMainView(g *gocui.Gui, v *gocui.View, hv *gocui.View) *MainView {
 		hv:           newView(g, hv),
 		headerRow:    newRow(nil),
 		fileRow:      newRow(nil),
-		directoryRow: newRow(&config.AppConfig.DirectoryStyle),
-		selectionRow: newRow(&config.AppConfig.SelectionStyle),
+		directoryRow: newRow(&config.AppConfig.DirectoryColor),
+		selectionRow: newRow(&config.AppConfig.SelectionColor),
 	}
 
 	mv.v.v.Frame = false
@@ -38,10 +40,15 @@ func newMainView(g *gocui.Gui, v *gocui.View, hv *gocui.View) *MainView {
 	return mv
 }
 
-func newRow(pathStyle *style.TextStyle) *row.Row {
+func newRow(pathColor *color.Color) *row.Row {
 	r := &row.Row{}
 	r.AddCell(config.AppConfig.IndexPercentage, true, nil)
-	r.AddCell(config.AppConfig.PathPercentage, true, pathStyle)
+	if pathColor != nil {
+		pathStyle := style.FromBasicFg(*pathColor)
+		r.AddCell(config.AppConfig.PathPercentage, true, &pathStyle)
+	} else {
+		r.AddCell(config.AppConfig.PathPercentage, true, nil)
+	}
 	r.AddCell(config.AppConfig.SizePercentage, false, nil)
 
 	return r

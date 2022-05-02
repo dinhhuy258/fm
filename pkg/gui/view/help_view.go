@@ -2,9 +2,9 @@ package view
 
 import (
 	"fmt"
+	"github.com/dinhhuy258/fm/pkg/gui/view/row"
 	"log"
 
-	"github.com/dinhhuy258/fm/pkg/row"
 	"github.com/dinhhuy258/gocui"
 )
 

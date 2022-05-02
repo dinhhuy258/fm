@@ -3,8 +3,7 @@ package row
 import (
 	"errors"
 	"fmt"
-
-	"github.com/dinhhuy258/fm/pkg/style"
+	"github.com/dinhhuy258/fm/pkg/gui/view/style"
 )
 
 var ErrInvalidRowData = errors.New("invalid row data")

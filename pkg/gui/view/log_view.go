@@ -2,7 +2,7 @@ package view
 
 import (
 	"github.com/dinhhuy258/fm/pkg/config"
-	"github.com/dinhhuy258/fm/pkg/style"
+	"github.com/dinhhuy258/fm/pkg/gui/view/style"
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -39,13 +39,13 @@ func (lv *LogView) SetLog(log string, level LogLevel) {
 	switch {
 	case level == INFO:
 		log = config.AppConfig.LogInfoFormat + log
-		logStyle = config.AppConfig.LogInfoStyle
+		logStyle = style.FromBasicFg(config.AppConfig.LogInfoColor)
 	case level == WARNING:
 		log = config.AppConfig.LogWarningFormat + log
-		logStyle = config.AppConfig.LogWarningStyle
+		logStyle = style.FromBasicFg(config.AppConfig.LogWarningColor)
 	default:
 		log = config.AppConfig.LogErrorFormat + log
-		logStyle = config.AppConfig.LogErrorStyle
+		logStyle = style.FromBasicFg(config.AppConfig.LogErrorColor)
 	}
 
 	lv.v.SetViewContent([]string{logStyle.Sprint(log)})

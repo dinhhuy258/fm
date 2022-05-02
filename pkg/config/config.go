@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/dinhhuy258/fm/pkg/style"
 	"github.com/dinhhuy258/gocui"
 	"github.com/gookit/color"
 )
@@ -22,17 +21,17 @@ type Config struct {
 	FocusFg          gocui.Attribute
 	SelectionPrefix  string
 	SelectionSuffix  string
-	SelectionStyle   style.TextStyle
+	SelectionColor   color.Color
 	FolderIcon       string
 	FileIcon         string
-	DirectoryStyle   style.TextStyle
-	SizeStyle        style.TextStyle
+	DirectoryColor   color.Color
+	SizeStyle        color.Color
 	LogErrorFormat   string
-	LogErrorStyle    style.TextStyle
+	LogErrorColor    color.Color
 	LogWarningFormat string
-	LogWarningStyle  style.TextStyle
+	LogWarningColor  color.Color
 	LogInfoFormat    string
-	LogInfoStyle     style.TextStyle
+	LogInfoColor     color.Color
 }
 
 var AppConfig *Config
@@ -54,16 +53,16 @@ func LoadConfig() {
 		FocusFg:          gocui.ColorBlue,
 		SelectionPrefix:  "{",
 		SelectionSuffix:  "}",
-		SelectionStyle:   style.FromBasicFg(color.Green),
+		SelectionColor:   color.Green,
 		FolderIcon:       "",
 		FileIcon:         "",
-		DirectoryStyle:   style.FromBasicFg(color.Cyan),
-		SizeStyle:        style.FromBasicFg(color.White),
+		DirectoryColor:   color.Cyan,
+		SizeStyle:        color.White,
 		LogErrorFormat:   "[ERROR] ",
-		LogErrorStyle:    style.FromBasicFg(color.Red),
+		LogErrorColor:    color.Red,
 		LogWarningFormat: "[WARNING] ",
-		LogWarningStyle:  style.FromBasicFg(color.Yellow),
+		LogWarningColor:  color.Yellow,
 		LogInfoFormat:    "[INFO] ",
-		LogInfoStyle:     style.FromBasicFg(color.Green),
+		LogInfoColor:     color.Green,
 	}
 }
