@@ -2,15 +2,15 @@ package message
 
 import (
 	"fmt"
+	"github.com/dinhhuy258/fm/pkg/app/context"
 	"log"
 
-	"github.com/dinhhuy258/fm/pkg/ctx"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
-func PasteSelections(ctx ctx.Context, params ...interface{}) error {
+func PasteSelections(ctx context.Context, params ...interface{}) error {
 	if len(params) != 1 {
 		return ErrInvalidMessageParameter
 	}
@@ -41,7 +41,7 @@ func PasteSelections(ctx ctx.Context, params ...interface{}) error {
 	return nil
 }
 
-func paste(ctx ctx.Context, paths []string, dest, operation string) {
+func paste(ctx context.Context, paths []string, dest, operation string) {
 	gui.GetGui().Views.Progress.StartProgress(len(paths))
 
 	var countChan chan int

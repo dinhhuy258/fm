@@ -1,24 +1,24 @@
 package app
 
 import (
+	"github.com/dinhhuy258/fm/pkg/app/context"
+	"github.com/dinhhuy258/fm/pkg/app/message"
+	"github.com/dinhhuy258/fm/pkg/app/mode"
 	"log"
 	"os"
 
 	"github.com/dinhhuy258/fm/pkg/gui"
-	"github.com/dinhhuy258/fm/pkg/message"
-	"github.com/dinhhuy258/fm/pkg/mode"
-	"github.com/dinhhuy258/fm/pkg/state"
 )
 
 type App struct {
-	state *state.State
+	state *context.State
 	modes *mode.Modes
 }
 
 // NewApp bootstrap a new application
 func NewApp() *App {
 	app := &App{
-		state: state.NewState(),
+		state: context.NewState(),
 	}
 
 	app.modes = mode.NewModes()
@@ -41,7 +41,7 @@ func (app *App) onModeChanged() {
 	gui.Views.Help.SetHelp(keys, helps)
 }
 
-func (app *App) State() *state.State {
+func (app *App) State() *context.State {
 	return app.state
 }
 

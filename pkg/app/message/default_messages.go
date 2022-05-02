@@ -2,9 +2,9 @@ package message
 
 import (
 	"errors"
+	"github.com/dinhhuy258/fm/pkg/app/context"
 
 	"github.com/dinhhuy258/fm/pkg/config"
-	"github.com/dinhhuy258/fm/pkg/ctx"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/gocui"
@@ -12,7 +12,7 @@ import (
 
 var ErrInvalidMessageParameter = errors.New("invalid message parameter")
 
-func ToggleSelection(ctx ctx.Context, _ ...interface{}) error {
+func ToggleSelection(ctx context.Context, _ ...interface{}) error {
 	path := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx].AbsolutePath
 
 	if _, hasPath := ctx.State().Selections[path]; hasPath {
@@ -26,7 +26,7 @@ func ToggleSelection(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func ToggleHidden(ctx ctx.Context, _ ...interface{}) error {
+func ToggleHidden(ctx context.Context, _ ...interface{}) error {
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
 	fs.GetFileManager().Dir.Reload()
@@ -45,7 +45,7 @@ func ToggleHidden(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func ClearSelection(ctx ctx.Context, _ ...interface{}) error {
+func ClearSelection(ctx context.Context, _ ...interface{}) error {
 	ctx.State().Selections = make(map[string]struct{})
 
 	refreshSelections(ctx)
@@ -53,7 +53,7 @@ func ClearSelection(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func SwitchMode(ctx ctx.Context, params ...interface{}) error {
+func SwitchMode(ctx context.Context, params ...interface{}) error {
 	if len(params) != 1 {
 		return ErrInvalidMessageParameter
 	}
@@ -61,11 +61,11 @@ func SwitchMode(ctx ctx.Context, params ...interface{}) error {
 	return ctx.PushMode(params[0].(string))
 }
 
-func PopMode(ctx ctx.Context, _ ...interface{}) error {
+func PopMode(ctx context.Context, _ ...interface{}) error {
 	return ctx.PopMode()
 }
 
-func Refresh(ctx ctx.Context, params ...interface{}) error {
+func Refresh(ctx context.Context, params ...interface{}) error {
 	currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 
 	focus := currentNode.AbsolutePath
@@ -83,7 +83,7 @@ func Refresh(ctx ctx.Context, params ...interface{}) error {
 	return nil
 }
 
-func refreshSelections(ctx ctx.Context) {
+func refreshSelections(ctx context.Context) {
 	gui.GetGui().Views.Selection.SetTitle(len(ctx.State().Selections))
 	gui.GetGui().Views.Selection.RenderSelections(ctx.State().Selections)
 
@@ -94,6 +94,6 @@ func refreshSelections(ctx ctx.Context) {
 	)
 }
 
-func Quit(_ ctx.Context, _ ...interface{}) error {
+func Quit(_ context.Context, _ ...interface{}) error {
 	return gocui.ErrQuit
 }

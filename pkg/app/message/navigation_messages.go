@@ -1,14 +1,14 @@
 package message
 
 import (
+	"github.com/dinhhuy258/fm/pkg/app/context"
 	"path/filepath"
 
-	"github.com/dinhhuy258/fm/pkg/ctx"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
-func FocusFirst(ctx ctx.Context, _ ...interface{}) error {
+func FocusFirst(ctx context.Context, _ ...interface{}) error {
 	_ = gui.GetGui().Views.Main.SetOrigin(0, 0)
 	_ = gui.GetGui().Views.Main.SetCursor(0, 0)
 	ctx.State().FocusIdx = 0
@@ -22,7 +22,7 @@ func FocusFirst(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func FocusNext(ctx ctx.Context, _ ...interface{}) error {
+func FocusNext(ctx context.Context, _ ...interface{}) error {
 	if ctx.State().FocusIdx == ctx.State().NumberOfFiles-1 {
 		return nil
 	}
@@ -42,7 +42,7 @@ func FocusNext(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func FocusPrevious(ctx ctx.Context, _ ...interface{}) error {
+func FocusPrevious(ctx context.Context, _ ...interface{}) error {
 	if ctx.State().FocusIdx == 0 {
 		return nil
 	}
@@ -62,7 +62,7 @@ func FocusPrevious(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func FocusPath(ctx ctx.Context, params ...interface{}) error {
+func FocusPath(ctx context.Context, params ...interface{}) error {
 	if len(params) != 1 {
 		return ErrInvalidMessageParameter
 	}
@@ -113,7 +113,7 @@ func FocusPath(ctx ctx.Context, params ...interface{}) error {
 	return nil
 }
 
-func Enter(ctx ctx.Context, _ ...interface{}) error {
+func Enter(ctx context.Context, _ ...interface{}) error {
 	currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 
 	if currentNode.IsDir {
@@ -123,7 +123,7 @@ func Enter(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func Back(ctx ctx.Context, _ ...interface{}) error {
+func Back(ctx context.Context, _ ...interface{}) error {
 	parent := fs.GetFileManager().Dir.Parent()
 
 	ChangeDirectory(ctx, parent, true, &fs.GetFileManager().Dir.Path)
@@ -131,7 +131,7 @@ func Back(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func LastVisitedPath(ctx ctx.Context, _ ...interface{}) error {
+func LastVisitedPath(ctx context.Context, _ ...interface{}) error {
 	ctx.State().History.VisitLast()
 	node := ctx.State().History.Peek()
 	ChangeDirectory(ctx, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
@@ -139,7 +139,7 @@ func LastVisitedPath(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func NextVisitedPath(ctx ctx.Context, _ ...interface{}) error {
+func NextVisitedPath(ctx context.Context, _ ...interface{}) error {
 	ctx.State().History.VisitNext()
 	node := ctx.State().History.Peek()
 	ChangeDirectory(ctx, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
@@ -147,7 +147,7 @@ func NextVisitedPath(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func ChangeDirectory(ctx ctx.Context, path string, saveHistory bool, focusPath *string) {
+func ChangeDirectory(ctx context.Context, path string, saveHistory bool, focusPath *string) {
 	if saveHistory && fs.GetFileManager().Dir != nil {
 		currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 		ctx.State().History.Push(currentNode)

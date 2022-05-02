@@ -2,14 +2,14 @@ package message
 
 import (
 	"fmt"
+	"github.com/dinhhuy258/fm/pkg/app/context"
 
-	"github.com/dinhhuy258/fm/pkg/ctx"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
-func DeleteSelections(ctx ctx.Context, _ ...interface{}) error {
+func DeleteSelections(ctx context.Context, _ ...interface{}) error {
 	if len(ctx.State().Selections) == 0 {
 		gui.GetGui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 
@@ -47,7 +47,7 @@ func DeleteSelections(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func DeleteCurrent(ctx ctx.Context, _ ...interface{}) error {
+func DeleteCurrent(ctx context.Context, _ ...interface{}) error {
 	currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 
 	gui.GetGui().Views.Confirm.SetConfirmation("Do you want to delete " + currentNode.RelativePath + "?")
@@ -69,7 +69,7 @@ func DeleteCurrent(ctx ctx.Context, _ ...interface{}) error {
 	return nil
 }
 
-func deletePaths(ctx ctx.Context, paths []string) {
+func deletePaths(ctx context.Context, paths []string) {
 	gui.GetGui().Views.Progress.StartProgress(len(paths))
 
 	countChan, errChan := fs.GetFileManager().Delete(paths)
@@ -109,7 +109,7 @@ func deletePaths(ctx ctx.Context, paths []string) {
 	}()
 }
 
-func getFocusIdx(ctx ctx.Context, paths []string) int {
+func getFocusIdx(ctx context.Context, paths []string) int {
 	pathsMap := make(map[string]struct{})
 	for _, path := range paths {
 		pathsMap[path] = struct{}{}

@@ -1,6 +1,8 @@
 package mode
 
-import "github.com/dinhhuy258/fm/pkg/message"
+import (
+	message2 "github.com/dinhhuy258/fm/pkg/app/message"
+)
 
 func createDeleteMode() *Mode {
 	return &Mode{
@@ -9,33 +11,33 @@ func createDeleteMode() *Mode {
 			OnKeys: map[string]*Action{
 				"d": {
 					Help: "delete",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.DeleteCurrent,
+							Func: message2.DeleteCurrent,
 						},
 					},
 				},
 				"s": {
 					Help: "delete selections",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.DeleteSelections,
+							Func: message2.DeleteSelections,
 						},
 					},
 				},
 				"esc": {
 					Help: "cancel",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.PopMode,
+							Func: message2.PopMode,
 						},
 					},
 				},
 				"q": {
 					Help: "quit",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.Quit,
+							Func: message2.Quit,
 						},
 					},
 				},

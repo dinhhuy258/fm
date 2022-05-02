@@ -1,6 +1,8 @@
 package mode
 
-import "github.com/dinhhuy258/fm/pkg/message"
+import (
+	message2 "github.com/dinhhuy258/fm/pkg/app/message"
+)
 
 func createDefaultMode() *Mode {
 	return &Mode{
@@ -9,142 +11,142 @@ func createDefaultMode() *Mode {
 			OnKeys: map[string]*Action{
 				"j": {
 					Help: "down",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.FocusNext,
+							Func: message2.FocusNext,
 						},
 					},
 				},
 				"k": {
 					Help: "up",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.FocusPrevious,
+							Func: message2.FocusPrevious,
 						},
 					},
 				},
 				"l": {
 					Help: "enter",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.Enter,
+							Func: message2.Enter,
 						},
 					},
 				},
 				"h": {
 					Help: "back",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.Back,
+							Func: message2.Back,
 						},
 					},
 				},
 				"m": {
 					Help: "mark save",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.SwitchMode,
+							Func: message2.SwitchMode,
 							Args: []interface{}{"mark-save"},
 						},
 					},
 				},
 				"`": {
 					Help: "mark load",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.SwitchMode,
+							Func: message2.SwitchMode,
 							Args: []interface{}{"mark-load"},
 						},
 					},
 				},
 				"d": {
 					Help: "delete",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.SwitchMode,
+							Func: message2.SwitchMode,
 							Args: []interface{}{"delete"},
 						},
 					},
 				},
 				"p": {
 					Help: "copy",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.PasteSelections,
+							Func: message2.PasteSelections,
 							Args: []interface{}{"copy"},
 						},
 					},
 				},
 				"x": {
 					Help: "cut",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.PasteSelections,
+							Func: message2.PasteSelections,
 							Args: []interface{}{"cut"},
 						},
 					},
 				},
 				"n": {
 					Help: "new",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.NewFile,
+							Func: message2.NewFile,
 						},
 					},
 				},
 				"ctrl+i": {
 					Help: "next visited path",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.NextVisitedPath,
+							Func: message2.NextVisitedPath,
 						},
 					},
 				},
 				"ctrl+o": {
 					Help: "last visited path",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.LastVisitedPath,
+							Func: message2.LastVisitedPath,
 						},
 					},
 				},
 				"ctrl+r": {
 					Help: "refresh",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.Refresh,
+							Func: message2.Refresh,
 						},
 					},
 				},
 				"space": {
 					Help: "toggle selection",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.ToggleSelection,
+							Func: message2.ToggleSelection,
 						},
 					},
 				},
 				"ctrl+space": {
 					Help: "clear selection",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.ClearSelection,
+							Func: message2.ClearSelection,
 						},
 					},
 				},
 				".": {
 					Help: "toggle hidden",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.ToggleHidden,
+							Func: message2.ToggleHidden,
 						},
 					},
 				},
 				"q": {
 					Help: "quit",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.Quit,
+							Func: message2.Quit,
 						},
 					},
 				},

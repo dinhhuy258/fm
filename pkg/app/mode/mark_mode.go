@@ -1,6 +1,8 @@
 package mode
 
-import "github.com/dinhhuy258/fm/pkg/message"
+import (
+	message2 "github.com/dinhhuy258/fm/pkg/app/message"
+)
 
 func createMarkSaveMode() *Mode {
 	return &Mode{
@@ -8,18 +10,18 @@ func createMarkSaveMode() *Mode {
 		KeyBindings: &KeyBindings{
 			OnAlphabet: &Action{
 				Help: "mark save",
-				Messages: []message.Message{
+				Messages: []message2.Message{
 					{
-						Func: message.MarkSave,
+						Func: message2.MarkSave,
 					},
 				},
 			},
 			OnKeys: map[string]*Action{
 				"esc": {
 					Help: "cancel",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.PopMode,
+							Func: message2.PopMode,
 						},
 					},
 				},
@@ -34,18 +36,18 @@ func createMarkLoadMode() *Mode {
 		KeyBindings: &KeyBindings{
 			OnAlphabet: &Action{
 				Help: "mark load",
-				Messages: []message.Message{
+				Messages: []message2.Message{
 					{
-						Func: message.MarkLoad,
+						Func: message2.MarkLoad,
 					},
 				},
 			},
 			OnKeys: map[string]*Action{
 				"esc": {
 					Help: "cancel",
-					Messages: []message.Message{
+					Messages: []message2.Message{
 						{
-							Func: message.PopMode,
+							Func: message2.PopMode,
 						},
 					},
 				},

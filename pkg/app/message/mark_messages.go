@@ -1,11 +1,11 @@
 package message
 
 import (
-	"github.com/dinhhuy258/fm/pkg/ctx"
+	"github.com/dinhhuy258/fm/pkg/app/context"
 	"github.com/dinhhuy258/fm/pkg/fs"
 )
 
-func MarkSave(ctx ctx.Context, params ...interface{}) error {
+func MarkSave(ctx context.Context, params ...interface{}) error {
 	if len(params) != 1 {
 		return ErrInvalidMessageParameter
 	}
@@ -22,7 +22,7 @@ func MarkSave(ctx ctx.Context, params ...interface{}) error {
 	return nil
 }
 
-func MarkLoad(ctx ctx.Context, params ...interface{}) error {
+func MarkLoad(ctx context.Context, params ...interface{}) error {
 	if len(params) != 1 {
 		return ErrInvalidMessageParameter
 	}

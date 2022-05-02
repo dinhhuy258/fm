@@ -2,16 +2,16 @@ package message
 
 import (
 	"fmt"
+	"github.com/dinhhuy258/fm/pkg/app/context"
 	"path"
 	"strings"
 
-	"github.com/dinhhuy258/fm/pkg/ctx"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
-func NewFile(ctx ctx.Context, _ ...interface{}) error {
+func NewFile(ctx context.Context, _ ...interface{}) error {
 	gui.GetGui().Views.Input.SetInput("new file")
 
 	go func() {

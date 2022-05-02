@@ -2,9 +2,8 @@ package mode
 
 import (
 	"errors"
-
-	"github.com/dinhhuy258/fm/pkg/message"
-	"github.com/dinhhuy258/fm/pkg/state"
+	"github.com/dinhhuy258/fm/pkg/app/context"
+	"github.com/dinhhuy258/fm/pkg/app/message"
 )
 
 var (
@@ -70,7 +69,7 @@ func (m *Modes) Peek() *Mode {
 	return m.Modes[len(m.Modes)-1]
 }
 
-func (m *Mode) GetHelp(state *state.State) ([]string, []string) {
+func (m *Mode) GetHelp(state *context.State) ([]string, []string) {
 	if m.Name == "mark load" {
 		keys := make([]string, 0, len(m.KeyBindings.OnKeys)+len(state.Marks))
 		helps := make([]string, 0, len(m.KeyBindings.OnKeys)+len(state.Marks))

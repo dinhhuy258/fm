@@ -1,4 +1,4 @@
-package state
+package context
 
 type State struct {
 	FocusIdx      int
