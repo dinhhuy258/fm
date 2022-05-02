@@ -37,7 +37,7 @@ func NewFile(ctx ctx.Context, _ ...interface{}) error {
 		} else {
 			ctx.Gui().Views.Log.SetLog(fmt.Sprintf("File %s were created successfully", name),
 				view.LogLevel(view.INFO))
-			_ = Refresh(ctx, path.Join(ctx.FileManager().Dir.Path, name))
+			_ = Refresh(ctx, path.Join(fs.GetFileManager().Dir.Path, name))
 		}
 	}()
 

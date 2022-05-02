@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dinhhuy258/fm/pkg/ctx"
+	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
@@ -46,7 +47,7 @@ func DeleteSelections(ctx ctx.Context, _ ...interface{}) error {
 }
 
 func DeleteCurrent(ctx ctx.Context, _ ...interface{}) error {
-	currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
+	currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 
 	ctx.Gui().Views.Confirm.SetConfirmation("Do you want to delete " + currentNode.RelativePath + "?")
 
@@ -70,7 +71,7 @@ func DeleteCurrent(ctx ctx.Context, _ ...interface{}) error {
 func deletePaths(ctx ctx.Context, paths []string) {
 	ctx.Gui().Views.Progress.StartProgress(len(paths))
 
-	countChan, errChan := ctx.FileManager().Delete(paths)
+	countChan, errChan := fs.GetFileManager().Delete(paths)
 
 	go func() {
 		errCount := 0
@@ -102,7 +103,7 @@ func deletePaths(ctx ctx.Context, paths []string) {
 		if focusIdx < 0 {
 			_ = Refresh(ctx)
 		} else {
-			_ = Refresh(ctx, ctx.FileManager().Dir.VisibleNodes[focusIdx].AbsolutePath)
+			_ = Refresh(ctx, fs.GetFileManager().Dir.VisibleNodes[focusIdx].AbsolutePath)
 		}
 	}()
 }
@@ -113,7 +114,7 @@ func getFocusIdx(ctx ctx.Context, paths []string) int {
 		pathsMap[path] = struct{}{}
 	}
 
-	visibleNodes := ctx.FileManager().Dir.VisibleNodes
+	visibleNodes := fs.GetFileManager().Dir.VisibleNodes
 	visibleNodesSize := len(visibleNodes)
 	focusIdx := ctx.State().FocusIdx
 

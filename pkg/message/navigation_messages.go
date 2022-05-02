@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 
 	"github.com/dinhhuy258/fm/pkg/ctx"
+	"github.com/dinhhuy258/fm/pkg/fs"
 )
 
 func FocusFirst(ctx ctx.Context, _ ...interface{}) error {
@@ -12,7 +13,7 @@ func FocusFirst(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().FocusIdx = 0
 
 	ctx.Gui().Views.Main.RenderDir(
-		ctx.FileManager().Dir,
+		fs.GetFileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
 	)
@@ -32,7 +33,7 @@ func FocusNext(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().FocusIdx++
 
 	ctx.Gui().Views.Main.RenderDir(
-		ctx.FileManager().Dir,
+		fs.GetFileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
 	)
@@ -52,7 +53,7 @@ func FocusPrevious(ctx ctx.Context, _ ...interface{}) error {
 	ctx.State().FocusIdx--
 
 	ctx.Gui().Views.Main.RenderDir(
-		ctx.FileManager().Dir,
+		fs.GetFileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
 	)
@@ -70,14 +71,14 @@ func FocusPath(ctx ctx.Context, params ...interface{}) error {
 		return ErrInvalidMessageParameter
 	}
 
-	if ctx.FileManager().Dir.Path != filepath.Dir(path) {
-		dirLoadedChan := ctx.FileManager().LoadDirectory(filepath.Dir(path))
+	if fs.GetFileManager().Dir.Path != filepath.Dir(path) {
+		dirLoadedChan := fs.GetFileManager().LoadDirectory(filepath.Dir(path))
 		<-dirLoadedChan
 	}
 
 	focusIdx := 0
 
-	for _, node := range ctx.FileManager().Dir.VisibleNodes {
+	for _, node := range fs.GetFileManager().Dir.VisibleNodes {
 		if node.AbsolutePath == path {
 			break
 		}
@@ -85,8 +86,8 @@ func FocusPath(ctx ctx.Context, params ...interface{}) error {
 		focusIdx++
 	}
 
-	if focusIdx == len(ctx.FileManager().Dir.VisibleNodes) {
-		focusIdx = len(ctx.FileManager().Dir.VisibleNodes) - 1
+	if focusIdx == len(fs.GetFileManager().Dir.VisibleNodes) {
+		focusIdx = len(fs.GetFileManager().Dir.VisibleNodes) - 1
 	}
 
 	_ = ctx.Gui().Views.Main.SetCursor(0, 0)
@@ -103,7 +104,7 @@ func FocusPath(ctx ctx.Context, params ...interface{}) error {
 	}
 
 	ctx.Gui().Views.Main.RenderDir(
-		ctx.FileManager().Dir,
+		fs.GetFileManager().Dir,
 		ctx.State().Selections,
 		ctx.State().FocusIdx,
 	)
@@ -112,7 +113,7 @@ func FocusPath(ctx ctx.Context, params ...interface{}) error {
 }
 
 func Enter(ctx ctx.Context, _ ...interface{}) error {
-	currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
+	currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 
 	if currentNode.IsDir {
 		ChangeDirectory(ctx, currentNode.AbsolutePath, true, nil)
@@ -122,9 +123,9 @@ func Enter(ctx ctx.Context, _ ...interface{}) error {
 }
 
 func Back(ctx ctx.Context, _ ...interface{}) error {
-	parent := ctx.FileManager().Dir.Parent()
+	parent := fs.GetFileManager().Dir.Parent()
 
-	ChangeDirectory(ctx, parent, true, &ctx.FileManager().Dir.Path)
+	ChangeDirectory(ctx, parent, true, &fs.GetFileManager().Dir.Path)
 
 	return nil
 }
@@ -146,19 +147,19 @@ func NextVisitedPath(ctx ctx.Context, _ ...interface{}) error {
 }
 
 func ChangeDirectory(ctx ctx.Context, path string, saveHistory bool, focusPath *string) {
-	if saveHistory && ctx.FileManager().Dir != nil {
-		currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
+	if saveHistory && fs.GetFileManager().Dir != nil {
+		currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 		ctx.State().History.Push(currentNode)
 	}
 
-	dirLoadedChan := ctx.FileManager().LoadDirectory(path)
+	dirLoadedChan := fs.GetFileManager().LoadDirectory(path)
 
 	go func() {
 		<-dirLoadedChan
 
-		numberOfFiles := len(ctx.FileManager().Dir.VisibleNodes)
+		numberOfFiles := len(fs.GetFileManager().Dir.VisibleNodes)
 		ctx.State().NumberOfFiles = numberOfFiles
-		ctx.Gui().Views.Main.SetTitle(ctx.FileManager().Dir.Path, numberOfFiles)
+		ctx.Gui().Views.Main.SetTitle(fs.GetFileManager().Dir.Path, numberOfFiles)
 
 		if focusPath == nil {
 			_ = FocusFirst(ctx)
@@ -167,7 +168,7 @@ func ChangeDirectory(ctx ctx.Context, path string, saveHistory bool, focusPath *
 		}
 
 		if saveHistory {
-			currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
+			currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 			ctx.State().History.Push(currentNode)
 		}
 	}()

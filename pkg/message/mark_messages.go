@@ -1,6 +1,9 @@
 package message
 
-import "github.com/dinhhuy258/fm/pkg/ctx"
+import (
+	"github.com/dinhhuy258/fm/pkg/ctx"
+	"github.com/dinhhuy258/fm/pkg/fs"
+)
 
 func MarkSave(ctx ctx.Context, params ...interface{}) error {
 	if len(params) != 1 {
@@ -13,7 +16,7 @@ func MarkSave(ctx ctx.Context, params ...interface{}) error {
 	}
 
 	_ = ctx.PopMode()
-	currentNode := ctx.FileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
+	currentNode := fs.GetFileManager().Dir.VisibleNodes[ctx.State().FocusIdx]
 	ctx.State().Marks[key] = currentNode.AbsolutePath
 
 	return nil

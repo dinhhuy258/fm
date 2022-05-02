@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/dinhhuy258/fm/pkg/ctx"
+	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
@@ -29,7 +30,7 @@ func PasteSelections(ctx ctx.Context, params ...interface{}) error {
 		paths = append(paths, k)
 	}
 
-	paste(ctx, paths, ctx.FileManager().Dir.Path, operation)
+	paste(ctx, paths, fs.GetFileManager().Dir.Path, operation)
 
 	// Clear selections
 	for k := range ctx.State().Selections {
@@ -47,9 +48,9 @@ func paste(ctx ctx.Context, paths []string, dest, operation string) {
 	var errChan chan error
 
 	if operation == "copy" {
-		countChan, errChan = ctx.FileManager().Copy(paths, dest)
+		countChan, errChan = fs.GetFileManager().Copy(paths, dest)
 	} else {
-		countChan, errChan = ctx.FileManager().Move(paths, dest)
+		countChan, errChan = fs.GetFileManager().Move(paths, dest)
 	}
 
 	go func() {

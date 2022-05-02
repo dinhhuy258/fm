@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/message"
 	"github.com/dinhhuy258/fm/pkg/mode"
@@ -13,7 +12,6 @@ import (
 
 type App struct {
 	gui         *gui.Gui
-	fileManager *fs.FileManager
 	state       *state.State
 	modes       *mode.Modes
 }
@@ -22,7 +20,6 @@ type App struct {
 func NewApp() (*App, error) {
 	app := &App{
 		state:       state.NewState(),
-		fileManager: fs.NewFileManager(),
 	}
 
 	app.modes = mode.NewModes()
@@ -55,10 +52,6 @@ func (app *App) State() *state.State {
 
 func (app *App) Gui() *gui.Gui {
 	return app.gui
-}
-
-func (app *App) FileManager() *fs.FileManager {
-	return app.fileManager
 }
 
 func (app *App) PopMode() error {

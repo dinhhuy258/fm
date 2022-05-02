@@ -5,10 +5,22 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
 type FileManager struct {
 	Dir *Directory
+}
+
+var fileManager *FileManager
+var fileManagerCreationOnce sync.Once
+
+func GetFileManager() *FileManager {
+	fileManagerCreationOnce.Do(func() {
+		fileManager = &FileManager{}
+	})
+
+	return fileManager
 }
 
 func NewFileManager() *FileManager {
