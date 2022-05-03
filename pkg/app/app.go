@@ -7,7 +7,6 @@ import (
 	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/app/context"
 	"github.com/dinhhuy258/fm/pkg/app/mode"
-
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
 

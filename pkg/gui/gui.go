@@ -14,6 +14,22 @@ type Gui struct {
 	onViewsCreated func()
 }
 
+func (gui *Gui) StartProgress(total int) {
+	gui.Views.Progress.StartProgress(total)
+}
+
+func (gui *Gui) UpdateProgress() {
+	gui.Views.Progress.AddCurrent(1)
+}
+
+func (gui *Gui) IsProgressFinished() bool {
+	return gui.Views.Progress.IsFinished()
+}
+
+func (gui *Gui) SetLog(log string, level view.LogLevel) {
+	gui.Views.Log.SetLog(log, level)
+}
+
 var (
 	gui                   *Gui
 	guiInitializationOnce sync.Once

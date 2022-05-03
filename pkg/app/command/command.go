@@ -11,7 +11,7 @@ type IApp interface {
 }
 
 type Command struct {
-	Help               string
-	Func               func(app IApp, params ...interface{}) error
-	Args               []interface{}
+	Help string
+	Func func(app IApp, params ...interface{}) error
+	Args []interface{}
 }

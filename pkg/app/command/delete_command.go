@@ -10,7 +10,7 @@ import (
 
 func DeleteSelections(app IApp, _ ...interface{}) error {
 	if len(app.State().Selections) == 0 {
-		gui.GetGui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
+		gui.GetGui().SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 
 		return PopMode(app)
 	}
@@ -39,7 +39,7 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 				delete(app.State().Selections, k)
 			}
 		} else {
-			gui.GetGui().Views.Log.SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
+			gui.GetGui().SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
 		}
 	}()
 
@@ -61,7 +61,7 @@ func DeleteCurrent(app IApp, _ ...interface{}) error {
 		if ans {
 			deletePaths(app, []string{currentNode.AbsolutePath})
 		} else {
-			gui.GetGui().Views.Log.SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
+			gui.GetGui().SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
 		}
 	}()
 
@@ -69,7 +69,7 @@ func DeleteCurrent(app IApp, _ ...interface{}) error {
 }
 
 func deletePaths(app IApp, paths []string) {
-	gui.GetGui().Views.Progress.StartProgress(len(paths))
+	gui.GetGui().StartProgress(len(paths))
 
 	countChan, errChan := fs.GetFileManager().Delete(paths)
 
@@ -79,9 +79,9 @@ func deletePaths(app IApp, paths []string) {
 		for {
 			select {
 			case <-countChan:
-				gui.GetGui().Views.Progress.AddCurrent(1)
+				gui.GetGui().UpdateProgress()
 
-				if gui.GetGui().Views.Progress.IsFinished() {
+				if gui.GetGui().IsProgressFinished() {
 					break loop
 				}
 			case <-errChan:
@@ -90,12 +90,12 @@ func deletePaths(app IApp, paths []string) {
 		}
 
 		if errCount != 0 {
-			gui.GetGui().Views.Log.SetLog(
+			gui.GetGui().SetLog(
 				fmt.Sprintf("Finished to delete %v. Error count: %d", paths, errCount),
 				view.LogLevel(view.INFO),
 			)
 		} else {
-			gui.GetGui().Views.Log.SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
+			gui.GetGui().SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
 		}
 
 		focusIdx := getFocusIdx(app, paths)

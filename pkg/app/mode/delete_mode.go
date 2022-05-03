@@ -8,7 +8,7 @@ type DeleteMode struct {
 	*Mode
 }
 
-func (_ *DeleteMode) GetName() string {
+func (*DeleteMode) GetName() string {
 	return "delete"
 }
 

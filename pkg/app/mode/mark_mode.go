@@ -9,7 +9,7 @@ type MarkSaveMode struct {
 	*Mode
 }
 
-func (_ *MarkSaveMode) GetName() string {
+func (*MarkSaveMode) GetName() string {
 	return "mark-save"
 }
 
@@ -55,7 +55,7 @@ func createMarkLoadMode() *MarkLoadMode {
 	}
 }
 
-func (_ *MarkLoadMode) GetName() string {
+func (*MarkLoadMode) GetName() string {
 	return "mark-load"
 }
 

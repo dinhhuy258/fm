@@ -33,9 +33,9 @@ func NewFile(app IApp, _ ...interface{}) error {
 		}
 
 		if err != nil {
-			gui.GetGui().Views.Log.SetLog(fmt.Sprintf("Failed to create file %s", name), view.LogLevel(view.ERROR))
+			gui.GetGui().SetLog(fmt.Sprintf("Failed to create file %s", name), view.LogLevel(view.ERROR))
 		} else {
-			gui.GetGui().Views.Log.SetLog(fmt.Sprintf("File %s were created successfully", name),
+			gui.GetGui().SetLog(fmt.Sprintf("File %s were created successfully", name),
 				view.LogLevel(view.INFO))
 			_ = Refresh(app, path.Join(fs.GetFileManager().Dir.Path, name))
 		}

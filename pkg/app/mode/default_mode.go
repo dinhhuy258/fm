@@ -8,7 +8,7 @@ type DefaultMode struct {
 	*Mode
 }
 
-func (_ *DefaultMode) GetName() string {
+func (*DefaultMode) GetName() string {
 	return "default"
 }
 

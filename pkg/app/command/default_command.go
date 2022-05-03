@@ -61,7 +61,7 @@ func Refresh(app IApp, params ...interface{}) error {
 
 	focus := currentNode.AbsolutePath
 	if len(params) == 1 {
-		focus = params[0].(string)
+		focus, _ = params[0].(string)
 	}
 
 	ChangeDirectory(app, fs.GetFileManager().Dir.Path, false, &focus)

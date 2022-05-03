@@ -6,6 +6,12 @@ import (
 )
 
 type Config struct {
+	SelectionColor   color.Color
+	DirectoryColor   color.Color
+	SizeStyle        color.Color
+	LogErrorColor    color.Color
+	LogWarningColor  color.Color
+	LogInfoColor     color.Color
 	ShowHidden       bool
 	IndexHeader      string
 	IndexPercentage  int
@@ -21,17 +27,11 @@ type Config struct {
 	FocusFg          gocui.Attribute
 	SelectionPrefix  string
 	SelectionSuffix  string
-	SelectionColor   color.Color
 	FolderIcon       string
 	FileIcon         string
-	DirectoryColor   color.Color
-	SizeStyle        color.Color
 	LogErrorFormat   string
-	LogErrorColor    color.Color
 	LogWarningFormat string
-	LogWarningColor  color.Color
 	LogInfoFormat    string
-	LogInfoColor     color.Color
 }
 
 var AppConfig *Config

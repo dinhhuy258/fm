@@ -12,8 +12,10 @@ type FileManager struct {
 	Dir *Directory
 }
 
-var fileManager *FileManager
-var fileManagerCreationOnce sync.Once
+var (
+	fileManager             *FileManager
+	fileManagerCreationOnce sync.Once
+)
 
 func GetFileManager() *FileManager {
 	fileManagerCreationOnce.Do(func() {
