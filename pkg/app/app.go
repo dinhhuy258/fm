@@ -5,24 +5,22 @@ import (
 	"os"
 
 	"github.com/dinhhuy258/fm/pkg/app/command"
-	"github.com/dinhhuy258/fm/pkg/app/context"
-	"github.com/dinhhuy258/fm/pkg/app/mode"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
 type App struct {
-	state *context.State
-	modes *mode.Modes
+	state *State
+	modes *Modes
 }
 
 // NewApp bootstrap a new application
 func NewApp() *App {
 	app := &App{
-		state: context.NewState(),
+		state: NewState(),
 	}
 
-	app.modes = mode.NewModes()
+	app.modes = NewModes()
 
 	gui.InitGui(app.onViewsCreated)
 
@@ -42,7 +40,7 @@ func (app *App) onModeChanged() {
 	appGui.Views.Help.SetHelp(keys, helps)
 }
 
-func (app *App) State() *context.State {
+func (app *App) State() *State {
 	return app.state
 }
 

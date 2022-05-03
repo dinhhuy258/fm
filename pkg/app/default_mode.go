@@ -1,4 +1,4 @@
-package mode
+package app
 
 import (
 	"github.com/dinhhuy258/fm/pkg/app/command"

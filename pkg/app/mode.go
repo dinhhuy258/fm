@@ -1,10 +1,8 @@
-package mode
+package app
 
 import (
 	"errors"
-
 	"github.com/dinhhuy258/fm/pkg/app/command"
-	"github.com/dinhhuy258/fm/pkg/app/context"
 )
 
 var (
@@ -20,7 +18,7 @@ type KeyBindings struct {
 type IMode interface {
 	GetName() string
 	GetKeyBindings() *KeyBindings
-	GetHelp(state *context.State) ([]string, []string)
+	GetHelp(state *State) ([]string, []string)
 }
 
 type Mode struct {
@@ -75,7 +73,7 @@ func (m *Modes) Peek() IMode {
 	return m.Modes[len(m.Modes)-1]
 }
 
-func (m *Mode) GetHelp(state *context.State) ([]string, []string) {
+func (m *Mode) GetHelp(*State) ([]string, []string) {
 	keys := make([]string, 0, len(m.GetKeyBindings().OnKeys)+1)
 	helps := make([]string, 0, len(m.GetKeyBindings().OnKeys)+1)
 	keybindings := m.GetKeyBindings()

@@ -1,8 +1,7 @@
-package mode
+package app
 
 import (
 	"github.com/dinhhuy258/fm/pkg/app/command"
-	"github.com/dinhhuy258/fm/pkg/app/context"
 )
 
 type MarkSaveMode struct {
@@ -59,7 +58,7 @@ func (*MarkLoadMode) GetName() string {
 	return "mark-load"
 }
 
-func (m *MarkLoadMode) GetHelp(state *context.State) ([]string, []string) {
+func (m *MarkLoadMode) GetHelp(state *State) ([]string, []string) {
 	keys := make([]string, 0, len(m.GetKeyBindings().OnKeys)+len(state.Marks))
 	helps := make([]string, 0, len(m.GetKeyBindings().OnKeys)+len(state.Marks))
 
