@@ -72,6 +72,11 @@ func deletePaths(app IApp, paths []string) {
 				}
 			case <-errChan:
 				errCount++
+				gui.GetGui().UpdateProgress()
+
+				if gui.GetGui().IsProgressFinished() {
+					break loop
+				}
 			}
 		}
 
