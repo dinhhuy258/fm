@@ -11,15 +11,9 @@ import (
 )
 
 func NewFile(app IApp, _ ...interface{}) error {
-	gui.GetGui().Views.Input.SetInput("new file")
-
-	go func() {
-		name := gui.GetGui().Views.Input.GetAnswer()
-
-		gui.GetGui().Views.Main.SetAsCurrentView()
-
+	gui.GetGui().SetInput("new file", func(name string) {
 		if name == "" {
-			gui.GetGui().Views.Log.SetViewOnTop()
+			gui.GetGui().SetLog("File name is empty", view.LogLevel(view.WARNING))
 
 			return
 		}
@@ -39,7 +33,7 @@ func NewFile(app IApp, _ ...interface{}) error {
 				view.LogLevel(view.INFO))
 			_ = Refresh(app, path.Join(fs.GetFileManager().Dir.Path, name))
 		}
-	}()
+	})
 
 	return nil
 }

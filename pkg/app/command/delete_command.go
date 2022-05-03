@@ -15,16 +15,8 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 		return PopMode(app)
 	}
 
-	gui.GetGui().Views.Confirm.SetConfirmation(
-		"Do you want to delete selected paths?",
-	)
-
-	go func() {
-		ans := gui.GetGui().Views.Confirm.GetAnswer()
-
+	gui.GetGui().SetConfirmation("Do you want to delete selected paths?", func(ans bool) {
 		_ = PopMode(app)
-
-		gui.GetGui().Views.Main.SetAsCurrentView()
 
 		if ans {
 			paths := make([]string, 0, len(app.GetSelections()))
@@ -41,7 +33,7 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 		} else {
 			gui.GetGui().SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
 		}
-	}()
+	})
 
 	return nil
 }
@@ -49,21 +41,15 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 func DeleteCurrent(app IApp, _ ...interface{}) error {
 	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
 
-	gui.GetGui().Views.Confirm.SetConfirmation("Do you want to delete " + currentNode.RelativePath + "?")
-
-	go func() {
-		ans := gui.GetGui().Views.Confirm.GetAnswer()
-
+	gui.GetGui().SetConfirmation("Do you want to delete "+currentNode.RelativePath+"?", func(ans bool) {
 		_ = PopMode(app)
-
-		gui.GetGui().Views.Main.SetAsCurrentView()
 
 		if ans {
 			deletePaths(app, []string{currentNode.AbsolutePath})
 		} else {
 			gui.GetGui().SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
 		}
-	}()
+	})
 
 	return nil
 }

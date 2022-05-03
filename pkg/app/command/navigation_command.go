@@ -2,18 +2,17 @@ package command
 
 import (
 	"path/filepath"
+	"strconv"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
 func FocusFirst(app IApp, _ ...interface{}) error {
-	_ = gui.GetGui().Views.Main.SetOrigin(0, 0)
-	_ = gui.GetGui().Views.Main.SetCursor(0, 0)
-
+	gui.GetGui().ResetCursor()
 	app.SetFocusIdx(0)
 
-	gui.GetGui().Views.Main.RenderDir(
+	gui.GetGui().RenderDir(
 		fs.GetFileManager().Dir,
 		app.GetSelections(),
 		app.GetFocusIdx(),
@@ -28,13 +27,10 @@ func FocusNext(app IApp, _ ...interface{}) error {
 		return nil
 	}
 
-	if err := gui.GetGui().Views.Main.NextCursor(); err != nil {
-		return err
-	}
-
+	gui.GetGui().NextCursor()
 	app.SetFocusIdx(focusIdx + 1)
 
-	gui.GetGui().Views.Main.RenderDir(
+	gui.GetGui().RenderDir(
 		fs.GetFileManager().Dir,
 		app.GetSelections(),
 		app.GetFocusIdx(),
@@ -49,13 +45,10 @@ func FocusPrevious(app IApp, _ ...interface{}) error {
 		return nil
 	}
 
-	if err := gui.GetGui().Views.Main.PreviousCursor(); err != nil {
-		return err
-	}
-
+	gui.GetGui().PreviousCursor()
 	app.SetFocusIdx(focusIdx - 1)
 
-	gui.GetGui().Views.Main.RenderDir(
+	gui.GetGui().RenderDir(
 		fs.GetFileManager().Dir,
 		app.GetSelections(),
 		app.GetFocusIdx(),
@@ -85,20 +78,15 @@ func FocusPath(app IApp, params ...interface{}) error {
 		focusIdx = len(fs.GetFileManager().Dir.VisibleNodes) - 1
 	}
 
-	_ = gui.GetGui().Views.Main.SetCursor(0, 0)
-	_ = gui.GetGui().Views.Main.SetOrigin(0, 0)
-
+	gui.GetGui().ResetCursor()
 	app.SetFocusIdx(0)
 
 	for i := 0; i < focusIdx; i++ {
-		if err := gui.GetGui().Views.Main.NextCursor(); err != nil {
-			return err
-		}
-
+		gui.GetGui().NextCursor()
 		app.SetFocusIdx(app.GetFocusIdx() + 1)
 	}
 
-	gui.GetGui().Views.Main.RenderDir(
+	gui.GetGui().RenderDir(
 		fs.GetFileManager().Dir,
 		app.GetSelections(),
 		app.GetFocusIdx(),
@@ -154,7 +142,8 @@ func ChangeDirectory(app IApp, path string, saveHistory bool, focusPath *string)
 
 		numberOfFiles := len(fs.GetFileManager().Dir.VisibleNodes)
 		app.SetNumberOfFiles(numberOfFiles)
-		gui.GetGui().Views.Main.SetTitle(fs.GetFileManager().Dir.Path, numberOfFiles)
+		title := (" " + fs.GetFileManager().Dir.Path + " (" + strconv.Itoa(numberOfFiles) + ") ")
+		gui.GetGui().SetMainTitle(title)
 
 		if focusPath == nil {
 			_ = FocusFirst(app)

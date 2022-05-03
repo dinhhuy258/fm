@@ -1,6 +1,8 @@
 package command
 
 import (
+	"strconv"
+
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
@@ -28,10 +30,11 @@ func ToggleHidden(app IApp, _ ...interface{}) error {
 
 	numberOfFiles := len(fs.GetFileManager().Dir.VisibleNodes)
 	app.SetNumberOfFiles(numberOfFiles)
-	gui.GetGui().Views.Main.SetTitle(fs.GetFileManager().Dir.Path, numberOfFiles)
-	gui.GetGui().Views.SortAndFilter.SetSortAndFilter()
+	title := (" " + fs.GetFileManager().Dir.Path + " (" + strconv.Itoa(numberOfFiles) + ") ")
+	gui.GetGui().SetMainTitle(title)
+	gui.GetGui().UpdateSortAndFilter()
 
-	gui.GetGui().Views.Main.RenderDir(
+	gui.GetGui().RenderDir(
 		fs.GetFileManager().Dir,
 		app.GetSelections(),
 		app.GetFocusIdx(),
@@ -70,10 +73,9 @@ func Refresh(app IApp, params ...interface{}) error {
 }
 
 func refreshSelections(app IApp) {
-	gui.GetGui().Views.Selection.SetTitle(len(app.GetSelections()))
-	gui.GetGui().Views.Selection.RenderSelections(app.GetSelections())
+	gui.GetGui().RenderSelections(app.GetSelections())
 
-	gui.GetGui().Views.Main.RenderDir(
+	gui.GetGui().RenderDir(
 		fs.GetFileManager().Dir,
 		app.GetSelections(),
 		app.GetFocusIdx(),

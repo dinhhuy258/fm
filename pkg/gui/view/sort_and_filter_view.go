@@ -18,12 +18,12 @@ func newSortAndFilterView(g *gocui.Gui, v *gocui.View) *SortAndFilterView {
 	}
 
 	sfv.v.SetTitle(" Sort & Filter ")
-	sfv.SetSortAndFilter()
+	sfv.UpdateSortAndFilter()
 
 	return sfv
 }
 
-func (sfv *SortAndFilterView) SetSortAndFilter() {
+func (sfv *SortAndFilterView) UpdateSortAndFilter() {
 	content := ""
 	if !config.AppConfig.ShowHidden {
 		content += "rel!^."

@@ -53,15 +53,17 @@ func (iv *InputView) inputEditor(_ *gocui.View, key gocui.Key, ch rune, mod gocu
 	}
 }
 
-func (iv *InputView) SetInput(ask string) {
+func (iv *InputView) SetInput(ask string, onInput func(string)) {
 	iv.v.SetViewContent([]string{inputViewPrefix})
 	iv.v.SetTitle(fmt.Sprintf(" Input [%s] ", ask))
 	_ = iv.v.v.SetCursor(len(inputViewPrefix), 0)
 	_, _ = iv.v.g.SetCurrentView(iv.v.v.Name())
 
 	iv.v.SetViewOnTop()
-}
 
-func (iv *InputView) GetAnswer() string {
-	return <-iv.inputChan
+	go func() {
+		ans := <-iv.inputChan
+
+		onInput(ans)
+	}()
 }

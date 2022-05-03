@@ -36,8 +36,8 @@ func (app *App) onModeChanged() {
 	keys, helps := currentMode.GetHelp(app.state)
 
 	appGui := gui.GetGui()
-	appGui.Views.Help.SetTitle(currentMode.GetName())
-	appGui.Views.Help.SetHelp(keys, helps)
+	appGui.SetHelpTitle(currentMode.GetName())
+	appGui.SetHelp(keys, helps)
 }
 
 func (app *App) State() *State {

@@ -4,30 +4,84 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/gocui"
 )
 
 type Gui struct {
 	g              *gocui.Gui
-	Views          *view.Views
+	views          *view.Views
 	onViewsCreated func()
 }
 
 func (gui *Gui) StartProgress(total int) {
-	gui.Views.Progress.StartProgress(total)
+	gui.views.Progress.StartProgress(total)
 }
 
 func (gui *Gui) UpdateProgress() {
-	gui.Views.Progress.AddCurrent(1)
+	gui.views.Progress.AddCurrent(1)
 }
 
 func (gui *Gui) IsProgressFinished() bool {
-	return gui.Views.Progress.IsFinished()
+	return gui.views.Progress.IsFinished()
 }
 
 func (gui *Gui) SetLog(log string, level view.LogLevel) {
-	gui.Views.Log.SetLog(log, level)
+	gui.views.Log.SetLog(log, level)
+}
+
+func (gui *Gui) SetInput(ask string, onInput func(string)) {
+	gui.views.Input.SetInput(ask, func(ans string) {
+		gui.views.Main.SetAsCurrentView()
+
+		onInput(ans)
+	})
+}
+
+func (gui *Gui) SetConfirmation(ask string, onConfirm func(bool)) {
+	gui.views.Confirm.SetConfirmation(ask, func(ans bool) {
+		gui.views.Main.SetAsCurrentView()
+
+		onConfirm(ans)
+	})
+}
+
+func (gui *Gui) RenderSelections(selections map[string]struct{}) {
+	gui.views.Selection.RenderSelections(selections)
+}
+
+func (gui *Gui) ResetCursor() {
+	_ = gui.views.Main.SetCursor(0, 0)
+	_ = gui.views.Main.SetOrigin(0, 0)
+}
+
+func (gui *Gui) NextCursor() {
+	_ = gui.views.Main.NextCursor()
+}
+
+func (gui *Gui) PreviousCursor() {
+	_ = gui.views.Main.PreviousCursor()
+}
+
+func (gui *Gui) SetHelpTitle(title string) {
+	gui.views.Help.SetTitle(title)
+}
+
+func (gui *Gui) SetHelp(keys []string, helps []string) {
+	gui.views.Help.SetHelp(keys, helps)
+}
+
+func (gui *Gui) SetMainTitle(title string) {
+	gui.views.Main.SetTitle(title)
+}
+
+func (gui *Gui) UpdateSortAndFilter() {
+	gui.views.SortAndFilter.UpdateSortAndFilter()
+}
+
+func (gui *Gui) RenderDir(dir *fs.Directory, selections map[string]struct{}, focusIdx int) {
+	gui.views.Main.RenderDir(dir, selections, focusIdx)
 }
 
 var (

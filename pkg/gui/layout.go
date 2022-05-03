@@ -27,7 +27,7 @@ func (gui *Gui) createAllViews() error {
 		return err
 	}
 
-	gui.Views = views
+	gui.views = views
 
 	return nil
 }
@@ -137,7 +137,7 @@ func (gui *Gui) setViewDimensions() error {
 }
 
 func (gui *Gui) layout(_ *gocui.Gui) error {
-	if gui.Views == nil {
+	if gui.views == nil {
 		if err := gui.createAllViews(); err != nil {
 			return err
 		}
@@ -147,7 +147,7 @@ func (gui *Gui) layout(_ *gocui.Gui) error {
 		return err
 	}
 
-	if err := gui.Views.Layout(); err != nil {
+	if err := gui.views.Layout(); err != nil {
 		return err
 	}
 

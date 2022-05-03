@@ -37,7 +37,7 @@ func (cv *ConfirmView) confirmEditor(_ *gocui.View, _ gocui.Key, ch rune, _ gocu
 	cv.confirmChan <- false
 }
 
-func (cv *ConfirmView) SetConfirmation(ask string) {
+func (cv *ConfirmView) SetConfirmation(ask string, onConfirm func(bool)) {
 	ask = "> " + ask + " (y/n) "
 	cv.v.SetViewContent([]string{ask})
 
@@ -53,8 +53,9 @@ func (cv *ConfirmView) SetConfirmation(ask string) {
 	if err := cv.v.v.SetCursor(len(ask), 0); err != nil {
 		log.Fatalf("failed to set cursor %v", err)
 	}
-}
 
-func (cv *ConfirmView) GetAnswer() bool {
-	return <-cv.confirmChan
+	go func() {
+		ans := <-cv.confirmChan
+		onConfirm(ans)
+	}()
 }

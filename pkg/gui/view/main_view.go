@@ -125,8 +125,8 @@ func (mv *MainView) RenderDir(dir *fs.Directory, selections map[string]struct{},
 	mv.v.SetViewContent(lines)
 }
 
-func (mv *MainView) SetTitle(path string, numberOfFiles int) {
-	mv.hv.v.Title = (" " + path + " (" + strconv.Itoa(numberOfFiles) + ") ")
+func (mv *MainView) SetTitle(title string) {
+	mv.hv.v.Title = title
 }
 
 func (mv *MainView) SetOrigin(x, y int) error {
