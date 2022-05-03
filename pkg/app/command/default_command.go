@@ -8,12 +8,12 @@ import (
 )
 
 func ToggleSelection(app IApp, _ ...interface{}) error {
-	path := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx].AbsolutePath
+	path := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()].AbsolutePath
 
-	if _, hasPath := app.State().Selections[path]; hasPath {
-		delete(app.State().Selections, path)
+	if app.HasSelection(path) {
+		app.DeleteSelection(path)
 	} else {
-		app.State().Selections[path] = struct{}{}
+		app.AddSelection(path)
 	}
 
 	refreshSelections(app)
@@ -27,21 +27,21 @@ func ToggleHidden(app IApp, _ ...interface{}) error {
 	fs.GetFileManager().Dir.Reload()
 
 	numberOfFiles := len(fs.GetFileManager().Dir.VisibleNodes)
-	app.State().NumberOfFiles = numberOfFiles
+	app.SetNumberOfFiles(numberOfFiles)
 	gui.GetGui().Views.Main.SetTitle(fs.GetFileManager().Dir.Path, numberOfFiles)
 	gui.GetGui().Views.SortAndFilter.SetSortAndFilter()
 
 	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
-		app.State().Selections,
-		app.State().FocusIdx,
+		app.GetSelections(),
+		app.GetFocusIdx(),
 	)
 
 	return nil
 }
 
 func ClearSelection(app IApp, _ ...interface{}) error {
-	app.State().Selections = make(map[string]struct{})
+	app.ClearSelections()
 
 	refreshSelections(app)
 
@@ -57,7 +57,7 @@ func PopMode(app IApp, _ ...interface{}) error {
 }
 
 func Refresh(app IApp, params ...interface{}) error {
-	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx]
+	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
 
 	focus := currentNode.AbsolutePath
 	if len(params) == 1 {
@@ -70,13 +70,13 @@ func Refresh(app IApp, params ...interface{}) error {
 }
 
 func refreshSelections(app IApp) {
-	gui.GetGui().Views.Selection.SetTitle(len(app.State().Selections))
-	gui.GetGui().Views.Selection.RenderSelections(app.State().Selections)
+	gui.GetGui().Views.Selection.SetTitle(len(app.GetSelections()))
+	gui.GetGui().Views.Selection.RenderSelections(app.GetSelections())
 
 	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
-		app.State().Selections,
-		app.State().FocusIdx,
+		app.GetSelections(),
+		app.GetFocusIdx(),
 	)
 }
 

@@ -9,7 +9,7 @@ import (
 )
 
 func DeleteSelections(app IApp, _ ...interface{}) error {
-	if len(app.State().Selections) == 0 {
+	if len(app.GetSelections()) == 0 {
 		gui.GetGui().SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 
 		return PopMode(app)
@@ -27,16 +27,16 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 		gui.GetGui().Views.Main.SetAsCurrentView()
 
 		if ans {
-			paths := make([]string, 0, len(app.State().Selections))
-			for k := range app.State().Selections {
+			paths := make([]string, 0, len(app.GetSelections()))
+			for k := range app.GetSelections() {
 				paths = append(paths, k)
 			}
 
 			deletePaths(app, paths)
 
 			// Clear selections
-			for k := range app.State().Selections {
-				delete(app.State().Selections, k)
+			for k := range app.GetSelections() {
+				app.DeleteSelection(k)
 			}
 		} else {
 			gui.GetGui().SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
@@ -47,7 +47,7 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 }
 
 func DeleteCurrent(app IApp, _ ...interface{}) error {
-	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx]
+	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
 
 	gui.GetGui().Views.Confirm.SetConfirmation("Do you want to delete " + currentNode.RelativePath + "?")
 
@@ -116,7 +116,7 @@ func getFocusIdx(app IApp, paths []string) int {
 
 	visibleNodes := fs.GetFileManager().Dir.VisibleNodes
 	visibleNodesSize := len(visibleNodes)
-	focusIdx := app.State().FocusIdx
+	focusIdx := app.GetFocusIdx()
 
 	for {
 		if _, hasKey := pathsMap[visibleNodes[focusIdx].AbsolutePath]; !hasKey {
@@ -131,7 +131,7 @@ func getFocusIdx(app IApp, paths []string) int {
 	}
 
 	if focusIdx == visibleNodesSize {
-		focusIdx = app.State().FocusIdx
+		focusIdx = app.GetFocusIdx()
 
 		for {
 			if _, hasKey := pathsMap[visibleNodes[focusIdx].AbsolutePath]; !hasKey {

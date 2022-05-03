@@ -10,19 +10,21 @@ import (
 func FocusFirst(app IApp, _ ...interface{}) error {
 	_ = gui.GetGui().Views.Main.SetOrigin(0, 0)
 	_ = gui.GetGui().Views.Main.SetCursor(0, 0)
-	app.State().FocusIdx = 0
+
+	app.SetFocusIdx(0)
 
 	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
-		app.State().Selections,
-		app.State().FocusIdx,
+		app.GetSelections(),
+		app.GetFocusIdx(),
 	)
 
 	return nil
 }
 
 func FocusNext(app IApp, _ ...interface{}) error {
-	if app.State().FocusIdx == app.State().NumberOfFiles-1 {
+	focusIdx := app.GetFocusIdx()
+	if focusIdx == app.GetNumberOfFiles()-1 {
 		return nil
 	}
 
@@ -30,19 +32,20 @@ func FocusNext(app IApp, _ ...interface{}) error {
 		return err
 	}
 
-	app.State().FocusIdx++
+	app.SetFocusIdx(focusIdx + 1)
 
 	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
-		app.State().Selections,
-		app.State().FocusIdx,
+		app.GetSelections(),
+		app.GetFocusIdx(),
 	)
 
 	return nil
 }
 
 func FocusPrevious(app IApp, _ ...interface{}) error {
-	if app.State().FocusIdx == 0 {
+	focusIdx := app.GetFocusIdx()
+	if focusIdx == 0 {
 		return nil
 	}
 
@@ -50,12 +53,12 @@ func FocusPrevious(app IApp, _ ...interface{}) error {
 		return err
 	}
 
-	app.State().FocusIdx--
+	app.SetFocusIdx(focusIdx - 1)
 
 	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
-		app.State().Selections,
-		app.State().FocusIdx,
+		app.GetSelections(),
+		app.GetFocusIdx(),
 	)
 
 	return nil
@@ -85,27 +88,27 @@ func FocusPath(app IApp, params ...interface{}) error {
 	_ = gui.GetGui().Views.Main.SetCursor(0, 0)
 	_ = gui.GetGui().Views.Main.SetOrigin(0, 0)
 
-	app.State().FocusIdx = 0
+	app.SetFocusIdx(0)
 
 	for i := 0; i < focusIdx; i++ {
 		if err := gui.GetGui().Views.Main.NextCursor(); err != nil {
 			return err
 		}
 
-		app.State().FocusIdx++
+		app.SetFocusIdx(app.GetFocusIdx() + 1)
 	}
 
 	gui.GetGui().Views.Main.RenderDir(
 		fs.GetFileManager().Dir,
-		app.State().Selections,
-		app.State().FocusIdx,
+		app.GetSelections(),
+		app.GetFocusIdx(),
 	)
 
 	return nil
 }
 
 func Enter(app IApp, _ ...interface{}) error {
-	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx]
+	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
 
 	if currentNode.IsDir {
 		ChangeDirectory(app, currentNode.AbsolutePath, true, nil)
@@ -123,16 +126,16 @@ func Back(app IApp, _ ...interface{}) error {
 }
 
 func LastVisitedPath(app IApp, _ ...interface{}) error {
-	app.State().History.VisitLast()
-	node := app.State().History.Peek()
+	app.VisitLastHistory()
+	node := app.PeekHistory()
 	ChangeDirectory(app, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
 
 	return nil
 }
 
 func NextVisitedPath(app IApp, _ ...interface{}) error {
-	app.State().History.VisitNext()
-	node := app.State().History.Peek()
+	app.VisitNextHistory()
+	node := app.PeekHistory()
 	ChangeDirectory(app, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
 
 	return nil
@@ -140,8 +143,8 @@ func NextVisitedPath(app IApp, _ ...interface{}) error {
 
 func ChangeDirectory(app IApp, path string, saveHistory bool, focusPath *string) {
 	if saveHistory && fs.GetFileManager().Dir != nil {
-		currentNode := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx]
-		app.State().History.Push(currentNode)
+		currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
+		app.PushHistory(currentNode)
 	}
 
 	dirLoadedChan := fs.GetFileManager().LoadDirectory(path)
@@ -150,7 +153,7 @@ func ChangeDirectory(app IApp, path string, saveHistory bool, focusPath *string)
 		<-dirLoadedChan
 
 		numberOfFiles := len(fs.GetFileManager().Dir.VisibleNodes)
-		app.State().NumberOfFiles = numberOfFiles
+		app.SetNumberOfFiles(numberOfFiles)
 		gui.GetGui().Views.Main.SetTitle(fs.GetFileManager().Dir.Path, numberOfFiles)
 
 		if focusPath == nil {
@@ -160,8 +163,8 @@ func ChangeDirectory(app IApp, path string, saveHistory bool, focusPath *string)
 		}
 
 		if saveHistory {
-			currentNode := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx]
-			app.State().History.Push(currentNode)
+			currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
+			app.PushHistory(currentNode)
 		}
 	}()
 }

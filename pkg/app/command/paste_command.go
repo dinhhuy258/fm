@@ -12,23 +12,21 @@ import (
 func PasteSelections(app IApp, params ...interface{}) error {
 	operation, _ := params[0].(string)
 
-	if len(app.State().Selections) == 0 {
+	selections := app.GetSelections()
+	if len(selections) == 0 {
 		gui.GetGui().SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 
 		return nil
 	}
 
-	paths := make([]string, 0, len(app.State().Selections))
-	for k := range app.State().Selections {
+	paths := make([]string, 0, len(selections))
+	for k := range selections {
 		paths = append(paths, k)
 	}
 
 	paste(app, paths, fs.GetFileManager().Dir.Path, operation)
 
-	// Clear selections
-	for k := range app.State().Selections {
-		delete(app.State().Selections, k)
-	}
+	app.ClearSelections()
 
 	return nil
 }

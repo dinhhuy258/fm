@@ -8,8 +8,8 @@ func MarkSave(app IApp, params ...interface{}) error {
 	key, _ := params[0].(string)
 	// Exit mark mode
 	_ = app.PopMode()
-	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx]
-	app.State().Marks[key] = currentNode.AbsolutePath
+	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
+	app.MarkSave(key, currentNode.AbsolutePath)
 
 	return nil
 }
@@ -19,7 +19,7 @@ func MarkLoad(app IApp, params ...interface{}) error {
 	// Exit mark mode
 	_ = app.PopMode()
 
-	if path, hasKey := app.State().Marks[key]; hasKey {
+	if path, hasKey := app.MarkLoad(key); hasKey {
 		return FocusPath(app, path)
 	}
 

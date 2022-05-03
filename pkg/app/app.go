@@ -7,6 +7,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/app/context"
 	"github.com/dinhhuy258/fm/pkg/app/mode"
+	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
@@ -43,6 +44,72 @@ func (app *App) onModeChanged() {
 
 func (app *App) State() *context.State {
 	return app.state
+}
+
+func (app *App) ClearSelections() {
+	for k := range app.state.Selections {
+		delete(app.state.Selections, k)
+	}
+}
+
+func (app *App) DeleteSelection(path string) {
+	delete(app.state.Selections, path)
+}
+
+func (app *App) HasSelection(path string) bool {
+	_, hasSelection := app.state.Selections[path]
+
+	return hasSelection
+}
+
+func (app *App) AddSelection(path string) {
+	app.state.Selections[path] = struct{}{}
+}
+
+func (app *App) GetSelections() map[string]struct{} {
+	return app.state.Selections
+}
+
+func (app *App) GetFocusIdx() int {
+	return app.state.FocusIdx
+}
+
+func (app *App) SetFocusIdx(idx int) {
+	app.state.FocusIdx = idx
+}
+
+func (app *App) GetNumberOfFiles() int {
+	return app.state.NumberOfFiles
+}
+
+func (app *App) SetNumberOfFiles(numberOfFiles int) {
+	app.state.NumberOfFiles = numberOfFiles
+}
+
+func (app *App) PushHistory(node *fs.Node) {
+	app.State().History.Push(node)
+}
+
+func (app *App) PeekHistory() *fs.Node {
+	return app.State().History.Peek()
+}
+
+func (app *App) VisitLastHistory() {
+	app.State().History.VisitLast()
+}
+
+func (app *App) VisitNextHistory() {
+	app.State().History.VisitNext()
+}
+
+func (app *App) MarkSave(key, path string) {
+	app.State().Marks[key] = path
+}
+
+func (app *App) MarkLoad(key string) (string, bool) {
+	path, hasKey := app.State().Marks[key]
+
+	return path, hasKey
 }
 
 func (app *App) PopMode() error {
