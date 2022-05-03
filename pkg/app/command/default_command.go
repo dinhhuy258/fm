@@ -49,10 +49,6 @@ func ClearSelection(app IApp, _ ...interface{}) error {
 }
 
 func SwitchMode(app IApp, params ...interface{}) error {
-	if len(params) != 1 {
-		return ErrInvalidCommandParameter
-	}
-
 	return app.PushMode(params[0].(string))
 }
 
@@ -64,13 +60,8 @@ func Refresh(app IApp, params ...interface{}) error {
 	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx]
 
 	focus := currentNode.AbsolutePath
-
 	if len(params) == 1 {
-		focusPath, ok := params[0].(string)
-
-		if ok {
-			focus = focusPath
-		}
+		focus = params[0].(string)
 	}
 
 	ChangeDirectory(app, fs.GetFileManager().Dir.Path, false, &focus)

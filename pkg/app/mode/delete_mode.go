@@ -8,10 +8,13 @@ type DeleteMode struct {
 	*Mode
 }
 
+func (_ *DeleteMode) GetName() string {
+	return "delete"
+}
+
 func createDeleteMode() *DeleteMode {
 	return &DeleteMode{
 		&Mode{
-			Name: "delete",
 			KeyBindings: &KeyBindings{
 				OnKeys: map[string]*command.Command{
 					"d": {

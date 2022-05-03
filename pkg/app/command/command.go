@@ -1,11 +1,8 @@
 package command
 
 import (
-	"errors"
 	"github.com/dinhhuy258/fm/pkg/app/context"
 )
-
-var ErrInvalidCommandParameter = errors.New("invalid command parameter")
 
 type IApp interface {
 	State() *context.State
@@ -14,7 +11,7 @@ type IApp interface {
 }
 
 type Command struct {
-	Help string
-	Func func(app IApp, params ...interface{}) error
-	Args []interface{}
+	Help               string
+	Func               func(app IApp, params ...interface{}) error
+	Args               []interface{}
 }

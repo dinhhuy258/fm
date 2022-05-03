@@ -8,10 +8,13 @@ type DefaultMode struct {
 	*Mode
 }
 
+func (_ *DefaultMode) GetName() string {
+	return "default"
+}
+
 func createDefaultMode() *DefaultMode {
 	return &DefaultMode{
 		&Mode{
-			Name: "default",
 			KeyBindings: &KeyBindings{
 				OnKeys: map[string]*command.Command{
 					"j": {

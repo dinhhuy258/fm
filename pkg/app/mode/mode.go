@@ -25,12 +25,7 @@ type IMode interface {
 
 type Mode struct {
 	IMode
-	Name        string
 	KeyBindings *KeyBindings
-}
-
-func (m *Mode) GetName() string {
-	return m.Name
 }
 
 func (m *Mode) GetKeyBindings() *KeyBindings {

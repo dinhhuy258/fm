@@ -5,15 +5,8 @@ import (
 )
 
 func MarkSave(app IApp, params ...interface{}) error {
-	if len(params) != 1 {
-		return ErrInvalidCommandParameter
-	}
-
-	key, ok := params[0].(string)
-	if !ok {
-		return ErrInvalidCommandParameter
-	}
-
+	key := params[0].(string)
+	// Exit mark mode
 	_ = app.PopMode()
 	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.State().FocusIdx]
 	app.State().Marks[key] = currentNode.AbsolutePath
@@ -22,15 +15,8 @@ func MarkSave(app IApp, params ...interface{}) error {
 }
 
 func MarkLoad(app IApp, params ...interface{}) error {
-	if len(params) != 1 {
-		return ErrInvalidCommandParameter
-	}
-
-	key, ok := params[0].(string)
-	if !ok {
-		return ErrInvalidCommandParameter
-	}
-
+	key := params[0].(string)
+	// Exit mark mode
 	_ = app.PopMode()
 
 	if path, hasKey := app.State().Marks[key]; hasKey {

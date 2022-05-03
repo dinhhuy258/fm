@@ -10,15 +10,7 @@ import (
 )
 
 func PasteSelections(app IApp, params ...interface{}) error {
-	if len(params) != 1 {
-		return ErrInvalidCommandParameter
-	}
-
-	operation, ok := params[0].(string)
-	if !ok || (operation != "cut" && operation != "copy") {
-		return ErrInvalidCommandParameter
-	}
-
+	operation := params[0].(string)
 	if len(app.State().Selections) == 0 {
 		gui.GetGui().Views.Log.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 

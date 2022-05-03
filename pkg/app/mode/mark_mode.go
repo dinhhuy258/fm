@@ -9,10 +9,13 @@ type MarkSaveMode struct {
 	*Mode
 }
 
+func (_ *MarkSaveMode) GetName() string {
+	return "mark-save"
+}
+
 func createMarkSaveMode() *MarkSaveMode {
 	return &MarkSaveMode{
 		Mode: &Mode{
-			Name: "mark save",
 			KeyBindings: &KeyBindings{
 				OnAlphabet: &command.Command{
 					Help: "mark save",
@@ -36,7 +39,6 @@ type MarkLoadMode struct {
 func createMarkLoadMode() *MarkLoadMode {
 	return &MarkLoadMode{
 		Mode: &Mode{
-			Name: "mark load",
 			KeyBindings: &KeyBindings{
 				OnAlphabet: &command.Command{
 					Help: "mark load",
@@ -51,6 +53,10 @@ func createMarkLoadMode() *MarkLoadMode {
 			},
 		},
 	}
+}
+
+func (_ *MarkLoadMode) GetName() string {
+	return "mark-load"
 }
 
 func (m *MarkLoadMode) GetHelp(state *context.State) ([]string, []string) {

@@ -62,15 +62,7 @@ func FocusPrevious(app IApp, _ ...interface{}) error {
 }
 
 func FocusPath(app IApp, params ...interface{}) error {
-	if len(params) != 1 {
-		return ErrInvalidCommandParameter
-	}
-
-	path, ok := params[0].(string)
-	if !ok {
-		return ErrInvalidCommandParameter
-	}
-
+	path := params[0].(string)
 	if fs.GetFileManager().Dir.Path != filepath.Dir(path) {
 		dirLoadedChan := fs.GetFileManager().LoadDirectory(filepath.Dir(path))
 		<-dirLoadedChan
