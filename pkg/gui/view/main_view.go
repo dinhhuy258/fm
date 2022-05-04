@@ -125,57 +125,6 @@ func (mv *MainView) RenderEntries(entries []fs.IEntry, selections map[string]str
 	mv.v.SetViewContent(lines)
 }
 
-func (mv *MainView) RenderDir(nodes []*fs.Node, selections map[string]struct{}, focus int) {
-	nodesSize := len(nodes)
-	lines := make([]string, nodesSize)
-	cfg := config.AppConfig
-
-	for i, node := range nodes {
-		fileIcon := cfg.FileIcon + " "
-		if node.IsDir {
-			fileIcon = cfg.FolderIcon + " "
-		}
-
-		_, isSelected := selections[node.AbsolutePath]
-
-		var path string
-
-		switch {
-		case i == focus:
-			path = cfg.FocusPrefix + fileIcon + node.RelativePath + cfg.FocusSuffix
-		case isSelected:
-			path = cfg.SelectionPrefix + fileIcon + node.RelativePath + cfg.SelectionSuffix
-		default:
-			path = "  " + fileIcon + node.RelativePath
-		}
-
-		if i == nodesSize-1 {
-			path = cfg.PathSuffix + path
-		} else {
-			path = cfg.PathPrefix + path
-		}
-
-		r := mv.fileRow
-		if isSelected {
-			r = mv.selectionRow
-		} else if node.IsDir {
-			r = mv.directoryRow
-		}
-
-		size := fs.Humanize(node.Size)
-		index := strconv.Itoa(i-focus) + "|" + strconv.Itoa(i)
-
-		line, err := r.Sprint([]string{index, path, size})
-		if err != nil {
-			log.Fatalf("failed to sprint row %v", err)
-		}
-
-		lines[i] = line
-	}
-
-	mv.v.SetViewContent(lines)
-}
-
 func (mv *MainView) SetTitle(title string) {
 	mv.hv.v.Title = title
 }

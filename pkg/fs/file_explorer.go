@@ -101,7 +101,7 @@ func (fe *FileExplorer) loadEntries() error {
 		size := lstat.Size()
 
 		if isDir {
-			fe.entries = append(fe.entries, &Directory2{
+			fe.entries = append(fe.entries, &Directory{
 				&Entry{
 					name: name,
 					path: absolutePath,
