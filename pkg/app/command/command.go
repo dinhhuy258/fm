@@ -12,8 +12,8 @@ type IApp interface {
 	AddSelection(path string)
 	GetFocusIdx() int
 	SetFocusIdx(idx int)
-	PushHistory(node *fs.Node)
-	PeekHistory() *fs.Node
+	PushHistory(entry fs.IEntry)
+	PeekHistory() fs.IEntry
 	VisitLastHistory()
 	VisitNextHistory()
 	MarkSave(key, path string)

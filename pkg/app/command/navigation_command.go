@@ -10,11 +10,12 @@ import (
 
 func FocusFirst(app IApp, _ ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
 
-	gui.GetGui().ResetCursor()
+	appGui.ResetCursor()
 	app.SetFocusIdx(0)
 
-	gui.GetGui().RenderEntries(
+	appGui.RenderEntries(
 		fileExplorer.GetEntries(),
 		app.GetSelections(),
 		app.GetFocusIdx(),
@@ -25,16 +26,17 @@ func FocusFirst(app IApp, _ ...interface{}) error {
 
 func FocusNext(app IApp, _ ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
 
 	focusIdx := app.GetFocusIdx()
 	if focusIdx == fileExplorer.GetEntriesSize()-1 {
 		return nil
 	}
 
-	gui.GetGui().NextCursor()
+	appGui.NextCursor()
 	app.SetFocusIdx(focusIdx + 1)
 
-	gui.GetGui().RenderEntries(
+	appGui.RenderEntries(
 		fileExplorer.GetEntries(),
 		app.GetSelections(),
 		app.GetFocusIdx(),
@@ -45,16 +47,17 @@ func FocusNext(app IApp, _ ...interface{}) error {
 
 func FocusPrevious(app IApp, _ ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
 
 	focusIdx := app.GetFocusIdx()
 	if focusIdx == 0 {
 		return nil
 	}
 
-	gui.GetGui().PreviousCursor()
+	appGui.PreviousCursor()
 	app.SetFocusIdx(focusIdx - 1)
 
-	gui.GetGui().RenderEntries(
+	appGui.RenderEntries(
 		fileExplorer.GetEntries(),
 		app.GetSelections(),
 		app.GetFocusIdx(),
@@ -105,62 +108,32 @@ func Back(app IApp, _ ...interface{}) error {
 
 func LastVisitedPath(app IApp, _ ...interface{}) error {
 	app.VisitLastHistory()
-	node := app.PeekHistory()
-	// TODO: Move filepath.Dir to fs package
-	ChangeDirectory(app, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
+	entry := app.PeekHistory()
+
+	LoadDirectory(app, fs.Dir(entry.GetPath()), false, entry.GetPath())
 
 	return nil
 }
 
 func NextVisitedPath(app IApp, _ ...interface{}) error {
 	app.VisitNextHistory()
-	node := app.PeekHistory()
-	// TODO: Move filepath.Dir to fs package
-	ChangeDirectory(app, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
+	entry := app.PeekHistory()
+
+	LoadDirectory(app, fs.Dir(entry.GetPath()), false, entry.GetPath())
 
 	return nil
 }
 
-// TODO: Do we need pointer in focusPath variable
-func ChangeDirectory(app IApp, path string, saveHistory bool, focusPath *string) {
-	fileManager := fs.GetFileManager()
-	// TODO Better way to handle isLoaded
-	if saveHistory && fileManager.IsLoaded() {
-		currentNode := fileManager.GetNodeAtIdx(app.GetFocusIdx())
-		app.PushHistory(currentNode)
-	}
-
-	dirLoadedChan := fs.GetFileManager().LoadDirectory(path)
-
-	go func() {
-		<-dirLoadedChan
-
-		numberOfFiles := fileManager.GetVisibleNodesSize()
-		title := (" " + fileManager.GetCurrentPath() + " (" + strconv.Itoa(numberOfFiles) + ") ")
-		gui.GetGui().SetMainTitle(title)
-
-		if focusPath == nil {
-			_ = FocusFirst(app)
-		} else {
-			_ = FocusPath(app, *focusPath)
-		}
-
-		if saveHistory {
-			currentNode := fileManager.GetNodeAtIdx(app.GetFocusIdx())
-			app.PushHistory(currentNode)
-		}
-	}()
-}
-
 func LoadDirectory(app IApp, path string, saveHistory bool, focusPath string) {
 	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
 
 	fileExplorer.LoadEntries(path, func() {
 		entriesSize := fileExplorer.GetEntriesSize()
 		path := fileExplorer.GetPath()
 
 		title := (" " + path + " (" + strconv.Itoa(entriesSize) + ") ")
-		gui.GetGui().SetMainTitle(title)
+		appGui.SetMainTitle(title)
 
 		if focusPath == "" {
 			_ = FocusFirst(app)
@@ -168,17 +141,18 @@ func LoadDirectory(app IApp, path string, saveHistory bool, focusPath string) {
 			_ = FocusPath(app, focusPath)
 		}
 
-		// if saveHistory {
-		// currentNode := fileManager.GetNodeAtIdx(app.GetFocusIdx())
-		// app.PushHistory(currentNode)
-		// }
+		if saveHistory {
+			entry := fileExplorer.GetEntry(app.GetFocusIdx())
+			app.PushHistory(entry)
+		}
 	})
 }
 
 func focusPath(app IApp, path string) {
 	fileExplorer := fs.GetFileExplorer()
-	focusIdx := 0
+	appGui := gui.GetGui()
 
+	focusIdx := 0
 	// Iterate through the list of entries and find the idx for the current path
 	for idx, entry := range fileExplorer.GetEntries() {
 		if entry.GetPath() == path {
@@ -187,15 +161,15 @@ func focusPath(app IApp, path string) {
 		}
 	}
 
-	gui.GetGui().ResetCursor()
+	appGui.ResetCursor()
 	app.SetFocusIdx(0)
 
 	for i := 0; i < focusIdx; i++ {
-		gui.GetGui().NextCursor()
+		appGui.NextCursor()
 		app.SetFocusIdx(app.GetFocusIdx() + 1)
 	}
 
-	gui.GetGui().RenderEntries(
+	appGui.RenderEntries(
 		fileExplorer.GetEntries(),
 		app.GetSelections(),
 		app.GetFocusIdx(),

@@ -3,28 +3,28 @@ package app
 import "github.com/dinhhuy258/fm/pkg/fs"
 
 type History struct {
-	loc   int
-	nodes []*fs.Node
+	loc     int
+	entries []fs.IEntry
 }
 
 func NewHistory() *History {
-	nodes := make([]*fs.Node, 0, 1000)
+	entries := make([]fs.IEntry, 0, 1000)
 
 	return &History{
-		loc:   -1,
-		nodes: nodes,
+		loc:     -1,
+		entries: entries,
 	}
 }
 
-func (h *History) Push(node *fs.Node) {
-	if len(h.nodes) == 0 || h.Peek().AbsolutePath != node.AbsolutePath {
-		h.nodes = append(h.nodes, node)
-		h.loc = len(h.nodes) - 1
+func (h *History) Push(entry fs.IEntry) {
+	if len(h.entries) == 0 || h.Peek().GetPath() != entry.GetPath() {
+		h.entries = append(h.entries, entry)
+		h.loc = len(h.entries) - 1
 	}
 }
 
-func (h *History) Peek() *fs.Node {
-	return h.nodes[h.loc]
+func (h *History) Peek() fs.IEntry {
+	return h.entries[h.loc]
 }
 
 func (h *History) VisitLast() {
@@ -34,7 +34,7 @@ func (h *History) VisitLast() {
 }
 
 func (h *History) VisitNext() {
-	if h.loc < len(h.nodes)-1 {
+	if h.loc < len(h.entries)-1 {
 		h.loc++
 	}
 }

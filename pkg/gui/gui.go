@@ -136,3 +136,7 @@ func (gui *Gui) Run() error {
 func (gui *Gui) SetOnKeyFunc(onKey func(string) error) {
 	gui.g.SetOnKeyFunc(onKey)
 }
+
+func (gui *Gui) Quit() error {
+	return gocui.ErrQuit
+}

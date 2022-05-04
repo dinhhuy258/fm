@@ -1,17 +1,15 @@
 package command
 
 import (
-	"strconv"
-
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
-	"github.com/dinhhuy258/gocui"
 )
 
 func ToggleSelection(app IApp, _ ...interface{}) error {
-	node := fs.GetFileManager().GetNodeAtIdx(app.GetFocusIdx())
-	path := node.AbsolutePath
+	fileExplorer := fs.GetFileExplorer()
+	entry := fileExplorer.GetEntry(app.GetFocusIdx())
+	path := entry.GetPath()
 
 	if app.HasSelection(path) {
 		app.DeleteSelection(path)
@@ -27,19 +25,10 @@ func ToggleSelection(app IApp, _ ...interface{}) error {
 func ToggleHidden(app IApp, _ ...interface{}) error {
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
-	fileManager := fs.GetFileManager()
-	fileManager.Reload()
+	fileExplorer := fs.GetFileExplorer()
+	entry := fileExplorer.GetEntry(app.GetFocusIdx())
 
-	numberOfFiles := fileManager.GetVisibleNodesSize()
-	title := (" " + fileManager.GetCurrentPath() + " (" + strconv.Itoa(numberOfFiles) + ") ")
-	gui.GetGui().SetMainTitle(title)
-	gui.GetGui().UpdateSortAndFilter()
-
-	gui.GetGui().RenderDir(
-		fs.GetFileManager().GetVisibleNodes(),
-		app.GetSelections(),
-		app.GetFocusIdx(),
-	)
+	LoadDirectory(app, fileExplorer.GetPath(), false, entry.GetPath())
 
 	return nil
 }
@@ -60,30 +49,36 @@ func PopMode(app IApp, _ ...interface{}) error {
 	return app.PopMode()
 }
 
+//TODO: Remove and use LoadDirectory instead
 func Refresh(app IApp, params ...interface{}) error {
-	fileManager := fs.GetFileManager()
-	currentNode := fileManager.GetNodeAtIdx(app.GetFocusIdx())
+	fileExplorer := fs.GetFileExplorer()
+	entry := fileExplorer.GetEntry(app.GetFocusIdx())
 
-	focus := currentNode.AbsolutePath
+	path := entry.GetPath()
 	if len(params) == 1 {
-		focus, _ = params[0].(string)
+		path, _ = params[0].(string)
 	}
 
-	ChangeDirectory(app, fileManager.GetCurrentPath(), false, &focus)
+	LoadDirectory(app, fileExplorer.GetPath(), false, path)
 
 	return nil
 }
 
-func refreshSelections(app IApp) {
-	gui.GetGui().RenderSelections(app.GetSelections())
+func Quit(_ IApp, _ ...interface{}) error {
+	appGui := gui.GetGui()
 
-	gui.GetGui().RenderDir(
-		fs.GetFileManager().GetVisibleNodes(),
+	return appGui.Quit()
+}
+
+func refreshSelections(app IApp) {
+	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
+
+	appGui.RenderSelections(app.GetSelections())
+
+	appGui.RenderEntries(
+		fileExplorer.GetEntries(),
 		app.GetSelections(),
 		app.GetFocusIdx(),
 	)
-}
-
-func Quit(_ IApp, _ ...interface{}) error {
-	return gocui.ErrQuit
 }

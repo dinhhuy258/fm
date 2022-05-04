@@ -11,9 +11,12 @@ import (
 )
 
 func NewFile(app IApp, _ ...interface{}) error {
-	gui.GetGui().SetInput("new file", func(name string) {
+	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
+
+	appGui.SetInput("new file", func(name string) {
 		if name == "" {
-			gui.GetGui().SetLog("File name is empty", view.LogLevel(view.WARNING))
+			appGui.SetLog("File name is empty", view.LogLevel(view.WARNING))
 
 			return
 		}
@@ -27,11 +30,11 @@ func NewFile(app IApp, _ ...interface{}) error {
 		}
 
 		if err != nil {
-			gui.GetGui().SetLog(fmt.Sprintf("Failed to create file %s", name), view.LogLevel(view.ERROR))
+			appGui.SetLog(fmt.Sprintf("Failed to create file %s", name), view.LogLevel(view.ERROR))
 		} else {
-			gui.GetGui().SetLog(fmt.Sprintf("File %s were created successfully", name),
+			appGui.SetLog(fmt.Sprintf("File %s were created successfully", name),
 				view.LogLevel(view.INFO))
-			_ = Refresh(app, path.Join(fs.GetFileManager().GetCurrentPath(), name))
+			_ = Refresh(app, path.Join(fileExplorer.GetPath(), name))
 		}
 	})
 

@@ -78,11 +78,11 @@ func (app *App) SetFocusIdx(idx int) {
 	app.FocusIdx = idx
 }
 
-func (app *App) PushHistory(node *fs.Node) {
-	app.History.Push(node)
+func (app *App) PushHistory(entry fs.IEntry) {
+	app.History.Push(entry)
 }
 
-func (app *App) PeekHistory() *fs.Node {
+func (app *App) PeekHistory() fs.IEntry {
 	return app.History.Peek()
 }
 
