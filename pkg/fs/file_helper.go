@@ -67,21 +67,22 @@ func Dir(path string) string {
 	return filepath.Dir(path)
 }
 
-func Delete(paths []string) (countChan chan int, errChan chan error) {
-	countChan = make(chan int, len(paths))
-	errChan = make(chan error)
-
+func Delete(paths []string, onDeletion func(), onError func(error), onCompletion func(int, int)) {
 	go func() {
+		successCount := 0
+		errorCount := 0
 		for _, path := range paths {
 			if err := os.RemoveAll(path); err != nil {
-				errChan <- err
+				errorCount++
+				onError(err)
+			} else {
+				successCount++
+				onDeletion()
 			}
-
-			countChan <- 1
 		}
-	}()
 
-	return countChan, errChan
+		onCompletion(successCount, errorCount)
+	}()
 }
 
 func Copy(srcPaths []string, destDir string) (countChan chan int, errChan chan error) {

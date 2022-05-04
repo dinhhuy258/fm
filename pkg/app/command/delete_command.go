@@ -57,32 +57,14 @@ func deletePaths(app IApp, paths []string) {
 	appGui := gui.GetGui()
 
 	appGui.StartProgress(len(paths))
-	countChan, errChan := fs.Delete(paths)
-
-	go func() {
-		errCount := 0
-	loop:
-		for {
-			select {
-			case <-countChan:
-				appGui.UpdateProgress()
-
-				if appGui.IsProgressFinished() {
-					break loop
-				}
-			case <-errChan:
-				errCount++
-				appGui.UpdateProgress()
-
-				if appGui.IsProgressFinished() {
-					break loop
-				}
-			}
-		}
-
-		if errCount != 0 {
+	fs.Delete(paths, func() {
+		appGui.UpdateProgress()
+	}, func(_ error) {
+		appGui.UpdateProgress()
+	}, func(successCount, errorCount int) {
+		if errorCount != 0 {
 			appGui.SetLog(
-				fmt.Sprintf("Finished to delete %v. Error count: %d", paths, errCount),
+				fmt.Sprintf("Finished to delete %v. Error count: %d", paths, errorCount),
 				view.LogLevel(view.INFO),
 			)
 		} else {
@@ -97,7 +79,7 @@ func deletePaths(app IApp, paths []string) {
 			entry := fileExplorer.GetEntry(focus)
 			LoadDirectory(app, fileExplorer.GetPath(), false, entry.GetPath())
 		}
-	}()
+	})
 }
 
 func getFocus(app IApp, deletedPaths []string) int {
