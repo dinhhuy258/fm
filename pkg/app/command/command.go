@@ -5,21 +5,25 @@ import (
 )
 
 type IApp interface {
+	// Render
 	RenderEntries()
 	RenderSelections()
+	// Selection
 	ClearSelections()
-	GetSelections() map[string]struct{}
-	DeleteSelection(path string)
-	HasSelection(path string) bool
-	AddSelection(path string)
-	GetFocusIdx() int
-	SetFocusIdx(idx int)
+	GetSelections() []string
+	ToggleSelection(path string)
+	// Focus
+	GetFocus() int
+	SetFocus(focus int)
+	// History
 	PushHistory(entry fs.IEntry)
 	PeekHistory() fs.IEntry
 	VisitLastHistory()
 	VisitNextHistory()
+	// Mark
 	MarkSave(key, path string)
 	MarkLoad(key string) (string, bool)
+	// Mode
 	PopMode() error
 	PushMode(mode string) error
 }

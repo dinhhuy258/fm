@@ -74,7 +74,7 @@ func (mv *MainView) layout() error {
 	return nil
 }
 
-func (mv *MainView) RenderEntries(entries []fs.IEntry, selections map[string]struct{}, focusIdx int) {
+func (mv *MainView) RenderEntries(entries []fs.IEntry, selections map[string]struct{}, focus int) {
 	entriesSize := len(entries)
 	lines := make([]string, entriesSize)
 	cfg := config.AppConfig
@@ -90,7 +90,7 @@ func (mv *MainView) RenderEntries(entries []fs.IEntry, selections map[string]str
 		var path string
 
 		switch {
-		case idx == focusIdx:
+		case idx == focus:
 			path = cfg.FocusPrefix + fileIcon + entry.GetName() + cfg.FocusSuffix
 		case isSelected:
 			path = cfg.SelectionPrefix + fileIcon + entry.GetName() + cfg.SelectionSuffix
@@ -112,7 +112,7 @@ func (mv *MainView) RenderEntries(entries []fs.IEntry, selections map[string]str
 		}
 
 		size := fs.Humanize(entry.GetSize())
-		index := strconv.Itoa(idx-focusIdx) + "|" + strconv.Itoa(idx)
+		index := strconv.Itoa(idx-focus) + "|" + strconv.Itoa(idx)
 
 		line, err := r.Sprint([]string{index, path, size})
 		if err != nil {
@@ -125,7 +125,7 @@ func (mv *MainView) RenderEntries(entries []fs.IEntry, selections map[string]str
 	mv.v.SetViewContent(lines)
 }
 
-func (mv *MainView) RenderDir(nodes []*fs.Node, selections map[string]struct{}, focusIdx int) {
+func (mv *MainView) RenderDir(nodes []*fs.Node, selections map[string]struct{}, focus int) {
 	nodesSize := len(nodes)
 	lines := make([]string, nodesSize)
 	cfg := config.AppConfig
@@ -141,7 +141,7 @@ func (mv *MainView) RenderDir(nodes []*fs.Node, selections map[string]struct{}, 
 		var path string
 
 		switch {
-		case i == focusIdx:
+		case i == focus:
 			path = cfg.FocusPrefix + fileIcon + node.RelativePath + cfg.FocusSuffix
 		case isSelected:
 			path = cfg.SelectionPrefix + fileIcon + node.RelativePath + cfg.SelectionSuffix
@@ -163,7 +163,7 @@ func (mv *MainView) RenderDir(nodes []*fs.Node, selections map[string]struct{}, 
 		}
 
 		size := fs.Humanize(node.Size)
-		index := strconv.Itoa(i-focusIdx) + "|" + strconv.Itoa(i)
+		index := strconv.Itoa(i-focus) + "|" + strconv.Itoa(i)
 
 		line, err := r.Sprint([]string{index, path, size})
 		if err != nil {

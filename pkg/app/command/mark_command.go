@@ -10,7 +10,7 @@ func MarkSave(app IApp, params ...interface{}) error {
 	key, _ := params[0].(string)
 	// Exit mark mode
 	_ = app.PopMode()
-	entry := fileExplorer.GetEntry(app.GetFocusIdx())
+	entry := fileExplorer.GetEntry(app.GetFocus())
 	app.MarkSave(key, entry.GetPath())
 
 	return nil

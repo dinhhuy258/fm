@@ -8,14 +8,10 @@ import (
 
 func ToggleSelection(app IApp, _ ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
-	entry := fileExplorer.GetEntry(app.GetFocusIdx())
+	entry := fileExplorer.GetEntry(app.GetFocus())
 	path := entry.GetPath()
 
-	if app.HasSelection(path) {
-		app.DeleteSelection(path)
-	} else {
-		app.AddSelection(path)
-	}
+	app.ToggleSelection(path)
 
 	app.RenderSelections()
 	app.RenderEntries()
@@ -27,7 +23,7 @@ func ToggleHidden(app IApp, _ ...interface{}) error {
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
 	fileExplorer := fs.GetFileExplorer()
-	entry := fileExplorer.GetEntry(app.GetFocusIdx())
+	entry := fileExplorer.GetEntry(app.GetFocus())
 
 	LoadDirectory(app, fileExplorer.GetPath(), false, entry.GetPath())
 
@@ -54,7 +50,7 @@ func PopMode(app IApp, _ ...interface{}) error {
 //TODO: Remove and use LoadDirectory instead
 func Refresh(app IApp, params ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
-	entry := fileExplorer.GetEntry(app.GetFocusIdx())
+	entry := fileExplorer.GetEntry(app.GetFocus())
 
 	path := entry.GetPath()
 	if len(params) == 1 {

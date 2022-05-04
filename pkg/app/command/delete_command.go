@@ -19,17 +19,10 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 		_ = PopMode(app)
 
 		if ans {
-			paths := make([]string, 0, len(app.GetSelections()))
-			for k := range app.GetSelections() {
-				paths = append(paths, k)
-			}
-
+			paths := app.GetSelections()
 			deletePaths(app, paths)
-
 			// Clear selections
-			for k := range app.GetSelections() {
-				app.DeleteSelection(k)
-			}
+			app.ClearSelections()
 		} else {
 			gui.GetGui().SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
 		}
@@ -39,7 +32,7 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 }
 
 func DeleteCurrent(app IApp, _ ...interface{}) error {
-	currentNode := fs.GetFileManager().GetNodeAtIdx(app.GetFocusIdx())
+	currentNode := fs.GetFileManager().GetNodeAtIdx(app.GetFocus())
 
 	gui.GetGui().SetConfirmation("Do you want to delete "+currentNode.RelativePath+"?", func(ans bool) {
 		_ = PopMode(app)
@@ -89,12 +82,12 @@ func deletePaths(app IApp, paths []string) {
 			gui.GetGui().SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
 		}
 
-		focusIdx := getFocusIdx(app, paths)
+		focus := getFocusIdx(app, paths)
 
-		if focusIdx < 0 {
+		if focus < 0 {
 			_ = Refresh(app)
 		} else {
-			_ = Refresh(app, fs.GetFileManager().GetNodeAtIdx(focusIdx).AbsolutePath)
+			_ = Refresh(app, fs.GetFileManager().GetNodeAtIdx(focus).AbsolutePath)
 		}
 	}()
 }
@@ -107,34 +100,34 @@ func getFocusIdx(app IApp, paths []string) int {
 
 	visibleNodes := fs.GetFileManager().GetVisibleNodes()
 	visibleNodesSize := len(visibleNodes)
-	focusIdx := app.GetFocusIdx()
+	focus := app.GetFocus()
 
 	for {
-		if _, hasKey := pathsMap[visibleNodes[focusIdx].AbsolutePath]; !hasKey {
+		if _, hasKey := pathsMap[visibleNodes[focus].AbsolutePath]; !hasKey {
 			break
 		}
 
-		focusIdx++
+		focus++
 
-		if focusIdx == visibleNodesSize {
+		if focus == visibleNodesSize {
 			break
 		}
 	}
 
-	if focusIdx == visibleNodesSize {
-		focusIdx = app.GetFocusIdx()
+	if focus == visibleNodesSize {
+		focus = app.GetFocus()
 
 		for {
-			if _, hasKey := pathsMap[visibleNodes[focusIdx].AbsolutePath]; !hasKey {
+			if _, hasKey := pathsMap[visibleNodes[focus].AbsolutePath]; !hasKey {
 				break
 			}
 
-			focusIdx--
-			if focusIdx < 0 {
+			focus--
+			if focus < 0 {
 				break
 			}
 		}
 	}
 
-	return focusIdx
+	return focus
 }

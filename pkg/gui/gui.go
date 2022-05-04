@@ -47,7 +47,7 @@ func (gui *Gui) SetConfirmation(ask string, onConfirm func(bool)) {
 	})
 }
 
-func (gui *Gui) RenderSelections(selections map[string]struct{}) {
+func (gui *Gui) RenderSelections(selections []string) {
 	gui.views.Selection.RenderSelections(selections)
 }
 
@@ -80,12 +80,12 @@ func (gui *Gui) UpdateSortAndFilter() {
 	gui.views.SortAndFilter.UpdateSortAndFilter()
 }
 
-func (gui *Gui) RenderDir(nodes []*fs.Node, selections map[string]struct{}, focusIdx int) {
-	gui.views.Main.RenderDir(nodes, selections, focusIdx)
+func (gui *Gui) RenderDir(nodes []*fs.Node, selections map[string]struct{}, focus int) {
+	gui.views.Main.RenderDir(nodes, selections, focus)
 }
 
-func (gui *Gui) RenderEntries(entries []fs.IEntry, selections map[string]struct{}, focusIdx int) {
-	gui.views.Main.RenderEntries(entries, selections, focusIdx)
+func (gui *Gui) RenderEntries(entries []fs.IEntry, selections map[string]struct{}, focus int) {
+	gui.views.Main.RenderEntries(entries, selections, focus)
 }
 
 var (

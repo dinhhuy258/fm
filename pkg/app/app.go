@@ -10,7 +10,7 @@ import (
 )
 
 type App struct {
-	FocusIdx   int
+	Focus      int
 	Selections map[string]struct{}
 	History    *History
 	Marks      map[string]string
@@ -20,7 +20,7 @@ type App struct {
 // NewApp bootstrap a new application
 func NewApp() *App {
 	app := &App{
-		FocusIdx:   -1,
+		Focus:      -1,
 		Selections: map[string]struct{}{},
 		Marks:      map[string]string{},
 		History:    NewHistory(),
@@ -53,7 +53,7 @@ func (app *App) RenderEntries() {
 	appGui.RenderEntries(
 		fileExplorer.GetEntries(),
 		app.Selections,
-		app.FocusIdx,
+		app.Focus,
 	)
 }
 
@@ -69,30 +69,29 @@ func (app *App) ClearSelections() {
 	}
 }
 
-func (app *App) DeleteSelection(path string) {
-	delete(app.Selections, path)
+func (app *App) ToggleSelection(path string) {
+	if _, hasSelection := app.Selections[path]; hasSelection {
+		delete(app.Selections, path)
+	} else {
+		app.Selections[path] = struct{}{}
+	}
 }
 
-func (app *App) HasSelection(path string) bool {
-	_, hasSelection := app.Selections[path]
+func (app *App) GetSelections() []string {
+	selections := make([]string, 0, len(app.Selections))
+	for selection := range app.Selections {
+		selections = append(selections, selection)
+	}
 
-	return hasSelection
+	return selections
 }
 
-func (app *App) AddSelection(path string) {
-	app.Selections[path] = struct{}{}
+func (app *App) GetFocus() int {
+	return app.Focus
 }
 
-func (app *App) GetSelections() map[string]struct{} {
-	return app.Selections
-}
-
-func (app *App) GetFocusIdx() int {
-	return app.FocusIdx
-}
-
-func (app *App) SetFocusIdx(idx int) {
-	app.FocusIdx = idx
+func (app *App) SetFocus(focus int) {
+	app.Focus = focus
 }
 
 func (app *App) PushHistory(entry fs.IEntry) {

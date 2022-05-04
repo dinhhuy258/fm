@@ -12,7 +12,7 @@ func FocusFirst(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 
 	appGui.ResetCursor()
-	app.SetFocusIdx(0)
+	app.SetFocus(0)
 
 	app.RenderEntries()
 
@@ -23,13 +23,13 @@ func FocusNext(app IApp, _ ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
 
-	focusIdx := app.GetFocusIdx()
-	if focusIdx == fileExplorer.GetEntriesSize()-1 {
+	focus := app.GetFocus()
+	if focus == fileExplorer.GetEntriesSize()-1 {
 		return nil
 	}
 
 	appGui.NextCursor()
-	app.SetFocusIdx(focusIdx + 1)
+	app.SetFocus(focus + 1)
 
 	app.RenderEntries()
 
@@ -39,13 +39,13 @@ func FocusNext(app IApp, _ ...interface{}) error {
 func FocusPrevious(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 
-	focusIdx := app.GetFocusIdx()
-	if focusIdx == 0 {
+	focus := app.GetFocus()
+	if focus == 0 {
 		return nil
 	}
 
 	appGui.PreviousCursor()
-	app.SetFocusIdx(focusIdx - 1)
+	app.SetFocus(focus - 1)
 
 	app.RenderEntries()
 
@@ -70,7 +70,7 @@ func FocusPath(app IApp, params ...interface{}) error {
 
 func Enter(app IApp, _ ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
-	entry := fileExplorer.GetEntry(app.GetFocusIdx())
+	entry := fileExplorer.GetEntry(app.GetFocus())
 
 	if entry.IsDirectory() {
 		LoadDirectory(app, entry.GetPath(), true, "")
@@ -128,7 +128,7 @@ func LoadDirectory(app IApp, path string, saveHistory bool, focusPath string) {
 		}
 
 		if saveHistory {
-			entry := fileExplorer.GetEntry(app.GetFocusIdx())
+			entry := fileExplorer.GetEntry(app.GetFocus())
 			app.PushHistory(entry)
 		}
 	})
@@ -138,21 +138,21 @@ func focusPath(app IApp, path string) {
 	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
 
-	focusIdx := 0
+	focus := 0
 	// Iterate through the list of entries and find the idx for the current path
 	for idx, entry := range fileExplorer.GetEntries() {
 		if entry.GetPath() == path {
-			focusIdx = idx
+			focus = idx
 			break
 		}
 	}
 
 	appGui.ResetCursor()
-	app.SetFocusIdx(0)
+	app.SetFocus(0)
 
-	for i := 0; i < focusIdx; i++ {
+	for i := 0; i < focus; i++ {
 		appGui.NextCursor()
-		app.SetFocusIdx(app.GetFocusIdx() + 1)
+		app.SetFocus(app.GetFocus() + 1)
 	}
 
 	app.RenderEntries()

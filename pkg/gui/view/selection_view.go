@@ -20,15 +20,9 @@ func newSelectionView(g *gocui.Gui, v *gocui.View) *SelectionView {
 	return sv
 }
 
-func (sv *SelectionView) RenderSelections(selections map[string]struct{}) {
+func (sv *SelectionView) RenderSelections(selections []string) {
 	sv.setTitle(len(selections))
-
-	s := make([]string, 0, len(selections))
-	for k := range selections {
-		s = append(s, k)
-	}
-
-	sv.v.SetViewContent(s)
+	sv.v.SetViewContent(selections)
 }
 
 func (sv *SelectionView) setTitle(selectionsNum int) {
