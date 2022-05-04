@@ -160,7 +160,7 @@ func (app *App) onKey(key string) error {
 }
 
 func (app *App) onViewsCreated() {
-	// Load help menu
+	// Push the default mode
 	_ = app.PushMode("default")
 
 	// Set on key handler
