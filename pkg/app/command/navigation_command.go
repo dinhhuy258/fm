@@ -9,17 +9,12 @@ import (
 )
 
 func FocusFirst(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
 
 	appGui.ResetCursor()
 	app.SetFocusIdx(0)
 
-	appGui.RenderEntries(
-		fileExplorer.GetEntries(),
-		app.GetSelections(),
-		app.GetFocusIdx(),
-	)
+	app.RenderEntries()
 
 	return nil
 }
@@ -36,17 +31,12 @@ func FocusNext(app IApp, _ ...interface{}) error {
 	appGui.NextCursor()
 	app.SetFocusIdx(focusIdx + 1)
 
-	appGui.RenderEntries(
-		fileExplorer.GetEntries(),
-		app.GetSelections(),
-		app.GetFocusIdx(),
-	)
+	app.RenderEntries()
 
 	return nil
 }
 
 func FocusPrevious(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
 
 	focusIdx := app.GetFocusIdx()
@@ -57,11 +47,7 @@ func FocusPrevious(app IApp, _ ...interface{}) error {
 	appGui.PreviousCursor()
 	app.SetFocusIdx(focusIdx - 1)
 
-	appGui.RenderEntries(
-		fileExplorer.GetEntries(),
-		app.GetSelections(),
-		app.GetFocusIdx(),
-	)
+	app.RenderEntries()
 
 	return nil
 }
@@ -169,9 +155,5 @@ func focusPath(app IApp, path string) {
 		app.SetFocusIdx(app.GetFocusIdx() + 1)
 	}
 
-	appGui.RenderEntries(
-		fileExplorer.GetEntries(),
-		app.GetSelections(),
-		app.GetFocusIdx(),
-	)
+	app.RenderEntries()
 }

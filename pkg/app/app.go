@@ -46,6 +46,23 @@ func (app *App) onModeChanged() {
 	appGui.SetHelp(keys, helps)
 }
 
+func (app *App) RenderEntries() {
+	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
+
+	appGui.RenderEntries(
+		fileExplorer.GetEntries(),
+		app.Selections,
+		app.FocusIdx,
+	)
+}
+
+func (app *App) RenderSelections() {
+	appGui := gui.GetGui()
+
+	appGui.RenderSelections(app.GetSelections())
+}
+
 func (app *App) ClearSelections() {
 	for k := range app.Selections {
 		delete(app.Selections, k)

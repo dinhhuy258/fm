@@ -5,6 +5,8 @@ import (
 )
 
 type IApp interface {
+	RenderEntries()
+	RenderSelections()
 	ClearSelections()
 	GetSelections() map[string]struct{}
 	DeleteSelection(path string)

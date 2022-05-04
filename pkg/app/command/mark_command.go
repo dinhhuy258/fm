@@ -5,11 +5,13 @@ import (
 )
 
 func MarkSave(app IApp, params ...interface{}) error {
+	fileExplorer := fs.GetFileExplorer()
+
 	key, _ := params[0].(string)
 	// Exit mark mode
 	_ = app.PopMode()
-	currentNode := fs.GetFileManager().GetNodeAtIdx(app.GetFocusIdx())
-	app.MarkSave(key, currentNode.AbsolutePath)
+	entry := fileExplorer.GetEntry(app.GetFocusIdx())
+	app.MarkSave(key, entry.GetPath())
 
 	return nil
 }

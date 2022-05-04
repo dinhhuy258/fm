@@ -17,7 +17,8 @@ func ToggleSelection(app IApp, _ ...interface{}) error {
 		app.AddSelection(path)
 	}
 
-	refreshSelections(app)
+	app.RenderSelections()
+	app.RenderEntries()
 
 	return nil
 }
@@ -36,7 +37,8 @@ func ToggleHidden(app IApp, _ ...interface{}) error {
 func ClearSelection(app IApp, _ ...interface{}) error {
 	app.ClearSelections()
 
-	refreshSelections(app)
+	app.RenderSelections()
+	app.RenderEntries()
 
 	return nil
 }
@@ -68,17 +70,4 @@ func Quit(_ IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 
 	return appGui.Quit()
-}
-
-func refreshSelections(app IApp) {
-	fileExplorer := fs.GetFileExplorer()
-	appGui := gui.GetGui()
-
-	appGui.RenderSelections(app.GetSelections())
-
-	appGui.RenderEntries(
-		fileExplorer.GetEntries(),
-		app.GetSelections(),
-		app.GetFocusIdx(),
-	)
 }
