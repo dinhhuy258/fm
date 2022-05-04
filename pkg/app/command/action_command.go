@@ -34,7 +34,7 @@ func NewFile(app IApp, _ ...interface{}) error {
 		} else {
 			appGui.SetLog(fmt.Sprintf("File %s were created successfully", name),
 				view.LogLevel(view.INFO))
-			_ = Refresh(app, path.Join(fileExplorer.GetPath(), name))
+			LoadDirectory(app, fileExplorer.GetPath(), false, path.Join(fileExplorer.GetPath(), name))
 		}
 	})
 

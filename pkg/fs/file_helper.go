@@ -38,6 +38,134 @@ func Humanize(size int64) string {
 	return ""
 }
 
+func CreateFile(name string) error {
+	f, err := os.OpenFile(name, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+	if err != nil {
+		return err
+	}
+
+	if err = f.Close(); err != nil {
+		return err
+	}
+
+	return err
+}
+
+// CreateDirectory creates a new directory given a name.
+func CreateDirectory(name string) error {
+	if _, err := os.Stat(name); errors.Is(err, os.ErrNotExist) {
+		err := os.Mkdir(name, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func Dir(path string) string {
+	return filepath.Dir(path)
+}
+
+func Delete(paths []string) (countChan chan int, errChan chan error) {
+	countChan = make(chan int, len(paths))
+	errChan = make(chan error)
+
+	go func() {
+		for _, path := range paths {
+			if err := os.RemoveAll(path); err != nil {
+				errChan <- err
+			}
+
+			countChan <- 1
+		}
+	}()
+
+	return countChan, errChan
+}
+
+func Copy(srcPaths []string, destDir string) (countChan chan int, errChan chan error) {
+	countChan = make(chan int, len(srcPaths))
+	errChan = make(chan error)
+
+	go func() {
+		for _, srcPath := range srcPaths {
+			dst := filepath.Join(destDir, filepath.Base(srcPath))
+			_, err := os.Lstat(dst)
+
+			if !os.IsNotExist(err) {
+				var newPath string
+
+				for i := 1; !os.IsNotExist(err); i++ {
+					newPath = fmt.Sprintf("%s.~%d~", dst, i)
+					_, err = os.Lstat(newPath)
+				}
+
+				dst = newPath
+			}
+
+			src := srcPath // This will make scopelint happy
+			walkFunc := func(path string, info os.FileInfo, err error) error {
+				if err != nil {
+					errChan <- err
+
+					return nil
+				}
+
+				if err := copyPath(src, path, dst, info); err != nil {
+					errChan <- err
+				}
+
+				return nil
+			}
+
+			if err := filepath.Walk(srcPath, walkFunc); err != nil {
+				errChan <- err
+			}
+
+			countChan <- 1
+		}
+	}()
+
+	return countChan, errChan
+}
+
+func Move(srcPaths []string, destDir string) (countChan chan int, errChan chan error) {
+	countChan = make(chan int, len(srcPaths))
+	errChan = make(chan error)
+
+	go func() {
+		for _, src := range srcPaths {
+			dst := filepath.Join(destDir, filepath.Base(src))
+			if dst == src {
+				countChan <- 1
+
+				continue
+			}
+
+			_, err := os.Stat(dst)
+			if !os.IsNotExist(err) {
+				var newPath string
+
+				for i := 1; !os.IsNotExist(err); i++ {
+					newPath = fmt.Sprintf("%s.~%d~", dst, i)
+					_, err = os.Lstat(newPath)
+				}
+
+				dst = newPath
+			}
+
+			if err := os.Rename(src, dst); err != nil {
+				errChan <- err
+			}
+
+			countChan <- 1
+		}
+	}()
+
+	return countChan, errChan
+}
+
 func isHidden(filename string) bool {
 	return filename[0:1] == "."
 }
@@ -118,33 +246,4 @@ func copyPath(src, path, dst string, info os.FileInfo) error {
 	}
 
 	return nil
-}
-
-func CreateFile(name string) error {
-	f, err := os.OpenFile(name, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
-	}
-
-	if err = f.Close(); err != nil {
-		return err
-	}
-
-	return err
-}
-
-// CreateDirectory creates a new directory given a name.
-func CreateDirectory(name string) error {
-	if _, err := os.Stat(name); errors.Is(err, os.ErrNotExist) {
-		err := os.Mkdir(name, os.ModePerm)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func Dir(path string) string {
-	return filepath.Dir(path)
 }

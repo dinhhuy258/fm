@@ -47,17 +47,11 @@ func PopMode(app IApp, _ ...interface{}) error {
 	return app.PopMode()
 }
 
-//TODO: Remove and use LoadDirectory instead
 func Refresh(app IApp, params ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
 	entry := fileExplorer.GetEntry(app.GetFocus())
 
-	path := entry.GetPath()
-	if len(params) == 1 {
-		path, _ = params[0].(string)
-	}
-
-	LoadDirectory(app, fileExplorer.GetPath(), false, path)
+	LoadDirectory(app, fileExplorer.GetPath(), false, entry.GetPath())
 
 	return nil
 }

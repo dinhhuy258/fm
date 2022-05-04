@@ -57,7 +57,7 @@ func deletePaths(app IApp, paths []string) {
 	appGui := gui.GetGui()
 
 	appGui.StartProgress(len(paths))
-	countChan, errChan := fs.GetFileManager().Delete(paths)
+	countChan, errChan := fs.Delete(paths)
 
 	go func() {
 		errCount := 0
@@ -94,7 +94,8 @@ func deletePaths(app IApp, paths []string) {
 		if focus < 0 {
 			_ = Refresh(app)
 		} else {
-			_ = Refresh(app, fileExplorer.GetEntry(focus).GetPath())
+			entry := fileExplorer.GetEntry(focus)
+			LoadDirectory(app, fileExplorer.GetPath(), false, entry.GetPath())
 		}
 	}()
 }

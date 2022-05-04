@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
@@ -10,16 +9,19 @@ import (
 )
 
 func PasteSelections(app IApp, params ...interface{}) error {
+	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
+
 	operation, _ := params[0].(string)
 
 	paths := app.GetSelections()
 	if len(paths) == 0 {
-		gui.GetGui().SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
+		appGui.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 
 		return nil
 	}
 
-	paste(app, paths, fs.GetFileManager().GetCurrentPath(), operation)
+	paste(app, paths, fileExplorer.GetPath(), operation)
 
 	app.ClearSelections()
 
@@ -27,16 +29,18 @@ func PasteSelections(app IApp, params ...interface{}) error {
 }
 
 func paste(app IApp, paths []string, dest, operation string) {
-	gui.GetGui().StartProgress(len(paths))
+	appGui := gui.GetGui()
+
+	appGui.StartProgress(len(paths))
 
 	var countChan chan int
 
 	var errChan chan error
 
 	if operation == "copy" {
-		countChan, errChan = fs.GetFileManager().Copy(paths, dest)
+		countChan, errChan = fs.Copy(paths, dest)
 	} else {
-		countChan, errChan = fs.GetFileManager().Move(paths, dest)
+		countChan, errChan = fs.Move(paths, dest)
 	}
 
 	go func() {
@@ -45,7 +49,7 @@ func paste(app IApp, paths []string, dest, operation string) {
 		for {
 			select {
 			case <-countChan:
-				gui.GetGui().UpdateProgress()
+				appGui.UpdateProgress()
 
 				break loop
 			case <-errChan:
@@ -54,16 +58,14 @@ func paste(app IApp, paths []string, dest, operation string) {
 		}
 
 		if errCount != 0 {
-			gui.GetGui().SetLog(
+			appGui.SetLog(
 				fmt.Sprintf("Finished to %s %v. Error count: %d", operation, paths, errCount),
 				view.LogLevel(view.INFO),
 			)
 		} else {
-			gui.GetGui().SetLog(fmt.Sprintf("Finished to %s %v", operation, paths), view.LogLevel(view.INFO))
+			appGui.SetLog(fmt.Sprintf("Finished to %s %v", operation, paths), view.LogLevel(view.INFO))
 		}
 
-		if err := Refresh(app); err != nil {
-			log.Fatalf("failed to refresh %v", err)
-		}
+		_ = Refresh(app)
 	}()
 }
