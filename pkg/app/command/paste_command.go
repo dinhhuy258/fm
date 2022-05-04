@@ -33,33 +33,16 @@ func paste(app IApp, paths []string, dest, operation string) {
 
 	appGui.StartProgress(len(paths))
 
-	var countChan chan int
-
-	var errChan chan error
-
-	if operation == "copy" {
-		countChan, errChan = fs.Copy(paths, dest)
-	} else {
-		countChan, errChan = fs.Move(paths, dest)
+	onSuccess := func() {
+		appGui.UpdateProgress()
 	}
-
-	go func() {
-		errCount := 0
-	loop:
-		for {
-			select {
-			case <-countChan:
-				appGui.UpdateProgress()
-
-				break loop
-			case <-errChan:
-				errCount++
-			}
-		}
-
-		if errCount != 0 {
+	onError := func(error) {
+		appGui.UpdateProgress()
+	}
+	onComplete := func(successCount int, errorCount int) {
+		if errorCount != 0 {
 			appGui.SetLog(
-				fmt.Sprintf("Finished to %s %v. Error count: %d", operation, paths, errCount),
+				fmt.Sprintf("Finished to %s %v. Error count: %d", operation, paths, errorCount),
 				view.LogLevel(view.INFO),
 			)
 		} else {
@@ -67,5 +50,11 @@ func paste(app IApp, paths []string, dest, operation string) {
 		}
 
 		_ = Refresh(app)
-	}()
+	}
+
+	if operation == "copy" {
+		fs.Copy(paths, dest, onSuccess, onError, onComplete)
+	} else {
+		fs.Move(paths, dest, onSuccess, onError, onComplete)
+	}
 }

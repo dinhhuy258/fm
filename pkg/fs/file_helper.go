@@ -67,29 +67,30 @@ func Dir(path string) string {
 	return filepath.Dir(path)
 }
 
-func Delete(paths []string, onDeletion func(), onError func(error), onCompletion func(int, int)) {
+func Delete(paths []string, onSuccess func(), onError func(error), onComplete func(int, int)) {
 	go func() {
 		successCount := 0
 		errorCount := 0
+
 		for _, path := range paths {
 			if err := os.RemoveAll(path); err != nil {
 				errorCount++
 				onError(err)
 			} else {
 				successCount++
-				onDeletion()
+				onSuccess()
 			}
 		}
 
-		onCompletion(successCount, errorCount)
+		onComplete(successCount, errorCount)
 	}()
 }
 
-func Copy(srcPaths []string, destDir string) (countChan chan int, errChan chan error) {
-	countChan = make(chan int, len(srcPaths))
-	errChan = make(chan error)
-
+func Copy(srcPaths []string, destDir string, onSuccess func(), onError func(error), onComplete func(int, int)) {
 	go func() {
+		successCount := 0
+		errorCount := 0
+
 		for _, srcPath := range srcPaths {
 			dst := filepath.Join(destDir, filepath.Base(srcPath))
 			_, err := os.Lstat(dst)
@@ -108,38 +109,39 @@ func Copy(srcPaths []string, destDir string) (countChan chan int, errChan chan e
 			src := srcPath // This will make scopelint happy
 			walkFunc := func(path string, info os.FileInfo, err error) error {
 				if err != nil {
-					errChan <- err
-
-					return nil
+					return err
 				}
 
 				if err := copyPath(src, path, dst, info); err != nil {
-					errChan <- err
+					return err
 				}
 
 				return nil
 			}
 
 			if err := filepath.Walk(srcPath, walkFunc); err != nil {
-				errChan <- err
+				errorCount++
+				onError(err)
+			} else {
+				successCount++
+				onSuccess()
 			}
-
-			countChan <- 1
 		}
-	}()
 
-	return countChan, errChan
+		onComplete(successCount, errorCount)
+	}()
 }
 
-func Move(srcPaths []string, destDir string) (countChan chan int, errChan chan error) {
-	countChan = make(chan int, len(srcPaths))
-	errChan = make(chan error)
-
+func Move(srcPaths []string, destDir string, onSuccess func(), onError func(error), onComplete func(int, int)) {
 	go func() {
+		successCount := 0
+		errorCount := 0
+
 		for _, src := range srcPaths {
 			dst := filepath.Join(destDir, filepath.Base(src))
 			if dst == src {
-				countChan <- 1
+				successCount++
+				onSuccess()
 
 				continue
 			}
@@ -157,14 +159,16 @@ func Move(srcPaths []string, destDir string) (countChan chan int, errChan chan e
 			}
 
 			if err := os.Rename(src, dst); err != nil {
-				errChan <- err
+				errorCount++
+				onError(err)
+			} else {
+				successCount++
+				onSuccess()
 			}
-
-			countChan <- 1
 		}
-	}()
 
-	return countChan, errChan
+		onComplete(successCount, errorCount)
+	}()
 }
 
 func isHidden(filename string) bool {
