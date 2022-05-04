@@ -7,6 +7,49 @@ import (
 	"github.com/dinhhuy258/fm/pkg/config"
 )
 
+type IEntry interface {
+	GetName() string
+	GetPath() string
+	GetSize() int64
+	IsDirectory() bool
+}
+
+type Entry struct {
+	IEntry
+
+	name string
+	path string
+	size int64
+}
+
+func (e *Entry) GetName() string {
+	return e.name
+}
+
+func (e *Entry) GetPath() string {
+	return e.path
+}
+
+func (e *Entry) GetSize() int64 {
+	return e.size
+}
+
+type File struct {
+	*Entry
+}
+
+func (*File) IsDirectory() bool {
+	return false
+}
+
+type Directory2 struct {
+	*Entry
+}
+
+func (*Directory2) IsDirectory() bool {
+	return true
+}
+
 type Node struct {
 	RelativePath string
 	AbsolutePath string

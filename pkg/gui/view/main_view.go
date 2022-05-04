@@ -74,6 +74,57 @@ func (mv *MainView) layout() error {
 	return nil
 }
 
+func (mv *MainView) RenderEntries(entries []fs.IEntry, selections map[string]struct{}, focusIdx int) {
+	entriesSize := len(entries)
+	lines := make([]string, entriesSize)
+	cfg := config.AppConfig
+
+	for idx, entry := range entries {
+		fileIcon := cfg.FileIcon + " "
+		if entry.IsDirectory() {
+			fileIcon = cfg.FolderIcon + " "
+		}
+
+		_, isSelected := selections[entry.GetPath()]
+
+		var path string
+
+		switch {
+		case idx == focusIdx:
+			path = cfg.FocusPrefix + fileIcon + entry.GetName() + cfg.FocusSuffix
+		case isSelected:
+			path = cfg.SelectionPrefix + fileIcon + entry.GetName() + cfg.SelectionSuffix
+		default:
+			path = "  " + fileIcon + entry.GetName()
+		}
+
+		if idx == entriesSize-1 {
+			path = cfg.PathSuffix + path
+		} else {
+			path = cfg.PathPrefix + path
+		}
+
+		r := mv.fileRow
+		if isSelected {
+			r = mv.selectionRow
+		} else if entry.IsDirectory() {
+			r = mv.directoryRow
+		}
+
+		size := fs.Humanize(entry.GetSize())
+		index := strconv.Itoa(idx-focusIdx) + "|" + strconv.Itoa(idx)
+
+		line, err := r.Sprint([]string{index, path, size})
+		if err != nil {
+			log.Fatalf("failed to sprint row %v", err)
+		}
+
+		lines[idx] = line
+	}
+
+	mv.v.SetViewContent(lines)
+}
+
 func (mv *MainView) RenderDir(nodes []*fs.Node, selections map[string]struct{}, focusIdx int) {
 	nodesSize := len(nodes)
 	lines := make([]string, nodesSize)

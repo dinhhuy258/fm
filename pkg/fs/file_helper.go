@@ -144,3 +144,7 @@ func CreateDirectory(name string) error {
 
 	return nil
 }
+
+func Dir(path string) string {
+	return filepath.Dir(path)
+}

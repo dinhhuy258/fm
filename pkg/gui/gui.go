@@ -84,6 +84,10 @@ func (gui *Gui) RenderDir(nodes []*fs.Node, selections map[string]struct{}, focu
 	gui.views.Main.RenderDir(nodes, selections, focusIdx)
 }
 
+func (gui *Gui) RenderEntries(entries []fs.IEntry, selections map[string]struct{}, focusIdx int) {
+	gui.views.Main.RenderEntries(entries, selections, focusIdx)
+}
+
 var (
 	gui                   *Gui
 	guiInitializationOnce sync.Once
