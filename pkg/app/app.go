@@ -10,14 +10,20 @@ import (
 )
 
 type App struct {
-	state *State
-	modes *Modes
+	FocusIdx   int
+	Selections map[string]struct{}
+	History    *History
+	Marks      map[string]string
+	modes      *Modes
 }
 
 // NewApp bootstrap a new application
 func NewApp() *App {
 	app := &App{
-		state: NewState(),
+		FocusIdx:   -1,
+		Selections: map[string]struct{}{},
+		Marks:      map[string]string{},
+		History:    NewHistory(),
 	}
 
 	app.modes = NewModes()
@@ -33,71 +39,67 @@ func (app *App) Run() error {
 
 func (app *App) onModeChanged() {
 	currentMode := app.modes.Peek()
-	keys, helps := currentMode.GetHelp(app.state)
+	keys, helps := currentMode.GetHelp(app)
 
 	appGui := gui.GetGui()
 	appGui.SetHelpTitle(currentMode.GetName())
 	appGui.SetHelp(keys, helps)
 }
 
-func (app *App) State() *State {
-	return app.state
-}
-
 func (app *App) ClearSelections() {
-	for k := range app.state.Selections {
-		delete(app.state.Selections, k)
+	for k := range app.Selections {
+		delete(app.Selections, k)
 	}
 }
 
 func (app *App) DeleteSelection(path string) {
-	delete(app.state.Selections, path)
+	delete(app.Selections, path)
 }
 
 func (app *App) HasSelection(path string) bool {
-	_, hasSelection := app.state.Selections[path]
+	_, hasSelection := app.Selections[path]
 
 	return hasSelection
 }
 
 func (app *App) AddSelection(path string) {
-	app.state.Selections[path] = struct{}{}
+	app.Selections[path] = struct{}{}
 }
 
 func (app *App) GetSelections() map[string]struct{} {
-	return app.state.Selections
+	return app.Selections
 }
 
 func (app *App) GetFocusIdx() int {
-	return app.state.FocusIdx
+	return app.FocusIdx
 }
 
 func (app *App) SetFocusIdx(idx int) {
-	app.state.FocusIdx = idx
+	app.FocusIdx = idx
 }
 
 func (app *App) PushHistory(node *fs.Node) {
-	app.State().History.Push(node)
+	app.History.Push(node)
 }
 
 func (app *App) PeekHistory() *fs.Node {
-	return app.State().History.Peek()
+	return app.History.Peek()
 }
 
 func (app *App) VisitLastHistory() {
-	app.State().History.VisitLast()
+	app.History.VisitLast()
 }
 
 func (app *App) VisitNextHistory() {
-	app.State().History.VisitNext()
+	app.History.VisitNext()
 }
 
 func (app *App) MarkSave(key, path string) {
-	app.State().Marks[key] = path
+	app.Marks[key] = path
 }
 
 func (app *App) MarkLoad(key string) (string, bool) {
-	path, hasKey := app.State().Marks[key]
+	path, hasKey := app.Marks[key]
 
 	return path, hasKey
 }
