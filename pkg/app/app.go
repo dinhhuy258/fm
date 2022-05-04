@@ -76,14 +76,6 @@ func (app *App) SetFocusIdx(idx int) {
 	app.state.FocusIdx = idx
 }
 
-func (app *App) GetNumberOfFiles() int {
-	return app.state.NumberOfFiles
-}
-
-func (app *App) SetNumberOfFiles(numberOfFiles int) {
-	app.state.NumberOfFiles = numberOfFiles
-}
-
 func (app *App) PushHistory(node *fs.Node) {
 	app.State().History.Push(node)
 }

@@ -22,8 +22,9 @@ func FocusFirst(app IApp, _ ...interface{}) error {
 }
 
 func FocusNext(app IApp, _ ...interface{}) error {
+	fileManager := fs.GetFileManager()
 	focusIdx := app.GetFocusIdx()
-	if focusIdx == app.GetNumberOfFiles()-1 {
+	if focusIdx == fileManager.GetVisibleNodesSize()-1 {
 		return nil
 	}
 
@@ -31,7 +32,7 @@ func FocusNext(app IApp, _ ...interface{}) error {
 	app.SetFocusIdx(focusIdx + 1)
 
 	gui.GetGui().RenderDir(
-		fs.GetFileManager().GetVisibleNodes(),
+		fileManager.GetVisibleNodes(),
 		app.GetSelections(),
 		app.GetFocusIdx(),
 	)
@@ -149,7 +150,6 @@ func ChangeDirectory(app IApp, path string, saveHistory bool, focusPath *string)
 		<-dirLoadedChan
 
 		numberOfFiles := fileManager.GetVisibleNodesSize()
-		app.SetNumberOfFiles(numberOfFiles)
 		title := (" " + fileManager.GetCurrentPath() + " (" + strconv.Itoa(numberOfFiles) + ") ")
 		gui.GetGui().SetMainTitle(title)
 

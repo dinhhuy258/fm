@@ -31,7 +31,6 @@ func ToggleHidden(app IApp, _ ...interface{}) error {
 	fileManager.Reload()
 
 	numberOfFiles := fileManager.GetVisibleNodesSize()
-	app.SetNumberOfFiles(numberOfFiles)
 	title := (" " + fileManager.GetCurrentPath() + " (" + strconv.Itoa(numberOfFiles) + ") ")
 	gui.GetGui().SetMainTitle(title)
 	gui.GetGui().UpdateSortAndFilter()

@@ -12,8 +12,6 @@ type IApp interface {
 	AddSelection(path string)
 	GetFocusIdx() int
 	SetFocusIdx(idx int)
-	GetNumberOfFiles() int
-	SetNumberOfFiles(numberOfFiles int)
 	PushHistory(node *fs.Node)
 	PeekHistory() *fs.Node
 	VisitLastHistory()
