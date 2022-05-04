@@ -10,7 +10,8 @@ import (
 )
 
 func ToggleSelection(app IApp, _ ...interface{}) error {
-	path := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()].AbsolutePath
+	node := fs.GetFileManager().GetNodeAtIdx(app.GetFocusIdx())
+	path := node.AbsolutePath
 
 	if app.HasSelection(path) {
 		app.DeleteSelection(path)
@@ -26,16 +27,17 @@ func ToggleSelection(app IApp, _ ...interface{}) error {
 func ToggleHidden(app IApp, _ ...interface{}) error {
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
-	fs.GetFileManager().Dir.Reload()
+	fileManager := fs.GetFileManager()
+	fileManager.Reload()
 
-	numberOfFiles := len(fs.GetFileManager().Dir.VisibleNodes)
+	numberOfFiles := fileManager.GetVisibleNodesSize()
 	app.SetNumberOfFiles(numberOfFiles)
-	title := (" " + fs.GetFileManager().Dir.Path + " (" + strconv.Itoa(numberOfFiles) + ") ")
+	title := (" " + fileManager.GetCurrentPath() + " (" + strconv.Itoa(numberOfFiles) + ") ")
 	gui.GetGui().SetMainTitle(title)
 	gui.GetGui().UpdateSortAndFilter()
 
 	gui.GetGui().RenderDir(
-		fs.GetFileManager().Dir,
+		fs.GetFileManager().GetVisibleNodes(),
 		app.GetSelections(),
 		app.GetFocusIdx(),
 	)
@@ -60,14 +62,15 @@ func PopMode(app IApp, _ ...interface{}) error {
 }
 
 func Refresh(app IApp, params ...interface{}) error {
-	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
+	fileManager := fs.GetFileManager()
+	currentNode := fileManager.GetNodeAtIdx(app.GetFocusIdx())
 
 	focus := currentNode.AbsolutePath
 	if len(params) == 1 {
 		focus, _ = params[0].(string)
 	}
 
-	ChangeDirectory(app, fs.GetFileManager().Dir.Path, false, &focus)
+	ChangeDirectory(app, fileManager.GetCurrentPath(), false, &focus)
 
 	return nil
 }
@@ -76,7 +79,7 @@ func refreshSelections(app IApp) {
 	gui.GetGui().RenderSelections(app.GetSelections())
 
 	gui.GetGui().RenderDir(
-		fs.GetFileManager().Dir,
+		fs.GetFileManager().GetVisibleNodes(),
 		app.GetSelections(),
 		app.GetFocusIdx(),
 	)

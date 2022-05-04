@@ -13,7 +13,7 @@ func FocusFirst(app IApp, _ ...interface{}) error {
 	app.SetFocusIdx(0)
 
 	gui.GetGui().RenderDir(
-		fs.GetFileManager().Dir,
+		fs.GetFileManager().GetVisibleNodes(),
 		app.GetSelections(),
 		app.GetFocusIdx(),
 	)
@@ -31,7 +31,7 @@ func FocusNext(app IApp, _ ...interface{}) error {
 	app.SetFocusIdx(focusIdx + 1)
 
 	gui.GetGui().RenderDir(
-		fs.GetFileManager().Dir,
+		fs.GetFileManager().GetVisibleNodes(),
 		app.GetSelections(),
 		app.GetFocusIdx(),
 	)
@@ -49,7 +49,7 @@ func FocusPrevious(app IApp, _ ...interface{}) error {
 	app.SetFocusIdx(focusIdx - 1)
 
 	gui.GetGui().RenderDir(
-		fs.GetFileManager().Dir,
+		fs.GetFileManager().GetVisibleNodes(),
 		app.GetSelections(),
 		app.GetFocusIdx(),
 	)
@@ -58,15 +58,16 @@ func FocusPrevious(app IApp, _ ...interface{}) error {
 }
 
 func FocusPath(app IApp, params ...interface{}) error {
+	fileManager := fs.GetFileManager()
 	path, _ := params[0].(string)
-	if fs.GetFileManager().Dir.Path != filepath.Dir(path) {
-		dirLoadedChan := fs.GetFileManager().LoadDirectory(filepath.Dir(path))
+	if fileManager.GetCurrentPath() != filepath.Dir(path) {
+		dirLoadedChan := fileManager.LoadDirectory(filepath.Dir(path))
 		<-dirLoadedChan
 	}
 
 	focusIdx := 0
 
-	for _, node := range fs.GetFileManager().Dir.VisibleNodes {
+	for _, node := range fileManager.GetVisibleNodes() {
 		if node.AbsolutePath == path {
 			break
 		}
@@ -74,8 +75,8 @@ func FocusPath(app IApp, params ...interface{}) error {
 		focusIdx++
 	}
 
-	if focusIdx == len(fs.GetFileManager().Dir.VisibleNodes) {
-		focusIdx = len(fs.GetFileManager().Dir.VisibleNodes) - 1
+	if focusIdx == fileManager.GetVisibleNodesSize() {
+		focusIdx = fileManager.GetVisibleNodesSize() - 1
 	}
 
 	gui.GetGui().ResetCursor()
@@ -87,7 +88,7 @@ func FocusPath(app IApp, params ...interface{}) error {
 	}
 
 	gui.GetGui().RenderDir(
-		fs.GetFileManager().Dir,
+		fs.GetFileManager().GetVisibleNodes(),
 		app.GetSelections(),
 		app.GetFocusIdx(),
 	)
@@ -96,7 +97,7 @@ func FocusPath(app IApp, params ...interface{}) error {
 }
 
 func Enter(app IApp, _ ...interface{}) error {
-	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
+	currentNode := fs.GetFileManager().GetNodeAtIdx(app.GetFocusIdx())
 
 	if currentNode.IsDir {
 		ChangeDirectory(app, currentNode.AbsolutePath, true, nil)
@@ -106,9 +107,11 @@ func Enter(app IApp, _ ...interface{}) error {
 }
 
 func Back(app IApp, _ ...interface{}) error {
-	parent := fs.GetFileManager().Dir.Parent()
+	fileManager := fs.GetFileManager()
+	parent := fileManager.GetParentPath()
 
-	ChangeDirectory(app, parent, true, &fs.GetFileManager().Dir.Path)
+	currentPath := fileManager.GetCurrentPath()
+	ChangeDirectory(app, parent, true, &currentPath)
 
 	return nil
 }
@@ -116,6 +119,7 @@ func Back(app IApp, _ ...interface{}) error {
 func LastVisitedPath(app IApp, _ ...interface{}) error {
 	app.VisitLastHistory()
 	node := app.PeekHistory()
+	//TODO: Move filepath.Dir to fs package
 	ChangeDirectory(app, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
 
 	return nil
@@ -124,14 +128,18 @@ func LastVisitedPath(app IApp, _ ...interface{}) error {
 func NextVisitedPath(app IApp, _ ...interface{}) error {
 	app.VisitNextHistory()
 	node := app.PeekHistory()
+	//TODO: Move filepath.Dir to fs package
 	ChangeDirectory(app, filepath.Dir(node.AbsolutePath), false, &node.AbsolutePath)
 
 	return nil
 }
 
+//TODO: Do we need pointer in focusPath variable
 func ChangeDirectory(app IApp, path string, saveHistory bool, focusPath *string) {
-	if saveHistory && fs.GetFileManager().Dir != nil {
-		currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
+	fileManager := fs.GetFileManager()
+	//TODO Better way to handle isLoaded
+	if saveHistory && fileManager.IsLoaded() {
+		currentNode := fileManager.GetNodeAtIdx(app.GetFocusIdx())
 		app.PushHistory(currentNode)
 	}
 
@@ -140,9 +148,9 @@ func ChangeDirectory(app IApp, path string, saveHistory bool, focusPath *string)
 	go func() {
 		<-dirLoadedChan
 
-		numberOfFiles := len(fs.GetFileManager().Dir.VisibleNodes)
+		numberOfFiles := fileManager.GetVisibleNodesSize()
 		app.SetNumberOfFiles(numberOfFiles)
-		title := (" " + fs.GetFileManager().Dir.Path + " (" + strconv.Itoa(numberOfFiles) + ") ")
+		title := (" " + fileManager.GetCurrentPath() + " (" + strconv.Itoa(numberOfFiles) + ") ")
 		gui.GetGui().SetMainTitle(title)
 
 		if focusPath == nil {
@@ -152,7 +160,7 @@ func ChangeDirectory(app IApp, path string, saveHistory bool, focusPath *string)
 		}
 
 		if saveHistory {
-			currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
+			currentNode := fileManager.GetNodeAtIdx(app.GetFocusIdx())
 			app.PushHistory(currentNode)
 		}
 	}()

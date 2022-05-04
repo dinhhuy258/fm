@@ -39,7 +39,7 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 }
 
 func DeleteCurrent(app IApp, _ ...interface{}) error {
-	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
+	currentNode := fs.GetFileManager().GetNodeAtIdx(app.GetFocusIdx())
 
 	gui.GetGui().SetConfirmation("Do you want to delete "+currentNode.RelativePath+"?", func(ans bool) {
 		_ = PopMode(app)
@@ -94,7 +94,7 @@ func deletePaths(app IApp, paths []string) {
 		if focusIdx < 0 {
 			_ = Refresh(app)
 		} else {
-			_ = Refresh(app, fs.GetFileManager().Dir.VisibleNodes[focusIdx].AbsolutePath)
+			_ = Refresh(app, fs.GetFileManager().GetNodeAtIdx(focusIdx).AbsolutePath)
 		}
 	}()
 }
@@ -105,7 +105,7 @@ func getFocusIdx(app IApp, paths []string) int {
 		pathsMap[path] = struct{}{}
 	}
 
-	visibleNodes := fs.GetFileManager().Dir.VisibleNodes
+	visibleNodes := fs.GetFileManager().GetVisibleNodes()
 	visibleNodesSize := len(visibleNodes)
 	focusIdx := app.GetFocusIdx()
 

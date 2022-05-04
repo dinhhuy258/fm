@@ -80,8 +80,8 @@ func (gui *Gui) UpdateSortAndFilter() {
 	gui.views.SortAndFilter.UpdateSortAndFilter()
 }
 
-func (gui *Gui) RenderDir(dir *fs.Directory, selections map[string]struct{}, focusIdx int) {
-	gui.views.Main.RenderDir(dir, selections, focusIdx)
+func (gui *Gui) RenderDir(nodes []*fs.Node, selections map[string]struct{}, focusIdx int) {
+	gui.views.Main.RenderDir(nodes, selections, focusIdx)
 }
 
 var (

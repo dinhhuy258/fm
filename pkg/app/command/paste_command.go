@@ -24,7 +24,7 @@ func PasteSelections(app IApp, params ...interface{}) error {
 		paths = append(paths, k)
 	}
 
-	paste(app, paths, fs.GetFileManager().Dir.Path, operation)
+	paste(app, paths, fs.GetFileManager().GetCurrentPath(), operation)
 
 	app.ClearSelections()
 

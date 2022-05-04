@@ -8,7 +8,7 @@ func MarkSave(app IApp, params ...interface{}) error {
 	key, _ := params[0].(string)
 	// Exit mark mode
 	_ = app.PopMode()
-	currentNode := fs.GetFileManager().Dir.VisibleNodes[app.GetFocusIdx()]
+	currentNode := fs.GetFileManager().GetNodeAtIdx(app.GetFocusIdx())
 	app.MarkSave(key, currentNode.AbsolutePath)
 
 	return nil
