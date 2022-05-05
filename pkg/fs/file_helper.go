@@ -75,9 +75,11 @@ func Delete(paths []string, onSuccess func(), onError func(error), onComplete fu
 		for _, path := range paths {
 			if err := os.RemoveAll(path); err != nil {
 				errorCount++
+
 				onError(err)
 			} else {
 				successCount++
+
 				onSuccess()
 			}
 		}
@@ -112,18 +114,16 @@ func Copy(srcPaths []string, destDir string, onSuccess func(), onError func(erro
 					return err
 				}
 
-				if err := copyPath(src, path, dst, info); err != nil {
-					return err
-				}
-
-				return nil
+				return copyPath(src, path, dst, info)
 			}
 
 			if err := filepath.Walk(srcPath, walkFunc); err != nil {
 				errorCount++
+
 				onError(err)
 			} else {
 				successCount++
+
 				onSuccess()
 			}
 		}
@@ -141,6 +141,7 @@ func Move(srcPaths []string, destDir string, onSuccess func(), onError func(erro
 			dst := filepath.Join(destDir, filepath.Base(src))
 			if dst == src {
 				successCount++
+
 				onSuccess()
 
 				continue
@@ -160,9 +161,11 @@ func Move(srcPaths []string, destDir string, onSuccess func(), onError func(erro
 
 			if err := os.Rename(src, dst); err != nil {
 				errorCount++
+
 				onError(err)
 			} else {
 				successCount++
+
 				onSuccess()
 			}
 		}

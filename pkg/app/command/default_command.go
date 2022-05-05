@@ -8,6 +8,7 @@ import (
 
 func ToggleSelection(app IApp, _ ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
+
 	entry := fileExplorer.GetEntry(app.GetFocus())
 	path := entry.GetPath()
 
@@ -20,11 +21,14 @@ func ToggleSelection(app IApp, _ ...interface{}) error {
 }
 
 func ToggleHidden(app IApp, _ ...interface{}) error {
+	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
+
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
-	fileExplorer := fs.GetFileExplorer()
-	entry := fileExplorer.GetEntry(app.GetFocus())
+	appGui.UpdateSortAndFilter()
 
+	entry := fileExplorer.GetEntry(app.GetFocus())
 	LoadDirectory(app, fileExplorer.GetPath(), false, entry.GetPath())
 
 	return nil
@@ -49,8 +53,8 @@ func PopMode(app IApp, _ ...interface{}) error {
 
 func Refresh(app IApp, params ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
-	entry := fileExplorer.GetEntry(app.GetFocus())
 
+	entry := fileExplorer.GetEntry(app.GetFocus())
 	LoadDirectory(app, fileExplorer.GetPath(), false, entry.GetPath())
 
 	return nil

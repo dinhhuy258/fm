@@ -52,7 +52,7 @@ func (fe *FileExplorer) GetEntry(idx int) IEntry {
 }
 
 func (fe *FileExplorer) LoadEntries(path string, onEntriesLoaded func()) {
-	//TODO: Check if path is directory or not
+	// TODO: Check if path is directory or not
 	fe.path = path
 
 	go func() {
@@ -84,6 +84,7 @@ func (fe *FileExplorer) loadEntries() error {
 
 	for _, name := range names {
 		absolutePath := filepath.Join(fe.path, name)
+
 		lstat, err := os.Lstat(absolutePath)
 		if err != nil {
 			if os.IsNotExist(err) {

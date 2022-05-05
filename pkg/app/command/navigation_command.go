@@ -55,9 +55,7 @@ func FocusPrevious(app IApp, _ ...interface{}) error {
 func FocusPath(app IApp, params ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
 
-	path, _ := params[0].(string)
-
-	if fileExplorer.GetPath() != filepath.Dir(path) {
+	if path, _ := params[0].(string); fileExplorer.GetPath() != filepath.Dir(path) {
 		fileExplorer.LoadEntries(filepath.Dir(path), func() {
 			focusPath(app, path)
 		})
@@ -70,8 +68,13 @@ func FocusPath(app IApp, params ...interface{}) error {
 
 func Enter(app IApp, _ ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
-	entry := fileExplorer.GetEntry(app.GetFocus())
 
+	if fileExplorer.GetEntriesSize() <= 0 {
+		// In case of folder is empty
+		return nil
+	}
+
+	entry := fileExplorer.GetEntry(app.GetFocus())
 	if entry.IsDirectory() {
 		LoadDirectory(app, entry.GetPath(), true, "")
 	}
@@ -81,6 +84,7 @@ func Enter(app IApp, _ ...interface{}) error {
 
 func Back(app IApp, _ ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
+
 	dir := fileExplorer.Dir()
 	if dir == "." {
 		// If folder has no parent directory then do nothing
@@ -127,7 +131,7 @@ func LoadDirectory(app IApp, path string, saveHistory bool, focusPath string) {
 			_ = FocusPath(app, focusPath)
 		}
 
-		if saveHistory {
+		if saveHistory && fileExplorer.GetEntriesSize() > 0 {
 			entry := fileExplorer.GetEntry(app.GetFocus())
 			app.PushHistory(entry)
 		}
@@ -143,17 +147,18 @@ func focusPath(app IApp, path string) {
 	for idx, entry := range fileExplorer.GetEntries() {
 		if entry.GetPath() == path {
 			focus = idx
+
 			break
 		}
 	}
 
 	appGui.ResetCursor()
-	app.SetFocus(0)
 
 	for i := 0; i < focus; i++ {
 		appGui.NextCursor()
-		app.SetFocus(app.GetFocus() + 1)
 	}
+
+	app.SetFocus(focus)
 
 	app.RenderEntries()
 }
