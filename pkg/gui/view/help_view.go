@@ -34,14 +34,14 @@ func (hv *HelpView) SetTitle(mode string) {
 	hv.v.v.Title = fmt.Sprintf(" Help [%s] ", mode)
 }
 
-func (hv *HelpView) SetHelp(keys []string, helps []string) {
+func (hv *HelpView) SetHelp(keys []string, msgs []string) {
 	lines := make([]string, 0, len(keys))
 
 	for i := 0; i < len(keys); i++ {
 		key := keys[i]
-		help := helps[i]
+		msg := msgs[i]
 
-		line, err := hv.helpRow.Sprint([]string{key, help})
+		line, err := hv.helpRow.Sprint([]string{key, msg})
 		if err != nil {
 			log.Fatalf("failed to set content for help view %v", err)
 		}

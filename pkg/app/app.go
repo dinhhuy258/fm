@@ -39,11 +39,20 @@ func (app *App) Run() error {
 
 func (app *App) onModeChanged() {
 	currentMode := app.modes.Peek()
-	keys, helps := currentMode.GetHelp(app)
+	helps := currentMode.GetHelp(app)
 
 	appGui := gui.GetGui()
 	appGui.SetHelpTitle(currentMode.GetName())
-	appGui.SetHelp(keys, helps)
+
+	keys := make([]string, 0, len(helps))
+	msgs := make([]string, 0, len(helps))
+
+	for _, h := range helps {
+		keys = append(keys, h.Key)
+		msgs = append(msgs, h.Msg)
+	}
+
+	appGui.SetHelp(keys, msgs)
 }
 
 func (app *App) RenderEntries() {

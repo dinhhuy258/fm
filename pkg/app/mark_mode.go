@@ -58,19 +58,22 @@ func (*MarkLoadMode) GetName() string {
 	return "mark-load"
 }
 
-func (m *MarkLoadMode) GetHelp(app *App) ([]string, []string) {
-	keys := make([]string, 0, len(m.GetKeyBindings().OnKeys)+len(app.Marks))
-	helps := make([]string, 0, len(m.GetKeyBindings().OnKeys)+len(app.Marks))
+func (m *MarkLoadMode) GetHelp(app *App) []*Help {
+	helps := make([]*Help, 0, len(m.KeyBindings.OnKeys)+len(app.Marks))
 
-	for k, m := range app.Marks {
-		keys = append(keys, k)
-		helps = append(helps, m)
+	for key, mark := range app.Marks {
+		helps = append(helps, &Help{
+			Key: key,
+			Msg: mark,
+		})
 	}
 
-	for k, a := range m.GetKeyBindings().OnKeys {
-		keys = append(keys, k)
-		helps = append(helps, a.Help)
+	for key, command := range m.GetKeyBindings().OnKeys {
+		helps = append(helps, &Help{
+			Key: key,
+			Msg: command.Help,
+		})
 	}
 
-	return keys, helps
+	return helps
 }

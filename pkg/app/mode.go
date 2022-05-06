@@ -12,6 +12,11 @@ var (
 	ErrEmptyModes   = errors.New("empty modes")
 )
 
+type Help struct {
+	Key string
+	Msg string
+}
+
 type KeyBindings struct {
 	OnKeys     map[string]*command.Command
 	OnAlphabet *command.Command
@@ -20,7 +25,7 @@ type KeyBindings struct {
 type IMode interface {
 	GetName() string
 	GetKeyBindings() *KeyBindings
-	GetHelp(app *App) ([]string, []string)
+	GetHelp(app *App) []*Help
 }
 
 type Mode struct {
@@ -88,20 +93,23 @@ func (m *Modes) Peek() IMode {
 	return m.Modes[len(m.Modes)-1]
 }
 
-func (m *Mode) GetHelp(*App) ([]string, []string) {
-	keys := make([]string, 0, len(m.GetKeyBindings().OnKeys)+1)
-	helps := make([]string, 0, len(m.GetKeyBindings().OnKeys)+1)
-	keybindings := m.GetKeyBindings()
+func (m *Mode) GetHelp(*App) []*Help {
+	helps := make([]*Help, 0, len(m.KeyBindings.OnKeys)+1)
+	keybindings := m.KeyBindings
 
 	if keybindings.OnAlphabet != nil {
-		keys = append(keys, "alphabet")
-		helps = append(helps, keybindings.OnAlphabet.Help)
+		helps = append(helps, &Help{
+			Key: "alphabet",
+			Msg: keybindings.OnAlphabet.Help,
+		})
 	}
 
-	for k, a := range keybindings.OnKeys {
-		keys = append(keys, k)
-		helps = append(helps, a.Help)
+	for key, command := range keybindings.OnKeys {
+		helps = append(helps, &Help{
+			Key: key,
+			Msg: command.Help,
+		})
 	}
 
-	return keys, helps
+	return helps
 }

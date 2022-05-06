@@ -68,8 +68,8 @@ func (gui *Gui) SetHelpTitle(title string) {
 	gui.views.Help.SetTitle(title)
 }
 
-func (gui *Gui) SetHelp(keys []string, helps []string) {
-	gui.views.Help.SetHelp(keys, helps)
+func (gui *Gui) SetHelp(keys []string, msgs []string) {
+	gui.views.Help.SetHelp(keys, msgs)
 }
 
 func (gui *Gui) SetMainTitle(title string) {

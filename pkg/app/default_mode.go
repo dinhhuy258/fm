@@ -88,7 +88,7 @@ func createDefaultMode() *DefaultMode {
 					},
 					// TODO: Move to configuration
 					"g": {
-						Help: "Go to",
+						Help: "go to",
 						Func: command.SwitchMode,
 						Args: []interface{}{"go-to"},
 					},

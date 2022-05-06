@@ -7,11 +7,16 @@ import (
 
 type CustomMode struct {
 	*Mode
-	name string
+	name  string
+	helps []*Help
 }
 
-func (mode *CustomMode) GetName() string {
-	return mode.name
+func (m *CustomMode) GetName() string {
+	return m.name
+}
+
+func (m *CustomMode) GetHelp(app *App) []*Help {
+	return m.helps
 }
 
 func createCustomMode(name string, keyBindings config.KeyBindingsConfig) *CustomMode {
@@ -22,20 +27,18 @@ func createCustomMode(name string, keyBindings config.KeyBindingsConfig) *Custom
 				OnKeys: map[string]*command.Command{},
 			},
 		},
+		helps: []*Help{},
 	}
 
 	for key, commandConfig := range keyBindings.OnKeys {
 		customMode.KeyBindings.OnKeys[key] = toCommand(commandConfig)
+		customMode.helps = append(customMode.helps, &Help{
+			Key: key,
+			Msg: commandConfig.Help,
+		})
 	}
 
 	return &customMode
-}
-
-func (mode *CustomMode) GetHelp(app *App) ([]string, []string) {
-	keys := make([]string, 0)
-	helps := make([]string, 0)
-
-	return keys, helps
 }
 
 // TODO: Find a better way to convert string to command
@@ -43,14 +46,16 @@ func toCommand(commandConfig *config.CommandConfig) *command.Command {
 	commandString := commandConfig.Name
 
 	switch commandString {
+	case "Quit":
+		return &command.Command{
+			Func: command.Quit,
+		}
 	case "PopMode":
 		return &command.Command{
-			Help: "cancel",
 			Func: command.PopMode,
 		}
 	case "ChangeDirectory":
 		return &command.Command{
-			Help: "change directory",
 			Func: command.ChangeDirectory,
 			Args: commandConfig.Args,
 		}

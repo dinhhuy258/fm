@@ -7,6 +7,7 @@ import (
 
 type CommandConfig struct {
 	Name string
+	Help string
 	Args []interface{}
 }
 
@@ -86,18 +87,36 @@ func LoadConfig() {
 					OnKeys: map[string]*CommandConfig{
 						"~": {
 							Name: "ChangeDirectory",
-							Args: []interface{}{"/Users/dinhhuy258/Workspace"},
+							Help: "Home",
+							Args: []interface{}{"/Users/dinhhuy258"},
 						},
 						"d": {
 							Name: "ChangeDirectory",
-							Args: []interface{}{"/Users/dinhhuy258/Workspace"},
+							Help: "Downloads",
+							Args: []interface{}{"/Users/dinhhuy258/Downloads"},
 						},
 						"D": {
 							Name: "ChangeDirectory",
+							Help: "Documents",
+							Args: []interface{}{"/Users/dinhhuy258/Documents"},
+						},
+						"w": {
+							Name: "ChangeDirectory",
+							Help: "Workspace",
 							Args: []interface{}{"/Users/dinhhuy258/Workspace"},
+						},
+						"h": {
+							Name: "ChangeDirectory",
+							Help: "Desktop",
+							Args: []interface{}{"/Users/dinhhuy258/Desktop"},
+						},
+						"q": {
+							Name: "Quit",
+							Help: "quit",
 						},
 						"esc": {
 							Name: "PopMode",
+							Help: "cancel",
 						},
 					},
 				},
