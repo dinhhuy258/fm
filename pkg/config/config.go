@@ -5,6 +5,20 @@ import (
 	"github.com/gookit/color"
 )
 
+type CommandConfig struct {
+	Name string
+	Args []interface{}
+}
+
+type KeyBindingsConfig struct {
+	OnKeys map[string]*CommandConfig
+}
+
+type ModeConfig struct {
+	Name        string
+	KeyBindings KeyBindingsConfig
+}
+
 type Config struct {
 	SelectionColor   color.Color
 	DirectoryColor   color.Color
@@ -32,6 +46,7 @@ type Config struct {
 	LogErrorFormat   string
 	LogWarningFormat string
 	LogInfoFormat    string
+	ModeConfigs      []ModeConfig
 }
 
 var AppConfig *Config
@@ -64,5 +79,29 @@ func LoadConfig() {
 		LogWarningColor:  color.Yellow,
 		LogInfoFormat:    "[INFO] ",
 		LogInfoColor:     color.Green,
+		ModeConfigs: []ModeConfig{
+			{
+				Name: "go-to",
+				KeyBindings: KeyBindingsConfig{
+					OnKeys: map[string]*CommandConfig{
+						"~": {
+							Name: "ChangeDirectory",
+							Args: []interface{}{"/Users/dinhhuy258/Workspace"},
+						},
+						"d": {
+							Name: "ChangeDirectory",
+							Args: []interface{}{"/Users/dinhhuy258/Workspace"},
+						},
+						"D": {
+							Name: "ChangeDirectory",
+							Args: []interface{}{"/Users/dinhhuy258/Workspace"},
+						},
+						"esc": {
+							Name: "PopMode",
+						},
+					},
+				},
+			},
+		},
 	}
 }

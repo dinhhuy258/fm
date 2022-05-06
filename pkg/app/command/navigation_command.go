@@ -114,6 +114,14 @@ func NextVisitedPath(app IApp, _ ...interface{}) error {
 	return nil
 }
 
+func ChangeDirectory(app IApp, params ...interface{}) error {
+	directory, _ := params[0].(string)
+
+	LoadDirectory(app, directory, true, "")
+
+	return nil
+}
+
 func LoadDirectory(app IApp, path string, saveHistory bool, focusPath string) {
 	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()

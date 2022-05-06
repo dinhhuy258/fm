@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/dinhhuy258/fm/pkg/app/command"
+	"github.com/dinhhuy258/fm/pkg/config"
 )
 
 var (
@@ -27,6 +28,7 @@ type Mode struct {
 	KeyBindings *KeyBindings
 }
 
+// TODO Considering remove this method
 func (m *Mode) GetKeyBindings() *KeyBindings {
 	return m.KeyBindings
 }
@@ -34,6 +36,7 @@ func (m *Mode) GetKeyBindings() *KeyBindings {
 type Modes struct {
 	Modes        []IMode
 	BuiltinModes map[string]IMode
+	CustomModes  map[string]IMode
 }
 
 func NewModes() *Modes {
@@ -43,21 +46,32 @@ func NewModes() *Modes {
 	builtinModes["mark-save"] = createMarkSaveMode()
 	builtinModes["mark-load"] = createMarkLoadMode()
 
+	customModes := make(map[string]IMode)
+	for _, customMode := range config.AppConfig.ModeConfigs {
+		customModes[customMode.Name] = createCustomMode(customMode.Name, customMode.KeyBindings)
+	}
+
 	return &Modes{
 		Modes:        make([]IMode, 0, 5),
 		BuiltinModes: builtinModes,
+		CustomModes:  customModes,
 	}
 }
 
 func (m *Modes) Push(mode string) error {
-	builtinMode, hasMode := m.BuiltinModes[mode]
-	if !hasMode {
-		return ErrModeNotFound
+	if builtinMode, hasBuiltinMode := m.BuiltinModes[mode]; hasBuiltinMode {
+		m.Modes = append(m.Modes, builtinMode)
+
+		return nil
 	}
 
-	m.Modes = append(m.Modes, builtinMode)
+	if customMode, hasCustomMode := m.CustomModes[mode]; hasCustomMode {
+		m.Modes = append(m.Modes, customMode)
 
-	return nil
+		return nil
+	}
+
+	return ErrModeNotFound
 }
 
 func (m *Modes) Pop() error {

@@ -86,6 +86,12 @@ func createDefaultMode() *DefaultMode {
 						Help: "toggle hidden",
 						Func: command.ToggleHidden,
 					},
+					// TODO: Move to configuration
+					"g": {
+						Help: "Go to",
+						Func: command.SwitchMode,
+						Args: []interface{}{"go-to"},
+					},
 					"q": {
 						Help: "quit",
 						Func: command.Quit,
