@@ -5,14 +5,18 @@ import (
 	"github.com/gookit/color"
 )
 
+type ActionConfig struct {
+	Help     string
+	Commands []*CommandConfig
+}
+
 type CommandConfig struct {
 	Name string
-	Help string
 	Args []interface{}
 }
 
 type KeyBindingsConfig struct {
-	OnKeys map[string]*CommandConfig
+	OnKeys map[string]*ActionConfig
 }
 
 type ModeConfig struct {
@@ -84,39 +88,82 @@ func LoadConfig() {
 			{
 				Name: "go-to",
 				KeyBindings: KeyBindingsConfig{
-					OnKeys: map[string]*CommandConfig{
+					OnKeys: map[string]*ActionConfig{
 						"~": {
-							Name: "ChangeDirectory",
 							Help: "Home",
-							Args: []interface{}{"/Users/dinhhuy258"},
+							Commands: []*CommandConfig{
+								{
+									Name: "ChangeDirectory",
+									Args: []interface{}{"/Users/dinhhuy258"},
+								},
+								{
+									Name: "PopMode",
+								},
+							},
 						},
 						"d": {
-							Name: "ChangeDirectory",
 							Help: "Downloads",
-							Args: []interface{}{"/Users/dinhhuy258/Downloads"},
+							Commands: []*CommandConfig{
+								{
+									Name: "ChangeDirectory",
+									Args: []interface{}{"/Users/dinhhuy258/Downloads"},
+								},
+								{
+									Name: "PopMode",
+								},
+							},
 						},
 						"D": {
-							Name: "ChangeDirectory",
 							Help: "Documents",
-							Args: []interface{}{"/Users/dinhhuy258/Documents"},
+							Commands: []*CommandConfig{
+								{
+									Name: "ChangeDirectory",
+									Args: []interface{}{"/Users/dinhhuy258/Documents"},
+								},
+								{
+									Name: "PopMode",
+								},
+							},
 						},
 						"w": {
-							Name: "ChangeDirectory",
 							Help: "Workspace",
-							Args: []interface{}{"/Users/dinhhuy258/Workspace"},
+							Commands: []*CommandConfig{
+								{
+									Name: "ChangeDirectory",
+									Args: []interface{}{"/Users/dinhhuy258/Workspace"},
+								},
+								{
+									Name: "PopMode",
+								},
+							},
 						},
 						"h": {
-							Name: "ChangeDirectory",
 							Help: "Desktop",
-							Args: []interface{}{"/Users/dinhhuy258/Desktop"},
+							Commands: []*CommandConfig{
+								{
+									Name: "ChangeDirectory",
+									Args: []interface{}{"/Users/dinhhuy258/Desktop"},
+								},
+								{
+									Name: "PopMode",
+								},
+							},
 						},
 						"q": {
-							Name: "Quit",
 							Help: "quit",
+							Commands: []*CommandConfig{
+								{
+									Name: "Quit",
+								},
+							},
 						},
 						"esc": {
-							Name: "PopMode",
 							Help: "cancel",
+							Commands: []*CommandConfig{
+								{
+									Name: "PopMode",
+								},
+							},
 						},
 					},
 				},
