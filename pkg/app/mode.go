@@ -12,14 +12,19 @@ var (
 	ErrEmptyModes   = errors.New("empty modes")
 )
 
+type Action struct {
+	Help     string
+	Commands []*command.Command
+}
+
 type Help struct {
 	Key string
 	Msg string
 }
 
 type KeyBindings struct {
-	OnKeys     map[string]*command.Command
-	OnAlphabet *command.Command
+	OnKeys     map[string]*Action
+	OnAlphabet *Action
 }
 
 type IMode interface {

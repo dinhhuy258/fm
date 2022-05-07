@@ -16,85 +16,158 @@ func createDefaultMode() *DefaultMode {
 	return &DefaultMode{
 		&Mode{
 			KeyBindings: &KeyBindings{
-				OnKeys: map[string]*command.Command{
+				OnKeys: map[string]*Action{
 					"j": {
 						Help: "down",
-						Func: command.FocusNext,
+						Commands: []*command.Command{
+							{
+
+								Func: command.FocusNext,
+							},
+						},
 					},
 					"k": {
 						Help: "up",
-						Func: command.FocusPrevious,
+						Commands: []*command.Command{
+							{
+								Func: command.FocusPrevious,
+							},
+						},
 					},
 					"l": {
 						Help: "enter",
-						Func: command.Enter,
+						Commands: []*command.Command{
+							{
+								Func: command.Enter,
+							},
+						},
 					},
 					"h": {
 						Help: "back",
-						Func: command.Back,
+						Commands: []*command.Command{
+							{
+								Func: command.Back,
+							},
+						},
 					},
 					"m": {
 						Help: "mark save",
-						Func: command.SwitchMode,
-						Args: []interface{}{"mark-save"},
+						Commands: []*command.Command{
+							{
+								Func: command.SwitchMode,
+								Args: []interface{}{"mark-save"},
+							},
+						},
 					},
 					"`": {
 						Help: "mark load",
-						Func: command.SwitchMode,
-						Args: []interface{}{"mark-load"},
+						Commands: []*command.Command{
+							{
+								Func: command.SwitchMode,
+								Args: []interface{}{"mark-load"},
+							},
+						},
 					},
 					"d": {
 						Help: "delete",
-						Func: command.SwitchMode,
-						Args: []interface{}{"delete"},
+						Commands: []*command.Command{
+							{
+								Func: command.SwitchMode,
+								Args: []interface{}{"delete"},
+							},
+						},
 					},
 					"p": {
 						Help: "copy",
-						Func: command.PasteSelections,
-						Args: []interface{}{"copy"},
+						Commands: []*command.Command{
+							{
+								Func: command.PasteSelections,
+								Args: []interface{}{"copy"},
+							},
+						},
 					},
 					"x": {
 						Help: "cut",
-						Func: command.PasteSelections,
-						Args: []interface{}{"cut"},
+						Commands: []*command.Command{
+							{
+								Func: command.PasteSelections,
+								Args: []interface{}{"cut"},
+							},
+						},
 					},
 					"n": {
 						Help: "new",
-						Func: command.NewFile,
+						Commands: []*command.Command{
+							{
+								Func: command.NewFile,
+							},
+						},
 					},
 					"ctrl+i": {
 						Help: "next visited path",
-						Func: command.NextVisitedPath,
+						Commands: []*command.Command{
+							{
+								Func: command.NextVisitedPath,
+							},
+						},
 					},
 					"ctrl+o": {
 						Help: "last visited path",
-						Func: command.LastVisitedPath,
+						Commands: []*command.Command{
+							{
+								Func: command.LastVisitedPath,
+							},
+						},
 					},
 					"ctrl+r": {
 						Help: "refresh",
-						Func: command.Refresh,
+						Commands: []*command.Command{
+							{
+								Func: command.Refresh,
+							},
+						},
 					},
 					"space": {
 						Help: "toggle selection",
-						Func: command.ToggleSelection,
+						Commands: []*command.Command{
+							{
+								Func: command.ToggleSelection,
+							},
+						},
 					},
 					"ctrl+space": {
 						Help: "clear selection",
-						Func: command.ClearSelection,
+						Commands: []*command.Command{
+							{
+								Func: command.ClearSelection,
+							},
+						},
 					},
 					".": {
 						Help: "toggle hidden",
-						Func: command.ToggleHidden,
+						Commands: []*command.Command{
+							{
+								Func: command.ToggleHidden,
+							},
+						},
 					},
 					// TODO: Move to configuration
 					"g": {
 						Help: "go to",
-						Func: command.SwitchMode,
-						Args: []interface{}{"go-to"},
+						Commands: []*command.Command{
+							{
+								Func: command.SwitchMode,
+								Args: []interface{}{"go-to"},
+							},
+						},
 					},
 					"q": {
 						Help: "quit",
-						Func: command.Quit,
+						Commands: []*command.Command{
+							{
+								Func: command.Quit,
+							},
+						},
 					},
 				},
 			},

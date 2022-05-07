@@ -152,16 +152,20 @@ func (app *App) PushMode(mode string) error {
 func (app *App) onKey(key string) error {
 	keybindings := app.modes.Peek().GetKeyBindings()
 
-	if cmd, hasKey := keybindings.OnKeys[key]; hasKey {
-		if err := cmd.Func(app, cmd.Args...); err != nil {
-			return err
+	if action, hasKey := keybindings.OnKeys[key]; hasKey {
+		for _, cmd := range action.Commands {
+			if err := cmd.Func(app, cmd.Args...); err != nil {
+				return err
+			}
 		}
 	} else if keybindings.OnAlphabet != nil {
-		args := keybindings.OnAlphabet.Args
-		args = append(args, key)
+		for _, cmd := range keybindings.OnAlphabet.Commands {
+			args := cmd.Args
+			args = append(args, key)
 
-		if err := keybindings.OnAlphabet.Func(app, args...); err != nil {
-			return err
+			if err := cmd.Func(app, args...); err != nil {
+				return err
+			}
 		}
 	}
 

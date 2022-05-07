@@ -16,22 +16,38 @@ func createDeleteMode() *DeleteMode {
 	return &DeleteMode{
 		&Mode{
 			KeyBindings: &KeyBindings{
-				OnKeys: map[string]*command.Command{
+				OnKeys: map[string]*Action{
 					"d": {
 						Help: "delete",
-						Func: command.DeleteCurrent,
+						Commands: []*command.Command{
+							{
+								Func: command.DeleteCurrent,
+							},
+						},
 					},
 					"s": {
 						Help: "delete selections",
-						Func: command.DeleteSelections,
+						Commands: []*command.Command{
+							{
+								Func: command.DeleteSelections,
+							},
+						},
 					},
 					"esc": {
 						Help: "cancel",
-						Func: command.PopMode,
+						Commands: []*command.Command{
+							{
+								Func: command.PopMode,
+							},
+						},
 					},
 					"q": {
 						Help: "quit",
-						Func: command.Quit,
+						Commands: []*command.Command{
+							{
+								Func: command.Quit,
+							},
+						},
 					},
 				},
 			},
