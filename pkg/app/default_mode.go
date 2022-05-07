@@ -151,6 +151,15 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
+					"/": {
+						Help: "search",
+						Commands: []*command.Command{
+							{
+								Func: command.SwitchMode,
+								Args: []interface{}{"search"},
+							},
+						},
+					},
 					// TODO: Move to configuration
 					"g": {
 						Help: "go to",

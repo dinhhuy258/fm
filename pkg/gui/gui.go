@@ -31,6 +31,10 @@ func (gui *Gui) SetLog(log string, level view.LogLevel) {
 	gui.views.Log.SetLog(log, level)
 }
 
+func (gui *Gui) SetLogViewOnTop() {
+	gui.views.Log.SetViewOnTop()
+}
+
 func (gui *Gui) SetInput(ask string, onInput func(string)) {
 	gui.views.Input.SetInput(ask, func(ans string) {
 		gui.views.Main.SetAsCurrentView()
