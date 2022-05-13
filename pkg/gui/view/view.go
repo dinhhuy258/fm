@@ -10,7 +10,7 @@ import (
 )
 
 type Views struct {
-	Main          *MainView
+	Explorer      *ExplorerView
 	Selection     *SelectionView
 	Help          *HelpView
 	SortAndFilter *SortAndFilterView
@@ -22,23 +22,23 @@ type Views struct {
 
 func CreateAllViews(g *gocui.Gui) (*Views, error) {
 	var (
-		mainHeader    *gocui.View
-		main          *gocui.View
-		selection     *gocui.View
-		sortAndFilter *gocui.View
-		help          *gocui.View
-		input         *gocui.View
-		log           *gocui.View
-		confirm       *gocui.View
-		progress      *gocui.View
+		explorerHeader *gocui.View
+		explorer       *gocui.View
+		selection      *gocui.View
+		sortAndFilter  *gocui.View
+		help           *gocui.View
+		input          *gocui.View
+		log            *gocui.View
+		confirm        *gocui.View
+		progress       *gocui.View
 	)
 
 	viewNameMappings := []struct {
 		viewPtr **gocui.View
 		name    string
 	}{
-		{viewPtr: &mainHeader, name: "main-header"},
-		{viewPtr: &main, name: "main"},
+		{viewPtr: &explorerHeader, name: "explorer-header"},
+		{viewPtr: &explorer, name: "explorer"},
 		{viewPtr: &selection, name: "selection"},
 		{viewPtr: &sortAndFilter, name: "sortAndFilter"},
 		{viewPtr: &help, name: "help"},
@@ -57,7 +57,7 @@ func CreateAllViews(g *gocui.Gui) (*Views, error) {
 	}
 
 	return &Views{
-		Main:          newMainView(g, main, mainHeader),
+		Explorer:      newExplorerView(g, explorer, explorerHeader),
 		Selection:     newSelectionView(g, selection),
 		SortAndFilter: newSortAndFilterView(g, sortAndFilter),
 		Help:          newHelpView(g, help),
@@ -71,7 +71,7 @@ func CreateAllViews(g *gocui.Gui) (*Views, error) {
 func (v *Views) Layout() error {
 	v.Help.layout()
 
-	return v.Main.layout()
+	return v.Explorer.layout()
 }
 
 type View struct {

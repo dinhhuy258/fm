@@ -12,7 +12,7 @@ import (
 	"github.com/gookit/color"
 )
 
-type MainView struct {
+type ExplorerView struct {
 	v            *View
 	hv           *View
 	headerRow    *row.Row
@@ -21,8 +21,8 @@ type MainView struct {
 	selectionRow *row.Row
 }
 
-func newMainView(g *gocui.Gui, v *gocui.View, hv *gocui.View) *MainView {
-	mv := &MainView{
+func newExplorerView(g *gocui.Gui, v *gocui.View, hv *gocui.View) *ExplorerView {
+	mv := &ExplorerView{
 		v:            newView(g, v),
 		hv:           newView(g, hv),
 		headerRow:    newRow(nil),
@@ -55,7 +55,7 @@ func newRow(pathColor *color.Color) *row.Row {
 	return r
 }
 
-func (mv *MainView) layout() error {
+func (mv *ExplorerView) layout() error {
 	x, _ := mv.v.v.Size()
 	mv.headerRow.SetWidth(x)
 	mv.directoryRow.SetWidth(x)
@@ -74,7 +74,7 @@ func (mv *MainView) layout() error {
 	return nil
 }
 
-func (mv *MainView) RenderEntries(entries []fs.IEntry, selections map[string]struct{}, focus int) {
+func (mv *ExplorerView) RenderEntries(entries []fs.IEntry, selections map[string]struct{}, focus int) {
 	entriesSize := len(entries)
 	lines := make([]string, entriesSize)
 	cfg := config.AppConfig
@@ -125,29 +125,29 @@ func (mv *MainView) RenderEntries(entries []fs.IEntry, selections map[string]str
 	mv.v.SetViewContent(lines)
 }
 
-func (mv *MainView) SetTitle(title string) {
+func (mv *ExplorerView) SetTitle(title string) {
 	mv.hv.v.Title = title
 }
 
-func (mv *MainView) SetOrigin(x, y int) error {
+func (mv *ExplorerView) SetOrigin(x, y int) error {
 	return mv.v.SetOrigin(x, y)
 }
 
-func (mv *MainView) SetCursor(x, y int) error {
+func (mv *ExplorerView) SetCursor(x, y int) error {
 	return mv.v.SetCursor(x, y)
 }
 
-func (mv *MainView) NextCursor() error {
+func (mv *ExplorerView) NextCursor() error {
 	return mv.v.NextCursor()
 }
 
-func (mv *MainView) PreviousCursor() error {
+func (mv *ExplorerView) PreviousCursor() error {
 	return mv.v.PreviousCursor()
 }
 
-func (mv *MainView) SetAsCurrentView() {
+func (mv *ExplorerView) SetAsCurrentView() {
 	_, err := mv.v.g.SetCurrentView(mv.v.v.Name())
 	if err != nil {
-		log.Fatalf("failed to set main view as the current view %v", err)
+		log.Fatalf("failed to set explorer view as the current view %v", err)
 	}
 }

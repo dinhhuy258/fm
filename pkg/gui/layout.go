@@ -42,7 +42,7 @@ func (gui *Gui) setViewDimensions() error {
 		dimension viewDimension
 	}{
 		{
-			name: "main-header",
+			name: "explorer-header",
 			dimension: viewDimension{
 				x0: 0,
 				y0: sortAndFilterSize + verticalMargin,
@@ -51,7 +51,7 @@ func (gui *Gui) setViewDimensions() error {
 			},
 		},
 		{
-			name: "main",
+			name: "explorer",
 			dimension: viewDimension{
 				x0: 0,
 				y0: sortAndFilterSize + verticalMargin + 1, // plus 1 for header

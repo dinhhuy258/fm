@@ -113,7 +113,7 @@ func LoadDirectory(app IApp, path string, focusPath string) {
 		path := fileExplorer.GetPath()
 
 		title := (" " + path + " (" + strconv.Itoa(entriesSize) + ") ")
-		appGui.SetMainTitle(title)
+		appGui.SetExplorerTitle(title)
 
 		if focusPath == "" {
 			_ = FocusFirst(app)
