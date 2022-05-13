@@ -77,7 +77,7 @@ func deletePaths(app IApp, paths []string) {
 			_ = Refresh(app)
 		} else {
 			entry := fileExplorer.GetEntry(focus)
-			LoadDirectory(app, fileExplorer.GetPath(), false, entry.GetPath())
+			LoadDirectory(app, fileExplorer.GetPath(), entry.GetPath())
 		}
 	})
 }

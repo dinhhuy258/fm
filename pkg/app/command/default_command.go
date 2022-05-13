@@ -29,7 +29,7 @@ func ToggleHidden(app IApp, _ ...interface{}) error {
 	appGui.UpdateSortAndFilter()
 
 	entry := fileExplorer.GetEntry(app.GetFocus())
-	LoadDirectory(app, fileExplorer.GetPath(), false, entry.GetPath())
+	LoadDirectory(app, fileExplorer.GetPath(), entry.GetPath())
 
 	return nil
 }
@@ -55,7 +55,7 @@ func Refresh(app IApp, params ...interface{}) error {
 	fileExplorer := fs.GetFileExplorer()
 
 	entry := fileExplorer.GetEntry(app.GetFocus())
-	LoadDirectory(app, fileExplorer.GetPath(), false, entry.GetPath())
+	LoadDirectory(app, fileExplorer.GetPath(), entry.GetPath())
 
 	return nil
 }

@@ -76,7 +76,7 @@ func Enter(app IApp, _ ...interface{}) error {
 
 	entry := fileExplorer.GetEntry(app.GetFocus())
 	if entry.IsDirectory() {
-		LoadDirectory(app, entry.GetPath(), true, "")
+		LoadDirectory(app, entry.GetPath(), "")
 	}
 
 	return nil
@@ -91,25 +91,7 @@ func Back(app IApp, _ ...interface{}) error {
 		return nil
 	}
 
-	LoadDirectory(app, dir, true, fileExplorer.GetPath())
-
-	return nil
-}
-
-func LastVisitedPath(app IApp, _ ...interface{}) error {
-	app.VisitLastHistory()
-	entry := app.PeekHistory()
-
-	LoadDirectory(app, fs.Dir(entry.GetPath()), false, entry.GetPath())
-
-	return nil
-}
-
-func NextVisitedPath(app IApp, _ ...interface{}) error {
-	app.VisitNextHistory()
-	entry := app.PeekHistory()
-
-	LoadDirectory(app, fs.Dir(entry.GetPath()), false, entry.GetPath())
+	LoadDirectory(app, dir, fileExplorer.GetPath())
 
 	return nil
 }
@@ -117,12 +99,12 @@ func NextVisitedPath(app IApp, _ ...interface{}) error {
 func ChangeDirectory(app IApp, params ...interface{}) error {
 	directory, _ := params[0].(string)
 
-	LoadDirectory(app, directory, true, "")
+	LoadDirectory(app, directory, "")
 
 	return nil
 }
 
-func LoadDirectory(app IApp, path string, saveHistory bool, focusPath string) {
+func LoadDirectory(app IApp, path string, focusPath string) {
 	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
 
@@ -137,11 +119,6 @@ func LoadDirectory(app IApp, path string, saveHistory bool, focusPath string) {
 			_ = FocusFirst(app)
 		} else {
 			_ = FocusPath(app, focusPath)
-		}
-
-		if saveHistory && fileExplorer.GetEntriesSize() > 0 {
-			entry := fileExplorer.GetEntry(app.GetFocus())
-			app.PushHistory(entry)
 		}
 	})
 }

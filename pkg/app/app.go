@@ -12,7 +12,6 @@ import (
 type App struct {
 	Focus      int
 	Selections map[string]struct{}
-	History    *History
 	Marks      map[string]string
 	modes      *Modes
 }
@@ -23,7 +22,6 @@ func NewApp() *App {
 		Focus:      -1,
 		Selections: map[string]struct{}{},
 		Marks:      map[string]string{},
-		History:    NewHistory(),
 	}
 
 	app.modes = NewModes()
@@ -106,22 +104,6 @@ func (app *App) SetFocus(focus int) {
 	app.Focus = focus
 }
 
-func (app *App) PushHistory(entry fs.IEntry) {
-	app.History.Push(entry)
-}
-
-func (app *App) PeekHistory() fs.IEntry {
-	return app.History.Peek()
-}
-
-func (app *App) VisitLastHistory() {
-	app.History.VisitLast()
-}
-
-func (app *App) VisitNextHistory() {
-	app.History.VisitNext()
-}
-
 func (app *App) MarkSave(key, path string) {
 	app.Marks[key] = path
 }
@@ -187,5 +169,5 @@ func (app *App) onViewsCreated() {
 		log.Fatalf("failed to get current working directory %v", err)
 	}
 
-	command.LoadDirectory(app, wd, true, "")
+	command.LoadDirectory(app, wd, "")
 }

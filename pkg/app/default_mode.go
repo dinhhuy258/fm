@@ -103,22 +103,6 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"ctrl+i": {
-						Help: "next visited path",
-						Commands: []*command.Command{
-							{
-								Func: command.NextVisitedPath,
-							},
-						},
-					},
-					"ctrl+o": {
-						Help: "last visited path",
-						Commands: []*command.Command{
-							{
-								Func: command.LastVisitedPath,
-							},
-						},
-					},
 					"ctrl+r": {
 						Help: "refresh",
 						Commands: []*command.Command{

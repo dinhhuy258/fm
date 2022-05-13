@@ -35,7 +35,7 @@ func NewFile(app IApp, _ ...interface{}) error {
 			appGui.SetLog(fmt.Sprintf("File %s were created successfully", name),
 				view.LogLevel(view.INFO))
 			// Reload the current directory in case file were created successfully
-			LoadDirectory(app, fileExplorer.GetPath(), false, path.Join(fileExplorer.GetPath(), name))
+			LoadDirectory(app, fileExplorer.GetPath(), path.Join(fileExplorer.GetPath(), name))
 		}
 	})
 

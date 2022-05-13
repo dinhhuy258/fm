@@ -1,9 +1,5 @@
 package command
 
-import (
-	"github.com/dinhhuy258/fm/pkg/fs"
-)
-
 type IApp interface {
 	// Render
 	RenderEntries()
@@ -15,11 +11,6 @@ type IApp interface {
 	// Focus
 	GetFocus() int
 	SetFocus(focus int)
-	// History
-	PushHistory(entry fs.IEntry)
-	PeekHistory() fs.IEntry
-	VisitLastHistory()
-	VisitNextHistory()
 	// Mark
 	MarkSave(key, path string)
 	MarkLoad(key string) (string, bool)
