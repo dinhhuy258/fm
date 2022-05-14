@@ -7,11 +7,15 @@ import (
 )
 
 type LogController struct {
+	*BaseController
+
 	view *view.LogView
 }
 
-func newLogController() *LogController {
-	return &LogController{}
+func newLogController(baseController *BaseController) *LogController {
+	return &LogController{
+		BaseController: baseController,
+	}
 }
 
 func (lc *LogController) SetView(view *view.LogView) {
@@ -22,7 +26,7 @@ func (lc *LogController) SetLog(level view.LogLevel, msgFormat string, args ...i
 	lc.view.SetLog(level, fmt.Sprintf(msgFormat, args...))
 }
 
-//TODO: Remove
+// TODO: Remove
 func (lc *LogController) SetViewOnTop() {
 	lc.view.SetViewOnTop()
 }

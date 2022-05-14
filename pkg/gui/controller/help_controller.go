@@ -3,6 +3,8 @@ package controller
 import "github.com/dinhhuy258/fm/pkg/gui/view"
 
 type HelpController struct {
+	*BaseController
+
 	title string
 	keys  []string
 	msgs  []string
@@ -10,8 +12,10 @@ type HelpController struct {
 	view *view.HelpView
 }
 
-func newHelpController() *HelpController {
-	return &HelpController{}
+func newHelpController(baseController *BaseController) *HelpController {
+	return &HelpController{
+		BaseController: baseController,
+	}
 }
 
 func (hc *HelpController) SetView(view *view.HelpView) {

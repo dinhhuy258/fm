@@ -10,6 +10,8 @@ import (
 )
 
 type ExplorerController struct {
+	*BaseController
+
 	path       string
 	focus      int
 	entries    []fs.IEntry
@@ -18,8 +20,10 @@ type ExplorerController struct {
 	view *view.ExplorerView
 }
 
-func newExplorerController(selections set.Set[string]) *ExplorerController {
+func newExplorerController(baseController *BaseController, selections set.Set[string]) *ExplorerController {
 	return &ExplorerController{
+		BaseController: baseController,
+
 		focus:      0,
 		selections: selections,
 	}

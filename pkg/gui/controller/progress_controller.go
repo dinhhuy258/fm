@@ -3,15 +3,19 @@ package controller
 import "github.com/dinhhuy258/fm/pkg/gui/view"
 
 type ProgressController struct {
+	*BaseController
+
 	total   int
 	current int
 
 	view *view.ProgressView
 }
 
-func newProgressController() *ProgressController {
+func newProgressController(baseController *BaseController) *ProgressController {
 	return &ProgressController{
-		total:  0,
+		BaseController: baseController,
+
+		total:   0,
 		current: 0,
 	}
 }

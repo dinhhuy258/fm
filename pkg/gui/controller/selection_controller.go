@@ -6,13 +6,16 @@ import (
 )
 
 type SelectionController struct {
+	*BaseController
+
 	selections set.Set[string]
 
 	view *view.SelectionView
 }
 
-func newSelectionController(selections set.Set[string]) *SelectionController {
+func newSelectionController(baseController *BaseController, selections set.Set[string]) *SelectionController {
 	return &SelectionController{
+		BaseController: baseController,
 		selections: selections,
 	}
 }

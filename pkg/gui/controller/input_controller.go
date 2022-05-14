@@ -3,11 +3,14 @@ package controller
 import "github.com/dinhhuy258/fm/pkg/gui/view"
 
 type InputController struct {
+	*BaseController
 	view *view.InputView
 }
 
-func newInputController() *InputController {
-	return &InputController{}
+func newInputController(baseController *BaseController) *InputController {
+	return &InputController{
+		BaseController: baseController,
+	}
 }
 
 func (ic *InputController) SetView(view *view.InputView) {
@@ -18,7 +21,7 @@ func (ic *InputController) SetView(view *view.InputView) {
 
 func (ic *InputController) SetInput(msg string, onInput func(string)) {
 	ic.view.SetInput(msg, func(ans string) {
-		// gui.views.Explorer.SetAsCurrentView()
+		ic.mediator.notify(INPUT_DONE, nil)
 
 		onInput(ans)
 	})
