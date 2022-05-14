@@ -56,12 +56,13 @@ func DeleteCurrent(app IApp, _ ...interface{}) error {
 func deletePaths(app IApp, paths []string) {
 	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
+	progressController := appGui.GetControllers().Progress
 
-	appGui.StartProgress(len(paths))
+	progressController.StartProgress(len(paths))
 	fs.Delete(paths, func() {
-		appGui.UpdateProgress()
+		progressController.UpdateProgress()
 	}, func(_ error) {
-		appGui.UpdateProgress()
+		progressController.UpdateProgress()
 	}, func(successCount, errorCount int) {
 		if errorCount != 0 {
 			appGui.SetLog(

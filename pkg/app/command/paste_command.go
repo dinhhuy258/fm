@@ -31,14 +31,15 @@ func PasteSelections(app IApp, params ...interface{}) error {
 
 func paste(app IApp, paths []string, dest, operation string) {
 	appGui := gui.GetGui()
+	progressController := appGui.GetControllers().Progress
 
-	appGui.StartProgress(len(paths))
+	progressController.StartProgress(len(paths))
 
 	onSuccess := func() {
-		appGui.UpdateProgress()
+		progressController.UpdateProgress()
 	}
 	onError := func(error) {
-		appGui.UpdateProgress()
+		progressController.UpdateProgress()
 	}
 	onComplete := func(successCount int, errorCount int) {
 		if errorCount != 0 {

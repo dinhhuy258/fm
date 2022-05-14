@@ -20,18 +20,6 @@ func (gui *Gui) GetControllers() *controller.Controllers {
 	return gui.controllers
 }
 
-func (gui *Gui) StartProgress(total int) {
-	gui.views.Progress.StartProgress(total)
-}
-
-func (gui *Gui) UpdateProgress() {
-	gui.views.Progress.AddCurrent(1)
-}
-
-func (gui *Gui) IsProgressFinished() bool {
-	return gui.views.Progress.IsFinished()
-}
-
 func (gui *Gui) SetLog(log string, level view.LogLevel) {
 	gui.views.Log.SetLog(log, level)
 }
@@ -56,17 +44,9 @@ func (gui *Gui) SetConfirmation(ask string, onConfirm func(bool)) {
 	})
 }
 
-func (gui *Gui) RenderSelections(selections []string) {
-	gui.views.Selection.RenderSelections(selections)
-}
-
 func (gui *Gui) UpdateSortAndFilter() {
 	gui.views.SortAndFilter.UpdateSortAndFilter()
 }
-
-// func (gui *Gui) RenderEntries(entries []fs.IEntry, selections map[string]struct{}, focus int) {
-// 	gui.views.Explorer.RenderEntries(entries, selections, focus)
-// }
 
 var (
 	gui                   *Gui
@@ -109,6 +89,7 @@ func (gui *Gui) Run() error {
 	gui.controllers.Explorer.SetView(gui.views.Explorer)
 	gui.controllers.Help.SetView(gui.views.Help)
 	gui.controllers.Sellection.SetView(gui.views.Selection)
+	gui.controllers.Progress.SetView(gui.views.Progress)
 
 	gui.layout(gui.g)
 	gui.onViewsCreated()

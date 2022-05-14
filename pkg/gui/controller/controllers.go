@@ -6,6 +6,7 @@ type Controllers struct {
 	Explorer   *ExplorerController
 	Help       *HelpController
 	Sellection *SelectionController
+	Progress   *ProgressController
 }
 
 func CreateAllControllers() *Controllers {
@@ -15,5 +16,6 @@ func CreateAllControllers() *Controllers {
 		Explorer:   newExplorerController(selections),
 		Help:       newHelpController(),
 		Sellection: newSelectionController(selections),
+		Progress:   newProgressController(),
 	}
 }
