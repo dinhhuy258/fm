@@ -12,7 +12,6 @@ type Views struct {
 	Explorer      *ExplorerView
 	Selection     *SelectionView
 	Help          *HelpView
-	SortAndFilter *SortAndFilterView
 	Input         *InputView
 	Log           *LogView
 	Confirm       *ConfirmView
@@ -24,7 +23,6 @@ func CreateAllViews(g *gocui.Gui) *Views {
 		explorerHeader *gocui.View
 		explorer       *gocui.View
 		selection      *gocui.View
-		sortAndFilter  *gocui.View
 		help           *gocui.View
 		input          *gocui.View
 		log            *gocui.View
@@ -39,7 +37,6 @@ func CreateAllViews(g *gocui.Gui) *Views {
 		{viewPtr: &explorerHeader, name: "explorer-header"},
 		{viewPtr: &explorer, name: "explorer"},
 		{viewPtr: &selection, name: "selection"},
-		{viewPtr: &sortAndFilter, name: "sortAndFilter"},
 		{viewPtr: &help, name: "help"},
 		{viewPtr: &input, name: "input"},
 		{viewPtr: &log, name: "log"},
@@ -55,7 +52,6 @@ func CreateAllViews(g *gocui.Gui) *Views {
 	return &Views{
 		Explorer:      newExplorerView(g, explorer, explorerHeader),
 		Selection:     newSelectionView(g, selection),
-		SortAndFilter: newSortAndFilterView(g, sortAndFilter),
 		Help:          newHelpView(g, help),
 		Input:         newInputView(g, input),
 		Log:           newLogView(g, log),

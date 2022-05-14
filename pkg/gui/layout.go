@@ -9,7 +9,6 @@ import (
 const (
 	horizontalMargin  = 1
 	verticalMargin    = 1
-	sortAndFilterSize = 2
 	logSize           = 2
 )
 
@@ -30,7 +29,7 @@ func (gui *Gui) setViewDimensions() error {
 			name: "explorer-header",
 			dimension: viewDimension{
 				x0: 0,
-				y0: sortAndFilterSize + verticalMargin,
+				y0: 0,
 				x1: int(float32(width)*0.7) - horizontalMargin,
 				y1: height - logSize - verticalMargin,
 			},
@@ -39,18 +38,9 @@ func (gui *Gui) setViewDimensions() error {
 			name: "explorer",
 			dimension: viewDimension{
 				x0: 0,
-				y0: sortAndFilterSize + verticalMargin + 1, // plus 1 for header
+				y0: verticalMargin + 1, // plus 1 for header
 				x1: int(float32(width)*0.7) - horizontalMargin,
 				y1: height - logSize - verticalMargin,
-			},
-		},
-		{
-			name: "sortAndFilter",
-			dimension: viewDimension{
-				x0: 0,
-				y0: 0,
-				x1: int(float32(width)*0.7) - horizontalMargin,
-				y1: sortAndFilterSize,
 			},
 		},
 		{

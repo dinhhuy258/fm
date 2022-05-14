@@ -36,10 +36,6 @@ func (gui *Gui) SetConfirmation(ask string, onConfirm func(bool)) {
 	})
 }
 
-func (gui *Gui) UpdateSortAndFilter() {
-	gui.views.SortAndFilter.UpdateSortAndFilter()
-}
-
 var (
 	gui                   *Gui
 	guiInitializationOnce sync.Once

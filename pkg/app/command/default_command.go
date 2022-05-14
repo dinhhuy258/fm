@@ -32,8 +32,6 @@ func ToggleHidden(app IApp, _ ...interface{}) error {
 
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
-	appGui.UpdateSortAndFilter()
-
 	entry := explorerController.GetCurrentEntry()
 	LoadDirectory(app, fs.GetFileExplorer().GetPath(), entry.GetPath())
 
