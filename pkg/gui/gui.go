@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
+	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/gocui"
 )
@@ -12,7 +13,12 @@ import (
 type Gui struct {
 	g              *gocui.Gui
 	views          *view.Views
+	controllers    *controller.Controllers
 	onViewsCreated func()
+}
+
+func (gui *Gui) GetControllers() *controller.Controllers {
+	return gui.controllers
 }
 
 func (gui *Gui) StartProgress(total int) {
@@ -125,6 +131,9 @@ func (gui *Gui) Run() error {
 	gui.g.SetManager(gocui.ManagerFunc(gui.layout))
 
 	gui.views = view.CreateAllViews(gui.g)
+	gui.controllers = controller.CreateAllControllers()
+	gui.controllers.Explorer.SetView(gui.views.Explorer)
+
 	gui.layout(gui.g)
 	gui.onViewsCreated()
 

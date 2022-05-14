@@ -129,6 +129,18 @@ func (mv *ExplorerView) SetTitle(title string) {
 	mv.hv.v.Title = title
 }
 
+func (mv *ExplorerView) ResetCursor() error {
+	if err := mv.SetCursor(0, 0); err != nil {
+		return err
+	}
+
+	if err := mv.SetOrigin(0, 0); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (mv *ExplorerView) SetOrigin(x, y int) error {
 	return mv.v.SetOrigin(x, y)
 }
