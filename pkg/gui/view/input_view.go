@@ -6,12 +6,21 @@ import (
 	"github.com/dinhhuy258/gocui"
 )
 
+type KeyEvent byte
+
+const (
+	TYPING  = 0
+	CANCEL  = 1
+	CONFIRM = 2
+)
+
 const (
 	inputViewPrefix = "> "
 )
 
 type InputView struct {
 	v         *View
+	onType    func(string, KeyEvent)
 	inputChan chan string
 }
 
@@ -26,6 +35,25 @@ func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
 	iv.v.v.Editor = gocui.EditorFunc(iv.inputEditor)
 
 	return iv
+}
+
+func (iv *InputView) SetInput(ask string, onInput func(string)) {
+	iv.v.SetViewContent([]string{inputViewPrefix})
+	iv.v.SetTitle(fmt.Sprintf(" Input [%s] ", ask))
+	_ = iv.v.v.SetCursor(len(inputViewPrefix), 0)
+	_, _ = iv.v.g.SetCurrentView(iv.v.v.Name())
+
+	iv.v.SetViewOnTop()
+
+	go func() {
+		ans := <-iv.inputChan
+
+		onInput(ans)
+	}()
+}
+
+func (iv *InputView) SetOnType(onType func(string, KeyEvent)) {
+	iv.onType = onType
 }
 
 func (iv *InputView) inputEditor(_ *gocui.View, key gocui.Key, ch rune, mod gocui.Modifier) {
@@ -51,19 +79,16 @@ func (iv *InputView) inputEditor(_ *gocui.View, key gocui.Key, ch rune, mod gocu
 	case key == gocui.KeyEsc:
 		iv.inputChan <- ""
 	}
-}
 
-func (iv *InputView) SetInput(ask string, onInput func(string)) {
-	iv.v.SetViewContent([]string{inputViewPrefix})
-	iv.v.SetTitle(fmt.Sprintf(" Input [%s] ", ask))
-	_ = iv.v.v.SetCursor(len(inputViewPrefix), 0)
-	_, _ = iv.v.g.SetCurrentView(iv.v.v.Name())
+	if iv.onType != nil {
+		keyEvent := KeyEvent(TYPING)
+		if key == gocui.KeyEnter {
+			keyEvent = KeyEvent(CONFIRM)
+		} else if key == gocui.KeyEsc {
+			keyEvent = KeyEvent(CANCEL)
+		}
 
-	iv.v.SetViewOnTop()
-
-	go func() {
-		ans := <-iv.inputChan
-
-		onInput(ans)
-	}()
+		viewContent := iv.v.v.BufferLines()[0]
+		iv.onType(viewContent[len(inputViewPrefix):], keyEvent)
+	}
 }

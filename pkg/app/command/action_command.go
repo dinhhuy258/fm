@@ -13,8 +13,9 @@ func NewFile(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 	logController := appGui.GetControllers().Log
 	explorerController := appGui.GetControllers().Explorer
+	inputController := appGui.GetControllers().Input
 
-	appGui.SetInput("new file", func(name string) {
+	inputController.SetInput("new file", func(name string) {
 		if name == "" {
 			logController.SetLog(view.LogLevel(view.WARNING), "File name is empty")
 

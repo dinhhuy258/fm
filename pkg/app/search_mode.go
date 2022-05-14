@@ -19,8 +19,9 @@ func (m *SearchMode) OnModeStarted(app *App) {
 	appGui := gui.GetGui()
 	logController := appGui.GetControllers().Log
 	explorerControler := appGui.GetControllers().Explorer
+	inputController := appGui.GetControllers().Input
 
-	appGui.SetInput("search", func(searchInput string) {
+	inputController.SetInput("search", func(searchInput string) {
 		_ = command.PopMode(app)
 		// TODO: Mediator pattern to anounnce log controller to update
 		logController.SetViewOnTop()

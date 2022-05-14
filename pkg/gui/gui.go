@@ -20,14 +20,6 @@ func (gui *Gui) GetControllers() *controller.Controllers {
 	return gui.controllers
 }
 
-func (gui *Gui) SetInput(ask string, onInput func(string)) {
-	gui.views.Input.SetInput(ask, func(ans string) {
-		gui.views.Explorer.SetAsCurrentView()
-
-		onInput(ans)
-	})
-}
-
 func (gui *Gui) SetConfirmation(ask string, onConfirm func(bool)) {
 	gui.views.Confirm.SetConfirmation(ask, func(ans bool) {
 		gui.views.Explorer.SetAsCurrentView()
@@ -79,6 +71,7 @@ func (gui *Gui) Run() error {
 	gui.controllers.Sellection.SetView(gui.views.Selection)
 	gui.controllers.Progress.SetView(gui.views.Progress)
 	gui.controllers.Log.SetView(gui.views.Log)
+	gui.controllers.Input.SetView(gui.views.Input)
 
 	gui.layout(gui.g)
 	gui.onViewsCreated()
