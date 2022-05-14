@@ -124,6 +124,10 @@ func (gui *Gui) Run() error {
 
 	gui.g.SetManager(gocui.ManagerFunc(gui.layout))
 
+	gui.views = view.CreateAllViews(gui.g)
+	gui.layout(gui.g)
+	gui.onViewsCreated()
+
 	err = gui.g.MainLoop()
 
 	if err != nil && !errors.Is(err, gocui.ErrQuit) {

@@ -1,7 +1,6 @@
 package view
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -20,7 +19,7 @@ type Views struct {
 	Progress      *ProgressView
 }
 
-func CreateAllViews(g *gocui.Gui) (*Views, error) {
+func CreateAllViews(g *gocui.Gui) *Views {
 	var (
 		explorerHeader *gocui.View
 		explorer       *gocui.View
@@ -48,12 +47,9 @@ func CreateAllViews(g *gocui.Gui) (*Views, error) {
 		{viewPtr: &progress, name: "progress"},
 	}
 
-	var err error
 	for _, mapping := range viewNameMappings {
-		*mapping.viewPtr, err = g.SetView(mapping.name, 0, 0, 10, 10)
-		if err != nil && !errors.Is(err, gocui.ErrUnknownView) {
-			return nil, err
-		}
+		// No need to handle error here, since we are creating views
+		*mapping.viewPtr, _ = g.SetView(mapping.name, 0, 0, 10, 10)
 	}
 
 	return &Views{
@@ -65,13 +61,17 @@ func CreateAllViews(g *gocui.Gui) (*Views, error) {
 		Log:           newLogView(g, log),
 		Confirm:       newConfirmView(g, confirm),
 		Progress:      newProgressView(g, progress),
-	}, nil
+	}
 }
 
 func (v *Views) Layout() error {
 	v.Help.layout()
 
-	return v.Explorer.layout()
+	if err := v.Explorer.layout(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 type View struct {

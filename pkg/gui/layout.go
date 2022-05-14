@@ -2,13 +2,9 @@ package gui
 
 import (
 	"errors"
-	"sync"
 
-	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/gocui"
 )
-
-var onViewsCreatedOnce sync.Once
 
 const (
 	horizontalMargin  = 1
@@ -19,17 +15,6 @@ const (
 
 type viewDimension struct {
 	x0, y0, x1, y1 int
-}
-
-func (gui *Gui) createAllViews() error {
-	views, err := view.CreateAllViews(gui.g)
-	if err != nil {
-		return err
-	}
-
-	gui.views = views
-
-	return nil
 }
 
 func (gui *Gui) setViewDimensions() error {
@@ -137,12 +122,6 @@ func (gui *Gui) setViewDimensions() error {
 }
 
 func (gui *Gui) layout(_ *gocui.Gui) error {
-	if gui.views == nil {
-		if err := gui.createAllViews(); err != nil {
-			return err
-		}
-	}
-
 	if err := gui.setViewDimensions(); err != nil {
 		return err
 	}
@@ -150,8 +129,6 @@ func (gui *Gui) layout(_ *gocui.Gui) error {
 	if err := gui.views.Layout(); err != nil {
 		return err
 	}
-
-	onViewsCreatedOnce.Do(gui.onViewsCreated)
 
 	return nil
 }
