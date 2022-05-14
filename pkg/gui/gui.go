@@ -4,7 +4,6 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/gocui"
@@ -65,9 +64,9 @@ func (gui *Gui) UpdateSortAndFilter() {
 	gui.views.SortAndFilter.UpdateSortAndFilter()
 }
 
-func (gui *Gui) RenderEntries(entries []fs.IEntry, selections map[string]struct{}, focus int) {
-	gui.views.Explorer.RenderEntries(entries, selections, focus)
-}
+// func (gui *Gui) RenderEntries(entries []fs.IEntry, selections map[string]struct{}, focus int) {
+// 	gui.views.Explorer.RenderEntries(entries, selections, focus)
+// }
 
 var (
 	gui                   *Gui
@@ -109,6 +108,7 @@ func (gui *Gui) Run() error {
 	gui.controllers = controller.CreateAllControllers()
 	gui.controllers.Explorer.SetView(gui.views.Explorer)
 	gui.controllers.Help.SetView(gui.views.Help)
+	gui.controllers.Sellection.SetView(gui.views.Selection)
 
 	gui.layout(gui.g)
 	gui.onViewsCreated()

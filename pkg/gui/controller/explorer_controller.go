@@ -1,6 +1,7 @@
 package controller
 
 import (
+	set "github.com/deckarep/golang-set/v2"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
@@ -8,14 +9,15 @@ import (
 type ExplorerController struct {
 	focus      int
 	entries    []fs.IEntry
-	selections map[string]struct{}
+	selections set.Set[string]
 
 	view *view.ExplorerView
 }
 
-func newExplorerController() *ExplorerController {
+func newExplorerController(selections set.Set[string]) *ExplorerController {
 	return &ExplorerController{
 		focus: 0,
+		selections: selections,
 	}
 }
 

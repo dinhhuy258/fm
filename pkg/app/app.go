@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/dinhhuy258/fm/pkg/app/command"
-	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
@@ -55,14 +54,14 @@ func (app *App) onModeChanged() {
 }
 
 func (app *App) RenderEntries() {
-	fileExplorer := fs.GetFileExplorer()
-	appGui := gui.GetGui()
+	// fileExplorer := fs.GetFileExplorer()
+	// appGui := gui.GetGui()
 
-	appGui.RenderEntries(
-		fileExplorer.GetEntries(),
-		app.Selections,
-		app.Focus,
-	)
+	// appGui.RenderEntries(
+	// 	fileExplorer.GetEntries(),
+	// 	app.Selections,
+	// 	app.Focus,
+	// )
 }
 
 func (app *App) RenderSelections() {

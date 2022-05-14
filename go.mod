@@ -3,6 +3,7 @@ module github.com/dinhhuy258/fm
 go 1.18
 
 require (
+	github.com/deckarep/golang-set/v2 v2.1.0
 	github.com/dinhhuy258/gocui v0.5.1-0.20210909081815-b279837195f5
 	github.com/gookit/color v1.4.2
 )

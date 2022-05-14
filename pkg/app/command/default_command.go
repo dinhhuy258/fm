@@ -7,15 +7,20 @@ import (
 )
 
 func ToggleSelection(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
+	explorerController := appGui.GetControllers().Explorer
+	selectionController := appGui.GetControllers().Sellection
 
-	entry := fileExplorer.GetEntry(app.GetFocus())
+	entry := explorerController.GetEntry(explorerController.GetFocus())
+	if entry == nil {
+		return nil
+	}
+
 	path := entry.GetPath()
 
-	app.ToggleSelection(path)
+	selectionController.ToggleSelection(path)
 
-	app.RenderSelections()
-	app.RenderEntries()
+	explorerController.UpdateView()
 
 	return nil
 }
@@ -35,10 +40,12 @@ func ToggleHidden(app IApp, _ ...interface{}) error {
 }
 
 func ClearSelection(app IApp, _ ...interface{}) error {
-	app.ClearSelections()
+	appGui := gui.GetGui()
+	explorerController := appGui.GetControllers().Explorer
+	selectionController := appGui.GetControllers().Sellection
 
-	app.RenderSelections()
-	app.RenderEntries()
+	selectionController.ClearSelections()
+	explorerController.UpdateView()
 
 	return nil
 }
