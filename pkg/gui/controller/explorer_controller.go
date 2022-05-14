@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"strconv"
+
 	set "github.com/deckarep/golang-set/v2"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
@@ -43,6 +45,9 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath string) {
 	// TODO: Find the right way to do this
 	fileExplorer.LoadEntries(path, func() {
 		ec.entries = fileExplorer.GetEntries()
+
+		title := (" " + path + " (" + strconv.Itoa(len(ec.entries)) + ") ")
+		ec.view.SetTitle(title)
 
 		if focusPath != "" {
 			ec.focusPath(focusPath)
