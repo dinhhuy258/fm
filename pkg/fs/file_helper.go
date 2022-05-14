@@ -183,6 +183,64 @@ func IsDir(path string) bool {
 	return info.IsDir()
 }
 
+func LoadEntries(path string, showHidden bool) ([]IEntry, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	names, err := f.Readdirnames(-1)
+	if err := f.Close(); err != nil {
+		return nil, err
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	entries := make([]IEntry, 0, len(names))
+
+	for _, name := range names {
+		absolutePath := filepath.Join(path, name)
+
+		lstat, err := os.Lstat(absolutePath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				continue
+			}
+
+			return nil, err
+		}
+
+		if !showHidden && isHidden(name) {
+			continue
+		}
+
+		isDir := lstat.IsDir()
+		size := lstat.Size()
+
+		if isDir {
+			entries = append(entries, &Directory{
+				&Entry{
+					name: name,
+					path: absolutePath,
+					size: size,
+				},
+			})
+		} else {
+			entries = append(entries, &File{
+				&Entry{
+					name: name,
+					path: absolutePath,
+					size: size,
+				},
+			})
+		}
+	}
+
+	return entries, nil
+}
+
 func isHidden(filename string) bool {
 	return filename[0:1] == "."
 }

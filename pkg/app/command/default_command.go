@@ -2,7 +2,6 @@ package command
 
 import (
 	"github.com/dinhhuy258/fm/pkg/config"
-	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
@@ -29,11 +28,10 @@ func ToggleHidden(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 	explorerController := appGui.GetControllers().Explorer
 
-
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
 	entry := explorerController.GetCurrentEntry()
-	LoadDirectory(app, fs.GetFileExplorer().GetPath(), entry.GetPath())
+	LoadDirectory(app, explorerController.GetPath(), entry.GetPath())
 
 	return nil
 }
@@ -60,10 +58,9 @@ func PopMode(app IApp, _ ...interface{}) error {
 func Refresh(app IApp, params ...interface{}) error {
 	appGui := gui.GetGui()
 	explorerController := appGui.GetControllers().Explorer
-	fileExplorer := fs.GetFileExplorer()
 
 	entry := explorerController.GetCurrentEntry()
-	LoadDirectory(app, fileExplorer.GetPath(), entry.GetPath())
+	LoadDirectory(app, explorerController.GetPath(), entry.GetPath())
 
 	return nil
 }

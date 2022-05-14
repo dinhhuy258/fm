@@ -12,7 +12,7 @@ import (
 func NewFile(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 	logController := appGui.GetControllers().Log
-	fileExplorer := fs.GetFileExplorer()
+	explorerController := appGui.GetControllers().Explorer
 
 	appGui.SetInput("new file", func(name string) {
 		if name == "" {
@@ -34,7 +34,7 @@ func NewFile(app IApp, _ ...interface{}) error {
 		} else {
 			logController.SetLog(view.LogLevel(view.INFO), "File %s were created successfully", name)
 			// Reload the current directory in case file were created successfully
-			LoadDirectory(app, fileExplorer.GetPath(), path.Join(fileExplorer.GetPath(), name))
+			LoadDirectory(app, explorerController.GetPath(), path.Join(explorerController.GetPath(), name))
 		}
 	})
 

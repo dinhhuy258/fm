@@ -56,15 +56,15 @@ func Enter(app IApp, _ ...interface{}) error {
 }
 
 func Back(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
+	explorerController := gui.GetGui().GetControllers().Explorer
 
-	dir := fileExplorer.Dir()
+	dir := fs.Dir(explorerController.GetPath())
 	if dir == "." {
 		// If folder has no parent directory then do nothing
 		return nil
 	}
 
-	LoadDirectory(app, dir, fileExplorer.GetPath())
+	LoadDirectory(app, dir, explorerController.GetPath())
 
 	return nil
 }

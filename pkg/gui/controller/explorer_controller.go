@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	set "github.com/deckarep/golang-set/v2"
+	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
@@ -32,12 +33,16 @@ func (ec *ExplorerController) GetFocus() int {
 	return ec.focus
 }
 
-func (ec *ExplorerController) GetCurrentEntry() fs.IEntry {
-	if ec.focus < 0 || ec.focus >= len(ec.entries) {
+func (ec *ExplorerController) GetEntry(idx int) fs.IEntry {
+	if idx < 0 || idx >= len(ec.entries) {
 		return nil
 	}
 
-	return ec.entries[ec.focus]
+	return ec.entries[idx]
+}
+
+func (ec *ExplorerController) GetCurrentEntry() fs.IEntry {
+	return ec.GetEntry(ec.focus)
 }
 
 func (ec *ExplorerController) GetEntries() []fs.IEntry {
@@ -55,21 +60,26 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath string) {
 	}
 
 	ec.path = path
-	fileExplorer := fs.GetFileExplorer()
 
-	// TODO: Find the right way to do this
-	fileExplorer.LoadEntries(path, func() {
-		ec.entries = fileExplorer.GetEntries()
+	//TODO: Goroutine
+	cfg := config.AppConfig
 
-		title := (" " + path + " (" + strconv.Itoa(len(ec.entries)) + ") ")
-		ec.view.SetTitle(title)
+	entries, err := fs.LoadEntries(path, cfg.ShowHidden)
+	if err != nil {
+		//TODO: Showing log here
+		return
+	}
 
-		if focusPath != "" {
-			ec.focusPath(focusPath)
-		} else {
-			ec.FocusFirst()
-		}
-	})
+	ec.entries = entries
+
+	title := (" " + path + " (" + strconv.Itoa(len(ec.entries)) + ") ")
+	ec.view.SetTitle(title)
+
+	if focusPath != "" {
+		ec.focusPath(focusPath)
+	} else {
+		ec.FocusFirst()
+	}
 }
 
 func (ec *ExplorerController) FocusPrevious() {
@@ -103,11 +113,9 @@ func (ec *ExplorerController) FocusFirst() {
 }
 
 func (ec *ExplorerController) FocusPath(path string) {
-	// TODO: Verify if the path is valid
-	fileExplorer := fs.GetFileExplorer()
 	parentPath := fs.Dir(path)
 
-	if fileExplorer.GetPath() != parentPath {
+	if ec.path != parentPath {
 		ec.LoadDirectory(parentPath, path)
 	} else {
 		ec.focusPath(path)

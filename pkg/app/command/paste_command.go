@@ -8,8 +8,8 @@ import (
 
 func PasteSelections(app IApp, params ...interface{}) error {
 	appGui := gui.GetGui()
-	fileExplorer := fs.GetFileExplorer()
 	logController := appGui.GetControllers().Log
+	explorerController := appGui.GetControllers().Explorer
 
 	operation, _ := params[0].(string)
 
@@ -21,7 +21,7 @@ func PasteSelections(app IApp, params ...interface{}) error {
 		return nil
 	}
 
-	paste(app, paths, fileExplorer.GetPath(), operation)
+	paste(app, paths, explorerController.GetPath(), operation)
 
 	selectionController.ClearSelections()
 
