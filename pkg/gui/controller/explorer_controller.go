@@ -29,12 +29,12 @@ func (ec *ExplorerController) GetFocus() int {
 	return ec.focus
 }
 
-func (ec *ExplorerController) GetEntry(idx int) fs.IEntry {
-	if idx < 0 || idx >= len(ec.entries) {
+func (ec *ExplorerController) GetCurrentEntry() fs.IEntry {
+	if ec.focus < 0 || ec.focus >= len(ec.entries) {
 		return nil
 	}
 
-	return ec.entries[idx]
+	return ec.entries[ec.focus]
 }
 
 func (ec *ExplorerController) LoadDirectory(path string, focusPath string) {

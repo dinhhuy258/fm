@@ -9,8 +9,6 @@ import (
 )
 
 type App struct {
-	Focus      int
-	Selections map[string]struct{}
 	Marks      map[string]string
 	modes      *Modes
 }
@@ -18,8 +16,6 @@ type App struct {
 // NewApp bootstrap a new application
 func NewApp() *App {
 	app := &App{
-		Focus:      -1,
-		Selections: map[string]struct{}{},
 		Marks:      map[string]string{},
 	}
 
@@ -51,54 +47,6 @@ func (app *App) onModeChanged() {
 
 	appGui := gui.GetGui()
 	appGui.GetControllers().Help.SetHelp(currentMode.GetName(), keys, msgs)
-}
-
-func (app *App) RenderEntries() {
-	// fileExplorer := fs.GetFileExplorer()
-	// appGui := gui.GetGui()
-
-	// appGui.RenderEntries(
-	// 	fileExplorer.GetEntries(),
-	// 	app.Selections,
-	// 	app.Focus,
-	// )
-}
-
-func (app *App) RenderSelections() {
-	appGui := gui.GetGui()
-
-	appGui.RenderSelections(app.GetSelections())
-}
-
-func (app *App) ClearSelections() {
-	for k := range app.Selections {
-		delete(app.Selections, k)
-	}
-}
-
-func (app *App) ToggleSelection(path string) {
-	if _, hasSelection := app.Selections[path]; hasSelection {
-		delete(app.Selections, path)
-	} else {
-		app.Selections[path] = struct{}{}
-	}
-}
-
-func (app *App) GetSelections() []string {
-	selections := make([]string, 0, len(app.Selections))
-	for selection := range app.Selections {
-		selections = append(selections, selection)
-	}
-
-	return selections
-}
-
-func (app *App) GetFocus() int {
-	return app.Focus
-}
-
-func (app *App) SetFocus(focus int) {
-	app.Focus = focus
 }
 
 func (app *App) MarkSave(key, path string) {

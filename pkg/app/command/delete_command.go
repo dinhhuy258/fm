@@ -10,8 +10,9 @@ import (
 
 func DeleteSelections(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
+	selectionController := appGui.GetControllers().Sellection
 
-	paths := app.GetSelections()
+	paths := selectionController.GetSelections()
 	if len(paths) == 0 {
 		appGui.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 
@@ -24,7 +25,7 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 		if ans {
 			deletePaths(app, paths)
 			// Clear selections after deleting
-			app.ClearSelections()
+			selectionController.ClearSelections()
 		} else {
 			appGui.SetLog("Canceled deleting selections files/folders", view.LogLevel(view.WARNING))
 		}
@@ -34,10 +35,10 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 }
 
 func DeleteCurrent(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
+	explorerController := appGui.GetControllers().Explorer
 
-	entry := fileExplorer.GetEntry(app.GetFocus())
+	entry := explorerController.GetCurrentEntry()
 
 	appGui.SetConfirmation(fmt.Sprintf("Do you want to delete %s?", entry.GetName()), func(ans bool) {
 		_ = PopMode(app)
@@ -84,6 +85,8 @@ func deletePaths(app IApp, paths []string) {
 
 // getFocus re-calculate the focus after deleting files/folders
 func getFocus(app IApp, deletedPaths []string) int {
+	appGui := gui.GetGui()
+	explorerController := appGui.GetControllers().Explorer
 	fileExplorer := fs.GetFileExplorer()
 
 	// Put deleted paths to hash map
@@ -95,7 +98,7 @@ func getFocus(app IApp, deletedPaths []string) int {
 	entries := fileExplorer.GetEntries()
 	entriesSize := fileExplorer.GetEntriesSize()
 
-	focus := app.GetFocus()
+	focus := explorerController.GetFocus()
 	// Move the focus until it focus to non-deleted paths
 	for focus < entriesSize {
 		if _, deleted := paths[entries[focus].GetPath()]; !deleted {
@@ -107,7 +110,7 @@ func getFocus(app IApp, deletedPaths []string) int {
 
 	if focus == entriesSize {
 		// In case, all paths below the current focus was deleted, let's try with paths above
-		focus = app.GetFocus()
+		focus = explorerController.GetFocus()
 
 		for focus < 0 {
 			if _, deleted := paths[entries[focus].GetPath()]; !deleted {

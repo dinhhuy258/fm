@@ -43,7 +43,7 @@ func Enter(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 	explorerController := appGui.GetControllers().Explorer
 
-	entry := explorerController.GetEntry(explorerController.GetFocus())
+	entry := explorerController.GetCurrentEntry()
 	if entry == nil {
 		return nil
 	}

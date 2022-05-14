@@ -37,6 +37,10 @@ func (sc *SelectionController) ToggleSelection(path string) {
 	sc.UpdateView()
 }
 
+func (sc *SelectionController) GetSelections() []string {
+	return sc.selections.ToSlice()
+}
+
 func (sc *SelectionController) UpdateView() {
 	sc.view.RenderSelections(sc.selections.ToSlice())
 }

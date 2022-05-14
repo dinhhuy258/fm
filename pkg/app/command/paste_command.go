@@ -14,7 +14,8 @@ func PasteSelections(app IApp, params ...interface{}) error {
 
 	operation, _ := params[0].(string)
 
-	paths := app.GetSelections()
+	selectionController := appGui.GetControllers().Sellection
+	paths := selectionController.GetSelections()
 	if len(paths) == 0 {
 		appGui.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
 
@@ -23,7 +24,7 @@ func PasteSelections(app IApp, params ...interface{}) error {
 
 	paste(app, paths, fileExplorer.GetPath(), operation)
 
-	app.ClearSelections()
+	selectionController.ClearSelections()
 
 	return nil
 }

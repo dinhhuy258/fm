@@ -11,7 +11,7 @@ func ToggleSelection(app IApp, _ ...interface{}) error {
 	explorerController := appGui.GetControllers().Explorer
 	selectionController := appGui.GetControllers().Sellection
 
-	entry := explorerController.GetEntry(explorerController.GetFocus())
+	entry := explorerController.GetCurrentEntry()
 	if entry == nil {
 		return nil
 	}
@@ -26,15 +26,16 @@ func ToggleSelection(app IApp, _ ...interface{}) error {
 }
 
 func ToggleHidden(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
+	explorerController := appGui.GetControllers().Explorer
+
 
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
 	appGui.UpdateSortAndFilter()
 
-	entry := fileExplorer.GetEntry(app.GetFocus())
-	LoadDirectory(app, fileExplorer.GetPath(), entry.GetPath())
+	entry := explorerController.GetCurrentEntry()
+	LoadDirectory(app, fs.GetFileExplorer().GetPath(), entry.GetPath())
 
 	return nil
 }
@@ -59,9 +60,11 @@ func PopMode(app IApp, _ ...interface{}) error {
 }
 
 func Refresh(app IApp, params ...interface{}) error {
+	appGui := gui.GetGui()
+	explorerController := appGui.GetControllers().Explorer
 	fileExplorer := fs.GetFileExplorer()
 
-	entry := fileExplorer.GetEntry(app.GetFocus())
+	entry := explorerController.GetCurrentEntry()
 	LoadDirectory(app, fileExplorer.GetPath(), entry.GetPath())
 
 	return nil
