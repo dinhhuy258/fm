@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"path"
 	"strings"
 
@@ -11,12 +10,13 @@ import (
 )
 
 func NewFile(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
+	logController := appGui.GetControllers().Log
+	fileExplorer := fs.GetFileExplorer()
 
 	appGui.SetInput("new file", func(name string) {
 		if name == "" {
-			appGui.SetLog("File name is empty", view.LogLevel(view.WARNING))
+			logController.SetLog(view.LogLevel(view.WARNING), "File name is empty")
 
 			return
 		}
@@ -30,10 +30,9 @@ func NewFile(app IApp, _ ...interface{}) error {
 		}
 
 		if err != nil {
-			appGui.SetLog(fmt.Sprintf("Failed to create file %s", name), view.LogLevel(view.ERROR))
+			logController.SetLog(view.LogLevel(view.ERROR), "Failed to create file %s", name)
 		} else {
-			appGui.SetLog(fmt.Sprintf("File %s were created successfully", name),
-				view.LogLevel(view.INFO))
+			logController.SetLog(view.LogLevel(view.INFO), "File %s were created successfully", name)
 			// Reload the current directory in case file were created successfully
 			LoadDirectory(app, fileExplorer.GetPath(), path.Join(fileExplorer.GetPath(), name))
 		}

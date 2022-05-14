@@ -7,6 +7,7 @@ type Controllers struct {
 	Help       *HelpController
 	Sellection *SelectionController
 	Progress   *ProgressController
+	Log        *LogController
 }
 
 func CreateAllControllers() *Controllers {
@@ -17,5 +18,6 @@ func CreateAllControllers() *Controllers {
 		Help:       newHelpController(),
 		Sellection: newSelectionController(selections),
 		Progress:   newProgressController(),
+		Log:        newLogController(),
 	}
 }

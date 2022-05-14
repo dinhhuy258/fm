@@ -20,14 +20,6 @@ func (gui *Gui) GetControllers() *controller.Controllers {
 	return gui.controllers
 }
 
-func (gui *Gui) SetLog(log string, level view.LogLevel) {
-	gui.views.Log.SetLog(log, level)
-}
-
-func (gui *Gui) SetLogViewOnTop() {
-	gui.views.Log.SetViewOnTop()
-}
-
 func (gui *Gui) SetInput(ask string, onInput func(string)) {
 	gui.views.Input.SetInput(ask, func(ans string) {
 		gui.views.Explorer.SetAsCurrentView()
@@ -90,6 +82,7 @@ func (gui *Gui) Run() error {
 	gui.controllers.Help.SetView(gui.views.Help)
 	gui.controllers.Sellection.SetView(gui.views.Selection)
 	gui.controllers.Progress.SetView(gui.views.Progress)
+	gui.controllers.Log.SetView(gui.views.Log)
 
 	gui.layout(gui.g)
 	gui.onViewsCreated()

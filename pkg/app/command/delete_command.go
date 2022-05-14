@@ -11,10 +11,11 @@ import (
 func DeleteSelections(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 	selectionController := appGui.GetControllers().Sellection
+	logController := appGui.GetControllers().Log
 
 	paths := selectionController.GetSelections()
 	if len(paths) == 0 {
-		appGui.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
+		logController.SetLog(view.LogLevel(view.WARNING), "Select nothing!!!")
 
 		return PopMode(app)
 	}
@@ -27,7 +28,7 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 			// Clear selections after deleting
 			selectionController.ClearSelections()
 		} else {
-			appGui.SetLog("Canceled deleting selections files/folders", view.LogLevel(view.WARNING))
+			logController.SetLog(view.LogLevel(view.WARNING), "Canceled deleting selections files/folders")
 		}
 	})
 
@@ -37,6 +38,7 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 func DeleteCurrent(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 	explorerController := appGui.GetControllers().Explorer
+	logController := appGui.GetControllers().Log
 
 	entry := explorerController.GetCurrentEntry()
 
@@ -46,7 +48,7 @@ func DeleteCurrent(app IApp, _ ...interface{}) error {
 		if ans {
 			deletePaths(app, []string{entry.GetPath()})
 		} else {
-			appGui.SetLog("Canceled deleting the current file/folder", view.LogLevel(view.WARNING))
+			logController.SetLog(view.LogLevel(view.WARNING), "Canceled deleting the current file/folder")
 		}
 	})
 
@@ -57,6 +59,7 @@ func deletePaths(app IApp, paths []string) {
 	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
 	progressController := appGui.GetControllers().Progress
+	logController := appGui.GetControllers().Log
 
 	progressController.StartProgress(len(paths))
 	fs.Delete(paths, func() {
@@ -65,12 +68,12 @@ func deletePaths(app IApp, paths []string) {
 		progressController.UpdateProgress()
 	}, func(successCount, errorCount int) {
 		if errorCount != 0 {
-			appGui.SetLog(
-				fmt.Sprintf("Finished to delete %v. Error count: %d", paths, errorCount),
+			logController.SetLog(
 				view.LogLevel(view.INFO),
+				"Finished to delete %v. Error count: %d", paths, errorCount,
 			)
 		} else {
-			appGui.SetLog(fmt.Sprintf("Finished to delete file %v", paths), view.LogLevel(view.INFO))
+			logController.SetLog(view.LogLevel(view.INFO), "Finished to delete file %v", paths)
 		}
 
 		focus := getFocus(app, paths)

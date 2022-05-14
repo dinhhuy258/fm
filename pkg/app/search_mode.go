@@ -18,10 +18,12 @@ func (*SearchMode) GetName() string {
 
 func (m *SearchMode) OnModeStarted(app *App) {
 	appGui := gui.GetGui()
+	logController := appGui.GetControllers().Log
 
 	appGui.SetInput("search", func(searchInput string) {
 		_ = command.PopMode(app)
-		appGui.SetLogViewOnTop()
+		// TODO: Mediator pattern to anounnce log controller to update
+		logController.SetViewOnTop()
 
 		if searchInput != "" {
 			fileExplorer := fs.GetFileExplorer()

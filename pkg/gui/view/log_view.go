@@ -33,7 +33,7 @@ func (lv *LogView) SetViewOnTop() {
 	lv.v.SetViewOnTop()
 }
 
-func (lv *LogView) SetLog(log string, level LogLevel) {
+func (lv *LogView) SetLog(level LogLevel, log string) {
 	var logStyle style.TextStyle
 
 	switch {
