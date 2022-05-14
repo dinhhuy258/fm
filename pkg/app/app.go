@@ -53,7 +53,7 @@ func (app *App) onModeChanged() {
 		msgs = append(msgs, h.Msg)
 	}
 
-	appGui.SetHelp(keys, msgs)
+	appGui.GetControllers().Help.SetHelp(keys, msgs)
 }
 
 func (app *App) RenderEntries() {

@@ -133,6 +133,7 @@ func (gui *Gui) Run() error {
 	gui.views = view.CreateAllViews(gui.g)
 	gui.controllers = controller.CreateAllControllers()
 	gui.controllers.Explorer.SetView(gui.views.Explorer)
+	gui.controllers.Help.SetView(gui.views.Help)
 
 	gui.layout(gui.g)
 	gui.onViewsCreated()
