@@ -35,10 +35,6 @@ func (fe *FileExplorer) Dir() string {
 	return Dir(fe.path)
 }
 
-func (fe *FileExplorer) GetEntriesSize() int {
-	return len(fe.entries)
-}
-
 func (fe *FileExplorer) GetEntries() []IEntry {
 	return fe.entries
 }

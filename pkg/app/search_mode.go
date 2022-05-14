@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/dinhhuy258/fm/pkg/app/command"
-	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
@@ -19,6 +18,7 @@ func (*SearchMode) GetName() string {
 func (m *SearchMode) OnModeStarted(app *App) {
 	appGui := gui.GetGui()
 	logController := appGui.GetControllers().Log
+	explorerControler := appGui.GetControllers().Explorer
 
 	appGui.SetInput("search", func(searchInput string) {
 		_ = command.PopMode(app)
@@ -26,9 +26,7 @@ func (m *SearchMode) OnModeStarted(app *App) {
 		logController.SetViewOnTop()
 
 		if searchInput != "" {
-			fileExplorer := fs.GetFileExplorer()
-
-			entries := fileExplorer.GetEntries()
+			entries := explorerControler.GetEntries()
 			for _, entry := range entries {
 				if strings.Contains(strings.ToLower(entry.GetName()), strings.ToLower(searchInput)) {
 					_ = command.FocusPath(app, entry.GetPath())

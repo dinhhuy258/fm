@@ -174,6 +174,15 @@ func Move(srcPaths []string, destDir string, onSuccess func(), onError func(erro
 	}()
 }
 
+func IsDir(path string) bool {
+	info, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+
+	return info.IsDir()
+}
+
 func isHidden(filename string) bool {
 	return filename[0:1] == "."
 }

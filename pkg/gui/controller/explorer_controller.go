@@ -9,6 +9,7 @@ import (
 )
 
 type ExplorerController struct {
+	path       string
 	focus      int
 	entries    []fs.IEntry
 	selections set.Set[string]
@@ -18,7 +19,7 @@ type ExplorerController struct {
 
 func newExplorerController(selections set.Set[string]) *ExplorerController {
 	return &ExplorerController{
-		focus: 0,
+		focus:      0,
 		selections: selections,
 	}
 }
@@ -39,7 +40,21 @@ func (ec *ExplorerController) GetCurrentEntry() fs.IEntry {
 	return ec.entries[ec.focus]
 }
 
+func (ec *ExplorerController) GetEntries() []fs.IEntry {
+	return ec.entries
+}
+
+func (ec *ExplorerController) GetPath() string {
+	return ec.path
+}
+
 func (ec *ExplorerController) LoadDirectory(path string, focusPath string) {
+	if !fs.IsDir(path) {
+		// TODO: Showing log here
+		return
+	}
+
+	ec.path = path
 	fileExplorer := fs.GetFileExplorer()
 
 	// TODO: Find the right way to do this

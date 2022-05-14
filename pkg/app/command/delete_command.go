@@ -91,7 +91,6 @@ func deletePaths(app IApp, paths []string) {
 func getFocus(app IApp, deletedPaths []string) int {
 	appGui := gui.GetGui()
 	explorerController := appGui.GetControllers().Explorer
-	fileExplorer := fs.GetFileExplorer()
 
 	// Put deleted paths to hash map
 	paths := make(map[string]struct{})
@@ -99,10 +98,10 @@ func getFocus(app IApp, deletedPaths []string) int {
 		paths[deletedPath] = struct{}{}
 	}
 
-	entries := fileExplorer.GetEntries()
-	entriesSize := fileExplorer.GetEntriesSize()
-
 	focus := explorerController.GetFocus()
+	entries := explorerController.GetEntries()
+	entriesSize := len(entries)
+
 	// Move the focus until it focus to non-deleted paths
 	for focus < entriesSize {
 		if _, deleted := paths[entries[focus].GetPath()]; !deleted {
