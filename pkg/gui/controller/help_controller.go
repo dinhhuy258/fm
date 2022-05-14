@@ -3,8 +3,9 @@ package controller
 import "github.com/dinhhuy258/fm/pkg/gui/view"
 
 type HelpController struct {
-	keys []string
-	msgs []string
+	title string
+	keys  []string
+	msgs  []string
 
 	view *view.HelpView
 }
@@ -17,7 +18,8 @@ func (hc *HelpController) SetView(view *view.HelpView) {
 	hc.view = view
 }
 
-func (hc *HelpController) SetHelp(keys []string, msgs []string) {
+func (hc *HelpController) SetHelp(title string, keys []string, msgs []string) {
+	hc.title = title
 	hc.keys = keys
 	hc.msgs = msgs
 
@@ -25,5 +27,5 @@ func (hc *HelpController) SetHelp(keys []string, msgs []string) {
 }
 
 func (hc *HelpController) UpdateView() {
-	hc.view.SetHelp(hc.keys, hc.msgs)
+	hc.view.SetHelp(hc.title, hc.keys, hc.msgs)
 }

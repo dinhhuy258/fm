@@ -61,31 +61,6 @@ func (gui *Gui) RenderSelections(selections []string) {
 	gui.views.Selection.RenderSelections(selections)
 }
 
-func (gui *Gui) ResetCursor() {
-	_ = gui.views.Explorer.SetCursor(0, 0)
-	_ = gui.views.Explorer.SetOrigin(0, 0)
-}
-
-func (gui *Gui) NextCursor() {
-	_ = gui.views.Explorer.NextCursor()
-}
-
-func (gui *Gui) PreviousCursor() {
-	_ = gui.views.Explorer.PreviousCursor()
-}
-
-func (gui *Gui) SetHelpTitle(title string) {
-	gui.views.Help.SetTitle(title)
-}
-
-func (gui *Gui) SetHelp(keys []string, msgs []string) {
-	gui.views.Help.SetHelp(keys, msgs)
-}
-
-func (gui *Gui) SetExplorerTitle(title string) {
-	gui.views.Explorer.SetTitle(title)
-}
-
 func (gui *Gui) UpdateSortAndFilter() {
 	gui.views.SortAndFilter.UpdateSortAndFilter()
 }

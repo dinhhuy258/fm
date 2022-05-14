@@ -42,9 +42,6 @@ func (app *App) onModeChanged() {
 
 	helps := currentMode.GetHelp(app)
 
-	appGui := gui.GetGui()
-	appGui.SetHelpTitle(currentMode.GetName())
-
 	keys := make([]string, 0, len(helps))
 	msgs := make([]string, 0, len(helps))
 
@@ -53,7 +50,8 @@ func (app *App) onModeChanged() {
 		msgs = append(msgs, h.Msg)
 	}
 
-	appGui.GetControllers().Help.SetHelp(keys, msgs)
+	appGui := gui.GetGui()
+	appGui.GetControllers().Help.SetHelp(currentMode.GetName(), keys, msgs)
 }
 
 func (app *App) RenderEntries() {
