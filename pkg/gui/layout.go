@@ -38,7 +38,7 @@ func (gui *Gui) setViewDimensions() error {
 			name: "explorer",
 			dimension: viewDimension{
 				x0: 0,
-				y0: verticalMargin + 1, // plus 1 for header
+				y0: verticalMargin,
 				x1: int(float32(width)*0.7) - horizontalMargin,
 				y1: height - logSize - verticalMargin,
 			},
