@@ -4,13 +4,13 @@ import (
 	"log"
 	"strconv"
 
+	set "github.com/deckarep/golang-set/v2"
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/view/row"
 	"github.com/dinhhuy258/fm/pkg/gui/view/style"
 	"github.com/dinhhuy258/gocui"
 	"github.com/gookit/color"
-	set "github.com/deckarep/golang-set/v2"
 )
 
 type ExplorerView struct {

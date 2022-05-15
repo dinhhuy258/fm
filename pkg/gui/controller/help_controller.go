@@ -12,14 +12,11 @@ type HelpController struct {
 	view *view.HelpView
 }
 
-func newHelpController(baseController *BaseController) *HelpController {
+func newHelpController(baseController *BaseController, view *view.HelpView) *HelpController {
 	return &HelpController{
 		BaseController: baseController,
+		view:           view,
 	}
-}
-
-func (hc *HelpController) SetView(view *view.HelpView) {
-	hc.view = view
 }
 
 func (hc *HelpController) SetHelp(title string, keys []string, msgs []string) {

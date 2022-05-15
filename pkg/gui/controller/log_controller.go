@@ -12,14 +12,11 @@ type LogController struct {
 	view *view.LogView
 }
 
-func newLogController(baseController *BaseController) *LogController {
+func newLogController(baseController *BaseController, view *view.LogView) *LogController {
 	return &LogController{
 		BaseController: baseController,
+		view:           view,
 	}
-}
-
-func (lc *LogController) SetView(view *view.LogView) {
-	lc.view = view
 }
 
 func (lc *LogController) SetLog(level view.LogLevel, msgFormat string, args ...interface{}) {

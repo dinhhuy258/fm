@@ -22,16 +22,11 @@ type InputController struct {
 	view *view.InputView
 }
 
-func newInputController(baseController *BaseController) *InputController {
+func newInputController(baseController *BaseController, view *view.InputView) *InputController {
 	return &InputController{
 		BaseController: baseController,
+		view:           view,
 	}
-}
-
-func (ic *InputController) SetView(view *view.InputView) {
-	ic.view = view
-
-	ic.view.SetOnType(ic.onType)
 }
 
 func (ic *InputController) SetInput(inputType InputType, msg string, onConfirm func(string)) {

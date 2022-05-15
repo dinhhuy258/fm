@@ -1,6 +1,9 @@
 package controller
 
-import set "github.com/deckarep/golang-set/v2"
+import (
+	set "github.com/deckarep/golang-set/v2"
+	"github.com/dinhhuy258/fm/pkg/gui/view"
+)
 
 type ControllerEvent int8
 
@@ -25,7 +28,7 @@ type Controllers struct {
 	Input      *InputController
 }
 
-func CreateAllControllers() *Controllers {
+func CreateAllControllers(views *view.Views) *Controllers {
 	// Selections object to share between explorer and selection controllers
 	selections := set.NewSet[string]()
 	controllers := &Controllers{}
@@ -34,12 +37,12 @@ func CreateAllControllers() *Controllers {
 		mediator: controllers,
 	}
 
-	controllers.Explorer = newExplorerController(baseController, selections)
-	controllers.Sellection = newSelectionController(baseController, selections)
-	controllers.Help = newHelpController(baseController)
-	controllers.Progress = newProgressController(baseController)
-	controllers.Log = newLogController(baseController)
-	controllers.Input = newInputController(baseController)
+	controllers.Explorer = newExplorerController(baseController, views.Explorer, selections)
+	controllers.Sellection = newSelectionController(baseController, views.Selection, selections)
+	controllers.Help = newHelpController(baseController, views.Help)
+	controllers.Progress = newProgressController(baseController, views.Progress)
+	controllers.Log = newLogController(baseController, views.Log)
+	controllers.Input = newInputController(baseController, views.Input)
 
 	return controllers
 }
@@ -47,6 +50,6 @@ func CreateAllControllers() *Controllers {
 func (c *Controllers) notify(event ControllerEvent, data string) {
 	switch event {
 	case INPUT_DONE:
-	   c.Explorer.view.SetAsCurrentView()
+		c.Explorer.view.SetAsCurrentView()
 	}
 }

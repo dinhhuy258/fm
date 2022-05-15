@@ -12,7 +12,7 @@ const (
 )
 
 type ProgressView struct {
-	v       *View
+	v *View
 }
 
 func newProgressView(g *gocui.Gui, v *gocui.View) *ProgressView {

@@ -13,15 +13,14 @@ type SelectionController struct {
 	view *view.SelectionView
 }
 
-func newSelectionController(baseController *BaseController, selections set.Set[string]) *SelectionController {
+func newSelectionController(baseController *BaseController,
+	view *view.SelectionView,
+	selections set.Set[string]) *SelectionController {
 	return &SelectionController{
 		BaseController: baseController,
-		selections: selections,
+		view:           view,
+		selections:     selections,
 	}
-}
-
-func (sc *SelectionController) SetView(view *view.SelectionView) {
-	sc.view = view
 }
 
 func (sc *SelectionController) ClearSelections() {

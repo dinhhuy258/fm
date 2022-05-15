@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	horizontalMargin  = 1
-	verticalMargin    = 1
-	logSize           = 2
+	horizontalMargin = 1
+	verticalMargin   = 1
+	logSize          = 2
 )
 
 type viewDimension struct {

@@ -57,13 +57,7 @@ func (gui *Gui) Run() error {
 	gui.g.SetManager(gocui.ManagerFunc(gui.layout))
 
 	gui.views = view.CreateAllViews(gui.g)
-	gui.controllers = controller.CreateAllControllers()
-	gui.controllers.Explorer.SetView(gui.views.Explorer)
-	gui.controllers.Help.SetView(gui.views.Help)
-	gui.controllers.Sellection.SetView(gui.views.Selection)
-	gui.controllers.Progress.SetView(gui.views.Progress)
-	gui.controllers.Log.SetView(gui.views.Log)
-	gui.controllers.Input.SetView(gui.views.Input)
+	gui.controllers = controller.CreateAllControllers(gui.views)
 
 	gui.layout(gui.g)
 	gui.onViewsCreated()

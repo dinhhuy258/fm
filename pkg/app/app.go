@@ -9,14 +9,14 @@ import (
 )
 
 type App struct {
-	Marks      map[string]string
-	modes      *Modes
+	Marks map[string]string
+	modes *Modes
 }
 
 // NewApp bootstrap a new application
 func NewApp() *App {
 	app := &App{
-		Marks:      map[string]string{},
+		Marks: map[string]string{},
 	}
 
 	app.modes = NewModes()

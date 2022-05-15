@@ -20,17 +20,16 @@ type ExplorerController struct {
 	view *view.ExplorerView
 }
 
-func newExplorerController(baseController *BaseController, selections set.Set[string]) *ExplorerController {
+func newExplorerController(baseController *BaseController,
+	view *view.ExplorerView,
+	selections set.Set[string]) *ExplorerController {
 	return &ExplorerController{
 		BaseController: baseController,
+		view:           view,
 
 		focus:      0,
 		selections: selections,
 	}
-}
-
-func (ec *ExplorerController) SetView(view *view.ExplorerView) {
-	ec.view = view
 }
 
 func (ec *ExplorerController) GetFocus() int {

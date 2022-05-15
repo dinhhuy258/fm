@@ -11,9 +11,11 @@ type ProgressController struct {
 	view *view.ProgressView
 }
 
-func newProgressController(baseController *BaseController) *ProgressController {
+func newProgressController(baseController *BaseController,
+	view *view.ProgressView) *ProgressController {
 	return &ProgressController{
 		BaseController: baseController,
+		view:           view,
 
 		total:   0,
 		current: 0,

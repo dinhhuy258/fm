@@ -9,12 +9,12 @@ import (
 )
 
 type Views struct {
-	Explorer      *ExplorerView
-	Selection     *SelectionView
-	Help          *HelpView
-	Input         *InputView
-	Log           *LogView
-	Progress      *ProgressView
+	Explorer  *ExplorerView
+	Selection *SelectionView
+	Help      *HelpView
+	Input     *InputView
+	Log       *LogView
+	Progress  *ProgressView
 }
 
 func CreateAllViews(g *gocui.Gui) *Views {
@@ -47,12 +47,12 @@ func CreateAllViews(g *gocui.Gui) *Views {
 	}
 
 	return &Views{
-		Explorer:      newExplorerView(g, explorer, explorerHeader),
-		Selection:     newSelectionView(g, selection),
-		Help:          newHelpView(g, help),
-		Input:         newInputView(g, input),
-		Log:           newLogView(g, log),
-		Progress:      newProgressView(g, progress),
+		Explorer:  newExplorerView(g, explorer, explorerHeader),
+		Selection: newSelectionView(g, selection),
+		Help:      newHelpView(g, help),
+		Input:     newInputView(g, input),
+		Log:       newLogView(g, log),
+		Progress:  newProgressView(g, progress),
 	}
 }
 
