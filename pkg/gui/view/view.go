@@ -127,6 +127,18 @@ func (view *View) PreviousCursor() error {
 	return nil
 }
 
+func (view *View) ResetCursor() error {
+	if err := view.SetCursor(0, 0); err != nil {
+		return err
+	}
+
+	if err := view.SetOrigin(0, 0); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (view *View) SetViewOnTop() {
 	if _, err := view.g.SetViewOnTop(view.v.Name()); err != nil {
 		log.Fatalf("failed to set view %s on top. Error: %v", view.v.Name(), err)

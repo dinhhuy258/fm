@@ -9,13 +9,14 @@ import (
 )
 
 type HelpView struct {
-	v       *View
+	*View
+
 	helpRow *row.Row
 }
 
 func newHelpView(g *gocui.Gui, v *gocui.View) *HelpView {
 	hv := &HelpView{
-		v: newView(g, v),
+		View: newView(g, v),
 	}
 
 	hv.helpRow = &row.Row{}
@@ -26,11 +27,11 @@ func newHelpView(g *gocui.Gui, v *gocui.View) *HelpView {
 }
 
 func (hv *HelpView) layout() {
-	x, _ := hv.v.v.Size()
+	x, _ := hv.v.Size()
 	hv.helpRow.SetWidth(x)
 }
 
-func (hv *HelpView) SetHelp(title string, keys []string, msgs []string) {
+func (hv *HelpView) UpdateView(title string, keys []string, msgs []string) {
 	lines := make([]string, 0, len(keys))
 
 	for i := 0; i < len(keys); i++ {
@@ -45,6 +46,6 @@ func (hv *HelpView) SetHelp(title string, keys []string, msgs []string) {
 		lines = append(lines, line)
 	}
 
-	hv.v.SetViewContent(lines)
-	hv.v.v.Title = fmt.Sprintf(" Help [%s] ", title)
+	hv.SetViewContent(lines)
+	hv.v.Title = fmt.Sprintf(" Help [%s] ", title)
 }

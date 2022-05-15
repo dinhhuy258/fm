@@ -9,6 +9,9 @@ import (
 type LogController struct {
 	*BaseController
 
+	level view.LogLevel
+	msg   string
+
 	view *view.LogView
 }
 
@@ -20,10 +23,12 @@ func newLogController(baseController *BaseController, view *view.LogView) *LogCo
 }
 
 func (lc *LogController) SetLog(level view.LogLevel, msgFormat string, args ...interface{}) {
-	lc.view.SetLog(level, fmt.Sprintf(msgFormat, args...))
+	lc.level = level
+	lc.msg = fmt.Sprintf(msgFormat, args...)
+
+	lc.UpdateView()
 }
 
-// TODO: Remove
-func (lc *LogController) SetViewOnTop() {
-	lc.view.SetViewOnTop()
+func (lc *LogController) UpdateView() {
+	lc.view.UpdateView(lc.level, lc.msg)
 }

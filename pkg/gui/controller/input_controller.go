@@ -16,6 +16,8 @@ const (
 type InputController struct {
 	*BaseController
 
+	title     string
+	prompt    string
 	inputType InputType
 	onConfirm func(string)
 
@@ -48,7 +50,12 @@ func (ic *InputController) SetInput(inputType InputType, msg string, onConfirm f
 		prompt = "> "
 	}
 
-	ic.view.SetInput(title, prompt)
+	ic.title = title
+	ic.prompt = prompt
+}
+
+func (ic *InputController) UpdateView() {
+	ic.view.UpdateView(ic.title, ic.prompt)
 }
 
 func (ic *InputController) onType(content string, event view.InputEvent) {

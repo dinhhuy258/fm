@@ -31,20 +31,20 @@ func (pc *ProgressController) StartProgress(total int) {
 	pc.total = total
 	pc.current = 0
 
-	pc.view.UpdateView(pc.current, pc.total)
+	pc.UpdateView()
 	pc.view.SetViewOnTop()
 }
 
 func (pc *ProgressController) UpdateProgress() {
-	pc.addCurrent(1)
+	pc.current++
+
+	pc.UpdateView()
 }
 
 func (pc *ProgressController) IsProgressFinished() bool {
 	return pc.total == pc.current
 }
 
-func (pc *ProgressController) addCurrent(current int) {
-	pc.current += current
-
+func (pc *ProgressController) UpdateView() {
 	pc.view.UpdateView(pc.current, pc.total)
 }

@@ -30,7 +30,7 @@ func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
 	return iv
 }
 
-func (iv *InputView) SetInput(title string, prompt string) {
+func (iv *InputView) UpdateView(title string, prompt string) {
 	iv.prompt = prompt
 
 	iv.v.SetViewContent([]string{prompt})

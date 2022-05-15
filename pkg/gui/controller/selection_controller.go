@@ -45,5 +45,5 @@ func (sc *SelectionController) GetSelections() []string {
 }
 
 func (sc *SelectionController) UpdateView() {
-	sc.view.RenderSelections(sc.selections.ToSlice())
+	sc.view.UpdateView(sc.selections.ToSlice())
 }

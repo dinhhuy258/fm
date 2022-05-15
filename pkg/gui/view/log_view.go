@@ -15,25 +15,21 @@ const (
 )
 
 type LogView struct {
-	v *View
+	*View
 }
 
 func newLogView(g *gocui.Gui, v *gocui.View) *LogView {
 	lv := &LogView{
-		v: newView(g, v),
+		newView(g, v),
 	}
 
-	lv.v.v.Title = " Logs "
-	lv.v.SetViewOnTop()
+	lv.v.Title = " Logs "
+	lv.SetViewOnTop()
 
 	return lv
 }
 
-func (lv *LogView) SetViewOnTop() {
-	lv.v.SetViewOnTop()
-}
-
-func (lv *LogView) SetLog(level LogLevel, log string) {
+func (lv *LogView) UpdateView(level LogLevel, log string) {
 	var logStyle style.TextStyle
 
 	switch {
@@ -48,6 +44,6 @@ func (lv *LogView) SetLog(level LogLevel, log string) {
 		logStyle = style.FromBasicFg(config.AppConfig.LogErrorColor)
 	}
 
-	lv.v.SetViewContent([]string{logStyle.Sprint(log)})
-	lv.v.SetViewOnTop()
+	lv.SetViewContent([]string{logStyle.Sprint(log)})
+	lv.SetViewOnTop()
 }

@@ -7,12 +7,12 @@ import (
 )
 
 type SelectionView struct {
-	v *View
+	*View
 }
 
 func newSelectionView(g *gocui.Gui, v *gocui.View) *SelectionView {
 	sv := &SelectionView{
-		v: newView(g, v),
+		newView(g, v),
 	}
 
 	sv.setTitle(0)
@@ -20,11 +20,11 @@ func newSelectionView(g *gocui.Gui, v *gocui.View) *SelectionView {
 	return sv
 }
 
-func (sv *SelectionView) RenderSelections(selections []string) {
+func (sv *SelectionView) UpdateView(selections []string) {
 	sv.setTitle(len(selections))
-	sv.v.SetViewContent(selections)
+	sv.SetViewContent(selections)
 }
 
 func (sv *SelectionView) setTitle(selectionsNum int) {
-	sv.v.v.Title = fmt.Sprintf(" Selection (%d) ", selectionsNum)
+	sv.v.Title = fmt.Sprintf(" Selection (%d) ", selectionsNum)
 }

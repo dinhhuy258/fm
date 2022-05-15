@@ -126,8 +126,7 @@ func (ec *ExplorerController) FocusPath(path string) {
 }
 
 func (ec *ExplorerController) UpdateView() {
-	// TODO: Rename view function
-	ec.view.RenderEntries(ec.entries, ec.selections, ec.focus)
+	ec.view.UpdateView(ec.entries, ec.selections, ec.focus)
 }
 
 func (ec *ExplorerController) focusPath(path string) {

@@ -28,5 +28,5 @@ func (hc *HelpController) SetHelp(title string, keys []string, msgs []string) {
 }
 
 func (hc *HelpController) UpdateView() {
-	hc.view.SetHelp(hc.title, hc.keys, hc.msgs)
+	hc.view.UpdateView(hc.title, hc.keys, hc.msgs)
 }

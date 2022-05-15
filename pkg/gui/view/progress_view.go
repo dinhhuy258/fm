@@ -12,19 +12,15 @@ const (
 )
 
 type ProgressView struct {
-	v *View
+	*View
 }
 
 func newProgressView(g *gocui.Gui, v *gocui.View) *ProgressView {
 	pv := &ProgressView{
-		v: newView(g, v),
+		newView(g, v),
 	}
 
 	return pv
-}
-
-func (pv *ProgressView) SetViewOnTop() {
-	pv.v.SetViewOnTop()
 }
 
 func (pv *ProgressView) UpdateView(current int, total int) {
@@ -44,6 +40,6 @@ func (pv *ProgressView) UpdateView(current int, total int) {
 		progressBar += progressEmpty
 	}
 
-	pv.v.v.Title = fmt.Sprintf(" Progress (%s) ", fmt.Sprintf("%0.0f%%", percent*100))
-	pv.v.SetViewContent([]string{progressBar})
+	pv.v.Title = fmt.Sprintf(" Progress (%s) ", fmt.Sprintf("%0.0f%%", percent*100))
+	pv.SetViewContent([]string{progressBar})
 }
