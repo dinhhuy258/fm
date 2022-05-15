@@ -63,7 +63,7 @@ func Back(app IApp, _ ...interface{}) error {
 		return nil
 	}
 
-	LoadDirectory(app, dir, explorerController.GetPath())
+	loadDirectory(app, dir, explorerController.GetPath())
 
 	return nil
 }
@@ -71,13 +71,12 @@ func Back(app IApp, _ ...interface{}) error {
 func ChangeDirectory(app IApp, params ...interface{}) error {
 	directory, _ := params[0].(string)
 
-	LoadDirectory(app, directory, "")
+	loadDirectory(app, directory, "")
 
 	return nil
 }
 
-// TODO: Remove?
-func LoadDirectory(app IApp, path string, focusPath string) {
+func loadDirectory(app IApp, path string, focusPath string) {
 	appGui := app.GetGui()
 
 	appGui.GetControllers().Explorer.LoadDirectory(path, "")

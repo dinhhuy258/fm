@@ -117,5 +117,5 @@ func (app *App) onGuiReady() {
 		log.Fatalf("failed to get current working directory %v", err)
 	}
 
-	command.LoadDirectory(app, wd, "")
+	command.ChangeDirectory(app, wd, "")
 }

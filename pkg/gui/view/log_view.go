@@ -6,12 +6,12 @@ import (
 	"github.com/dinhhuy258/gocui"
 )
 
-type LogLevel byte
+type LogLevel int8
 
 const (
-	INFO    = 0
-	WARNING = 1
-	ERROR   = 2
+	Info = iota
+	Warning
+	Error
 )
 
 type LogView struct {
@@ -37,10 +37,10 @@ func (lv *LogView) SetLog(level LogLevel, log string) {
 	var logStyle style.TextStyle
 
 	switch {
-	case level == INFO:
+	case level == Info:
 		log = config.AppConfig.LogInfoFormat + log
 		logStyle = style.FromBasicFg(config.AppConfig.LogInfoColor)
-	case level == WARNING:
+	case level == Warning:
 		log = config.AppConfig.LogWarningFormat + log
 		logStyle = style.FromBasicFg(config.AppConfig.LogWarningColor)
 	default:

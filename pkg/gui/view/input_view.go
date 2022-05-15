@@ -4,18 +4,18 @@ import (
 	"github.com/dinhhuy258/gocui"
 )
 
-type KeyEvent byte
+type InputEvent int8
 
 const (
-	TYPING  = 0
-	CANCEL  = 1
-	CONFIRM = 2
+	Typing InputEvent = iota
+	Cancel
+	Confirm
 )
 
 type InputView struct {
 	v           *View
 	inputPrefix string
-	onType      func(string, KeyEvent)
+	onType      func(string, InputEvent)
 }
 
 func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
@@ -41,7 +41,7 @@ func (iv *InputView) SetInput(title string, inputPrefix string) {
 	iv.v.SetViewOnTop()
 }
 
-func (iv *InputView) SetOnType(onType func(string, KeyEvent)) {
+func (iv *InputView) SetOnType(onType func(string, InputEvent)) {
 	iv.onType = onType
 }
 
@@ -65,11 +65,11 @@ func (iv *InputView) inputEditor(_ *gocui.View, key gocui.Key, ch rune, mod gocu
 	}
 
 	if iv.onType != nil {
-		keyEvent := KeyEvent(TYPING)
+		keyEvent := Typing
 		if key == gocui.KeyEnter {
-			keyEvent = KeyEvent(CONFIRM)
+			keyEvent = Confirm
 		} else if key == gocui.KeyEsc {
-			keyEvent = KeyEvent(CANCEL)
+			keyEvent = Cancel
 		}
 
 		viewContent := iv.v.v.BufferLines()[0]

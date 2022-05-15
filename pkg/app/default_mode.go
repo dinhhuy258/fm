@@ -15,7 +15,7 @@ func (*DefaultMode) GetName() string {
 func createDefaultMode() *DefaultMode {
 	return &DefaultMode{
 		&Mode{
-			KeyBindings: &KeyBindings{
+			keyBindings: &KeyBindings{
 				OnKeys: map[string]*Action{
 					"j": {
 						Help: "down",

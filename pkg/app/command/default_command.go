@@ -30,7 +30,7 @@ func ToggleHidden(app IApp, _ ...interface{}) error {
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
 	entry := explorerController.GetCurrentEntry()
-	LoadDirectory(app, explorerController.GetPath(), entry.GetPath())
+	loadDirectory(app, explorerController.GetPath(), entry.GetPath())
 
 	return nil
 }
@@ -61,7 +61,7 @@ func Refresh(app IApp, params ...interface{}) error {
 	explorerController := appGui.GetControllers().Explorer
 
 	entry := explorerController.GetCurrentEntry()
-	LoadDirectory(app, explorerController.GetPath(), entry.GetPath())
+	loadDirectory(app, explorerController.GetPath(), entry.GetPath())
 
 	return nil
 }

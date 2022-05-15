@@ -50,5 +50,6 @@ func CreateAllControllers(views *view.Views) *Controllers {
 func (c *Controllers) notify(event Event, data string) {
 	if event == InputDone {
 		c.Explorer.view.SetAsCurrentView()
+		c.Log.view.SetViewOnTop()
 	}
 }

@@ -17,14 +17,11 @@ func (*SearchMode) GetName() string {
 
 func (m *SearchMode) OnModeStarted(app *App) {
 	appGui := app.GetGui()
-	logController := appGui.GetControllers().Log
 	explorerControler := appGui.GetControllers().Explorer
 	inputController := appGui.GetControllers().Input
 
-	inputController.SetInput(controller.INPUT, "search", func(searchInput string) {
+	inputController.SetInput(controller.Input, "search", func(searchInput string) {
 		_ = command.PopMode(app)
-		// TODO: Mediator pattern to anounnce log controller to update
-		logController.SetViewOnTop()
 
 		if searchInput != "" {
 			entries := explorerControler.GetEntries()
@@ -42,7 +39,7 @@ func (m *SearchMode) OnModeStarted(app *App) {
 func createSearchMode() *SearchMode {
 	return &SearchMode{
 		&Mode{
-			KeyBindings: &KeyBindings{
+			keyBindings: &KeyBindings{
 				OnKeys: map[string]*Action{
 					"esc": {
 						Help: "cancel",

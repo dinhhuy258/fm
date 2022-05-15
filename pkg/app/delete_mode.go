@@ -15,7 +15,7 @@ func (*DeleteMode) GetName() string {
 func createDeleteMode() *DeleteMode {
 	return &DeleteMode{
 		&Mode{
-			KeyBindings: &KeyBindings{
+			keyBindings: &KeyBindings{
 				OnKeys: map[string]*Action{
 					"d": {
 						Help: "delete",

@@ -16,7 +16,7 @@ func PasteSelections(app IApp, params ...interface{}) error {
 	paths := selectionController.GetSelections()
 
 	if len(paths) == 0 {
-		logController.SetLog(view.LogLevel(view.WARNING), "Select nothing!!!")
+		logController.SetLog(view.Warning, "Select nothing!!!")
 
 		return nil
 	}
@@ -44,11 +44,11 @@ func paste(app IApp, paths []string, dest, operation string) {
 	onComplete := func(successCount int, errorCount int) {
 		if errorCount != 0 {
 			logController.SetLog(
-				view.LogLevel(view.INFO),
+				view.Info,
 				"Finished to %s %v. Error count: %d", operation, paths, errorCount,
 			)
 		} else {
-			logController.SetLog(view.LogLevel(view.INFO), "Finished to %s %v", operation, paths)
+			logController.SetLog(view.Info, "Finished to %s %v", operation, paths)
 		}
 
 		_ = Refresh(app)

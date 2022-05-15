@@ -36,12 +36,11 @@ type IMode interface {
 
 type Mode struct {
 	IMode
-	KeyBindings *KeyBindings
+	keyBindings *KeyBindings
 }
 
-// TODO Considering remove this method
 func (m *Mode) GetKeyBindings() *KeyBindings {
-	return m.KeyBindings
+	return m.keyBindings
 }
 
 func (m *Mode) OnModeStarted(*App) {
@@ -104,8 +103,8 @@ func (m *Modes) Peek() IMode {
 }
 
 func (m *Mode) GetHelp(*App) []*Help {
-	helps := make([]*Help, 0, len(m.KeyBindings.OnKeys)+1)
-	keybindings := m.KeyBindings
+	helps := make([]*Help, 0, len(m.keyBindings.OnKeys)+1)
+	keybindings := m.keyBindings
 
 	if keybindings.OnAlphabet != nil {
 		helps = append(helps, &Help{

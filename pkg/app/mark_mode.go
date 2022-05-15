@@ -15,7 +15,7 @@ func (*MarkSaveMode) GetName() string {
 func createMarkSaveMode() *MarkSaveMode {
 	return &MarkSaveMode{
 		Mode: &Mode{
-			KeyBindings: &KeyBindings{
+			keyBindings: &KeyBindings{
 				OnAlphabet: &Action{
 					Help: "mark save",
 					Commands: []*command.Command{
@@ -46,7 +46,7 @@ type MarkLoadMode struct {
 func createMarkLoadMode() *MarkLoadMode {
 	return &MarkLoadMode{
 		Mode: &Mode{
-			KeyBindings: &KeyBindings{
+			keyBindings: &KeyBindings{
 				OnAlphabet: &Action{
 					Help: "mark load",
 					Commands: []*command.Command{
@@ -75,7 +75,7 @@ func (*MarkLoadMode) GetName() string {
 }
 
 func (m *MarkLoadMode) GetHelp(app *App) []*Help {
-	helps := make([]*Help, 0, len(m.KeyBindings.OnKeys)+len(app.Marks))
+	helps := make([]*Help, 0, len(m.keyBindings.OnKeys)+len(app.Marks))
 
 	for key, mark := range app.Marks {
 		helps = append(helps, &Help{

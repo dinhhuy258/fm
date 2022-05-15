@@ -23,7 +23,7 @@ func createCustomMode(name string, keyBindings config.KeyBindingsConfig) *Custom
 	customMode := CustomMode{
 		name: name,
 		Mode: &Mode{
-			KeyBindings: &KeyBindings{
+			keyBindings: &KeyBindings{
 				OnKeys: map[string]*Action{},
 			},
 		},
@@ -31,13 +31,13 @@ func createCustomMode(name string, keyBindings config.KeyBindingsConfig) *Custom
 	}
 
 	for key, actionConfig := range keyBindings.OnKeys {
-		customMode.KeyBindings.OnKeys[key] = &Action{
+		customMode.keyBindings.OnKeys[key] = &Action{
 			Commands: []*command.Command{},
 		}
 
 		for _, commandConfig := range actionConfig.Commands {
-			customMode.KeyBindings.OnKeys[key].Commands = append(
-				customMode.KeyBindings.OnKeys[key].Commands,
+			customMode.keyBindings.OnKeys[key].Commands = append(
+				customMode.keyBindings.OnKeys[key].Commands,
 				toCommand(commandConfig),
 			)
 		}

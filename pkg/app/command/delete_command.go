@@ -16,12 +16,12 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 
 	paths := selectionController.GetSelections()
 	if len(paths) == 0 {
-		logController.SetLog(view.LogLevel(view.WARNING), "Select nothing!!!")
+		logController.SetLog(view.Warning, "Select nothing!!!")
 
 		return PopMode(app)
 	}
 
-	inputController.SetInput(controller.CONFIRM, "Do you want to delete selected paths?",
+	inputController.SetInput(controller.Confirm, "Do you want to delete selected paths?",
 		func(ans string) {
 			_ = PopMode(app)
 
@@ -30,7 +30,7 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 				// Clear selections after deleting
 				selectionController.ClearSelections()
 			} else {
-				logController.SetLog(view.LogLevel(view.WARNING), "Canceled deleting selections files/folders")
+				logController.SetLog(view.Warning, "Canceled deleting selections files/folders")
 			}
 		})
 
@@ -45,14 +45,14 @@ func DeleteCurrent(app IApp, _ ...interface{}) error {
 
 	entry := explorerController.GetCurrentEntry()
 
-	inputController.SetInput(controller.CONFIRM, fmt.Sprintf("Do you want to delete %s?", entry.GetName()),
+	inputController.SetInput(controller.Confirm, fmt.Sprintf("Do you want to delete %s?", entry.GetName()),
 		func(ans string) {
 			_ = PopMode(app)
 
 			if ans == "y" || ans == "Y" {
 				deletePaths(app, []string{entry.GetPath()})
 			} else {
-				logController.SetLog(view.LogLevel(view.WARNING), "Canceled deleting the current file/folder")
+				logController.SetLog(view.Warning, "Canceled deleting the current file/folder")
 			}
 		})
 
@@ -73,11 +73,11 @@ func deletePaths(app IApp, paths []string) {
 	}, func(successCount, errorCount int) {
 		if errorCount != 0 {
 			logController.SetLog(
-				view.LogLevel(view.INFO),
+				view.Info,
 				"Finished to delete %v. Error count: %d", paths, errorCount,
 			)
 		} else {
-			logController.SetLog(view.LogLevel(view.INFO), "Finished to delete file %v", paths)
+			logController.SetLog(view.Info, "Finished to delete file %v", paths)
 		}
 
 		focus := getFocus(app, paths)
@@ -86,7 +86,7 @@ func deletePaths(app IApp, paths []string) {
 			_ = Refresh(app)
 		} else {
 			entry := explorerController.GetEntry(focus)
-			LoadDirectory(app, explorerController.GetPath(), entry.GetPath())
+			loadDirectory(app, explorerController.GetPath(), entry.GetPath())
 		}
 	})
 }
