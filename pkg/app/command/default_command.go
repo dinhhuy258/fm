@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/dinhhuy258/fm/pkg/config"
+	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 func ToggleSelection(app IApp, _ ...interface{}) error {
@@ -30,7 +31,7 @@ func ToggleHidden(app IApp, _ ...interface{}) error {
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
 	entry := explorerController.GetCurrentEntry()
-	loadDirectory(app, explorerController.GetPath(), entry.GetPath())
+	loadDirectory(app, explorerController.GetPath(), optional.NewOptional(entry.GetPath()))
 
 	return nil
 }
@@ -61,7 +62,7 @@ func Refresh(app IApp, params ...interface{}) error {
 	explorerController := appGui.GetControllers().Explorer
 
 	entry := explorerController.GetCurrentEntry()
-	loadDirectory(app, explorerController.GetPath(), entry.GetPath())
+	loadDirectory(app, explorerController.GetPath(), optional.NewOptional(entry.GetPath()))
 
 	return nil
 }

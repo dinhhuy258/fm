@@ -117,5 +117,7 @@ func (app *App) onGuiReady() {
 		log.Fatalf("failed to get current working directory %v", err)
 	}
 
-	command.ChangeDirectory(app, wd, "")
+	if err := command.ChangeDirectory(app, wd); err != nil {
+		log.Fatalf("failed to load the current working directory %v", err)
+	}
 }

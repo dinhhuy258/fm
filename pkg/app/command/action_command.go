@@ -7,6 +7,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
+	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 func NewFile(app IApp, _ ...interface{}) error {
@@ -34,8 +35,10 @@ func NewFile(app IApp, _ ...interface{}) error {
 			logController.SetLog(view.Error, "Failed to create file %s", name)
 		} else {
 			logController.SetLog(view.Info, "File %s were created successfully", name)
+
 			// Reload the current directory in case file were created successfully
-			loadDirectory(app, explorerController.GetPath(), path.Join(explorerController.GetPath(), name))
+			focusPath := path.Join(explorerController.GetPath(), name)
+			loadDirectory(app, explorerController.GetPath(), optional.NewOptional(focusPath))
 		}
 	})
 

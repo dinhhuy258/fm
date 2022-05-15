@@ -6,6 +6,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
+	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 func DeleteSelections(app IApp, _ ...interface{}) error {
@@ -86,7 +87,7 @@ func deletePaths(app IApp, paths []string) {
 			_ = Refresh(app)
 		} else {
 			entry := explorerController.GetEntry(focus)
-			loadDirectory(app, explorerController.GetPath(), entry.GetPath())
+			loadDirectory(app, explorerController.GetPath(), optional.NewOptional(entry.GetPath()))
 		}
 	})
 }

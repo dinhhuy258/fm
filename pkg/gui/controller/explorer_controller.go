@@ -7,6 +7,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
+	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 type ExplorerController struct {
@@ -57,7 +58,7 @@ func (ec *ExplorerController) GetPath() string {
 	return ec.path
 }
 
-func (ec *ExplorerController) LoadDirectory(path string, focusPath string) {
+func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Optional[string]) {
 	if !fs.IsDir(path) {
 		// TODO: Showing log here
 		return
@@ -79,11 +80,11 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath string) {
 	title := (" " + path + " (" + strconv.Itoa(len(ec.entries)) + ") ")
 	ec.view.SetTitle(title)
 
-	if focusPath != "" {
-		ec.focusPath(focusPath)
-	} else {
+	focusPath.IfPresentOrElse(func(focusPath *string) {
+		ec.focusPath(*focusPath)
+	}, func() {
 		ec.FocusFirst()
-	}
+	})
 }
 
 func (ec *ExplorerController) FocusPrevious() {
@@ -118,7 +119,7 @@ func (ec *ExplorerController) FocusFirst() {
 
 func (ec *ExplorerController) FocusPath(path string) {
 	if parentPath := fs.Dir(path); ec.path != parentPath {
-		ec.LoadDirectory(parentPath, path)
+		ec.LoadDirectory(parentPath, optional.NewOptional(path))
 	} else {
 		ec.focusPath(path)
 	}

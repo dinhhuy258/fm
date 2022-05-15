@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/dinhhuy258/fm/pkg/fs"
+	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 func FocusFirst(app IApp, _ ...interface{}) error {
@@ -48,7 +49,7 @@ func Enter(app IApp, _ ...interface{}) error {
 	}
 
 	if entry.IsDirectory() {
-		explorerController.LoadDirectory(entry.GetPath(), "")
+		explorerController.LoadDirectory(entry.GetPath(), optional.NewEmptyOptional[string]())
 	}
 
 	return nil
@@ -63,7 +64,7 @@ func Back(app IApp, _ ...interface{}) error {
 		return nil
 	}
 
-	loadDirectory(app, dir, explorerController.GetPath())
+	loadDirectory(app, dir, optional.NewOptional(explorerController.GetPath()))
 
 	return nil
 }
@@ -71,13 +72,13 @@ func Back(app IApp, _ ...interface{}) error {
 func ChangeDirectory(app IApp, params ...interface{}) error {
 	directory, _ := params[0].(string)
 
-	loadDirectory(app, directory, "")
+	loadDirectory(app, directory, optional.NewEmptyOptional[string]())
 
 	return nil
 }
 
-func loadDirectory(app IApp, path string, focusPath string) {
+func loadDirectory(app IApp, path string, focusPath optional.Optional[string]) {
 	appGui := app.GetGui()
 
-	appGui.GetControllers().Explorer.LoadDirectory(path, "")
+	appGui.GetControllers().Explorer.LoadDirectory(path, focusPath)
 }
