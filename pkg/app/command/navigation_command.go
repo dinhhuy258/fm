@@ -1,9 +1,6 @@
 package command
 
 import (
-	"path/filepath"
-	"strconv"
-
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
@@ -11,27 +8,15 @@ import (
 func FocusFirst(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 
-	appGui.ResetCursor()
-	app.SetFocus(0)
-
-	app.RenderEntries()
+	appGui.GetControllers().Explorer.FocusFirst()
 
 	return nil
 }
 
 func FocusNext(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
 
-	focus := app.GetFocus()
-	if focus == fileExplorer.GetEntriesSize()-1 {
-		return nil
-	}
-
-	appGui.NextCursor()
-	app.SetFocus(focus + 1)
-
-	app.RenderEntries()
+	appGui.GetControllers().Explorer.FocusNext()
 
 	return nil
 }
@@ -39,59 +24,47 @@ func FocusNext(app IApp, _ ...interface{}) error {
 func FocusPrevious(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 
-	focus := app.GetFocus()
-	if focus == 0 {
-		return nil
-	}
-
-	appGui.PreviousCursor()
-	app.SetFocus(focus - 1)
-
-	app.RenderEntries()
+	appGui.GetControllers().Explorer.FocusPrevious()
 
 	return nil
 }
 
 func FocusPath(app IApp, params ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
 
-	if path, _ := params[0].(string); fileExplorer.GetPath() != filepath.Dir(path) {
-		fileExplorer.LoadEntries(filepath.Dir(path), func() {
-			focusPath(app, path)
-		})
-	} else {
-		focusPath(app, path)
-	}
+	// TODO Verify path
+	path, _ := params[0].(string)
+	appGui.GetControllers().Explorer.FocusPath(path)
 
 	return nil
 }
 
 func Enter(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
+	explorerController := appGui.GetControllers().Explorer
 
-	if fileExplorer.GetEntriesSize() <= 0 {
-		// In case of folder is empty
+	entry := explorerController.GetCurrentEntry()
+	if entry == nil {
 		return nil
 	}
 
-	entry := fileExplorer.GetEntry(app.GetFocus())
 	if entry.IsDirectory() {
-		LoadDirectory(app, entry.GetPath(), "")
+		explorerController.LoadDirectory(entry.GetPath(), "")
 	}
 
 	return nil
 }
 
 func Back(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
+	explorerController := gui.GetGui().GetControllers().Explorer
 
-	dir := fileExplorer.Dir()
+	dir := fs.Dir(explorerController.GetPath())
 	if dir == "." {
 		// If folder has no parent directory then do nothing
 		return nil
 	}
 
-	LoadDirectory(app, dir, fileExplorer.GetPath())
+	LoadDirectory(app, dir, explorerController.GetPath())
 
 	return nil
 }
@@ -104,46 +77,9 @@ func ChangeDirectory(app IApp, params ...interface{}) error {
 	return nil
 }
 
+// TODO: Remove?
 func LoadDirectory(app IApp, path string, focusPath string) {
-	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
 
-	fileExplorer.LoadEntries(path, func() {
-		entriesSize := fileExplorer.GetEntriesSize()
-		path := fileExplorer.GetPath()
-
-		title := (" " + path + " (" + strconv.Itoa(entriesSize) + ") ")
-		appGui.SetExplorerTitle(title)
-
-		if focusPath == "" {
-			_ = FocusFirst(app)
-		} else {
-			_ = FocusPath(app, focusPath)
-		}
-	})
-}
-
-func focusPath(app IApp, path string) {
-	fileExplorer := fs.GetFileExplorer()
-	appGui := gui.GetGui()
-
-	focus := 0
-	// Iterate through the list of entries and find the idx for the current path
-	for idx, entry := range fileExplorer.GetEntries() {
-		if entry.GetPath() == path {
-			focus = idx
-
-			break
-		}
-	}
-
-	appGui.ResetCursor()
-
-	for i := 0; i < focus; i++ {
-		appGui.NextCursor()
-	}
-
-	app.SetFocus(focus)
-
-	app.RenderEntries()
+	appGui.GetControllers().Explorer.LoadDirectory(path, "")
 }

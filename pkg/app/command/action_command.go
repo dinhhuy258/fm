@@ -1,22 +1,24 @@
 package command
 
 import (
-	"fmt"
 	"path"
 	"strings"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
+	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
 func NewFile(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
+	logController := appGui.GetControllers().Log
+	explorerController := appGui.GetControllers().Explorer
+	inputController := appGui.GetControllers().Input
 
-	appGui.SetInput("new file", func(name string) {
+	inputController.SetInput(controller.INPUT, "new file", func(name string) {
 		if name == "" {
-			appGui.SetLog("File name is empty", view.LogLevel(view.WARNING))
+			logController.SetLog(view.LogLevel(view.WARNING), "File name is empty")
 
 			return
 		}
@@ -30,12 +32,11 @@ func NewFile(app IApp, _ ...interface{}) error {
 		}
 
 		if err != nil {
-			appGui.SetLog(fmt.Sprintf("Failed to create file %s", name), view.LogLevel(view.ERROR))
+			logController.SetLog(view.LogLevel(view.ERROR), "Failed to create file %s", name)
 		} else {
-			appGui.SetLog(fmt.Sprintf("File %s were created successfully", name),
-				view.LogLevel(view.INFO))
+			logController.SetLog(view.LogLevel(view.INFO), "File %s were created successfully", name)
 			// Reload the current directory in case file were created successfully
-			LoadDirectory(app, fileExplorer.GetPath(), path.Join(fileExplorer.GetPath(), name))
+			LoadDirectory(app, explorerController.GetPath(), path.Join(explorerController.GetPath(), name))
 		}
 	})
 

@@ -1,52 +1,55 @@
 package command
 
 import (
-	"fmt"
-
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
 func PasteSelections(app IApp, params ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
+	logController := appGui.GetControllers().Log
+	explorerController := appGui.GetControllers().Explorer
 
 	operation, _ := params[0].(string)
 
-	paths := app.GetSelections()
+	selectionController := appGui.GetControllers().Sellection
+	paths := selectionController.GetSelections()
+
 	if len(paths) == 0 {
-		appGui.SetLog("Select nothing!!!", view.LogLevel(view.WARNING))
+		logController.SetLog(view.LogLevel(view.WARNING), "Select nothing!!!")
 
 		return nil
 	}
 
-	paste(app, paths, fileExplorer.GetPath(), operation)
+	paste(app, paths, explorerController.GetPath(), operation)
 
-	app.ClearSelections()
+	selectionController.ClearSelections()
 
 	return nil
 }
 
 func paste(app IApp, paths []string, dest, operation string) {
 	appGui := gui.GetGui()
+	progressController := appGui.GetControllers().Progress
+	logController := appGui.GetControllers().Log
 
-	appGui.StartProgress(len(paths))
+	progressController.StartProgress(len(paths))
 
 	onSuccess := func() {
-		appGui.UpdateProgress()
+		progressController.UpdateProgress()
 	}
 	onError := func(error) {
-		appGui.UpdateProgress()
+		progressController.UpdateProgress()
 	}
 	onComplete := func(successCount int, errorCount int) {
 		if errorCount != 0 {
-			appGui.SetLog(
-				fmt.Sprintf("Finished to %s %v. Error count: %d", operation, paths, errorCount),
+			logController.SetLog(
 				view.LogLevel(view.INFO),
+				"Finished to %s %v. Error count: %d", operation, paths, errorCount,
 			)
 		} else {
-			appGui.SetLog(fmt.Sprintf("Finished to %s %v", operation, paths), view.LogLevel(view.INFO))
+			logController.SetLog(view.LogLevel(view.INFO), "Finished to %s %v", operation, paths)
 		}
 
 		_ = Refresh(app)

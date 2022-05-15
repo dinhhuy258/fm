@@ -21,7 +21,6 @@ func createDefaultMode() *DefaultMode {
 						Help: "down",
 						Commands: []*command.Command{
 							{
-
 								Func: command.FocusNext,
 							},
 						},

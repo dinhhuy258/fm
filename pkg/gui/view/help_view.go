@@ -30,11 +30,7 @@ func (hv *HelpView) layout() {
 	hv.helpRow.SetWidth(x)
 }
 
-func (hv *HelpView) SetTitle(mode string) {
-	hv.v.v.Title = fmt.Sprintf(" Help [%s] ", mode)
-}
-
-func (hv *HelpView) SetHelp(keys []string, msgs []string) {
+func (hv *HelpView) SetHelp(title string, keys []string, msgs []string) {
 	lines := make([]string, 0, len(keys))
 
 	for i := 0; i < len(keys); i++ {
@@ -50,4 +46,5 @@ func (hv *HelpView) SetHelp(keys []string, msgs []string) {
 	}
 
 	hv.v.SetViewContent(lines)
+	hv.v.v.Title = fmt.Sprintf(" Help [%s] ", title)
 }

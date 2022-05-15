@@ -5,23 +5,18 @@ import (
 	"os"
 
 	"github.com/dinhhuy258/fm/pkg/app/command"
-	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
 type App struct {
-	Focus      int
-	Selections map[string]struct{}
-	Marks      map[string]string
-	modes      *Modes
+	Marks map[string]string
+	modes *Modes
 }
 
 // NewApp bootstrap a new application
 func NewApp() *App {
 	app := &App{
-		Focus:      -1,
-		Selections: map[string]struct{}{},
-		Marks:      map[string]string{},
+		Marks: map[string]string{},
 	}
 
 	app.modes = NewModes()
@@ -42,9 +37,6 @@ func (app *App) onModeChanged() {
 
 	helps := currentMode.GetHelp(app)
 
-	appGui := gui.GetGui()
-	appGui.SetHelpTitle(currentMode.GetName())
-
 	keys := make([]string, 0, len(helps))
 	msgs := make([]string, 0, len(helps))
 
@@ -53,55 +45,8 @@ func (app *App) onModeChanged() {
 		msgs = append(msgs, h.Msg)
 	}
 
-	appGui.SetHelp(keys, msgs)
-}
-
-func (app *App) RenderEntries() {
-	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
-
-	appGui.RenderEntries(
-		fileExplorer.GetEntries(),
-		app.Selections,
-		app.Focus,
-	)
-}
-
-func (app *App) RenderSelections() {
-	appGui := gui.GetGui()
-
-	appGui.RenderSelections(app.GetSelections())
-}
-
-func (app *App) ClearSelections() {
-	for k := range app.Selections {
-		delete(app.Selections, k)
-	}
-}
-
-func (app *App) ToggleSelection(path string) {
-	if _, hasSelection := app.Selections[path]; hasSelection {
-		delete(app.Selections, path)
-	} else {
-		app.Selections[path] = struct{}{}
-	}
-}
-
-func (app *App) GetSelections() []string {
-	selections := make([]string, 0, len(app.Selections))
-	for selection := range app.Selections {
-		selections = append(selections, selection)
-	}
-
-	return selections
-}
-
-func (app *App) GetFocus() int {
-	return app.Focus
-}
-
-func (app *App) SetFocus(focus int) {
-	app.Focus = focus
+	appGui.GetControllers().Help.SetHelp(currentMode.GetName(), keys, msgs)
 }
 
 func (app *App) MarkSave(key, path string) {

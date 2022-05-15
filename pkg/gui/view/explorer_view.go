@@ -4,6 +4,7 @@ import (
 	"log"
 	"strconv"
 
+	set "github.com/deckarep/golang-set/v2"
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/view/row"
@@ -74,7 +75,7 @@ func (mv *ExplorerView) layout() error {
 	return nil
 }
 
-func (mv *ExplorerView) RenderEntries(entries []fs.IEntry, selections map[string]struct{}, focus int) {
+func (mv *ExplorerView) RenderEntries(entries []fs.IEntry, selections set.Set[string], focus int) {
 	entriesSize := len(entries)
 	lines := make([]string, entriesSize)
 	cfg := config.AppConfig
@@ -85,7 +86,7 @@ func (mv *ExplorerView) RenderEntries(entries []fs.IEntry, selections map[string
 			fileIcon = cfg.FolderIcon + " "
 		}
 
-		_, isSelected := selections[entry.GetPath()]
+		isSelected := selections.Contains(entry.GetPath())
 
 		var path string
 
@@ -127,6 +128,18 @@ func (mv *ExplorerView) RenderEntries(entries []fs.IEntry, selections map[string
 
 func (mv *ExplorerView) SetTitle(title string) {
 	mv.hv.v.Title = title
+}
+
+func (mv *ExplorerView) ResetCursor() error {
+	if err := mv.SetCursor(0, 0); err != nil {
+		return err
+	}
+
+	if err := mv.SetOrigin(0, 0); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (mv *ExplorerView) SetOrigin(x, y int) error {

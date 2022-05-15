@@ -9,14 +9,12 @@ import (
 )
 
 type Views struct {
-	Explorer      *ExplorerView
-	Selection     *SelectionView
-	Help          *HelpView
-	SortAndFilter *SortAndFilterView
-	Input         *InputView
-	Log           *LogView
-	Confirm       *ConfirmView
-	Progress      *ProgressView
+	Explorer  *ExplorerView
+	Selection *SelectionView
+	Help      *HelpView
+	Input     *InputView
+	Log       *LogView
+	Progress  *ProgressView
 }
 
 func CreateAllViews(g *gocui.Gui) *Views {
@@ -24,11 +22,9 @@ func CreateAllViews(g *gocui.Gui) *Views {
 		explorerHeader *gocui.View
 		explorer       *gocui.View
 		selection      *gocui.View
-		sortAndFilter  *gocui.View
 		help           *gocui.View
 		input          *gocui.View
 		log            *gocui.View
-		confirm        *gocui.View
 		progress       *gocui.View
 	)
 
@@ -39,11 +35,9 @@ func CreateAllViews(g *gocui.Gui) *Views {
 		{viewPtr: &explorerHeader, name: "explorer-header"},
 		{viewPtr: &explorer, name: "explorer"},
 		{viewPtr: &selection, name: "selection"},
-		{viewPtr: &sortAndFilter, name: "sortAndFilter"},
 		{viewPtr: &help, name: "help"},
 		{viewPtr: &input, name: "input"},
 		{viewPtr: &log, name: "log"},
-		{viewPtr: &confirm, name: "confirm"},
 		{viewPtr: &progress, name: "progress"},
 	}
 
@@ -53,14 +47,12 @@ func CreateAllViews(g *gocui.Gui) *Views {
 	}
 
 	return &Views{
-		Explorer:      newExplorerView(g, explorer, explorerHeader),
-		Selection:     newSelectionView(g, selection),
-		SortAndFilter: newSortAndFilterView(g, sortAndFilter),
-		Help:          newHelpView(g, help),
-		Input:         newInputView(g, input),
-		Log:           newLogView(g, log),
-		Confirm:       newConfirmView(g, confirm),
-		Progress:      newProgressView(g, progress),
+		Explorer:  newExplorerView(g, explorer, explorerHeader),
+		Selection: newSelectionView(g, selection),
+		Help:      newHelpView(g, help),
+		Input:     newInputView(g, input),
+		Log:       newLogView(g, log),
+		Progress:  newProgressView(g, progress),
 	}
 }
 
@@ -95,7 +87,7 @@ func (view *View) SetViewContent(displayStrings []string) {
 	})
 }
 
-func (view *View) Size() (x, y int) {
+func (view *View) Size() (int, int) {
 	return view.v.Size()
 }
 

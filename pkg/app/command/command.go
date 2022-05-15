@@ -1,16 +1,6 @@
 package command
 
 type IApp interface {
-	// Render
-	RenderEntries()
-	RenderSelections()
-	// Selection
-	ClearSelections()
-	GetSelections() []string
-	ToggleSelection(path string)
-	// Focus
-	GetFocus() int
-	SetFocus(focus int)
 	// Mark
 	MarkSave(key, path string)
 	MarkLoad(key string) (string, bool)

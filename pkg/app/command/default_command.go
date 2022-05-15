@@ -2,49 +2,55 @@ package command
 
 import (
 	"github.com/dinhhuy258/fm/pkg/config"
-	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
 func ToggleSelection(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
+	explorerController := appGui.GetControllers().Explorer
+	selectionController := appGui.GetControllers().Sellection
 
-	entry := fileExplorer.GetEntry(app.GetFocus())
+	entry := explorerController.GetCurrentEntry()
+	if entry == nil {
+		return nil
+	}
+
 	path := entry.GetPath()
 
-	app.ToggleSelection(path)
+	selectionController.ToggleSelection(path)
 
-	app.RenderSelections()
-	app.RenderEntries()
+	explorerController.UpdateView()
 
 	return nil
 }
 
 func ToggleHidden(app IApp, _ ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
 	appGui := gui.GetGui()
+	explorerController := appGui.GetControllers().Explorer
 
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
-	appGui.UpdateSortAndFilter()
-
-	entry := fileExplorer.GetEntry(app.GetFocus())
-	LoadDirectory(app, fileExplorer.GetPath(), entry.GetPath())
+	entry := explorerController.GetCurrentEntry()
+	LoadDirectory(app, explorerController.GetPath(), entry.GetPath())
 
 	return nil
 }
 
 func ClearSelection(app IApp, _ ...interface{}) error {
-	app.ClearSelections()
+	appGui := gui.GetGui()
+	explorerController := appGui.GetControllers().Explorer
+	selectionController := appGui.GetControllers().Sellection
 
-	app.RenderSelections()
-	app.RenderEntries()
+	selectionController.ClearSelections()
+	explorerController.UpdateView()
 
 	return nil
 }
 
 func SwitchMode(app IApp, params ...interface{}) error {
-	return app.PushMode(params[0].(string))
+	mode, _ := params[0].(string)
+
+	return app.PushMode(mode)
 }
 
 func PopMode(app IApp, _ ...interface{}) error {
@@ -52,10 +58,11 @@ func PopMode(app IApp, _ ...interface{}) error {
 }
 
 func Refresh(app IApp, params ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
+	explorerController := appGui.GetControllers().Explorer
 
-	entry := fileExplorer.GetEntry(app.GetFocus())
-	LoadDirectory(app, fileExplorer.GetPath(), entry.GetPath())
+	entry := explorerController.GetCurrentEntry()
+	LoadDirectory(app, explorerController.GetPath(), entry.GetPath())
 
 	return nil
 }

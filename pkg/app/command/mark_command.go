@@ -1,16 +1,17 @@
 package command
 
 import (
-	"github.com/dinhhuy258/fm/pkg/fs"
+	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
 func MarkSave(app IApp, params ...interface{}) error {
-	fileExplorer := fs.GetFileExplorer()
+	appGui := gui.GetGui()
+	explorerController := appGui.GetControllers().Explorer
 
 	key, _ := params[0].(string)
 	// Exit mark mode
 	_ = app.PopMode()
-	entry := fileExplorer.GetEntry(app.GetFocus())
+	entry := explorerController.GetCurrentEntry()
 	app.MarkSave(key, entry.GetPath())
 
 	return nil
