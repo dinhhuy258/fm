@@ -12,7 +12,8 @@ type ProgressController struct {
 }
 
 func newProgressController(baseController *BaseController,
-	view *view.ProgressView) *ProgressController {
+	view *view.ProgressView,
+) *ProgressController {
 	return &ProgressController{
 		BaseController: baseController,
 		view:           view,

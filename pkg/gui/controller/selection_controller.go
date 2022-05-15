@@ -15,7 +15,8 @@ type SelectionController struct {
 
 func newSelectionController(baseController *BaseController,
 	view *view.SelectionView,
-	selections set.Set[string]) *SelectionController {
+	selections set.Set[string],
+) *SelectionController {
 	return &SelectionController{
 		BaseController: baseController,
 		view:           view,

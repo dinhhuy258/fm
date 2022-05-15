@@ -36,8 +36,10 @@ func createCustomMode(name string, keyBindings config.KeyBindingsConfig) *Custom
 		}
 
 		for _, commandConfig := range actionConfig.Commands {
-			customMode.KeyBindings.OnKeys[key].Commands =
-				append(customMode.KeyBindings.OnKeys[key].Commands, toCommand(commandConfig))
+			customMode.KeyBindings.OnKeys[key].Commands = append(
+				customMode.KeyBindings.OnKeys[key].Commands,
+				toCommand(commandConfig),
+			)
 		}
 
 		customMode.helps = append(customMode.helps, &Help{

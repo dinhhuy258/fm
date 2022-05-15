@@ -15,3 +15,6 @@ linters:
     - godox
     - nilerr
     - cyclop
+    - varnamelen
+    - exhaustruct
+    - ireturn

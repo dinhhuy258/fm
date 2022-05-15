@@ -32,7 +32,7 @@ func FocusPrevious(app IApp, _ ...interface{}) error {
 func FocusPath(app IApp, params ...interface{}) error {
 	appGui := gui.GetGui()
 
-	//TODO Verify path
+	// TODO Verify path
 	path, _ := params[0].(string)
 	appGui.GetControllers().Explorer.FocusPath(path)
 
@@ -77,7 +77,7 @@ func ChangeDirectory(app IApp, params ...interface{}) error {
 	return nil
 }
 
-//TODO: Remove?
+// TODO: Remove?
 func LoadDirectory(app IApp, path string, focusPath string) {
 	appGui := gui.GetGui()
 

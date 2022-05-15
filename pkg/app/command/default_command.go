@@ -48,7 +48,9 @@ func ClearSelection(app IApp, _ ...interface{}) error {
 }
 
 func SwitchMode(app IApp, params ...interface{}) error {
-	return app.PushMode(params[0].(string))
+	mode, _ := params[0].(string)
+
+	return app.PushMode(mode)
 }
 
 func PopMode(app IApp, _ ...interface{}) error {

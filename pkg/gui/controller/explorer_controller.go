@@ -22,7 +22,8 @@ type ExplorerController struct {
 
 func newExplorerController(baseController *BaseController,
 	view *view.ExplorerView,
-	selections set.Set[string]) *ExplorerController {
+	selections set.Set[string],
+) *ExplorerController {
 	return &ExplorerController{
 		BaseController: baseController,
 		view:           view,
@@ -64,12 +65,12 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath string) {
 
 	ec.path = path
 
-	//TODO: Goroutine
+	// TODO: Goroutine
 	cfg := config.AppConfig
 
 	entries, err := fs.LoadEntries(path, cfg.ShowHidden)
 	if err != nil {
-		//TODO: Showing log here
+		// TODO: Showing log here
 		return
 	}
 
@@ -90,8 +91,8 @@ func (ec *ExplorerController) FocusPrevious() {
 		return
 	}
 
-	ec.view.PreviousCursor()
-	ec.focus = ec.focus - 1
+	_ = ec.view.PreviousCursor()
+	ec.focus--
 
 	ec.UpdateView()
 }
@@ -101,14 +102,14 @@ func (ec *ExplorerController) FocusNext() {
 		return
 	}
 
-	ec.view.NextCursor()
-	ec.focus = ec.focus + 1
+	_ = ec.view.NextCursor()
+	ec.focus++
 
 	ec.UpdateView()
 }
 
 func (ec *ExplorerController) FocusFirst() {
-	ec.view.ResetCursor()
+	_ = ec.view.ResetCursor()
 
 	ec.focus = 0
 
@@ -116,9 +117,7 @@ func (ec *ExplorerController) FocusFirst() {
 }
 
 func (ec *ExplorerController) FocusPath(path string) {
-	parentPath := fs.Dir(path)
-
-	if ec.path != parentPath {
+	if parentPath := fs.Dir(path); ec.path != parentPath {
 		ec.LoadDirectory(parentPath, path)
 	} else {
 		ec.focusPath(path)
@@ -141,10 +140,10 @@ func (ec *ExplorerController) focusPath(path string) {
 		}
 	}
 
-	ec.view.ResetCursor()
+	_ = ec.view.ResetCursor()
 
 	for i := 0; i < focus; i++ {
-		ec.view.NextCursor()
+		_ = ec.view.NextCursor()
 	}
 
 	ec.focus = focus

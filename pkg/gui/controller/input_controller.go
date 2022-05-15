@@ -23,10 +23,14 @@ type InputController struct {
 }
 
 func newInputController(baseController *BaseController, view *view.InputView) *InputController {
-	return &InputController{
+	inputController := &InputController{
 		BaseController: baseController,
 		view:           view,
 	}
+
+	view.SetOnType(inputController.onType)
+
+	return inputController
 }
 
 func (ic *InputController) SetInput(inputType InputType, msg string, onConfirm func(string)) {
@@ -35,6 +39,7 @@ func (ic *InputController) SetInput(inputType InputType, msg string, onConfirm f
 
 	title := ""
 	inputPrefix := ""
+
 	if inputType == CONFIRM {
 		title = " Confirmation "
 		inputPrefix = "> " + msg + " (y/n) "
@@ -48,14 +53,14 @@ func (ic *InputController) SetInput(inputType InputType, msg string, onConfirm f
 
 func (ic *InputController) onType(content string, event view.KeyEvent) {
 	if ic.inputType == CONFIRM {
-		ic.mediator.notify(INPUT_DONE, content)
+		ic.mediator.notify(InputDone, content)
 		ic.onConfirm(content)
 
 		return
 	}
 
 	if event == view.CONFIRM || event == view.CANCEL {
-		ic.mediator.notify(INPUT_DONE, content)
+		ic.mediator.notify(InputDone, content)
 
 		ic.onConfirm(content)
 	}

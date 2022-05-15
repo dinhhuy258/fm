@@ -87,7 +87,7 @@ func (view *View) SetViewContent(displayStrings []string) {
 	})
 }
 
-func (view *View) Size() (x, y int) {
+func (view *View) Size() (int, int) {
 	return view.v.Size()
 }
 

@@ -5,18 +5,18 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
-type ControllerEvent int8
+type Event int8
 
 const (
-	INPUT_DONE ControllerEvent = iota
+	InputDone Event = iota
 )
 
-type ControllerMediator interface {
-	notify(ControllerEvent, string)
+type Mediator interface {
+	notify(Event, string)
 }
 
 type BaseController struct {
-	mediator ControllerMediator
+	mediator Mediator
 }
 
 type Controllers struct {
@@ -47,9 +47,8 @@ func CreateAllControllers(views *view.Views) *Controllers {
 	return controllers
 }
 
-func (c *Controllers) notify(event ControllerEvent, data string) {
-	switch event {
-	case INPUT_DONE:
+func (c *Controllers) notify(event Event, data string) {
+	if event == InputDone {
 		c.Explorer.view.SetAsCurrentView()
 	}
 }

@@ -15,6 +15,7 @@ func PasteSelections(app IApp, params ...interface{}) error {
 
 	selectionController := appGui.GetControllers().Sellection
 	paths := selectionController.GetSelections()
+
 	if len(paths) == 0 {
 		logController.SetLog(view.LogLevel(view.WARNING), "Select nothing!!!")
 

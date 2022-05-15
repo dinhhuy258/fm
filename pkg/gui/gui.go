@@ -59,7 +59,10 @@ func (gui *Gui) Run() error {
 	gui.views = view.CreateAllViews(gui.g)
 	gui.controllers = controller.CreateAllControllers(gui.views)
 
-	gui.layout(gui.g)
+	if err := gui.layout(gui.g); err != nil {
+		return err
+	}
+
 	gui.onViewsCreated()
 
 	err = gui.g.MainLoop()
