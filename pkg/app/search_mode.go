@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/dinhhuy258/fm/pkg/app/command"
-	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 )
 
@@ -17,7 +16,7 @@ func (*SearchMode) GetName() string {
 }
 
 func (m *SearchMode) OnModeStarted(app *App) {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	logController := appGui.GetControllers().Log
 	explorerControler := appGui.GetControllers().Explorer
 	inputController := appGui.GetControllers().Input

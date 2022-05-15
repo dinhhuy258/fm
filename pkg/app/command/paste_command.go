@@ -2,12 +2,11 @@ package command
 
 import (
 	"github.com/dinhhuy258/fm/pkg/fs"
-	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
 func PasteSelections(app IApp, params ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	logController := appGui.GetControllers().Log
 	explorerController := appGui.GetControllers().Explorer
 
@@ -30,7 +29,7 @@ func PasteSelections(app IApp, params ...interface{}) error {
 }
 
 func paste(app IApp, paths []string, dest, operation string) {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	progressController := appGui.GetControllers().Progress
 	logController := appGui.GetControllers().Log
 

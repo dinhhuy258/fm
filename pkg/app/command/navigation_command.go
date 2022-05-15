@@ -2,11 +2,10 @@ package command
 
 import (
 	"github.com/dinhhuy258/fm/pkg/fs"
-	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
 func FocusFirst(app IApp, _ ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 
 	appGui.GetControllers().Explorer.FocusFirst()
 
@@ -14,7 +13,7 @@ func FocusFirst(app IApp, _ ...interface{}) error {
 }
 
 func FocusNext(app IApp, _ ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 
 	appGui.GetControllers().Explorer.FocusNext()
 
@@ -22,7 +21,7 @@ func FocusNext(app IApp, _ ...interface{}) error {
 }
 
 func FocusPrevious(app IApp, _ ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 
 	appGui.GetControllers().Explorer.FocusPrevious()
 
@@ -30,7 +29,7 @@ func FocusPrevious(app IApp, _ ...interface{}) error {
 }
 
 func FocusPath(app IApp, params ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 
 	// TODO Verify path
 	path, _ := params[0].(string)
@@ -40,7 +39,7 @@ func FocusPath(app IApp, params ...interface{}) error {
 }
 
 func Enter(app IApp, _ ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	explorerController := appGui.GetControllers().Explorer
 
 	entry := explorerController.GetCurrentEntry()
@@ -56,7 +55,7 @@ func Enter(app IApp, _ ...interface{}) error {
 }
 
 func Back(app IApp, _ ...interface{}) error {
-	explorerController := gui.GetGui().GetControllers().Explorer
+	explorerController := app.GetGui().GetControllers().Explorer
 
 	dir := fs.Dir(explorerController.GetPath())
 	if dir == "." {
@@ -79,7 +78,7 @@ func ChangeDirectory(app IApp, params ...interface{}) error {
 
 // TODO: Remove?
 func LoadDirectory(app IApp, path string, focusPath string) {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 
 	appGui.GetControllers().Explorer.LoadDirectory(path, "")
 }

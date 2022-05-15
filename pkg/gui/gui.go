@@ -2,7 +2,6 @@ package gui
 
 import (
 	"errors"
-	"sync"
 
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
@@ -10,39 +9,20 @@ import (
 )
 
 type Gui struct {
-	g              *gocui.Gui
-	views          *view.Views
-	controllers    *controller.Controllers
-	onViewsCreated func()
+	g           *gocui.Gui
+	views       *view.Views
+	controllers *controller.Controllers
 }
 
 func (gui *Gui) GetControllers() *controller.Controllers {
 	return gui.controllers
 }
 
-var (
-	gui                   *Gui
-	guiInitializationOnce sync.Once
-)
-
-func InitGui(onViewsCreated func()) {
-	// Make sure only one gui is created
-	guiInitializationOnce.Do(func() {
-		gui = &Gui{
-			onViewsCreated: onViewsCreated,
-		}
-	})
+func NewGui() *Gui {
+	return &Gui{}
 }
 
-func GetGui() *Gui {
-	if gui == nil {
-		panic("gui is not initialized")
-	}
-
-	return gui
-}
-
-func (gui *Gui) Run() error {
+func (gui *Gui) Run(onGuiReady func()) error {
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		return err
@@ -63,7 +43,7 @@ func (gui *Gui) Run() error {
 		return err
 	}
 
-	gui.onViewsCreated()
+	onGuiReady()
 
 	err = gui.g.MainLoop()
 

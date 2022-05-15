@@ -5,13 +5,12 @@ import (
 	"strings"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
-	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
 func NewFile(app IApp, _ ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	logController := appGui.GetControllers().Log
 	explorerController := appGui.GetControllers().Explorer
 	inputController := appGui.GetControllers().Input

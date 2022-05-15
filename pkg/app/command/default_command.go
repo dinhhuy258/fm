@@ -2,11 +2,10 @@ package command
 
 import (
 	"github.com/dinhhuy258/fm/pkg/config"
-	"github.com/dinhhuy258/fm/pkg/gui"
 )
 
 func ToggleSelection(app IApp, _ ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	explorerController := appGui.GetControllers().Explorer
 	selectionController := appGui.GetControllers().Sellection
 
@@ -25,7 +24,7 @@ func ToggleSelection(app IApp, _ ...interface{}) error {
 }
 
 func ToggleHidden(app IApp, _ ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	explorerController := appGui.GetControllers().Explorer
 
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
@@ -37,7 +36,7 @@ func ToggleHidden(app IApp, _ ...interface{}) error {
 }
 
 func ClearSelection(app IApp, _ ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	explorerController := appGui.GetControllers().Explorer
 	selectionController := appGui.GetControllers().Sellection
 
@@ -58,7 +57,7 @@ func PopMode(app IApp, _ ...interface{}) error {
 }
 
 func Refresh(app IApp, params ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	explorerController := appGui.GetControllers().Explorer
 
 	entry := explorerController.GetCurrentEntry()
@@ -67,8 +66,8 @@ func Refresh(app IApp, params ...interface{}) error {
 	return nil
 }
 
-func Quit(_ IApp, _ ...interface{}) error {
-	appGui := gui.GetGui()
+func Quit(app IApp, _ ...interface{}) error {
+	appGui := app.GetGui()
 
 	return appGui.Quit()
 }

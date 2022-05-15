@@ -9,6 +9,7 @@ import (
 )
 
 type App struct {
+	gui   *gui.Gui
 	Marks map[string]string
 	modes *Modes
 }
@@ -16,18 +17,17 @@ type App struct {
 // NewApp bootstrap a new application
 func NewApp() *App {
 	app := &App{
+		gui:   gui.NewGui(),
 		Marks: map[string]string{},
 	}
 
 	app.modes = NewModes()
 
-	gui.InitGui(app.onViewsCreated)
-
 	return app
 }
 
 func (app *App) Run() error {
-	return gui.GetGui().Run()
+	return app.gui.Run(app.onGuiReady)
 }
 
 func (app *App) onModeChanged() {
@@ -45,8 +45,11 @@ func (app *App) onModeChanged() {
 		msgs = append(msgs, h.Msg)
 	}
 
-	appGui := gui.GetGui()
-	appGui.GetControllers().Help.SetHelp(currentMode.GetName(), keys, msgs)
+	app.gui.GetControllers().Help.SetHelp(currentMode.GetName(), keys, msgs)
+}
+
+func (app *App) GetGui() *gui.Gui {
+	return app.gui
 }
 
 func (app *App) MarkSave(key, path string) {
@@ -102,12 +105,12 @@ func (app *App) onKey(key string) error {
 	return nil
 }
 
-func (app *App) onViewsCreated() {
+func (app *App) onGuiReady() {
 	// Push the default mode
 	_ = app.PushMode("default")
 
 	// Set on key handler
-	gui.GetGui().SetOnKeyFunc(app.onKey)
+	app.gui.SetOnKeyFunc(app.onKey)
 
 	wd, err := os.Getwd()
 	if err != nil {

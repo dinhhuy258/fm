@@ -1,11 +1,7 @@
 package command
 
-import (
-	"github.com/dinhhuy258/fm/pkg/gui"
-)
-
 func MarkSave(app IApp, params ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	explorerController := appGui.GetControllers().Explorer
 
 	key, _ := params[0].(string)

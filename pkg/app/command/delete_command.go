@@ -4,13 +4,12 @@ import (
 	"fmt"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
-	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
 func DeleteSelections(app IApp, _ ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	selectionController := appGui.GetControllers().Sellection
 	logController := appGui.GetControllers().Log
 	inputController := appGui.GetControllers().Input
@@ -39,7 +38,7 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 }
 
 func DeleteCurrent(app IApp, _ ...interface{}) error {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	explorerController := appGui.GetControllers().Explorer
 	logController := appGui.GetControllers().Log
 	inputController := appGui.GetControllers().Input
@@ -61,7 +60,7 @@ func DeleteCurrent(app IApp, _ ...interface{}) error {
 }
 
 func deletePaths(app IApp, paths []string) {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	progressController := appGui.GetControllers().Progress
 	logController := appGui.GetControllers().Log
 	explorerController := appGui.GetControllers().Explorer
@@ -94,7 +93,7 @@ func deletePaths(app IApp, paths []string) {
 
 // getFocus re-calculate the focus after deleting files/folders
 func getFocus(app IApp, deletedPaths []string) int {
-	appGui := gui.GetGui()
+	appGui := app.GetGui()
 	explorerController := appGui.GetControllers().Explorer
 
 	// Put deleted paths to hash map

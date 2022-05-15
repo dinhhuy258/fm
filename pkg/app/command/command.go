@@ -1,6 +1,10 @@
 package command
 
+import "github.com/dinhhuy258/fm/pkg/gui"
+
 type IApp interface {
+	// Gui
+	GetGui() *gui.Gui
 	// Mark
 	MarkSave(key, path string)
 	MarkLoad(key string) (string, bool)
