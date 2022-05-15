@@ -2,46 +2,46 @@ package command
 
 import (
 	"github.com/dinhhuy258/fm/pkg/fs"
+	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 func FocusFirst(app IApp, _ ...interface{}) error {
-	appGui := app.GetGui()
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
-	appGui.GetControllers().Explorer.FocusFirst()
+	explorerController.FocusFirst()
 
 	return nil
 }
 
 func FocusNext(app IApp, _ ...interface{}) error {
-	appGui := app.GetGui()
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
-	appGui.GetControllers().Explorer.FocusNext()
+	explorerController.FocusNext()
 
 	return nil
 }
 
 func FocusPrevious(app IApp, _ ...interface{}) error {
-	appGui := app.GetGui()
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
-	appGui.GetControllers().Explorer.FocusPrevious()
+	explorerController.FocusPrevious()
 
 	return nil
 }
 
 func FocusPath(app IApp, params ...interface{}) error {
-	appGui := app.GetGui()
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	// TODO Verify path
 	path, _ := params[0].(string)
-	appGui.GetControllers().Explorer.FocusPath(path)
+	explorerController.FocusPath(path)
 
 	return nil
 }
 
 func Enter(app IApp, _ ...interface{}) error {
-	appGui := app.GetGui()
-	explorerController := appGui.GetControllers().Explorer
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	entry := explorerController.GetCurrentEntry()
 	if entry == nil {
@@ -56,7 +56,7 @@ func Enter(app IApp, _ ...interface{}) error {
 }
 
 func Back(app IApp, _ ...interface{}) error {
-	explorerController := app.GetGui().GetControllers().Explorer
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	dir := fs.Dir(explorerController.GetPath())
 	if dir == "." {
@@ -78,7 +78,7 @@ func ChangeDirectory(app IApp, params ...interface{}) error {
 }
 
 func loadDirectory(app IApp, path string, focusPath optional.Optional[string]) {
-	appGui := app.GetGui()
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
-	appGui.GetControllers().Explorer.LoadDirectory(path, focusPath)
+	explorerController.LoadDirectory(path, focusPath)
 }

@@ -16,15 +16,14 @@ func (*SearchMode) GetName() string {
 }
 
 func (m *SearchMode) OnModeStarted(app *App) {
-	appGui := app.GetGui()
-	explorerControler := appGui.GetControllers().Explorer
-	inputController := appGui.GetControllers().Input
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
+	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 
-	inputController.SetInput(controller.Input, "search", func(searchInput string) {
+	inputController.SetInput(controller.InputText, "search", func(searchInput string) {
 		_ = command.PopMode(app)
 
 		if searchInput != "" {
-			entries := explorerControler.GetEntries()
+			entries := explorerController.GetEntries()
 			for _, entry := range entries {
 				if strings.Contains(strings.ToLower(entry.GetName()), strings.ToLower(searchInput)) {
 					_ = command.FocusPath(app, entry.GetPath())

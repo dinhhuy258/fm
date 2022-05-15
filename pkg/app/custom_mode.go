@@ -15,7 +15,7 @@ func (m *CustomMode) GetName() string {
 	return m.name
 }
 
-func (m *CustomMode) GetHelp(app *App) []*Help {
+func (m *CustomMode) GetHelp() []*Help {
 	return m.helps
 }
 

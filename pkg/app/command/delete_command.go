@@ -10,10 +10,9 @@ import (
 )
 
 func DeleteSelections(app IApp, _ ...interface{}) error {
-	appGui := app.GetGui()
-	selectionController := appGui.GetControllers().Sellection
-	logController := appGui.GetControllers().Log
-	inputController := appGui.GetControllers().Input
+	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
+	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 
 	paths := selectionController.GetSelections()
 	if len(paths) == 0 {
@@ -22,7 +21,7 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 		return PopMode(app)
 	}
 
-	inputController.SetInput(controller.Confirm, "Do you want to delete selected paths?",
+	inputController.SetInput(controller.InputConfirm, "Do you want to delete selected paths?",
 		func(ans string) {
 			_ = PopMode(app)
 
@@ -39,14 +38,13 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 }
 
 func DeleteCurrent(app IApp, _ ...interface{}) error {
-	appGui := app.GetGui()
-	explorerController := appGui.GetControllers().Explorer
-	logController := appGui.GetControllers().Log
-	inputController := appGui.GetControllers().Input
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
+	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 
 	entry := explorerController.GetCurrentEntry()
 
-	inputController.SetInput(controller.Confirm, fmt.Sprintf("Do you want to delete %s?", entry.GetName()),
+	inputController.SetInput(controller.InputConfirm, fmt.Sprintf("Do you want to delete %s?", entry.GetName()),
 		func(ans string) {
 			_ = PopMode(app)
 
@@ -61,10 +59,9 @@ func DeleteCurrent(app IApp, _ ...interface{}) error {
 }
 
 func deletePaths(app IApp, paths []string) {
-	appGui := app.GetGui()
-	progressController := appGui.GetControllers().Progress
-	logController := appGui.GetControllers().Log
-	explorerController := appGui.GetControllers().Explorer
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
+	progressController, _ := app.GetController(controller.Progress).(*controller.ProgressController)
 
 	progressController.StartProgress(len(paths))
 	fs.Delete(paths, func() {
@@ -94,8 +91,7 @@ func deletePaths(app IApp, paths []string) {
 
 // getFocus re-calculate the focus after deleting files/folders
 func getFocus(app IApp, deletedPaths []string) int {
-	appGui := app.GetGui()
-	explorerController := appGui.GetControllers().Explorer
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	// Put deleted paths to hash map
 	paths := make(map[string]struct{})

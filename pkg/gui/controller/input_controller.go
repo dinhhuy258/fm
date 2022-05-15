@@ -9,8 +9,8 @@ import (
 type InputType int8
 
 const (
-	Input InputType = iota
-	Confirm
+	InputText InputType = iota
+	InputConfirm
 )
 
 type InputController struct {
@@ -38,21 +38,21 @@ func (ic *InputController) SetInput(inputType InputType, msg string, onConfirm f
 	ic.onConfirm = onConfirm
 
 	title := ""
-	inputPrefix := ""
+	prompt := ""
 
-	if inputType == Confirm {
+	if inputType == InputConfirm {
 		title = " Confirmation "
-		inputPrefix = "> " + msg + " (y/n) "
+		prompt = "> " + msg + " (y/n) "
 	} else {
 		title = fmt.Sprintf(" Input [%s] ", msg)
-		inputPrefix = "> "
+		prompt = "> "
 	}
 
-	ic.view.SetInput(title, inputPrefix)
+	ic.view.SetInput(title, prompt)
 }
 
 func (ic *InputController) onType(content string, event view.InputEvent) {
-	if ic.inputType == Confirm {
+	if ic.inputType == InputConfirm {
 		ic.mediator.notify(InputDone, content)
 		ic.onConfirm(content)
 

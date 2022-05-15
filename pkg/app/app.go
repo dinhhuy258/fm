@@ -6,11 +6,12 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/gui"
+	"github.com/dinhhuy258/fm/pkg/gui/controller"
 )
 
 type App struct {
 	gui   *gui.Gui
-	Marks map[string]string
+	marks map[string]string
 	modes *Modes
 }
 
@@ -18,10 +19,10 @@ type App struct {
 func NewApp() *App {
 	app := &App{
 		gui:   gui.NewGui(),
-		Marks: map[string]string{},
+		marks: map[string]string{},
 	}
 
-	app.modes = NewModes()
+	app.modes = CreateAllModes(app.marks)
 
 	return app
 }
@@ -35,7 +36,7 @@ func (app *App) onModeChanged() {
 
 	currentMode.OnModeStarted(app)
 
-	helps := currentMode.GetHelp(app)
+	helps := currentMode.GetHelp()
 
 	keys := make([]string, 0, len(helps))
 	msgs := make([]string, 0, len(helps))
@@ -45,19 +46,20 @@ func (app *App) onModeChanged() {
 		msgs = append(msgs, h.Msg)
 	}
 
-	app.gui.GetControllers().Help.SetHelp(currentMode.GetName(), keys, msgs)
+	helpController, _ := app.GetController(controller.Help).(*controller.HelpController)
+	helpController.SetHelp(currentMode.GetName(), keys, msgs)
 }
 
-func (app *App) GetGui() *gui.Gui {
-	return app.gui
+func (app *App) GetController(controllerType controller.Type) controller.IController {
+	return app.gui.GetController(controllerType)
 }
 
 func (app *App) MarkSave(key, path string) {
-	app.Marks[key] = path
+	app.marks[key] = path
 }
 
 func (app *App) MarkLoad(key string) (string, bool) {
-	path, hasKey := app.Marks[key]
+	path, hasKey := app.marks[key]
 
 	return path, hasKey
 }
@@ -80,6 +82,10 @@ func (app *App) PushMode(mode string) error {
 	app.onModeChanged()
 
 	return nil
+}
+
+func (app *App) Quit() error {
+	return app.gui.Quit()
 }
 
 func (app *App) onKey(key string) error {

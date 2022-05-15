@@ -14,8 +14,8 @@ type Gui struct {
 	controllers *controller.Controllers
 }
 
-func (gui *Gui) GetControllers() *controller.Controllers {
-	return gui.controllers
+func (gui *Gui) GetController(controllerType controller.Type) controller.IController {
+	return gui.controllers.GetController(controllerType)
 }
 
 func NewGui() *Gui {

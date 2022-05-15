@@ -1,8 +1,9 @@
 package command
 
+import "github.com/dinhhuy258/fm/pkg/gui/controller"
+
 func MarkSave(app IApp, params ...interface{}) error {
-	appGui := app.GetGui()
-	explorerController := appGui.GetControllers().Explorer
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	key, _ := params[0].(string)
 	// Exit mark mode

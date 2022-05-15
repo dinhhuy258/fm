@@ -2,17 +2,17 @@ package command
 
 import (
 	"github.com/dinhhuy258/fm/pkg/fs"
+	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
 func PasteSelections(app IApp, params ...interface{}) error {
-	appGui := app.GetGui()
-	logController := appGui.GetControllers().Log
-	explorerController := appGui.GetControllers().Explorer
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
+	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
 
 	operation, _ := params[0].(string)
 
-	selectionController := appGui.GetControllers().Sellection
 	paths := selectionController.GetSelections()
 
 	if len(paths) == 0 {
@@ -29,9 +29,8 @@ func PasteSelections(app IApp, params ...interface{}) error {
 }
 
 func paste(app IApp, paths []string, dest, operation string) {
-	appGui := app.GetGui()
-	progressController := appGui.GetControllers().Progress
-	logController := appGui.GetControllers().Log
+	progressController, _ := app.GetController(controller.Progress).(*controller.ProgressController)
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 
 	progressController.StartProgress(len(paths))
 

@@ -13,9 +13,9 @@ const (
 )
 
 type InputView struct {
-	v           *View
-	inputPrefix string
-	onType      func(string, InputEvent)
+	v      *View
+	prompt string
+	onType func(string, InputEvent)
 }
 
 func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
@@ -30,12 +30,12 @@ func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
 	return iv
 }
 
-func (iv *InputView) SetInput(title string, inputPrefix string) {
-	iv.inputPrefix = inputPrefix
+func (iv *InputView) SetInput(title string, prompt string) {
+	iv.prompt = prompt
 
-	iv.v.SetViewContent([]string{inputPrefix})
+	iv.v.SetViewContent([]string{prompt})
 	iv.v.SetTitle(title)
-	_ = iv.v.v.SetCursor(len(inputPrefix), 0)
+	_ = iv.v.v.SetCursor(len(prompt), 0)
 	_, _ = iv.v.g.SetCurrentView(iv.v.v.Name())
 
 	iv.v.SetViewOnTop()
@@ -51,13 +51,13 @@ func (iv *InputView) inputEditor(_ *gocui.View, key gocui.Key, ch rune, mod gocu
 		iv.v.v.EditWrite(ch)
 	case key == gocui.KeyBackspace || key == gocui.KeyBackspace2:
 		x, _ := iv.v.v.Cursor()
-		if x > len(iv.inputPrefix) {
+		if x > len(iv.prompt) {
 			iv.v.v.EditDelete(true)
 		}
 	case key == gocui.KeyArrowLeft:
 		x, _ := iv.v.v.Cursor()
 
-		if x > len(iv.inputPrefix) {
+		if x > len(iv.prompt) {
 			iv.v.v.MoveCursor(-1, 0, false)
 		}
 	case key == gocui.KeyArrowRight:
@@ -73,6 +73,6 @@ func (iv *InputView) inputEditor(_ *gocui.View, key gocui.Key, ch rune, mod gocu
 		}
 
 		viewContent := iv.v.v.BufferLines()[0]
-		iv.onType(viewContent[len(iv.inputPrefix):], keyEvent)
+		iv.onType(viewContent[len(iv.prompt):], keyEvent)
 	}
 }

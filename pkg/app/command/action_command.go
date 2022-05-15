@@ -11,12 +11,11 @@ import (
 )
 
 func NewFile(app IApp, _ ...interface{}) error {
-	appGui := app.GetGui()
-	logController := appGui.GetControllers().Log
-	explorerController := appGui.GetControllers().Explorer
-	inputController := appGui.GetControllers().Input
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
+	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 
-	inputController.SetInput(controller.Input, "new file", func(name string) {
+	inputController.SetInput(controller.InputText, "new file", func(name string) {
 		if name == "" {
 			logController.SetLog(view.Warning, "File name is empty")
 

@@ -5,6 +5,17 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
+type Type int8
+
+const (
+	Explorer Type = iota
+	Help
+	Sellection
+	Progress
+	Log
+	Input
+)
+
 type Event int8
 
 const (
@@ -15,41 +26,48 @@ type Mediator interface {
 	notify(Event, string)
 }
 
+type IController interface{}
+
 type BaseController struct {
+	IController
+
 	mediator Mediator
 }
 
 type Controllers struct {
-	Explorer   *ExplorerController
-	Help       *HelpController
-	Sellection *SelectionController
-	Progress   *ProgressController
-	Log        *LogController
-	Input      *InputController
+	controllers map[Type]IController
 }
 
 func CreateAllControllers(views *view.Views) *Controllers {
 	// Selections object to share between explorer and selection controllers
 	selections := set.NewSet[string]()
-	controllers := &Controllers{}
+	c := &Controllers{}
 
 	baseController := &BaseController{
-		mediator: controllers,
+		mediator: c,
 	}
 
-	controllers.Explorer = newExplorerController(baseController, views.Explorer, selections)
-	controllers.Sellection = newSelectionController(baseController, views.Selection, selections)
-	controllers.Help = newHelpController(baseController, views.Help)
-	controllers.Progress = newProgressController(baseController, views.Progress)
-	controllers.Log = newLogController(baseController, views.Log)
-	controllers.Input = newInputController(baseController, views.Input)
+	c.controllers = make(map[Type]IController)
+	c.controllers[Explorer] = newExplorerController(baseController, views.Explorer, selections)
+	c.controllers[Sellection] = newSelectionController(baseController, views.Selection, selections)
+	c.controllers[Help] = newHelpController(baseController, views.Help)
+	c.controllers[Progress] = newProgressController(baseController, views.Progress)
+	c.controllers[Log] = newLogController(baseController, views.Log)
+	c.controllers[Input] = newInputController(baseController, views.Input)
 
-	return controllers
+	return c
+}
+
+func (c *Controllers) GetController(controllerType Type) IController {
+	return c.controllers[controllerType]
 }
 
 func (c *Controllers) notify(event Event, data string) {
+	explorerController, _ := c.controllers[Explorer].(*ExplorerController)
+	logController, _ := c.controllers[Log].(*LogController)
+
 	if event == InputDone {
-		c.Explorer.view.SetAsCurrentView()
-		c.Log.view.SetViewOnTop()
+		explorerController.view.SetAsCurrentView()
+		logController.view.SetViewOnTop()
 	}
 }
