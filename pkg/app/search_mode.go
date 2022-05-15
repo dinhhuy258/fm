@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/gui"
+	"github.com/dinhhuy258/fm/pkg/gui/controller"
 )
 
 type SearchMode struct {
@@ -21,7 +22,7 @@ func (m *SearchMode) OnModeStarted(app *App) {
 	explorerControler := appGui.GetControllers().Explorer
 	inputController := appGui.GetControllers().Input
 
-	inputController.SetInput("search", func(searchInput string) {
+	inputController.SetInput(controller.INPUT, "search", func(searchInput string) {
 		_ = command.PopMode(app)
 		// TODO: Mediator pattern to anounnce log controller to update
 		logController.SetViewOnTop()

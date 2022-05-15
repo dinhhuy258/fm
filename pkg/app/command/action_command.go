@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
+	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
@@ -15,7 +16,7 @@ func NewFile(app IApp, _ ...interface{}) error {
 	explorerController := appGui.GetControllers().Explorer
 	inputController := appGui.GetControllers().Input
 
-	inputController.SetInput("new file", func(name string) {
+	inputController.SetInput(controller.INPUT, "new file", func(name string) {
 		if name == "" {
 			logController.SetLog(view.LogLevel(view.WARNING), "File name is empty")
 

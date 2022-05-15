@@ -20,14 +20,6 @@ func (gui *Gui) GetControllers() *controller.Controllers {
 	return gui.controllers
 }
 
-func (gui *Gui) SetConfirmation(ask string, onConfirm func(bool)) {
-	gui.views.Confirm.SetConfirmation(ask, func(ans bool) {
-		gui.views.Explorer.SetAsCurrentView()
-
-		onConfirm(ans)
-	})
-}
-
 var (
 	gui                   *Gui
 	guiInitializationOnce sync.Once

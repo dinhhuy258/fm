@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui"
+	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
@@ -12,6 +13,7 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 	selectionController := appGui.GetControllers().Sellection
 	logController := appGui.GetControllers().Log
+	inputController := appGui.GetControllers().Input
 
 	paths := selectionController.GetSelections()
 	if len(paths) == 0 {
@@ -20,17 +22,18 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 		return PopMode(app)
 	}
 
-	gui.GetGui().SetConfirmation("Do you want to delete selected paths?", func(ans bool) {
-		_ = PopMode(app)
+	inputController.SetInput(controller.CONFIRM, "Do you want to delete selected paths?",
+		func(ans string) {
+			_ = PopMode(app)
 
-		if ans {
-			deletePaths(app, paths)
-			// Clear selections after deleting
-			selectionController.ClearSelections()
-		} else {
-			logController.SetLog(view.LogLevel(view.WARNING), "Canceled deleting selections files/folders")
-		}
-	})
+			if ans == "y" || ans == "Y" {
+				deletePaths(app, paths)
+				// Clear selections after deleting
+				selectionController.ClearSelections()
+			} else {
+				logController.SetLog(view.LogLevel(view.WARNING), "Canceled deleting selections files/folders")
+			}
+		})
 
 	return nil
 }
@@ -39,18 +42,20 @@ func DeleteCurrent(app IApp, _ ...interface{}) error {
 	appGui := gui.GetGui()
 	explorerController := appGui.GetControllers().Explorer
 	logController := appGui.GetControllers().Log
+	inputController := appGui.GetControllers().Input
 
 	entry := explorerController.GetCurrentEntry()
 
-	appGui.SetConfirmation(fmt.Sprintf("Do you want to delete %s?", entry.GetName()), func(ans bool) {
-		_ = PopMode(app)
+	inputController.SetInput(controller.CONFIRM, fmt.Sprintf("Do you want to delete %s?", entry.GetName()),
+		func(ans string) {
+			_ = PopMode(app)
 
-		if ans {
-			deletePaths(app, []string{entry.GetPath()})
-		} else {
-			logController.SetLog(view.LogLevel(view.WARNING), "Canceled deleting the current file/folder")
-		}
-	})
+			if ans == "y" || ans == "Y" {
+				deletePaths(app, []string{entry.GetPath()})
+			} else {
+				logController.SetLog(view.LogLevel(view.WARNING), "Canceled deleting the current file/folder")
+			}
+		})
 
 	return nil
 }

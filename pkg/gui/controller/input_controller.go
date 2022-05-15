@@ -1,9 +1,24 @@
 package controller
 
-import "github.com/dinhhuy258/fm/pkg/gui/view"
+import (
+	"fmt"
+
+	"github.com/dinhhuy258/fm/pkg/gui/view"
+)
+
+type InputType int8
+
+const (
+	INPUT InputType = iota
+	CONFIRM
+)
 
 type InputController struct {
 	*BaseController
+
+	inputType InputType
+	onConfirm func(string)
+
 	view *view.InputView
 }
 
@@ -19,13 +34,34 @@ func (ic *InputController) SetView(view *view.InputView) {
 	ic.view.SetOnType(ic.onType)
 }
 
-func (ic *InputController) SetInput(msg string, onInput func(string)) {
-	ic.view.SetInput(msg, func(ans string) {
-		ic.mediator.notify(INPUT_DONE, nil)
+func (ic *InputController) SetInput(inputType InputType, msg string, onConfirm func(string)) {
+	ic.inputType = inputType
+	ic.onConfirm = onConfirm
 
-		onInput(ans)
-	})
+	title := ""
+	inputPrefix := ""
+	if inputType == CONFIRM {
+		title = " Confirmation "
+		inputPrefix = "> " + msg + " (y/n) "
+	} else {
+		title = fmt.Sprintf(" Input [%s] ", msg)
+		inputPrefix = "> "
+	}
+
+	ic.view.SetInput(title, inputPrefix)
 }
 
 func (ic *InputController) onType(content string, event view.KeyEvent) {
+	if ic.inputType == CONFIRM {
+		ic.mediator.notify(INPUT_DONE, content)
+		ic.onConfirm(content)
+
+		return
+	}
+
+	if event == view.CONFIRM || event == view.CANCEL {
+		ic.mediator.notify(INPUT_DONE, content)
+
+		ic.onConfirm(content)
+	}
 }

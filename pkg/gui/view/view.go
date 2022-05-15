@@ -14,7 +14,6 @@ type Views struct {
 	Help          *HelpView
 	Input         *InputView
 	Log           *LogView
-	Confirm       *ConfirmView
 	Progress      *ProgressView
 }
 
@@ -26,7 +25,6 @@ func CreateAllViews(g *gocui.Gui) *Views {
 		help           *gocui.View
 		input          *gocui.View
 		log            *gocui.View
-		confirm        *gocui.View
 		progress       *gocui.View
 	)
 
@@ -40,7 +38,6 @@ func CreateAllViews(g *gocui.Gui) *Views {
 		{viewPtr: &help, name: "help"},
 		{viewPtr: &input, name: "input"},
 		{viewPtr: &log, name: "log"},
-		{viewPtr: &confirm, name: "confirm"},
 		{viewPtr: &progress, name: "progress"},
 	}
 
@@ -55,7 +52,6 @@ func CreateAllViews(g *gocui.Gui) *Views {
 		Help:          newHelpView(g, help),
 		Input:         newInputView(g, input),
 		Log:           newLogView(g, log),
-		Confirm:       newConfirmView(g, confirm),
 		Progress:      newProgressView(g, progress),
 	}
 }

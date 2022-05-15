@@ -1,8 +1,6 @@
 package view
 
 import (
-	"fmt"
-
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -14,20 +12,15 @@ const (
 	CONFIRM = 2
 )
 
-const (
-	inputViewPrefix = "> "
-)
-
 type InputView struct {
-	v         *View
-	onType    func(string, KeyEvent)
-	inputChan chan string
+	v           *View
+	inputPrefix string
+	onType      func(string, KeyEvent)
 }
 
 func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
 	iv := &InputView{
-		v:         newView(g, v),
-		inputChan: make(chan string, 1),
+		v: newView(g, v),
 	}
 
 	iv.v.v.Title = " Input "
@@ -37,19 +30,15 @@ func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
 	return iv
 }
 
-func (iv *InputView) SetInput(ask string, onInput func(string)) {
-	iv.v.SetViewContent([]string{inputViewPrefix})
-	iv.v.SetTitle(fmt.Sprintf(" Input [%s] ", ask))
-	_ = iv.v.v.SetCursor(len(inputViewPrefix), 0)
+func (iv *InputView) SetInput(title string, inputPrefix string) {
+	iv.inputPrefix = inputPrefix
+
+	iv.v.SetViewContent([]string{inputPrefix})
+	iv.v.SetTitle(title)
+	_ = iv.v.v.SetCursor(len(inputPrefix), 0)
 	_, _ = iv.v.g.SetCurrentView(iv.v.v.Name())
 
 	iv.v.SetViewOnTop()
-
-	go func() {
-		ans := <-iv.inputChan
-
-		onInput(ans)
-	}()
 }
 
 func (iv *InputView) SetOnType(onType func(string, KeyEvent)) {
@@ -62,22 +51,17 @@ func (iv *InputView) inputEditor(_ *gocui.View, key gocui.Key, ch rune, mod gocu
 		iv.v.v.EditWrite(ch)
 	case key == gocui.KeyBackspace || key == gocui.KeyBackspace2:
 		x, _ := iv.v.v.Cursor()
-		if x > len(inputViewPrefix) {
+		if x > len(iv.inputPrefix) {
 			iv.v.v.EditDelete(true)
 		}
 	case key == gocui.KeyArrowLeft:
 		x, _ := iv.v.v.Cursor()
 
-		if x > len(inputViewPrefix) {
+		if x > len(iv.inputPrefix) {
 			iv.v.v.MoveCursor(-1, 0, false)
 		}
 	case key == gocui.KeyArrowRight:
 		iv.v.v.MoveCursor(1, 0, false)
-	case key == gocui.KeyEnter:
-		viewContent := iv.v.v.BufferLines()[0]
-		iv.inputChan <- viewContent[len(inputViewPrefix):]
-	case key == gocui.KeyEsc:
-		iv.inputChan <- ""
 	}
 
 	if iv.onType != nil {
@@ -89,6 +73,6 @@ func (iv *InputView) inputEditor(_ *gocui.View, key gocui.Key, ch rune, mod gocu
 		}
 
 		viewContent := iv.v.v.BufferLines()[0]
-		iv.onType(viewContent[len(inputViewPrefix):], keyEvent)
+		iv.onType(viewContent[len(iv.inputPrefix):], keyEvent)
 	}
 }

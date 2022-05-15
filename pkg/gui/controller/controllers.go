@@ -9,7 +9,7 @@ const (
 )
 
 type ControllerMediator interface {
-	notify(ControllerEvent, interface{})
+	notify(ControllerEvent, string)
 }
 
 type BaseController struct {
@@ -44,7 +44,7 @@ func CreateAllControllers() *Controllers {
 	return controllers
 }
 
-func (c *Controllers) notify(event ControllerEvent, data interface{}) {
+func (c *Controllers) notify(event ControllerEvent, data string) {
 	switch event {
 	case INPUT_DONE:
 	   c.Explorer.view.SetAsCurrentView()
