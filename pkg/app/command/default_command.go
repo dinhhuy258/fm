@@ -6,13 +6,13 @@ import (
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
-func ToggleSelection(app IApp, _ ...interface{}) error {
+func ToggleSelection(app IApp, _ ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
 
 	entry := explorerController.GetCurrentEntry()
 	if entry == nil {
-		return nil
+		return
 	}
 
 	path := entry.GetPath()
@@ -20,50 +20,42 @@ func ToggleSelection(app IApp, _ ...interface{}) error {
 	selectionController.ToggleSelection(path)
 
 	explorerController.UpdateView()
-
-	return nil
 }
 
-func ToggleHidden(app IApp, _ ...interface{}) error {
+func ToggleHidden(app IApp, _ ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
 	entry := explorerController.GetCurrentEntry()
 	loadDirectory(app, explorerController.GetPath(), optional.NewOptional(entry.GetPath()))
-
-	return nil
 }
 
-func ClearSelection(app IApp, _ ...interface{}) error {
+func ClearSelection(app IApp, _ ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
 
 	selectionController.ClearSelections()
 	explorerController.UpdateView()
-
-	return nil
 }
 
-func SwitchMode(app IApp, params ...interface{}) error {
+func SwitchMode(app IApp, params ...interface{}) {
 	mode, _ := params[0].(string)
 
-	return app.PushMode(mode)
+	app.PushMode(mode)
 }
 
-func PopMode(app IApp, _ ...interface{}) error {
-	return app.PopMode()
+func PopMode(app IApp, _ ...interface{}) {
+	app.PopMode()
 }
 
-func Refresh(app IApp, params ...interface{}) error {
+func Refresh(app IApp, params ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	entry := explorerController.GetCurrentEntry()
 	loadDirectory(app, explorerController.GetPath(), optional.NewOptional(entry.GetPath()))
-
-	return nil
 }
 
-func Quit(app IApp, _ ...interface{}) error {
-	return app.Quit()
+func Quit(app IApp, _ ...interface{}) {
+	app.Quit()
 }

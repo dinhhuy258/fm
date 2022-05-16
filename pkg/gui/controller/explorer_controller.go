@@ -66,7 +66,6 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Opti
 
 	ec.path = path
 
-	// TODO: Goroutine
 	cfg := config.AppConfig
 
 	entries, err := fs.LoadEntries(path, cfg.ShowHidden)

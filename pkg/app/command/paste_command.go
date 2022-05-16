@@ -6,7 +6,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
-func PasteSelections(app IApp, params ...interface{}) error {
+func PasteSelections(app IApp, params ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
@@ -18,14 +18,12 @@ func PasteSelections(app IApp, params ...interface{}) error {
 	if len(paths) == 0 {
 		logController.SetLog(view.Warning, "Select nothing!!!")
 
-		return nil
+		return
 	}
 
 	paste(app, paths, explorerController.GetPath(), operation)
 
 	selectionController.ClearSelections()
-
-	return nil
 }
 
 func paste(app IApp, paths []string, dest, operation string) {
@@ -50,7 +48,7 @@ func paste(app IApp, paths []string, dest, operation string) {
 			logController.SetLog(view.Info, "Finished to %s %v", operation, paths)
 		}
 
-		_ = Refresh(app)
+		Refresh(app)
 	}
 
 	if operation == "copy" {

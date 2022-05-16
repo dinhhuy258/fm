@@ -10,7 +10,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
-func NewFile(app IApp, _ ...interface{}) error {
+func NewFile(app IApp, _ ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
@@ -40,6 +40,4 @@ func NewFile(app IApp, _ ...interface{}) error {
 			loadDirectory(app, explorerController.GetPath(), optional.NewOptional(focusPath))
 		}
 	})
-
-	return nil
 }

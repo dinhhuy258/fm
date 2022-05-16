@@ -68,68 +68,64 @@ func Dir(path string) string {
 }
 
 func Delete(paths []string, onSuccess func(), onError func(error), onComplete func(int, int)) {
-	go func() {
-		successCount := 0
-		errorCount := 0
+	successCount := 0
+	errorCount := 0
 
-		for _, path := range paths {
-			if err := os.RemoveAll(path); err != nil {
-				errorCount++
+	for _, path := range paths {
+		if err := os.RemoveAll(path); err != nil {
+			errorCount++
 
-				onError(err)
-			} else {
-				successCount++
+			onError(err)
+		} else {
+			successCount++
 
-				onSuccess()
-			}
+			onSuccess()
 		}
+	}
 
-		onComplete(successCount, errorCount)
-	}()
+	onComplete(successCount, errorCount)
 }
 
 func Copy(srcPaths []string, destDir string, onSuccess func(), onError func(error), onComplete func(int, int)) {
-	go func() {
-		successCount := 0
-		errorCount := 0
+	successCount := 0
+	errorCount := 0
 
-		for _, srcPath := range srcPaths {
-			dst := filepath.Join(destDir, filepath.Base(srcPath))
-			_, err := os.Lstat(dst)
+	for _, srcPath := range srcPaths {
+		srcPath := srcPath
+		dst := filepath.Join(destDir, filepath.Base(srcPath))
+		_, err := os.Lstat(dst)
 
-			if !os.IsNotExist(err) {
-				var newPath string
+		if !os.IsNotExist(err) {
+			var newPath string
 
-				for i := 1; !os.IsNotExist(err); i++ {
-					newPath = fmt.Sprintf("%s.~%d~", dst, i)
-					_, err = os.Lstat(newPath)
-				}
-
-				dst = newPath
+			for i := 1; !os.IsNotExist(err); i++ {
+				newPath = fmt.Sprintf("%s.~%d~", dst, i)
+				_, err = os.Lstat(newPath)
 			}
 
-			src := srcPath // This will make scopelint happy
-			walkFunc := func(path string, info os.FileInfo, err error) error {
-				if err != nil {
-					return err
-				}
-
-				return copyPath(src, path, dst, info)
-			}
-
-			if err := filepath.Walk(srcPath, walkFunc); err != nil {
-				errorCount++
-
-				onError(err)
-			} else {
-				successCount++
-
-				onSuccess()
-			}
+			dst = newPath
 		}
 
-		onComplete(successCount, errorCount)
-	}()
+		walkFunc := func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			return copyPath(srcPath, path, dst, info)
+		}
+
+		if err := filepath.Walk(srcPath, walkFunc); err != nil {
+			errorCount++
+
+			onError(err)
+		} else {
+			successCount++
+
+			onSuccess()
+		}
+	}
+
+	onComplete(successCount, errorCount)
 }
 
 func Move(srcPaths []string, destDir string, onSuccess func(), onError func(error), onComplete func(int, int)) {

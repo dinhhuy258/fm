@@ -58,6 +58,8 @@ func (gui *Gui) SetOnKeyFunc(onKey func(string) error) {
 	gui.g.SetOnKeyFunc(onKey)
 }
 
-func (gui *Gui) Quit() error {
-	return gocui.ErrQuit
+func (gui *Gui) Quit() {
+	gui.g.Update(func(g *gocui.Gui) error {
+		return gocui.ErrQuit
+	})
 }

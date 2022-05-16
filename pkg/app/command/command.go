@@ -8,16 +8,16 @@ type IApp interface {
 	// Controller
 	GetController(controller.Type) controller.IController
 	// Quit
-	Quit() error
+	Quit()
 	// Mark
 	MarkSave(key, path string)
 	MarkLoad(key string) (string, bool)
 	// Mode
-	PopMode() error
-	PushMode(mode string) error
+	PopMode()
+	PushMode(mode string)
 }
 
 type Command struct {
-	Func func(app IApp, params ...interface{}) error
+	Func func(app IApp, params ...interface{})
 	Args []interface{}
 }

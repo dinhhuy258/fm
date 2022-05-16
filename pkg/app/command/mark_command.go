@@ -2,26 +2,23 @@ package command
 
 import "github.com/dinhhuy258/fm/pkg/gui/controller"
 
-func MarkSave(app IApp, params ...interface{}) error {
+func MarkSave(app IApp, params ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
-	key, _ := params[0].(string)
 	// Exit mark mode
-	_ = app.PopMode()
-	entry := explorerController.GetCurrentEntry()
-	app.MarkSave(key, entry.GetPath())
+	app.PopMode()
 
-	return nil
+	entry := explorerController.GetCurrentEntry()
+	key, _ := params[0].(string)
+	app.MarkSave(key, entry.GetPath())
 }
 
-func MarkLoad(app IApp, params ...interface{}) error {
+func MarkLoad(app IApp, params ...interface{}) {
 	key, _ := params[0].(string)
 	// Exit mark mode
-	_ = app.PopMode()
+	app.PopMode()
 
 	if path, hasKey := app.MarkLoad(key); hasKey {
-		return FocusPath(app, path)
+		FocusPath(app, path)
 	}
-
-	return nil
 }

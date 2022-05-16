@@ -9,7 +9,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
-func DeleteSelections(app IApp, _ ...interface{}) error {
+func DeleteSelections(app IApp, _ ...interface{}) {
 	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
@@ -18,12 +18,12 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 	if len(paths) == 0 {
 		logController.SetLog(view.Warning, "Select nothing!!!")
 
-		return PopMode(app)
+		PopMode(app)
 	}
 
 	inputController.SetInput(controller.InputConfirm, "Do you want to delete selected paths?",
 		func(ans string) {
-			_ = PopMode(app)
+			PopMode(app)
 
 			if ans == "y" || ans == "Y" {
 				deletePaths(app, paths)
@@ -33,11 +33,9 @@ func DeleteSelections(app IApp, _ ...interface{}) error {
 				logController.SetLog(view.Warning, "Canceled deleting selections files/folders")
 			}
 		})
-
-	return nil
 }
 
-func DeleteCurrent(app IApp, _ ...interface{}) error {
+func DeleteCurrent(app IApp, _ ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
@@ -46,7 +44,7 @@ func DeleteCurrent(app IApp, _ ...interface{}) error {
 
 	inputController.SetInput(controller.InputConfirm, fmt.Sprintf("Do you want to delete %s?", entry.GetName()),
 		func(ans string) {
-			_ = PopMode(app)
+			PopMode(app)
 
 			if ans == "y" || ans == "Y" {
 				deletePaths(app, []string{entry.GetPath()})
@@ -54,8 +52,6 @@ func DeleteCurrent(app IApp, _ ...interface{}) error {
 				logController.SetLog(view.Warning, "Canceled deleting the current file/folder")
 			}
 		})
-
-	return nil
 }
 
 func deletePaths(app IApp, paths []string) {
@@ -81,7 +77,7 @@ func deletePaths(app IApp, paths []string) {
 		focus := getFocus(app, paths)
 
 		if focus < 0 {
-			_ = Refresh(app)
+			Refresh(app)
 		} else {
 			entry := explorerController.GetEntry(focus)
 			loadDirectory(app, explorerController.GetPath(), optional.NewOptional(entry.GetPath()))

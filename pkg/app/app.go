@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/alitto/pond"
 	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
@@ -13,13 +14,16 @@ type App struct {
 	gui   *gui.Gui
 	marks map[string]string
 	modes *Modes
+
+	commandWorkerPool *pond.WorkerPool
 }
 
 // NewApp bootstrap a new application
 func NewApp() *App {
 	app := &App{
-		gui:   gui.NewGui(),
-		marks: map[string]string{},
+		gui:               gui.NewGui(),
+		marks:             map[string]string{},
+		commandWorkerPool: pond.New(1 /* we only need one woker to avoid concurency issue */, 10),
 	}
 
 	app.modes = CreateAllModes(app.marks)
@@ -64,28 +68,26 @@ func (app *App) MarkLoad(key string) (string, bool) {
 	return path, hasKey
 }
 
-func (app *App) PopMode() error {
+func (app *App) PopMode() {
 	if err := app.modes.Pop(); err != nil {
-		return err
+		// TODO: Better error handling???
+		log.Fatalf("failed to pop mode %v", err)
 	}
 
 	app.onModeChanged()
-
-	return nil
 }
 
-func (app *App) PushMode(mode string) error {
+func (app *App) PushMode(mode string) {
 	if err := app.modes.Push(mode); err != nil {
-		return err
+		// TODO: Better error handling???
+		log.Fatalf("failed to push mode %v", err)
 	}
 
 	app.onModeChanged()
-
-	return nil
 }
 
-func (app *App) Quit() error {
-	return app.gui.Quit()
+func (app *App) Quit() {
+	app.gui.Quit()
 }
 
 func (app *App) onKey(key string) error {
@@ -93,18 +95,21 @@ func (app *App) onKey(key string) error {
 
 	if action, hasKey := keybindings.OnKeys[key]; hasKey {
 		for _, cmd := range action.Commands {
-			if err := cmd.Func(app, cmd.Args...); err != nil {
-				return err
-			}
+			cmd := cmd
+
+			app.commandWorkerPool.Submit(func() {
+				cmd.Func(app, cmd.Args...)
+			})
 		}
 	} else if keybindings.OnAlphabet != nil {
 		for _, cmd := range keybindings.OnAlphabet.Commands {
+			cmd := cmd
 			args := cmd.Args
 			args = append(args, key)
 
-			if err := cmd.Func(app, args...); err != nil {
-				return err
-			}
+			app.commandWorkerPool.Submit(func() {
+				cmd.Func(app, args...)
+			})
 		}
 	}
 
@@ -113,7 +118,7 @@ func (app *App) onKey(key string) error {
 
 func (app *App) onGuiReady() {
 	// Push the default mode
-	_ = app.PushMode("default")
+	app.PushMode("default")
 
 	// Set on key handler
 	app.gui.SetOnKeyFunc(app.onKey)
@@ -123,7 +128,5 @@ func (app *App) onGuiReady() {
 		log.Fatalf("failed to get current working directory %v", err)
 	}
 
-	if err := command.ChangeDirectory(app, wd); err != nil {
-		log.Fatalf("failed to load the current working directory %v", err)
-	}
+	command.ChangeDirectory(app, wd)
 }

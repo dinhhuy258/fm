@@ -20,13 +20,13 @@ func (m *SearchMode) OnModeStarted(app *App) {
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 
 	inputController.SetInput(controller.InputText, "search", func(searchInput string) {
-		_ = command.PopMode(app)
+		command.PopMode(app)
 
 		if searchInput != "" {
 			entries := explorerController.GetEntries()
 			for _, entry := range entries {
 				if strings.Contains(strings.ToLower(entry.GetName()), strings.ToLower(searchInput)) {
-					_ = command.FocusPath(app, entry.GetPath())
+					command.FocusPath(app, entry.GetPath())
 
 					return
 				}
