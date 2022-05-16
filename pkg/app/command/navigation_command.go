@@ -10,18 +10,21 @@ func FocusFirst(app IApp, _ ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusFirst()
+	explorerController.UpdateView()
 }
 
 func FocusNext(app IApp, _ ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusNext()
+	explorerController.UpdateView()
 }
 
 func FocusPrevious(app IApp, _ ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusPrevious()
+	explorerController.UpdateView()
 }
 
 func FocusPath(app IApp, params ...interface{}) {
@@ -30,6 +33,7 @@ func FocusPath(app IApp, params ...interface{}) {
 	// TODO Verify path
 	path, _ := params[0].(string)
 	explorerController.FocusPath(path)
+	explorerController.UpdateView()
 }
 
 func Enter(app IApp, _ ...interface{}) {
@@ -42,6 +46,7 @@ func Enter(app IApp, _ ...interface{}) {
 
 	if entry.IsDirectory() {
 		explorerController.LoadDirectory(entry.GetPath(), optional.NewEmptyOptional[string]())
+		explorerController.UpdateView()
 	}
 }
 
@@ -63,8 +68,10 @@ func ChangeDirectory(app IApp, params ...interface{}) {
 	loadDirectory(app, directory, optional.NewEmptyOptional[string]())
 }
 
+// TODO: Considering remove this method and use ChangeDirectory instead
 func loadDirectory(app IApp, path string, focusPath optional.Optional[string]) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.LoadDirectory(path, focusPath)
+	explorerController.UpdateView()
 }

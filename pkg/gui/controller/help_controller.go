@@ -23,8 +23,6 @@ func (hc *HelpController) SetHelp(title string, keys []string, msgs []string) {
 	hc.title = title
 	hc.keys = keys
 	hc.msgs = msgs
-
-	hc.UpdateView()
 }
 
 func (hc *HelpController) UpdateView() {

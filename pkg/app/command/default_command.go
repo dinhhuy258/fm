@@ -19,6 +19,7 @@ func ToggleSelection(app IApp, _ ...interface{}) {
 
 	selectionController.ToggleSelection(path)
 
+	selectionController.UpdateView()
 	explorerController.UpdateView()
 }
 
@@ -36,6 +37,8 @@ func ClearSelection(app IApp, _ ...interface{}) {
 	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
 
 	selectionController.ClearSelections()
+
+	selectionController.UpdateView()
 	explorerController.UpdateView()
 }
 

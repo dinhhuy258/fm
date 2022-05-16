@@ -52,6 +52,7 @@ func (app *App) onModeChanged() {
 
 	helpController, _ := app.GetController(controller.Help).(*controller.HelpController)
 	helpController.SetHelp(currentMode.GetName(), keys, msgs)
+	helpController.UpdateView()
 }
 
 func (app *App) GetController(controllerType controller.Type) controller.IController {

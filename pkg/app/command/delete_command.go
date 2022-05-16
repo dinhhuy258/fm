@@ -17,6 +17,7 @@ func DeleteSelections(app IApp, _ ...interface{}) {
 	paths := selectionController.GetSelections()
 	if len(paths) == 0 {
 		logController.SetLog(view.Warning, "Select nothing!!!")
+		logController.UpdateView()
 
 		PopMode(app)
 	}
@@ -29,10 +30,13 @@ func DeleteSelections(app IApp, _ ...interface{}) {
 				deletePaths(app, paths)
 				// Clear selections after deleting
 				selectionController.ClearSelections()
+				selectionController.UpdateView()
 			} else {
 				logController.SetLog(view.Warning, "Canceled deleting selections files/folders")
+				logController.UpdateView()
 			}
 		})
+	inputController.UpdateView()
 }
 
 func DeleteCurrent(app IApp, _ ...interface{}) {
@@ -50,8 +54,10 @@ func DeleteCurrent(app IApp, _ ...interface{}) {
 				deletePaths(app, []string{entry.GetPath()})
 			} else {
 				logController.SetLog(view.Warning, "Canceled deleting the current file/folder")
+				logController.UpdateView()
 			}
 		})
+	inputController.UpdateView()
 }
 
 func deletePaths(app IApp, paths []string) {
@@ -60,18 +66,23 @@ func deletePaths(app IApp, paths []string) {
 	progressController, _ := app.GetController(controller.Progress).(*controller.ProgressController)
 
 	progressController.StartProgress(len(paths))
+	progressController.UpdateView()
 	fs.Delete(paths, func() {
 		progressController.UpdateProgress()
+		progressController.UpdateView()
 	}, func(_ error) {
 		progressController.UpdateProgress()
+		progressController.UpdateView()
 	}, func(successCount, errorCount int) {
 		if errorCount != 0 {
 			logController.SetLog(
 				view.Info,
 				"Finished to delete %v. Error count: %d", paths, errorCount,
 			)
+			logController.UpdateView()
 		} else {
 			logController.SetLog(view.Info, "Finished to delete file %v", paths)
+			logController.UpdateView()
 		}
 
 		focus := getFocus(app, paths)

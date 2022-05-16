@@ -18,6 +18,7 @@ func NewFile(app IApp, _ ...interface{}) {
 	inputController.SetInput(controller.InputText, "new file", func(name string) {
 		if name == "" {
 			logController.SetLog(view.Warning, "File name is empty")
+			logController.UpdateView()
 
 			return
 		}
@@ -32,12 +33,15 @@ func NewFile(app IApp, _ ...interface{}) {
 
 		if err != nil {
 			logController.SetLog(view.Error, "Failed to create file %s", name)
+			logController.UpdateView()
 		} else {
 			logController.SetLog(view.Info, "File %s were created successfully", name)
+			logController.UpdateView()
 
 			// Reload the current directory in case file were created successfully
 			focusPath := path.Join(explorerController.GetPath(), name)
 			loadDirectory(app, explorerController.GetPath(), optional.NewOptional(focusPath))
 		}
 	})
+	inputController.UpdateView()
 }

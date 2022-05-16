@@ -93,8 +93,6 @@ func (ec *ExplorerController) FocusPrevious() {
 
 	_ = ec.view.PreviousCursor()
 	ec.focus--
-
-	ec.UpdateView()
 }
 
 func (ec *ExplorerController) FocusNext() {
@@ -104,16 +102,12 @@ func (ec *ExplorerController) FocusNext() {
 
 	_ = ec.view.NextCursor()
 	ec.focus++
-
-	ec.UpdateView()
 }
 
 func (ec *ExplorerController) FocusFirst() {
 	_ = ec.view.ResetCursor()
 
 	ec.focus = 0
-
-	ec.UpdateView()
 }
 
 func (ec *ExplorerController) FocusPath(path string) {
@@ -146,6 +140,4 @@ func (ec *ExplorerController) focusPath(path string) {
 	}
 
 	ec.focus = focus
-
-	ec.UpdateView()
 }

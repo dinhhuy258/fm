@@ -52,8 +52,6 @@ func (ic *InputController) SetInput(inputType InputType, msg string, onConfirm f
 
 	ic.title = title
 	ic.prompt = prompt
-
-	ic.UpdateView()
 }
 
 func (ic *InputController) UpdateView() {

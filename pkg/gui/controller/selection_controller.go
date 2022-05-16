@@ -26,8 +26,6 @@ func newSelectionController(baseController *BaseController,
 
 func (sc *SelectionController) ClearSelections() {
 	sc.selections.Clear()
-
-	sc.UpdateView()
 }
 
 func (sc *SelectionController) ToggleSelection(path string) {
@@ -36,8 +34,6 @@ func (sc *SelectionController) ToggleSelection(path string) {
 	} else {
 		sc.selections.Add(path)
 	}
-
-	sc.UpdateView()
 }
 
 func (sc *SelectionController) GetSelections() []string {

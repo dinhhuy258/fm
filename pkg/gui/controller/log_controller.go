@@ -25,8 +25,6 @@ func newLogController(baseController *BaseController, view *view.LogView) *LogCo
 func (lc *LogController) SetLog(level view.LogLevel, msgFormat string, args ...interface{}) {
 	lc.level = level
 	lc.msg = fmt.Sprintf(msgFormat, args...)
-
-	lc.UpdateView()
 }
 
 func (lc *LogController) UpdateView() {
