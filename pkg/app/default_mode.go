@@ -102,6 +102,14 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
+					"r": {
+						Help: "rename",
+						Commands: []*command.Command{
+							{
+								Func: command.Rename,
+							},
+						},
+					},
 					"ctrl+r": {
 						Help: "refresh",
 						Commands: []*command.Command{

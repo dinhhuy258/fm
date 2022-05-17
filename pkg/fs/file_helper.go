@@ -38,6 +38,10 @@ func Humanize(size int64) string {
 	return ""
 }
 
+func Rename(oldPath, newPath string) error {
+	return os.Rename(oldPath, newPath)
+}
+
 func CreateFile(name string) error {
 	f, err := os.OpenFile(name, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dinhhuy258/fm/pkg/gui/view"
+	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 type InputType int8
@@ -13,11 +14,14 @@ const (
 	InputConfirm
 )
 
+var defaultInputValue = ""
+
 type InputController struct {
 	*BaseController
 
 	title     string
 	prompt    string
+	value     optional.Optional[string]
 	inputType InputType
 	onConfirm func(string)
 
@@ -35,7 +39,9 @@ func newInputController(baseController *BaseController, view *view.InputView) *I
 	return inputController
 }
 
-func (ic *InputController) SetInput(inputType InputType, msg string, onConfirm func(string)) {
+func (ic *InputController) SetInput(inputType InputType, msg string,
+	value optional.Optional[string], onConfirm func(string),
+) {
 	ic.inputType = inputType
 	ic.onConfirm = onConfirm
 
@@ -52,10 +58,11 @@ func (ic *InputController) SetInput(inputType InputType, msg string, onConfirm f
 
 	ic.title = title
 	ic.prompt = prompt
+	ic.value = value
 }
 
 func (ic *InputController) UpdateView() {
-	ic.view.UpdateView(ic.title, ic.prompt)
+	ic.view.UpdateView(ic.title, ic.prompt, *ic.value.GetOrElse(&defaultInputValue))
 }
 
 func (ic *InputController) onType(content string, event view.InputEvent) {

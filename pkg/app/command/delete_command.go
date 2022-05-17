@@ -23,6 +23,7 @@ func DeleteSelections(app IApp, _ ...interface{}) {
 	}
 
 	inputController.SetInput(controller.InputConfirm, "Do you want to delete selected paths?",
+		optional.NewEmptyOptional[string](),
 		func(ans string) {
 			if ans == "y" || ans == "Y" {
 				deletePaths(app, paths)
@@ -45,6 +46,7 @@ func DeleteCurrent(app IApp, _ ...interface{}) {
 	entry := explorerController.GetCurrentEntry()
 
 	inputController.SetInput(controller.InputConfirm, fmt.Sprintf("Do you want to delete %s?", entry.GetName()),
+		optional.NewEmptyOptional[string](),
 		func(ans string) {
 			if ans == "y" || ans == "Y" {
 				deletePaths(app, []string{entry.GetPath()})

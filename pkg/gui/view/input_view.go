@@ -30,12 +30,12 @@ func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
 	return iv
 }
 
-func (iv *InputView) UpdateView(title string, prompt string) {
+func (iv *InputView) UpdateView(title string, prompt string, value string) {
 	iv.prompt = prompt
 
-	iv.v.SetViewContent([]string{prompt})
+	iv.v.SetViewContent([]string{prompt + value})
 	iv.v.SetTitle(title)
-	_ = iv.v.v.SetCursor(len(prompt), 0)
+	_ = iv.v.v.SetCursor(len(prompt) + len(value), 0)
 	_, _ = iv.v.g.SetCurrentView(iv.v.v.Name())
 
 	iv.v.SetViewOnTop()
