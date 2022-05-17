@@ -13,6 +13,13 @@ func FocusFirst(app IApp, _ ...interface{}) {
 	explorerController.UpdateView()
 }
 
+func FocusLast(app IApp, _ ...interface{}) {
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
+
+	explorerController.FocusLast()
+	explorerController.UpdateView()
+}
+
 func FocusNext(app IApp, _ ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 

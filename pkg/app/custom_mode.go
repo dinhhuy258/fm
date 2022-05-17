@@ -69,6 +69,14 @@ func toCommand(commandConfig *config.CommandConfig) *command.Command {
 		return &command.Command{
 			Func: command.PopMode,
 		}
+	case "FocusFirst":
+		return &command.Command{
+			Func: command.FocusFirst,
+		}
+	case "FocusLast":
+		return &command.Command{
+			Func: command.FocusLast,
+		}
 	case "ChangeDirectory":
 		return &command.Command{
 			Func: command.ChangeDirectory,

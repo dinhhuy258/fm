@@ -112,6 +112,12 @@ func (ec *ExplorerController) FocusFirst() {
 	ec.focus = 0
 }
 
+func (ec *ExplorerController) FocusLast() {
+	for ec.focus < len(ec.entries)-1 {
+		ec.FocusNext()
+	}
+}
+
 func (ec *ExplorerController) FocusPath(path string) {
 	if parentPath := fs.Dir(path); ec.path != parentPath {
 		ec.LoadDirectory(parentPath, optional.New(path))

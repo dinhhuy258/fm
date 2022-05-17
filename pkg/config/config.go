@@ -150,6 +150,17 @@ func LoadConfig() {
 								},
 							},
 						},
+						"g": {
+							Help: "focus first",
+							Commands: []*CommandConfig{
+								{
+									Name: "FocusFirst",
+								},
+								{
+									Name: "PopMode",
+								},
+							},
+						},
 						"q": {
 							Help: "quit",
 							Commands: []*CommandConfig{
@@ -180,6 +191,14 @@ func LoadConfig() {
 							{
 								Name: "SwitchMode",
 								Args: []interface{}{"go-to"},
+							},
+						},
+					},
+					"G": {
+						Help: "focus last",
+						Commands: []*CommandConfig{
+							{
+								Name: "FocusLast",
 							},
 						},
 					},
