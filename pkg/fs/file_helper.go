@@ -129,45 +129,43 @@ func Copy(srcPaths []string, destDir string, onSuccess func(), onError func(erro
 }
 
 func Move(srcPaths []string, destDir string, onSuccess func(), onError func(error), onComplete func(int, int)) {
-	go func() {
-		successCount := 0
-		errorCount := 0
+	successCount := 0
+	errorCount := 0
 
-		for _, src := range srcPaths {
-			dst := filepath.Join(destDir, filepath.Base(src))
-			if dst == src {
-				successCount++
+	for _, src := range srcPaths {
+		dst := filepath.Join(destDir, filepath.Base(src))
+		if dst == src {
+			successCount++
 
-				onSuccess()
+			onSuccess()
 
-				continue
-			}
-
-			_, err := os.Stat(dst)
-			if !os.IsNotExist(err) {
-				var newPath string
-
-				for i := 1; !os.IsNotExist(err); i++ {
-					newPath = fmt.Sprintf("%s.~%d~", dst, i)
-					_, err = os.Lstat(newPath)
-				}
-
-				dst = newPath
-			}
-
-			if err := os.Rename(src, dst); err != nil {
-				errorCount++
-
-				onError(err)
-			} else {
-				successCount++
-
-				onSuccess()
-			}
+			continue
 		}
 
-		onComplete(successCount, errorCount)
-	}()
+		_, err := os.Stat(dst)
+		if !os.IsNotExist(err) {
+			var newPath string
+
+			for i := 1; !os.IsNotExist(err); i++ {
+				newPath = fmt.Sprintf("%s.~%d~", dst, i)
+				_, err = os.Lstat(newPath)
+			}
+
+			dst = newPath
+		}
+
+		if err := os.Rename(src, dst); err != nil {
+			errorCount++
+
+			onError(err)
+		} else {
+			successCount++
+
+			onSuccess()
+		}
+	}
+
+	onComplete(successCount, errorCount)
 }
 
 func IsDir(path string) bool {
