@@ -23,6 +23,9 @@ func createDeleteMode() *DeleteMode {
 							{
 								Func: command.DeleteCurrent,
 							},
+							{
+								Func: command.PopMode,
+							},
 						},
 					},
 					"s": {
@@ -30,6 +33,9 @@ func createDeleteMode() *DeleteMode {
 						Commands: []*command.Command{
 							{
 								Func: command.DeleteSelections,
+							},
+							{
+								Func: command.PopMode,
 							},
 						},
 					},

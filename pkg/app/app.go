@@ -38,8 +38,6 @@ func (app *App) Run() error {
 func (app *App) onModeChanged() {
 	currentMode := app.modes.Peek()
 
-	currentMode.OnModeStarted(app)
-
 	helps := currentMode.GetHelp()
 
 	keys := make([]string, 0, len(helps))

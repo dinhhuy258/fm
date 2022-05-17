@@ -138,8 +138,7 @@ func createDefaultMode() *DefaultMode {
 						Help: "search",
 						Commands: []*command.Command{
 							{
-								Func: command.SwitchMode,
-								Args: []interface{}{"search"},
+								Func: command.Search,
 							},
 						},
 					},

@@ -22,6 +22,9 @@ func createMarkSaveMode() *MarkSaveMode {
 						{
 							Func: command.MarkSave,
 						},
+						{
+							Func: command.PopMode,
+						},
 					},
 				},
 				OnKeys: map[string]*Action{
@@ -54,6 +57,9 @@ func createMarkLoadMode(marks map[string]string) *MarkLoadMode {
 					Commands: []*command.Command{
 						{
 							Func: command.MarkLoad,
+						},
+						{
+							Func: command.PopMode,
 						},
 					},
 				},

@@ -31,7 +31,6 @@ type IMode interface {
 	GetName() string
 	GetKeyBindings() *KeyBindings
 	GetHelp() []*Help
-	OnModeStarted(app *App)
 }
 
 type Mode struct {
@@ -41,9 +40,6 @@ type Mode struct {
 
 func (m *Mode) GetKeyBindings() *KeyBindings {
 	return m.keyBindings
-}
-
-func (m *Mode) OnModeStarted(*App) {
 }
 
 type Modes struct {
@@ -58,7 +54,6 @@ func CreateAllModes(marks map[string]string) *Modes {
 	builtinModes["delete"] = createDeleteMode()
 	builtinModes["mark-save"] = createMarkSaveMode()
 	builtinModes["mark-load"] = createMarkLoadMode(marks)
-	builtinModes["search"] = createSearchMode()
 
 	customModes := make(map[string]IMode)
 	for _, customMode := range config.AppConfig.ModeConfigs {

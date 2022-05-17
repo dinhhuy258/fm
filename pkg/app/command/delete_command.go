@@ -19,13 +19,11 @@ func DeleteSelections(app IApp, _ ...interface{}) {
 		logController.SetLog(view.Warning, "Select nothing!!!")
 		logController.UpdateView()
 
-		PopMode(app)
+		return
 	}
 
 	inputController.SetInput(controller.InputConfirm, "Do you want to delete selected paths?",
 		func(ans string) {
-			PopMode(app)
-
 			if ans == "y" || ans == "Y" {
 				deletePaths(app, paths)
 				// Clear selections after deleting
@@ -48,8 +46,6 @@ func DeleteCurrent(app IApp, _ ...interface{}) {
 
 	inputController.SetInput(controller.InputConfirm, fmt.Sprintf("Do you want to delete %s?", entry.GetName()),
 		func(ans string) {
-			PopMode(app)
-
 			if ans == "y" || ans == "Y" {
 				deletePaths(app, []string{entry.GetPath()})
 			} else {
