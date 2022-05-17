@@ -35,7 +35,7 @@ func (iv *InputView) UpdateView(title string, prompt string, value string) {
 
 	iv.v.SetViewContent([]string{prompt + value})
 	iv.v.SetTitle(title)
-	_ = iv.v.v.SetCursor(len(prompt) + len(value), 0)
+	_ = iv.v.v.SetCursor(len(prompt)+len(value), 0)
 	_, _ = iv.v.g.SetCurrentView(iv.v.v.Name())
 
 	iv.v.SetViewOnTop()

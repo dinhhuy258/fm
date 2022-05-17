@@ -15,7 +15,7 @@ func NewFile(app IApp, _ ...interface{}) {
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 
-	inputController.SetInput(controller.InputText, "new file", optional.NewEmptyOptional[string](), func(name string) {
+	inputController.SetInput(controller.InputText, "new file", optional.NewEmpty[string](), func(name string) {
 		if name == "" {
 			logController.SetLog(view.Warning, "File name is empty")
 			logController.UpdateView()
@@ -40,7 +40,7 @@ func NewFile(app IApp, _ ...interface{}) {
 
 			// Reload the current directory in case file were created successfully
 			focusPath := path.Join(explorerController.GetPath(), name)
-			loadDirectory(app, explorerController.GetPath(), optional.NewOptional(focusPath))
+			loadDirectory(app, explorerController.GetPath(), optional.New(focusPath))
 		}
 	})
 	inputController.UpdateView()
@@ -56,7 +56,7 @@ func Rename(app IApp, _ ...interface{}) {
 	inputController.SetInput(
 		controller.InputText,
 		"rename",
-		optional.NewOptional(currentEntry.GetName()),
+		optional.New(currentEntry.GetName()),
 		func(newName string) {
 			if newName == "" {
 				logController.SetLog(view.Warning, "File name is empty")
@@ -76,7 +76,7 @@ func Rename(app IApp, _ ...interface{}) {
 
 				// Reload the current directory
 				focusPath := path.Join(explorerController.GetPath(), newName)
-				loadDirectory(app, explorerController.GetPath(), optional.NewOptional(focusPath))
+				loadDirectory(app, explorerController.GetPath(), optional.New(focusPath))
 			}
 		},
 	)

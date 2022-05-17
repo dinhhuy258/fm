@@ -11,7 +11,7 @@ func Search(app IApp, _ ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 
-	inputController.SetInput(controller.InputText, "search", optional.NewEmptyOptional[string](),
+	inputController.SetInput(controller.InputText, "search", optional.NewEmpty[string](),
 		func(searchInput string) {
 			if searchInput != "" {
 				entries := explorerController.GetEntries()

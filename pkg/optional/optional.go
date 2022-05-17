@@ -4,11 +4,11 @@ type Optional[T any] struct {
 	value *T
 }
 
-func NewOptional[T any](value T) Optional[T] {
+func New[T any](value T) Optional[T] {
 	return Optional[T]{&value}
 }
 
-func NewEmptyOptional[T any]() Optional[T] {
+func NewEmpty[T any]() Optional[T] {
 	return Optional[T]{}
 }
 

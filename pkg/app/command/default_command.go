@@ -29,7 +29,7 @@ func ToggleHidden(app IApp, _ ...interface{}) {
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
 
 	entry := explorerController.GetCurrentEntry()
-	loadDirectory(app, explorerController.GetPath(), optional.NewOptional(entry.GetPath()))
+	loadDirectory(app, explorerController.GetPath(), optional.New(entry.GetPath()))
 }
 
 func ClearSelection(app IApp, _ ...interface{}) {
@@ -56,7 +56,7 @@ func Refresh(app IApp, params ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	entry := explorerController.GetCurrentEntry()
-	loadDirectory(app, explorerController.GetPath(), optional.NewOptional(entry.GetPath()))
+	loadDirectory(app, explorerController.GetPath(), optional.New(entry.GetPath()))
 }
 
 func Quit(app IApp, _ ...interface{}) {

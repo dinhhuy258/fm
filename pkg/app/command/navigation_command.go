@@ -45,7 +45,7 @@ func Enter(app IApp, _ ...interface{}) {
 	}
 
 	if entry.IsDirectory() {
-		explorerController.LoadDirectory(entry.GetPath(), optional.NewEmptyOptional[string]())
+		explorerController.LoadDirectory(entry.GetPath(), optional.NewEmpty[string]())
 		explorerController.UpdateView()
 	}
 }
@@ -59,13 +59,13 @@ func Back(app IApp, _ ...interface{}) {
 		return
 	}
 
-	loadDirectory(app, dir, optional.NewOptional(explorerController.GetPath()))
+	loadDirectory(app, dir, optional.New(explorerController.GetPath()))
 }
 
 func ChangeDirectory(app IApp, params ...interface{}) {
 	directory, _ := params[0].(string)
 
-	loadDirectory(app, directory, optional.NewEmptyOptional[string]())
+	loadDirectory(app, directory, optional.NewEmpty[string]())
 }
 
 // TODO: Considering remove this method and use ChangeDirectory instead

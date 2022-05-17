@@ -112,7 +112,7 @@ func (ec *ExplorerController) FocusFirst() {
 
 func (ec *ExplorerController) FocusPath(path string) {
 	if parentPath := fs.Dir(path); ec.path != parentPath {
-		ec.LoadDirectory(parentPath, optional.NewOptional(path))
+		ec.LoadDirectory(parentPath, optional.New(path))
 	} else {
 		ec.focusPath(path)
 	}
