@@ -66,13 +66,15 @@ func (iv *InputView) inputEditor(_ *gocui.View, key gocui.Key, ch rune, mod gocu
 
 	if iv.onType != nil {
 		keyEvent := Typing
+		inputValue := iv.v.v.BufferLines()[0][len(iv.prompt):]
+
 		if key == gocui.KeyEnter {
 			keyEvent = Confirm
 		} else if key == gocui.KeyEsc {
 			keyEvent = Cancel
+			inputValue = ""
 		}
 
-		viewContent := iv.v.v.BufferLines()[0]
-		iv.onType(viewContent[len(iv.prompt):], keyEvent)
+		iv.onType(inputValue, keyEvent)
 	}
 }
