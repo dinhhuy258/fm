@@ -60,6 +60,11 @@ func toCommand(commandConfig *config.CommandConfig) *command.Command {
 		return &command.Command{
 			Func: command.Quit,
 		}
+	case "SwitchMode":
+		return &command.Command{
+			Func: command.SwitchMode,
+			Args: commandConfig.Args,
+		}
 	case "PopMode":
 		return &command.Command{
 			Func: command.PopMode,

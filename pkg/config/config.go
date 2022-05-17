@@ -25,33 +25,34 @@ type ModeConfig struct {
 }
 
 type Config struct {
-	SelectionColor   color.Color
-	DirectoryColor   color.Color
-	SizeStyle        color.Color
-	LogErrorColor    color.Color
-	LogWarningColor  color.Color
-	LogInfoColor     color.Color
-	ShowHidden       bool
-	IndexHeader      string
-	IndexPercentage  int
-	PathHeader       string
-	PathPercentage   int
-	SizeHeader       string
-	SizePercentage   int
-	PathPrefix       string
-	PathSuffix       string
-	FocusPrefix      string
-	FocusSuffix      string
-	FocusBg          gocui.Attribute
-	FocusFg          gocui.Attribute
-	SelectionPrefix  string
-	SelectionSuffix  string
-	FolderIcon       string
-	FileIcon         string
-	LogErrorFormat   string
-	LogWarningFormat string
-	LogInfoFormat    string
-	ModeConfigs      []ModeConfig
+	SelectionColor    color.Color
+	DirectoryColor    color.Color
+	SizeStyle         color.Color
+	LogErrorColor     color.Color
+	LogWarningColor   color.Color
+	LogInfoColor      color.Color
+	ShowHidden        bool
+	IndexHeader       string
+	IndexPercentage   int
+	PathHeader        string
+	PathPercentage    int
+	SizeHeader        string
+	SizePercentage    int
+	PathPrefix        string
+	PathSuffix        string
+	FocusPrefix       string
+	FocusSuffix       string
+	FocusBg           gocui.Attribute
+	FocusFg           gocui.Attribute
+	SelectionPrefix   string
+	SelectionSuffix   string
+	FolderIcon        string
+	FileIcon          string
+	LogErrorFormat    string
+	LogWarningFormat  string
+	LogInfoFormat     string
+	ModeConfigs       []ModeConfig
+	DefaultModeConfig ModeConfig
 }
 
 var AppConfig *Config
@@ -163,6 +164,22 @@ func LoadConfig() {
 								{
 									Name: "PopMode",
 								},
+							},
+						},
+					},
+				},
+			},
+		},
+		DefaultModeConfig: ModeConfig{
+			Name: "default",
+			KeyBindings: KeyBindingsConfig{
+				OnKeys: map[string]*ActionConfig{
+					"g": {
+						Help: "go to",
+						Commands: []*CommandConfig{
+							{
+								Name: "SwitchMode",
+								Args: []interface{}{"go-to"},
 							},
 						},
 					},

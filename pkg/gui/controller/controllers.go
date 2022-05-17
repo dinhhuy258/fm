@@ -20,6 +20,7 @@ type Event int8
 
 const (
 	InputDone Event = iota
+	ShowErrorLog
 )
 
 type Mediator interface {
@@ -69,5 +70,7 @@ func (c *Controllers) notify(event Event, data string) {
 	if event == InputDone {
 		explorerController.view.SetAsCurrentView()
 		logController.view.SetViewOnTop()
+	} else if event == ShowErrorLog {
+		logController.SetLog(view.Error, data)
 	}
 }

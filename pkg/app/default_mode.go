@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/dinhhuy258/fm/pkg/app/command"
+	"github.com/dinhhuy258/fm/pkg/config"
 )
 
 type DefaultMode struct {
@@ -13,7 +14,7 @@ func (*DefaultMode) GetName() string {
 }
 
 func createDefaultMode() *DefaultMode {
-	return &DefaultMode{
+	defaultMode := &DefaultMode{
 		&Mode{
 			keyBindings: &KeyBindings{
 				OnKeys: map[string]*Action{
@@ -150,16 +151,6 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					// TODO: Move to configuration
-					"g": {
-						Help: "go to",
-						Commands: []*command.Command{
-							{
-								Func: command.SwitchMode,
-								Args: []interface{}{"go-to"},
-							},
-						},
-					},
 					"q": {
 						Help: "quit",
 						Commands: []*command.Command{
@@ -172,4 +163,23 @@ func createDefaultMode() *DefaultMode {
 			},
 		},
 	}
+
+	defaultModeConfig := config.AppConfig.DefaultModeConfig
+
+	for key, actionConfig := range defaultModeConfig.KeyBindings.OnKeys {
+		defaultMode.keyBindings.OnKeys[key] = &Action{
+			Commands: []*command.Command{},
+		}
+
+		for _, commandConfig := range actionConfig.Commands {
+			defaultMode.keyBindings.OnKeys[key].Commands = append(
+				defaultMode.keyBindings.OnKeys[key].Commands,
+				toCommand(commandConfig),
+			)
+		}
+
+		defaultMode.keyBindings.OnKeys[key].Help = actionConfig.Help
+	}
+
+	return defaultMode
 }
