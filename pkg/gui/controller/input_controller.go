@@ -64,6 +64,10 @@ func (ic *InputController) SetInputBuffer(input string) {
 	ic.view.SetInputBuffer(input)
 }
 
+func (ic *InputController) GetInputBuffer() string {
+	return ic.view.GetInputBuffer()
+}
+
 func (ic *InputController) UpdateInputBufferFromKey(key key.Key) {
 	ic.view.UpdateInputBufferFromKey(key)
 }

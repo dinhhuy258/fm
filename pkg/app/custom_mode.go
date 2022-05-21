@@ -108,6 +108,10 @@ func toCommand(commandConfig *config.CommandConfig) *command.Command {
 			Func: command.SetInputBuffer,
 			Args: commandConfig.Args,
 		}
+	case "NewFileFromInput":
+		return &command.Command{
+			Func: command.NewFileFromInput,
+		}
 	}
 
 	return nil

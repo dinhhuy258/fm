@@ -185,6 +185,25 @@ func LoadConfig() {
 				Name: "new-file",
 				KeyBindings: KeyBindingsConfig{
 					OnKeys: map[string]*ActionConfig{
+						"ctrl+c": {
+							Help: "quit",
+							Commands: []*CommandConfig{
+								{
+									Name: "Quit",
+								},
+							},
+						},
+						"enter": {
+							Help: "new file",
+							Commands: []*CommandConfig{
+								{
+									Name: "NewFileFromInput",
+								},
+								{
+									Name: "PopMode",
+								},
+							},
+						},
 						"esc": {
 							Help: "cancel",
 							Commands: []*CommandConfig{
