@@ -8,7 +8,6 @@ import (
 type InputView struct {
 	v      *View
 	prompt string
-	input  string
 }
 
 func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
@@ -24,7 +23,6 @@ func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
 
 func (iv *InputView) UpdateView(title string, prompt string, value string) {
 	iv.prompt = prompt
-	iv.input = ""
 
 	iv.v.SetViewContent([]string{prompt + value})
 	iv.v.SetTitle(title)
@@ -35,19 +33,21 @@ func (iv *InputView) UpdateView(title string, prompt string, value string) {
 }
 
 func (iv *InputView) SetInputBuffer(input string) {
-	iv.input = input
-	iv.v.SetViewContent([]string{iv.prompt + iv.input})
-	_ = iv.v.v.SetCursor(len(iv.prompt)+len(iv.input), 0)
+	iv.v.SetViewContent([]string{iv.prompt + input})
+	_ = iv.v.v.SetCursor(len(iv.prompt)+len(input), 0)
 
+	_, _ = iv.v.g.SetCurrentView(iv.v.v.Name())
 	iv.v.SetViewOnTop()
+}
+
+func (iv *InputView) GetInputBuffer() string {
+	return iv.v.v.BufferLines()[0][len(iv.prompt):]
 }
 
 func (iv *InputView) UpdateInputBufferFromKey(key key.Key) {
 	switch k := key.(type) {
 	case rune:
-		iv.input += string(k)
-		iv.v.SetViewContent([]string{iv.prompt + iv.input})
-		_ = iv.v.v.SetCursor(len(iv.prompt)+len(iv.input), 0)
+		iv.v.v.EditWrite(k)
 	case gocui.Key:
 		switch {
 		case k == gocui.KeyBackspace || k == gocui.KeyBackspace2:
