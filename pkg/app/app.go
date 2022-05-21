@@ -99,15 +99,13 @@ func (app *App) Quit() {
 func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 	keybindings := app.modes.Peek().GetKeyBindings()
 
-	var pressedKey key.Key
-
 	if ch == 0 {
-		pressedKey = k
+		app.pressedKey = k
 	} else {
-		pressedKey = ch
+		app.pressedKey = ch
 	}
 
-	if action, hasKey := keybindings.OnKeys[pressedKey]; hasKey {
+	if action, hasKey := keybindings.OnKeys[app.pressedKey]; hasKey {
 		for _, cmd := range action.Commands {
 			cmd := cmd
 

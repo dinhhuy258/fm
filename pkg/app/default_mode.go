@@ -167,7 +167,9 @@ func createDefaultMode() *DefaultMode {
 
 	defaultModeConfig := config.AppConfig.DefaultModeConfig
 
-	for key, actionConfig := range defaultModeConfig.KeyBindings.OnKeys {
+	for k, actionConfig := range defaultModeConfig.KeyBindings.OnKeys {
+		key := key.GetKey(k)
+
 		defaultMode.keyBindings.OnKeys[key] = &Action{
 			Commands: []*command.Command{},
 		}

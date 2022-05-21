@@ -12,7 +12,6 @@ func SetInputBuffer(app IApp, params ...interface{}) {
 func UpdateInputBufferFromKey(app IApp, params ...interface{}) {
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 
-	key, _ := params[0].(string)
-	inputController.UpdateInputBufferFromKey(key)
+	inputController.UpdateInputBufferFromKey(app.GetPressedKey())
 }
 
