@@ -1,19 +1,22 @@
 package command
 
-import "github.com/dinhhuy258/fm/pkg/gui/controller"
+import (
+	"github.com/dinhhuy258/fm/pkg/gui/controller"
+	"github.com/dinhhuy258/fm/pkg/key"
+)
 
 func MarkSave(app IApp, params ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	entry := explorerController.GetCurrentEntry()
-	key, _ := params[0].(string)
-	app.MarkSave(key, entry.GetPath())
+	k := key.GetKeyDisplay(app.GetPressedKey())
+	app.MarkSave(k, entry.GetPath())
 }
 
 func MarkLoad(app IApp, params ...interface{}) {
-	key, _ := params[0].(string)
+	k := key.GetKeyDisplay(app.GetPressedKey())
 
-	if path, hasKey := app.MarkLoad(key); hasKey {
+	if path, hasKey := app.MarkLoad(k); hasKey {
 		FocusPath(app, path)
 	}
 }

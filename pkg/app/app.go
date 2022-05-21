@@ -13,9 +13,10 @@ import (
 )
 
 type App struct {
-	gui   *gui.Gui
-	marks map[string]string
-	modes *Modes
+	gui        *gui.Gui
+	marks      map[string]string
+	modes      *Modes
+	pressedKey key.Key
 
 	commandWorkerPool *pond.WorkerPool
 }
@@ -87,6 +88,10 @@ func (app *App) PushMode(mode string) {
 	app.onModeChanged()
 }
 
+func (app *App) GetPressedKey() key.Key {
+	return app.pressedKey
+}
+
 func (app *App) Quit() {
 	app.gui.Quit()
 }
@@ -113,21 +118,17 @@ func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 	} else if keybindings.OnAlphabet != nil {
 		for _, cmd := range keybindings.OnAlphabet.Commands {
 			cmd := cmd
-			args := cmd.Args
-			args = append(args, pressedKey)
 
 			app.commandWorkerPool.Submit(func() {
-				cmd.Func(app, args...)
+				cmd.Func(app, cmd.Args...)
 			})
 		}
 	} else if keybindings.Default != nil {
 		for _, cmd := range keybindings.Default.Commands {
 			cmd := cmd
-			args := cmd.Args
-			args = append(args, pressedKey)
 
 			app.commandWorkerPool.Submit(func() {
-				cmd.Func(app, args...)
+				cmd.Func(app, cmd.Args...)
 			})
 		}
 	}
