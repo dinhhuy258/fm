@@ -53,7 +53,6 @@ type Modes struct {
 func CreateAllModes(marks map[string]string) *Modes {
 	builtinModes := make(map[string]IMode)
 	builtinModes["default"] = createDefaultMode()
-	builtinModes["delete"] = createDeleteMode()
 	builtinModes["mark-save"] = createMarkSaveMode()
 	builtinModes["mark-load"] = createMarkLoadMode(marks)
 

@@ -222,6 +222,135 @@ func LoadConfig() {
 					},
 				},
 			},
+			{
+				Name: "delete",
+				KeyBindings: KeyBindingsConfig{
+					OnKeys: map[string]*ActionConfig{
+						"ctrl+c": {
+							Help: "quit",
+							Commands: []*CommandConfig{
+								{
+									Name: "Quit",
+								},
+							},
+						},
+						"d": {
+							Help: "delete current",
+							Commands: []*CommandConfig{
+								{
+									Name: "SetInputBuffer",
+									Args: []interface{}{"Do you want to delete this file? (y/n) "},
+								},
+								{
+									Name: "SwitchMode",
+									Args: []interface{}{"delete-current"},
+								},
+							},
+						},
+						"s": {
+							Help: "delete selections",
+							Commands: []*CommandConfig{
+								{
+									Name: "SetInputBuffer",
+									Args: []interface{}{"Do you want to delete selected files? (y/n) "},
+								},
+								{
+									Name: "SwitchMode",
+									Args: []interface{}{"delete-selections"},
+								},
+							},
+						},
+						"esc": {
+							Help: "cancel",
+							Commands: []*CommandConfig{
+								{
+									Name: "PopMode",
+								},
+							},
+						},
+					},
+				},
+			},
+			{
+				Name: "delete-current",
+				KeyBindings: KeyBindingsConfig{
+					OnKeys: map[string]*ActionConfig{
+						"ctrl+c": {
+							Help: "quit",
+							Commands: []*CommandConfig{
+								{
+									Name: "Quit",
+								},
+							},
+						},
+						"y": {
+							Help: "delete",
+							Commands: []*CommandConfig{
+								{
+									Name: "DeleteCurrent",
+								},
+								{
+									Name: "PopMode",
+								},
+								{
+									Name: "PopMode",
+								},
+							},
+						},
+					},
+					Default: &ActionConfig{
+						Help: "cancel",
+						Commands: []*CommandConfig{
+							{
+								Name: "PopMode",
+							},
+							{
+								Name: "PopMode",
+							},
+						},
+					},
+				},
+			},
+			{
+				Name: "delete-selections",
+				KeyBindings: KeyBindingsConfig{
+					OnKeys: map[string]*ActionConfig{
+						"ctrl+c": {
+							Help: "quit",
+							Commands: []*CommandConfig{
+								{
+									Name: "Quit",
+								},
+							},
+						},
+						"y": {
+							Help: "delete selections",
+							Commands: []*CommandConfig{
+								{
+									Name: "DeleteSelections",
+								},
+								{
+									Name: "PopMode",
+								},
+								{
+									Name: "PopMode",
+								},
+							},
+						},
+					},
+					Default: &ActionConfig{
+						Help: "cancel",
+						Commands: []*CommandConfig{
+							{
+								Name: "PopMode",
+							},
+							{
+								Name: "PopMode",
+							},
+						},
+					},
+				},
+			},
 		},
 		DefaultModeConfig: ModeConfig{
 			Name: "default",

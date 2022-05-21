@@ -96,14 +96,6 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					key.GetKey("n"): {
-						Help: "new",
-						Commands: []*command.Command{
-							{
-								Func: command.NewFile,
-							},
-						},
-					},
 					key.GetKey("r"): {
 						Help: "rename",
 						Commands: []*command.Command{

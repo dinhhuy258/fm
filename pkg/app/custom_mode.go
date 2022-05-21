@@ -112,6 +112,14 @@ func toCommand(commandConfig *config.CommandConfig) *command.Command {
 		return &command.Command{
 			Func: command.NewFileFromInput,
 		}
+	case "DeleteCurrent":
+		return &command.Command{
+			Func: command.DeleteCurrent,
+		}
+	case "DeleteSelections":
+		return &command.Command{
+			Func: command.DeleteSelections,
+		}
 	}
 
 	return nil
