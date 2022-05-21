@@ -16,7 +16,8 @@ type CommandConfig struct {
 }
 
 type KeyBindingsConfig struct {
-	OnKeys map[string]*ActionConfig
+	OnKeys  map[string]*ActionConfig
+	Default *ActionConfig
 }
 
 type ModeConfig struct {
@@ -180,6 +181,28 @@ func LoadConfig() {
 					},
 				},
 			},
+			{
+				Name: "new-file",
+				KeyBindings: KeyBindingsConfig{
+					OnKeys: map[string]*ActionConfig{
+						"esc": {
+							Help: "cancel",
+							Commands: []*CommandConfig{
+								{
+									Name: "PopMode",
+								},
+							},
+						},
+					},
+					Default: &ActionConfig{
+						Commands: []*CommandConfig{
+							{
+								Name: "UpdateInputBufferFromKey",
+							},
+						},
+					},
+				},
+			},
 		},
 		DefaultModeConfig: ModeConfig{
 			Name: "default",
@@ -199,6 +222,19 @@ func LoadConfig() {
 						Commands: []*CommandConfig{
 							{
 								Name: "FocusLast",
+							},
+						},
+					},
+					"n": {
+						Help: "new file",
+						Commands: []*CommandConfig{
+							{
+								Name: "SwitchMode",
+								Args: []interface{}{"new-file"},
+							},
+							{
+								Name: "SetInputBuffer",
+								Args: []interface{}{""},
 							},
 						},
 					},

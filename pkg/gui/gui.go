@@ -54,7 +54,7 @@ func (gui *Gui) Run(onGuiReady func()) error {
 	return nil
 }
 
-func (gui *Gui) SetOnKeyFunc(onKey func(string) error) {
+func (gui *Gui) SetOnKeyFunc(onKey func(key gocui.Key, ch rune, mod gocui.Modifier) error) {
 	gui.g.SetOnKeyFunc(onKey)
 }
 

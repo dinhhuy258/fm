@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/dinhhuy258/fm/pkg/app/command"
+	"github.com/dinhhuy258/fm/pkg/key"
 )
 
 type DeleteMode struct {
@@ -16,8 +17,8 @@ func createDeleteMode() *DeleteMode {
 	return &DeleteMode{
 		&Mode{
 			keyBindings: &KeyBindings{
-				OnKeys: map[string]*Action{
-					"d": {
+				OnKeys: map[key.Key]*Action{
+					key.GetKey("d"): {
 						Help: "delete",
 						Commands: []*command.Command{
 							{
@@ -28,7 +29,7 @@ func createDeleteMode() *DeleteMode {
 							},
 						},
 					},
-					"s": {
+					key.GetKey("s"): {
 						Help: "delete selections",
 						Commands: []*command.Command{
 							{
@@ -39,7 +40,7 @@ func createDeleteMode() *DeleteMode {
 							},
 						},
 					},
-					"esc": {
+					key.GetKey("esc"): {
 						Help: "cancel",
 						Commands: []*command.Command{
 							{
@@ -47,7 +48,7 @@ func createDeleteMode() *DeleteMode {
 							},
 						},
 					},
-					"q": {
+					key.GetKey("q"): {
 						Help: "quit",
 						Commands: []*command.Command{
 							{

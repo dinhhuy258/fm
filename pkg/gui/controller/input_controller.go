@@ -61,6 +61,14 @@ func (ic *InputController) SetInput(inputType InputType, msg string,
 	ic.value = value
 }
 
+func (ic *InputController) SetInputBuffer(input string) {
+	ic.view.SetInputBuffer(input)
+}
+
+func (ic *InputController) UpdateInputBufferFromKey(key string) {
+	ic.view.InputEditor(key)
+}
+
 func (ic *InputController) UpdateView() {
 	ic.view.UpdateView(ic.title, ic.prompt, *ic.value.GetOrElse(&defaultInputValue))
 }

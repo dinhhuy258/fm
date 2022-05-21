@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/config"
+	"github.com/dinhhuy258/fm/pkg/key"
 )
 
 type CustomMode struct {
@@ -24,13 +25,16 @@ func createCustomMode(name string, keyBindings config.KeyBindingsConfig) *Custom
 		name: name,
 		Mode: &Mode{
 			keyBindings: &KeyBindings{
-				OnKeys: map[string]*Action{},
+				OnKeys:  map[key.Key]*Action{},
+				Default: nil,
 			},
 		},
 		helps: []*Help{},
 	}
 
-	for key, actionConfig := range keyBindings.OnKeys {
+	for k, actionConfig := range keyBindings.OnKeys {
+		key := key.GetKey(k)
+
 		customMode.keyBindings.OnKeys[key] = &Action{
 			Commands: []*command.Command{},
 		}
@@ -46,6 +50,19 @@ func createCustomMode(name string, keyBindings config.KeyBindingsConfig) *Custom
 			Key: key,
 			Msg: actionConfig.Help,
 		})
+	}
+
+	if keyBindings.Default != nil {
+		customMode.keyBindings.Default = &Action{
+			Commands: []*command.Command{},
+		}
+
+		for _, commandConfig := range keyBindings.Default.Commands {
+			customMode.keyBindings.Default.Commands = append(
+				customMode.keyBindings.Default.Commands,
+				toCommand(commandConfig),
+			)
+		}
 	}
 
 	return &customMode
@@ -80,6 +97,15 @@ func toCommand(commandConfig *config.CommandConfig) *command.Command {
 	case "ChangeDirectory":
 		return &command.Command{
 			Func: command.ChangeDirectory,
+			Args: commandConfig.Args,
+		}
+	case "UpdateInputBufferFromKey":
+		return &command.Command{
+			Func: command.UpdateInputBufferFromKey,
+		}
+	case "SetInputBuffer":
+		return &command.Command{
+			Func: command.SetInputBuffer,
 			Args: commandConfig.Args,
 		}
 	}

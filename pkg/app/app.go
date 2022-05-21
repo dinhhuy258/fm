@@ -8,6 +8,8 @@ import (
 	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
+	"github.com/dinhhuy258/fm/pkg/key"
+	"github.com/dinhhuy258/gocui"
 )
 
 type App struct {
@@ -44,7 +46,7 @@ func (app *App) onModeChanged() {
 	msgs := make([]string, 0, len(helps))
 
 	for _, h := range helps {
-		keys = append(keys, h.Key)
+		keys = append(keys, key.GetKeyDisplay(h.Key))
 		msgs = append(msgs, h.Msg)
 	}
 
@@ -89,10 +91,18 @@ func (app *App) Quit() {
 	app.gui.Quit()
 }
 
-func (app *App) onKey(key string) error {
+func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 	keybindings := app.modes.Peek().GetKeyBindings()
 
-	if action, hasKey := keybindings.OnKeys[key]; hasKey {
+	var pressedKey key.Key
+
+	if ch == 0 {
+		pressedKey = k
+	} else {
+		pressedKey = ch
+	}
+
+	if action, hasKey := keybindings.OnKeys[pressedKey]; hasKey {
 		for _, cmd := range action.Commands {
 			cmd := cmd
 
@@ -104,7 +114,17 @@ func (app *App) onKey(key string) error {
 		for _, cmd := range keybindings.OnAlphabet.Commands {
 			cmd := cmd
 			args := cmd.Args
-			args = append(args, key)
+			args = append(args, pressedKey)
+
+			app.commandWorkerPool.Submit(func() {
+				cmd.Func(app, args...)
+			})
+		}
+	} else if keybindings.Default != nil {
+		for _, cmd := range keybindings.Default.Commands {
+			cmd := cmd
+			args := cmd.Args
+			args = append(args, pressedKey)
 
 			app.commandWorkerPool.Submit(func() {
 				cmd.Func(app, args...)
@@ -128,4 +148,8 @@ func (app *App) onGuiReady() {
 	}
 
 	command.ChangeDirectory(app, wd)
+}
+
+func isAlphabet(key string) bool {
+	return len(key) == 1 && ((key >= "a" && key <= "z") || (key >= "A" && key <= "Z"))
 }

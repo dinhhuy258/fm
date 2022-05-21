@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/config"
+	"github.com/dinhhuy258/fm/pkg/key"
 )
 
 type DefaultMode struct {
@@ -17,8 +18,8 @@ func createDefaultMode() *DefaultMode {
 	defaultMode := &DefaultMode{
 		&Mode{
 			keyBindings: &KeyBindings{
-				OnKeys: map[string]*Action{
-					"j": {
+				OnKeys: map[key.Key]*Action{
+					key.GetKey("j"): {
 						Help: "down",
 						Commands: []*command.Command{
 							{
@@ -26,7 +27,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"k": {
+					key.GetKey("k"): {
 						Help: "up",
 						Commands: []*command.Command{
 							{
@@ -34,7 +35,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"l": {
+					key.GetKey("l"): {
 						Help: "enter",
 						Commands: []*command.Command{
 							{
@@ -42,7 +43,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"h": {
+					key.GetKey("h"): {
 						Help: "back",
 						Commands: []*command.Command{
 							{
@@ -50,7 +51,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"m": {
+					key.GetKey("m"): {
 						Help: "mark save",
 						Commands: []*command.Command{
 							{
@@ -59,7 +60,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"`": {
+					key.GetKey("`"): {
 						Help: "mark load",
 						Commands: []*command.Command{
 							{
@@ -68,7 +69,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"d": {
+					key.GetKey("d"): {
 						Help: "delete",
 						Commands: []*command.Command{
 							{
@@ -77,7 +78,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"p": {
+					key.GetKey("p"): {
 						Help: "copy",
 						Commands: []*command.Command{
 							{
@@ -86,7 +87,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"x": {
+					key.GetKey("x"): {
 						Help: "cut",
 						Commands: []*command.Command{
 							{
@@ -95,7 +96,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"n": {
+					key.GetKey("n"): {
 						Help: "new",
 						Commands: []*command.Command{
 							{
@@ -103,7 +104,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"r": {
+					key.GetKey("r"): {
 						Help: "rename",
 						Commands: []*command.Command{
 							{
@@ -111,7 +112,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"ctrl+r": {
+					key.GetKey("ctrl+r"): {
 						Help: "refresh",
 						Commands: []*command.Command{
 							{
@@ -119,7 +120,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"space": {
+					key.GetKey("space"): {
 						Help: "toggle selection",
 						Commands: []*command.Command{
 							{
@@ -127,7 +128,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"ctrl+space": {
+					key.GetKey("ctrl+space"): {
 						Help: "clear selection",
 						Commands: []*command.Command{
 							{
@@ -135,7 +136,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					".": {
+					key.GetKey("."): {
 						Help: "toggle hidden",
 						Commands: []*command.Command{
 							{
@@ -143,7 +144,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"/": {
+					key.GetKey("/"): {
 						Help: "search",
 						Commands: []*command.Command{
 							{
@@ -151,7 +152,7 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					"q": {
+					key.GetKey("q"): {
 						Help: "quit",
 						Commands: []*command.Command{
 							{

@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/config"
+	"github.com/dinhhuy258/fm/pkg/key"
 )
 
 var (
@@ -18,13 +19,14 @@ type Action struct {
 }
 
 type Help struct {
-	Key string
+	Key key.Key
 	Msg string
 }
 
 type KeyBindings struct {
-	OnKeys     map[string]*Action
+	OnKeys     map[key.Key]*Action
 	OnAlphabet *Action
+	Default    *Action
 }
 
 type IMode interface {
