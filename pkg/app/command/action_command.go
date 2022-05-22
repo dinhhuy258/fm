@@ -45,38 +45,38 @@ func NewFileFromInput(app IApp, _ ...interface{}) {
 }
 
 func Rename(app IApp, _ ...interface{}) {
-	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
-	logController, _ := app.GetController(controller.Log).(*controller.LogController)
-	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
-
-	currentEntry := explorerController.GetCurrentEntry()
-
-	inputController.SetInput(
-		controller.InputText,
-		"rename",
-		optional.New(currentEntry.GetName()),
-		func(newName string) {
-			if newName == "" {
-				logController.SetLog(view.Warning, "File name is empty")
-				logController.UpdateView()
-
-				return
-			}
-
-			err := fs.Rename(currentEntry.GetPath(), path.Join(explorerController.GetPath(), newName))
-
-			if err != nil {
-				logController.SetLog(view.Error, "Failed to rename file %s", newName)
-				logController.UpdateView()
-			} else {
-				logController.SetLog(view.Info, "File %s were renamed successfully", newName)
-				logController.UpdateView()
-
-				// Reload the current directory
-				focusPath := path.Join(explorerController.GetPath(), newName)
-				loadDirectory(app, explorerController.GetPath(), optional.New(focusPath))
-			}
-		},
-	)
-	inputController.UpdateView()
+	// explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
+	// logController, _ := app.GetController(controller.Log).(*controller.LogController)
+	// inputController, _ := app.GetController(controller.Input).(*controller.InputController)
+	//
+	// currentEntry := explorerController.GetCurrentEntry()
+	//
+	// inputController.SetInput(
+	// 	controller.InputText,
+	// 	"rename",
+	// 	optional.New(currentEntry.GetName()),
+	// 	func(newName string) {
+	// 		if newName == "" {
+	// 			logController.SetLog(view.Warning, "File name is empty")
+	// 			logController.UpdateView()
+	//
+	// 			return
+	// 		}
+	//
+	// 		err := fs.Rename(currentEntry.GetPath(), path.Join(explorerController.GetPath(), newName))
+	//
+	// 		if err != nil {
+	// 			logController.SetLog(view.Error, "Failed to rename file %s", newName)
+	// 			logController.UpdateView()
+	// 		} else {
+	// 			logController.SetLog(view.Info, "File %s were renamed successfully", newName)
+	// 			logController.UpdateView()
+	//
+	// 			// Reload the current directory
+	// 			focusPath := path.Join(explorerController.GetPath(), newName)
+	// 			loadDirectory(app, explorerController.GetPath(), optional.New(focusPath))
+	// 		}
+	// 	},
+	// )
+	// inputController.UpdateView()
 }

@@ -136,14 +136,6 @@ func createDefaultMode() *DefaultMode {
 							},
 						},
 					},
-					key.GetKey("/"): {
-						Help: "search",
-						Commands: []*command.Command{
-							{
-								Func: command.Search,
-							},
-						},
-					},
 					key.GetKey("q"): {
 						Help: "quit",
 						Commands: []*command.Command{

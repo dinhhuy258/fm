@@ -120,6 +120,10 @@ func toCommand(commandConfig *config.CommandConfig) *command.Command {
 		return &command.Command{
 			Func: command.DeleteSelections,
 		}
+	case "SearchFromInput":
+		return &command.Command{
+			Func: command.SearchFromInput,
+		}
 	}
 
 	return nil

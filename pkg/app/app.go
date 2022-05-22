@@ -105,7 +105,10 @@ func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 		app.pressedKey = ch
 	}
 
-	if action, hasKey := keybindings.OnKeys[app.pressedKey]; hasKey {
+	action, hasKey := keybindings.OnKeys[app.pressedKey]
+
+	switch {
+	case hasKey:
 		for _, cmd := range action.Commands {
 			cmd := cmd
 
@@ -113,7 +116,7 @@ func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 				cmd.Func(app, cmd.Args...)
 			})
 		}
-	} else if keybindings.OnAlphabet != nil {
+	case keybindings.OnAlphabet != nil:
 		for _, cmd := range keybindings.OnAlphabet.Commands {
 			cmd := cmd
 
@@ -121,7 +124,7 @@ func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 				cmd.Func(app, cmd.Args...)
 			})
 		}
-	} else if keybindings.Default != nil {
+	case keybindings.Default != nil:
 		for _, cmd := range keybindings.Default.Commands {
 			cmd := cmd
 

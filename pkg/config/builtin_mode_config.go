@@ -42,6 +42,48 @@ var newFileModeConfig = ModeConfig{
 	},
 }
 
+var searchModeConfig = ModeConfig{
+	Name: "search",
+	KeyBindings: KeyBindingsConfig{
+		OnKeys: map[string]*ActionConfig{
+			"ctrl+c": {
+				Help: "quit",
+				Commands: []*CommandConfig{
+					{
+						Name: "Quit",
+					},
+				},
+			},
+			"enter": {
+				Help: "search",
+				Commands: []*CommandConfig{
+					{
+						Name: "SearchFromInput",
+					},
+					{
+						Name: "PopMode",
+					},
+				},
+			},
+			"esc": {
+				Help: "cancel",
+				Commands: []*CommandConfig{
+					{
+						Name: "PopMode",
+					},
+				},
+			},
+		},
+		Default: &ActionConfig{
+			Commands: []*CommandConfig{
+				{
+					Name: "UpdateInputBufferFromKey",
+				},
+			},
+		},
+	},
+}
+
 var deleteModeConfig = ModeConfig{
 	Name: "delete",
 	KeyBindings: KeyBindingsConfig{
@@ -176,6 +218,7 @@ var deleteSelectionsModeConfig = ModeConfig{
 
 var builtinModeConfigs = []ModeConfig{
 	newFileModeConfig,
+	searchModeConfig,
 	deleteModeConfig,
 	deleteCurrentModeConfig,
 	deleteSelectionsModeConfig,
