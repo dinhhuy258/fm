@@ -8,12 +8,15 @@ import (
 	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
+	"github.com/dinhhuy258/fm/pkg/key"
+	"github.com/dinhhuy258/gocui"
 )
 
 type App struct {
-	gui   *gui.Gui
-	marks map[string]string
-	modes *Modes
+	gui        *gui.Gui
+	marks      map[string]string
+	modes      *Modes
+	pressedKey key.Key
 
 	commandWorkerPool *pond.WorkerPool
 }
@@ -44,7 +47,7 @@ func (app *App) onModeChanged() {
 	msgs := make([]string, 0, len(helps))
 
 	for _, h := range helps {
-		keys = append(keys, h.Key)
+		keys = append(keys, key.GetKeyDisplay(h.Key))
 		msgs = append(msgs, h.Msg)
 	}
 
@@ -85,14 +88,27 @@ func (app *App) PushMode(mode string) {
 	app.onModeChanged()
 }
 
+func (app *App) GetPressedKey() key.Key {
+	return app.pressedKey
+}
+
 func (app *App) Quit() {
 	app.gui.Quit()
 }
 
-func (app *App) onKey(key string) error {
+func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 	keybindings := app.modes.Peek().GetKeyBindings()
 
-	if action, hasKey := keybindings.OnKeys[key]; hasKey {
+	if ch == 0 {
+		app.pressedKey = k
+	} else {
+		app.pressedKey = ch
+	}
+
+	action, hasKey := keybindings.OnKeys[app.pressedKey]
+
+	switch {
+	case hasKey:
 		for _, cmd := range action.Commands {
 			cmd := cmd
 
@@ -100,14 +116,20 @@ func (app *App) onKey(key string) error {
 				cmd.Func(app, cmd.Args...)
 			})
 		}
-	} else if keybindings.OnAlphabet != nil {
+	case keybindings.OnAlphabet != nil:
 		for _, cmd := range keybindings.OnAlphabet.Commands {
 			cmd := cmd
-			args := cmd.Args
-			args = append(args, key)
 
 			app.commandWorkerPool.Submit(func() {
-				cmd.Func(app, args...)
+				cmd.Func(app, cmd.Args...)
+			})
+		}
+	case keybindings.Default != nil:
+		for _, cmd := range keybindings.Default.Commands {
+			cmd := cmd
+
+			app.commandWorkerPool.Submit(func() {
+				cmd.Func(app, cmd.Args...)
 			})
 		}
 	}

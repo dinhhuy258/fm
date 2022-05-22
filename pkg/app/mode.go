@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/config"
+	"github.com/dinhhuy258/fm/pkg/key"
 )
 
 var (
@@ -18,13 +19,14 @@ type Action struct {
 }
 
 type Help struct {
-	Key string
+	Key key.Key
 	Msg string
 }
 
 type KeyBindings struct {
-	OnKeys     map[string]*Action
+	OnKeys     map[key.Key]*Action
 	OnAlphabet *Action
+	Default    *Action
 }
 
 type IMode interface {
@@ -51,12 +53,15 @@ type Modes struct {
 func CreateAllModes(marks map[string]string) *Modes {
 	builtinModes := make(map[string]IMode)
 	builtinModes["default"] = createDefaultMode()
-	builtinModes["delete"] = createDeleteMode()
 	builtinModes["mark-save"] = createMarkSaveMode()
 	builtinModes["mark-load"] = createMarkLoadMode(marks)
 
+	for _, builtinMode := range config.AppConfig.BuiltinModeConfigs {
+		builtinModes[builtinMode.Name] = createCustomMode(builtinMode.Name, builtinMode.KeyBindings)
+	}
+
 	customModes := make(map[string]IMode)
-	for _, customMode := range config.AppConfig.ModeConfigs {
+	for _, customMode := range config.AppConfig.CustomModeConfigs {
 		customModes[customMode.Name] = createCustomMode(customMode.Name, customMode.KeyBindings)
 	}
 

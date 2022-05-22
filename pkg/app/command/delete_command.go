@@ -1,8 +1,6 @@
 package command
 
 import (
-	"fmt"
-
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
@@ -12,7 +10,6 @@ import (
 func DeleteSelections(app IApp, _ ...interface{}) {
 	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
-	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 
 	paths := selectionController.GetSelections()
 	if len(paths) == 0 {
@@ -22,40 +19,18 @@ func DeleteSelections(app IApp, _ ...interface{}) {
 		return
 	}
 
-	inputController.SetInput(controller.InputConfirm, "Do you want to delete selected paths?",
-		optional.NewEmpty[string](),
-		func(ans string) {
-			if ans == "y" || ans == "Y" {
-				deletePaths(app, paths)
-				// Clear selections after deleting
-				selectionController.ClearSelections()
-				selectionController.UpdateView()
-			} else {
-				logController.SetLog(view.Warning, "Canceled deleting selections files/folders")
-				logController.UpdateView()
-			}
-		})
-	inputController.UpdateView()
+	deletePaths(app, paths)
+	// Clear selections after deleting
+	selectionController.ClearSelections()
+	selectionController.UpdateView()
 }
 
 func DeleteCurrent(app IApp, _ ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
-	logController, _ := app.GetController(controller.Log).(*controller.LogController)
-	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 
 	entry := explorerController.GetCurrentEntry()
 
-	inputController.SetInput(controller.InputConfirm, fmt.Sprintf("Do you want to delete %s?", entry.GetName()),
-		optional.NewEmpty[string](),
-		func(ans string) {
-			if ans == "y" || ans == "Y" {
-				deletePaths(app, []string{entry.GetPath()})
-			} else {
-				logController.SetLog(view.Warning, "Canceled deleting the current file/folder")
-				logController.UpdateView()
-			}
-		})
-	inputController.UpdateView()
+	deletePaths(app, []string{entry.GetPath()})
 }
 
 func deletePaths(app IApp, paths []string) {

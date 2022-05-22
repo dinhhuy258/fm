@@ -1,21 +1,13 @@
 package view
 
 import (
+	"github.com/dinhhuy258/fm/pkg/key"
 	"github.com/dinhhuy258/gocui"
-)
-
-type InputEvent int8
-
-const (
-	Typing InputEvent = iota
-	Cancel
-	Confirm
 )
 
 type InputView struct {
 	v      *View
 	prompt string
-	onType func(string, InputEvent)
 }
 
 func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
@@ -23,58 +15,43 @@ func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
 		v: newView(g, v),
 	}
 
+	iv.prompt = "> "
 	iv.v.v.Title = " Input "
-	iv.v.v.Editable = true
-	iv.v.v.Editor = gocui.EditorFunc(iv.inputEditor)
 
 	return iv
 }
 
-func (iv *InputView) UpdateView(title string, prompt string, value string) {
-	iv.prompt = prompt
+func (iv *InputView) SetInputBuffer(input string) {
+	iv.v.SetViewContent([]string{iv.prompt + input})
+	_ = iv.v.v.SetCursor(len(iv.prompt)+len(input), 0)
 
-	iv.v.SetViewContent([]string{prompt + value})
-	iv.v.SetTitle(title)
-	_ = iv.v.v.SetCursor(len(prompt)+len(value), 0)
 	_, _ = iv.v.g.SetCurrentView(iv.v.v.Name())
-
 	iv.v.SetViewOnTop()
 }
 
-func (iv *InputView) SetOnType(onType func(string, InputEvent)) {
-	iv.onType = onType
+func (iv *InputView) GetInputBuffer() string {
+	return iv.v.v.BufferLines()[0][len(iv.prompt):]
 }
 
-func (iv *InputView) inputEditor(_ *gocui.View, key gocui.Key, ch rune, mod gocui.Modifier) {
-	switch {
-	case ch != 0 && mod == 0:
-		iv.v.v.EditWrite(ch)
-	case key == gocui.KeyBackspace || key == gocui.KeyBackspace2:
-		x, _ := iv.v.v.Cursor()
-		if x > len(iv.prompt) {
-			iv.v.v.EditDelete(true)
+func (iv *InputView) UpdateInputBufferFromKey(key key.Key) {
+	switch k := key.(type) {
+	case rune:
+		iv.v.v.EditWrite(k)
+	case gocui.Key:
+		switch {
+		case k == gocui.KeyBackspace || k == gocui.KeyBackspace2:
+			x, _ := iv.v.v.Cursor()
+			if x > len(iv.prompt) {
+				iv.v.v.EditDelete(true)
+			}
+		case k == gocui.KeyArrowLeft:
+			x, _ := iv.v.v.Cursor()
+
+			if x > len(iv.prompt) {
+				iv.v.v.MoveCursor(-1, 0, false)
+			}
+		case k == gocui.KeyArrowRight:
+			iv.v.v.MoveCursor(1, 0, false)
 		}
-	case key == gocui.KeyArrowLeft:
-		x, _ := iv.v.v.Cursor()
-
-		if x > len(iv.prompt) {
-			iv.v.v.MoveCursor(-1, 0, false)
-		}
-	case key == gocui.KeyArrowRight:
-		iv.v.v.MoveCursor(1, 0, false)
-	}
-
-	if iv.onType != nil {
-		keyEvent := Typing
-		inputValue := iv.v.v.BufferLines()[0][len(iv.prompt):]
-
-		if key == gocui.KeyEnter {
-			keyEvent = Confirm
-		} else if key == gocui.KeyEsc {
-			keyEvent = Cancel
-			inputValue = ""
-		}
-
-		iv.onType(inputValue, keyEvent)
 	}
 }

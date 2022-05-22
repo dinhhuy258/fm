@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/dinhhuy258/fm/pkg/app/command"
+	"github.com/dinhhuy258/fm/pkg/key"
 )
 
 type MarkSaveMode struct {
@@ -27,7 +28,7 @@ func createMarkSaveMode() *MarkSaveMode {
 						},
 					},
 				},
-				OnKeys: map[string]*Action{
+				OnKeys: map[key.Key]*Action{
 					"esc": {
 						Help: "cancel",
 						Commands: []*command.Command{
@@ -63,8 +64,8 @@ func createMarkLoadMode(marks map[string]string) *MarkLoadMode {
 						},
 					},
 				},
-				OnKeys: map[string]*Action{
-					"esc": {
+				OnKeys: map[key.Key]*Action{
+					key.GetKey("esc"): {
 						Help: "cancel",
 						Commands: []*command.Command{
 							{

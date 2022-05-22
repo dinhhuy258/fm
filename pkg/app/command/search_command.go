@@ -4,25 +4,21 @@ import (
 	"strings"
 
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
-	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
-func Search(app IApp, _ ...interface{}) {
+func SearchFromInput(app IApp, _ ...interface{}) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
+	filterValue := inputController.GetInputBuffer()
 
-	inputController.SetInput(controller.InputText, "search", optional.NewEmpty[string](),
-		func(searchInput string) {
-			if searchInput != "" {
-				entries := explorerController.GetEntries()
-				for _, entry := range entries {
-					if strings.Contains(strings.ToLower(entry.GetName()), strings.ToLower(searchInput)) {
-						FocusPath(app, entry.GetPath())
+	if filterValue != "" {
+		entries := explorerController.GetEntries()
+		for _, entry := range entries {
+			if strings.Contains(strings.ToLower(entry.GetName()), strings.ToLower(filterValue)) {
+				FocusPath(app, entry.GetPath())
 
-						return
-					}
-				}
+				return
 			}
-		})
-	inputController.UpdateView()
+		}
+	}
 }
