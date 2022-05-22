@@ -148,7 +148,3 @@ func (app *App) onGuiReady() {
 
 	command.ChangeDirectory(app, wd)
 }
-
-func isAlphabet(key string) bool {
-	return len(key) == 1 && ((key >= "a" && key <= "z") || (key >= "A" && key <= "Z"))
-}

@@ -15,8 +15,6 @@ const (
 	InputConfirm
 )
 
-var defaultInputValue = ""
-
 type InputController struct {
 	*BaseController
 

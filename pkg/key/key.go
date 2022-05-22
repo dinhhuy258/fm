@@ -22,6 +22,7 @@ func GetKeyDisplay(key Key) string {
 		if ok {
 			return value
 		}
+
 		keyInt = int(key)
 	}
 
@@ -42,5 +43,6 @@ func GetKey(key string) Key {
 	}
 
 	log.Fatal("Key empty for keybinding: " + strings.ToLower(key))
+
 	return nil
 }

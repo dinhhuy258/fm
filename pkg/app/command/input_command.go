@@ -14,4 +14,3 @@ func UpdateInputBufferFromKey(app IApp, params ...interface{}) {
 
 	inputController.UpdateInputBufferFromKey(app.GetPressedKey())
 }
-
