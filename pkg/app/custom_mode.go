@@ -86,6 +86,14 @@ func toCommand(commandConfig *config.CommandConfig) *command.Command {
 		return &command.Command{
 			Func: command.PopMode,
 		}
+	case "FocusNext":
+		return &command.Command{
+			Func: command.FocusNext,
+		}
+	case "FocusPrevious":
+		return &command.Command{
+			Func: command.FocusPrevious,
+		}
 	case "FocusFirst":
 		return &command.Command{
 			Func: command.FocusFirst,
@@ -94,7 +102,20 @@ func toCommand(commandConfig *config.CommandConfig) *command.Command {
 		return &command.Command{
 			Func: command.FocusLast,
 		}
+	case "Enter":
+		return &command.Command{
+			Func: command.Enter,
+		}
+	case "Back":
+		return &command.Command{
+			Func: command.Back,
+		}
 	case "ChangeDirectory":
+		return &command.Command{
+			Func: command.ChangeDirectory,
+			Args: commandConfig.Args,
+		}
+	case "PasteSelections":
 		return &command.Command{
 			Func: command.ChangeDirectory,
 			Args: commandConfig.Args,
@@ -123,6 +144,26 @@ func toCommand(commandConfig *config.CommandConfig) *command.Command {
 	case "SearchFromInput":
 		return &command.Command{
 			Func: command.SearchFromInput,
+		}
+	case "Refresh":
+		return &command.Command{
+			Func: command.Refresh,
+		}
+	case "ToggleSelection":
+		return &command.Command{
+			Func: command.ToggleSelection,
+		}
+	case "ClearSelection":
+		return &command.Command{
+			Func: command.ClearSelection,
+		}
+	case "MarkSave":
+		return &command.Command{
+			Func: command.MarkSave,
+		}
+	case "MarkLoad":
+		return &command.Command{
+			Func: command.MarkLoad,
 		}
 	}
 

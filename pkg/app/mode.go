@@ -29,6 +29,7 @@ type KeyBindings struct {
 	Default    *Action
 }
 
+// TODO: Remove interface???
 type IMode interface {
 	GetName() string
 	GetKeyBindings() *KeyBindings
@@ -52,12 +53,29 @@ type Modes struct {
 
 func CreateAllModes(marks map[string]string) *Modes {
 	builtinModes := make(map[string]IMode)
-	builtinModes["default"] = createDefaultMode()
-	builtinModes["mark-save"] = createMarkSaveMode()
-	builtinModes["mark-load"] = createMarkLoadMode(marks)
 
 	for _, builtinMode := range config.AppConfig.BuiltinModeConfigs {
 		builtinModes[builtinMode.Name] = createCustomMode(builtinMode.Name, builtinMode.KeyBindings)
+	}
+
+	defaultMode, _ := builtinModes["default"].(*CustomMode)
+	defaultModeConfig := config.AppConfig.DefaultModeConfig
+
+	for k, actionConfig := range defaultModeConfig.KeyBindings.OnKeys {
+		key := key.GetKey(k)
+
+		defaultMode.keyBindings.OnKeys[key] = &Action{
+			Commands: []*command.Command{},
+		}
+
+		for _, commandConfig := range actionConfig.Commands {
+			defaultMode.keyBindings.OnKeys[key].Commands = append(
+				defaultMode.keyBindings.OnKeys[key].Commands,
+				toCommand(commandConfig),
+			)
+		}
+
+		defaultMode.keyBindings.OnKeys[key].Help = actionConfig.Help
 	}
 
 	customModes := make(map[string]IMode)
