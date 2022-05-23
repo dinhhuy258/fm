@@ -1,7 +1,6 @@
 package config
 
 import (
-	"github.com/dinhhuy258/gocui"
 	"github.com/gookit/color"
 )
 
@@ -32,6 +31,8 @@ type Config struct {
 	LogErrorColor      color.Color
 	LogWarningColor    color.Color
 	LogInfoColor       color.Color
+	FocusBg            color.Color
+	FocusFg            color.Color
 	ShowHidden         bool
 	IndexHeader        string
 	IndexPercentage    int
@@ -43,8 +44,6 @@ type Config struct {
 	PathSuffix         string
 	FocusPrefix        string
 	FocusSuffix        string
-	FocusBg            gocui.Attribute
-	FocusFg            gocui.Attribute
 	SelectionPrefix    string
 	SelectionSuffix    string
 	FolderIcon         string
@@ -72,8 +71,8 @@ func LoadConfig() {
 		PathSuffix:         "╰─",
 		FocusPrefix:        "▸[",
 		FocusSuffix:        "]",
-		FocusBg:            gocui.ColorDefault,
-		FocusFg:            gocui.ColorBlue,
+		FocusBg:            color.Black,
+		FocusFg:            color.Blue,
 		SelectionPrefix:    "{",
 		SelectionSuffix:    "}",
 		SelectionColor:     color.Green,

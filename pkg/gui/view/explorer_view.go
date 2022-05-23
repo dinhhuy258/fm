@@ -34,8 +34,8 @@ func newExplorerView(g *gocui.Gui, v *gocui.View, hv *gocui.View) *ExplorerView 
 
 	mv.v.Frame = false
 	mv.v.Highlight = true
-	mv.v.SelBgColor = config.AppConfig.FocusBg
-	mv.v.SelFgColor = config.AppConfig.FocusFg
+	mv.v.SelBgColor = toGocuiAttribute(config.AppConfig.FocusBg)
+	mv.v.SelFgColor = toGocuiAttribute(config.AppConfig.FocusFg)
 
 	return mv
 }
@@ -135,4 +135,27 @@ func (mv *ExplorerView) layout() error {
 	mv.hv.SetViewContent([]string{rowString})
 
 	return nil
+}
+
+func toGocuiAttribute(c color.Color) gocui.Attribute {
+	switch {
+	case c == color.Black:
+		return gocui.ColorBlack
+	case c == color.Red:
+		return gocui.ColorRed
+	case c == color.Green:
+		return gocui.ColorGreen
+	case c == color.Yellow:
+		return gocui.ColorYellow
+	case c == color.Blue:
+		return gocui.ColorBlue
+	case c == color.Magenta:
+		return gocui.ColorMagenta
+	case c == color.Cyan:
+		return gocui.ColorCyan
+	case c == color.White:
+		return gocui.ColorWhite
+	default:
+		return gocui.ColorWhite
+	}
 }
