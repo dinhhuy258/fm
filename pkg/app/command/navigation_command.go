@@ -6,44 +6,44 @@ import (
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
-func FocusFirst(app IApp, _ ...interface{}) {
+func FocusFirst(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusFirst()
 	explorerController.UpdateView()
 }
 
-func FocusLast(app IApp, _ ...interface{}) {
+func FocusLast(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusLast()
 	explorerController.UpdateView()
 }
 
-func FocusNext(app IApp, _ ...interface{}) {
+func FocusNext(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusNext()
 	explorerController.UpdateView()
 }
 
-func FocusPrevious(app IApp, _ ...interface{}) {
+func FocusPrevious(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusPrevious()
 	explorerController.UpdateView()
 }
 
-func FocusPath(app IApp, params ...interface{}) {
+func FocusPath(app IApp, params ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	// TODO Verify path
-	path, _ := params[0].(string)
+	path := params[0]
 	explorerController.FocusPath(path)
 	explorerController.UpdateView()
 }
 
-func Enter(app IApp, _ ...interface{}) {
+func Enter(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	entry := explorerController.GetCurrentEntry()
@@ -57,7 +57,7 @@ func Enter(app IApp, _ ...interface{}) {
 	}
 }
 
-func Back(app IApp, _ ...interface{}) {
+func Back(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	dir := fs.Dir(explorerController.GetPath())
@@ -69,8 +69,8 @@ func Back(app IApp, _ ...interface{}) {
 	loadDirectory(app, dir, optional.New(explorerController.GetPath()))
 }
 
-func ChangeDirectory(app IApp, params ...interface{}) {
-	directory, _ := params[0].(string)
+func ChangeDirectory(app IApp, params ...string) {
+	directory := params[0]
 
 	loadDirectory(app, directory, optional.NewEmpty[string]())
 }

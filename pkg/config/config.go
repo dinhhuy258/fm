@@ -2,7 +2,7 @@ package config
 
 type CommandConfig struct {
 	Name string
-	Args []interface{}
+	Args []string
 }
 
 type ActionConfig struct {
@@ -93,7 +93,7 @@ func LoadConfig() {
 							Commands: []*CommandConfig{
 								{
 									Name: "ChangeDirectory",
-									Args: []interface{}{"/Users/dinhhuy258"},
+									Args: []string{"/Users/dinhhuy258"},
 								},
 								{
 									Name: "PopMode",
@@ -105,7 +105,7 @@ func LoadConfig() {
 							Commands: []*CommandConfig{
 								{
 									Name: "ChangeDirectory",
-									Args: []interface{}{"/Users/dinhhuy258/Downloads"},
+									Args: []string{"/Users/dinhhuy258/Downloads"},
 								},
 								{
 									Name: "PopMode",
@@ -117,7 +117,7 @@ func LoadConfig() {
 							Commands: []*CommandConfig{
 								{
 									Name: "ChangeDirectory",
-									Args: []interface{}{"/Users/dinhhuy258/Documents"},
+									Args: []string{"/Users/dinhhuy258/Documents"},
 								},
 								{
 									Name: "PopMode",
@@ -129,7 +129,7 @@ func LoadConfig() {
 							Commands: []*CommandConfig{
 								{
 									Name: "ChangeDirectory",
-									Args: []interface{}{"/Users/dinhhuy258/Workspace"},
+									Args: []string{"/Users/dinhhuy258/Workspace"},
 								},
 								{
 									Name: "PopMode",
@@ -141,7 +141,7 @@ func LoadConfig() {
 							Commands: []*CommandConfig{
 								{
 									Name: "ChangeDirectory",
-									Args: []interface{}{"/Users/dinhhuy258/Desktop"},
+									Args: []string{"/Users/dinhhuy258/Desktop"},
 								},
 								{
 									Name: "PopMode",
@@ -188,7 +188,7 @@ func LoadConfig() {
 						Commands: []*CommandConfig{
 							{
 								Name: "SwitchMode",
-								Args: []interface{}{"go-to"},
+								Args: []string{"go-to"},
 							},
 						},
 					},
@@ -205,11 +205,11 @@ func LoadConfig() {
 						Commands: []*CommandConfig{
 							{
 								Name: "SwitchMode",
-								Args: []interface{}{"new-file"},
+								Args: []string{"new-file"},
 							},
 							{
 								Name: "SetInputBuffer",
-								Args: []interface{}{""},
+								Args: []string{""},
 							},
 						},
 					},
@@ -218,11 +218,11 @@ func LoadConfig() {
 						Commands: []*CommandConfig{
 							{
 								Name: "SwitchMode",
-								Args: []interface{}{"search"},
+								Args: []string{"search"},
 							},
 							{
 								Name: "SetInputBuffer",
-								Args: []interface{}{""},
+								Args: []string{""},
 							},
 						},
 					},

@@ -10,7 +10,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
-func NewFileFromInput(app IApp, _ ...interface{}) {
+func NewFileFromInput(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
@@ -44,7 +44,7 @@ func NewFileFromInput(app IApp, _ ...interface{}) {
 	}
 }
 
-func Rename(app IApp, _ ...interface{}) {
+func Rename(app IApp, _ ...string) {
 	// explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	// logController, _ := app.GetController(controller.Log).(*controller.LogController)
 	// inputController, _ := app.GetController(controller.Input).(*controller.InputController)

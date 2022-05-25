@@ -6,7 +6,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
-func ToggleSelection(app IApp, _ ...interface{}) {
+func ToggleSelection(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
 
@@ -23,7 +23,7 @@ func ToggleSelection(app IApp, _ ...interface{}) {
 	explorerController.UpdateView()
 }
 
-func ToggleHidden(app IApp, _ ...interface{}) {
+func ToggleHidden(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
@@ -32,7 +32,7 @@ func ToggleHidden(app IApp, _ ...interface{}) {
 	loadDirectory(app, explorerController.GetPath(), optional.New(entry.GetPath()))
 }
 
-func ClearSelection(app IApp, _ ...interface{}) {
+func ClearSelection(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
 
@@ -42,23 +42,23 @@ func ClearSelection(app IApp, _ ...interface{}) {
 	explorerController.UpdateView()
 }
 
-func SwitchMode(app IApp, params ...interface{}) {
-	mode, _ := params[0].(string)
+func SwitchMode(app IApp, params ...string) {
+	mode := params[0]
 
 	app.PushMode(mode)
 }
 
-func PopMode(app IApp, _ ...interface{}) {
+func PopMode(app IApp, _ ...string) {
 	app.PopMode()
 }
 
-func Refresh(app IApp, params ...interface{}) {
+func Refresh(app IApp, params ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	entry := explorerController.GetCurrentEntry()
 	loadDirectory(app, explorerController.GetPath(), optional.New(entry.GetPath()))
 }
 
-func Quit(app IApp, _ ...interface{}) {
+func Quit(app IApp, _ ...string) {
 	app.Quit()
 }

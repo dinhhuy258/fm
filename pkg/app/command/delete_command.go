@@ -7,7 +7,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
-func DeleteSelections(app IApp, _ ...interface{}) {
+func DeleteSelections(app IApp, _ ...string) {
 	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 
@@ -25,7 +25,7 @@ func DeleteSelections(app IApp, _ ...interface{}) {
 	selectionController.UpdateView()
 }
 
-func DeleteCurrent(app IApp, _ ...interface{}) {
+func DeleteCurrent(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	entry := explorerController.GetCurrentEntry()

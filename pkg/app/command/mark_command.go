@@ -5,7 +5,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/key"
 )
 
-func MarkSave(app IApp, params ...interface{}) {
+func MarkSave(app IApp, params ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	entry := explorerController.GetCurrentEntry()
@@ -13,7 +13,7 @@ func MarkSave(app IApp, params ...interface{}) {
 	app.MarkSave(k, entry.GetPath())
 }
 
-func MarkLoad(app IApp, params ...interface{}) {
+func MarkLoad(app IApp, params ...string) {
 	k := key.GetKeyDisplay(app.GetPressedKey())
 
 	if path, hasKey := app.MarkLoad(k); hasKey {

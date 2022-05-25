@@ -6,7 +6,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 )
 
-func SearchFromInput(app IApp, _ ...interface{}) {
+func SearchFromInput(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 	filterValue := inputController.GetInputBuffer()

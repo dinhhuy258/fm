@@ -6,12 +6,12 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
-func PasteSelections(app IApp, params ...interface{}) {
+func PasteSelections(app IApp, params ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
 
-	operation, _ := params[0].(string)
+	operation := params[0]
 
 	paths := selectionController.GetSelections()
 

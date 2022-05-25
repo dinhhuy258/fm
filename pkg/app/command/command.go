@@ -21,6 +21,6 @@ type IApp interface {
 }
 
 type Command struct {
-	Func func(app IApp, params ...interface{})
-	Args []interface{}
+	Func func(app IApp, params ...string)
+	Args []string
 }

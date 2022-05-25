@@ -49,7 +49,7 @@ var defaultModeConfig = ModeConfig{
 				Commands: []*CommandConfig{
 					{
 						Name: "SwitchMode",
-						Args: []interface{}{"mark-save"},
+						Args: []string{"mark-save"},
 					},
 				},
 			},
@@ -58,7 +58,7 @@ var defaultModeConfig = ModeConfig{
 				Commands: []*CommandConfig{
 					{
 						Name: "SwitchMode",
-						Args: []interface{}{"mark-load"},
+						Args: []string{"mark-load"},
 					},
 				},
 			},
@@ -67,7 +67,7 @@ var defaultModeConfig = ModeConfig{
 				Commands: []*CommandConfig{
 					{
 						Name: "SwitchMode",
-						Args: []interface{}{"delete"},
+						Args: []string{"delete"},
 					},
 				},
 			},
@@ -76,7 +76,7 @@ var defaultModeConfig = ModeConfig{
 				Commands: []*CommandConfig{
 					{
 						Name: "PasteSelections",
-						Args: []interface{}{"copy"},
+						Args: []string{"copy"},
 					},
 				},
 			},
@@ -85,7 +85,7 @@ var defaultModeConfig = ModeConfig{
 				Commands: []*CommandConfig{
 					{
 						Name: "PasteSelections",
-						Args: []interface{}{"cut"},
+						Args: []string{"cut"},
 					},
 				},
 			},
@@ -294,11 +294,11 @@ var deleteModeConfig = ModeConfig{
 				Commands: []*CommandConfig{
 					{
 						Name: "SetInputBuffer",
-						Args: []interface{}{"Do you want to delete this file? (y/n) "},
+						Args: []string{"Do you want to delete this file? (y/n) "},
 					},
 					{
 						Name: "SwitchMode",
-						Args: []interface{}{"delete-current"},
+						Args: []string{"delete-current"},
 					},
 				},
 			},
@@ -307,11 +307,11 @@ var deleteModeConfig = ModeConfig{
 				Commands: []*CommandConfig{
 					{
 						Name: "SetInputBuffer",
-						Args: []interface{}{"Do you want to delete selected files? (y/n) "},
+						Args: []string{"Do you want to delete selected files? (y/n) "},
 					},
 					{
 						Name: "SwitchMode",
-						Args: []interface{}{"delete-selections"},
+						Args: []string{"delete-selections"},
 					},
 				},
 			},
