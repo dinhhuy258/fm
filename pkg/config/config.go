@@ -1,17 +1,13 @@
 package config
 
-import (
-	"github.com/gookit/color"
-)
+type CommandConfig struct {
+	Name string
+	Args []interface{}
+}
 
 type ActionConfig struct {
 	Help     string
 	Commands []*CommandConfig
-}
-
-type CommandConfig struct {
-	Name string
-	Args []interface{}
 }
 
 type KeyBindingsConfig struct {
@@ -25,14 +21,14 @@ type ModeConfig struct {
 }
 
 type Config struct {
-	SelectionColor     color.Color
-	DirectoryColor     color.Color
-	SizeStyle          color.Color
-	LogErrorColor      color.Color
-	LogWarningColor    color.Color
-	LogInfoColor       color.Color
-	FocusBg            color.Color
-	FocusFg            color.Color
+	SelectionColor     string
+	DirectoryColor     string
+	SizeStyle          string
+	LogErrorColor      string
+	LogWarningColor    string
+	LogInfoColor       string
+	FocusBg            string
+	FocusFg            string
 	ShowHidden         bool
 	IndexHeader        string
 	IndexPercentage    int
@@ -71,21 +67,21 @@ func LoadConfig() {
 		PathSuffix:         "╰─",
 		FocusPrefix:        "▸[",
 		FocusSuffix:        "]",
-		FocusBg:            color.Black,
-		FocusFg:            color.Blue,
+		FocusBg:            "black",
+		FocusFg:            "blue",
 		SelectionPrefix:    "{",
 		SelectionSuffix:    "}",
-		SelectionColor:     color.Green,
+		SelectionColor:     "green",
 		FolderIcon:         "",
 		FileIcon:           "",
-		DirectoryColor:     color.Cyan,
-		SizeStyle:          color.White,
+		DirectoryColor:     "cyan",
+		SizeStyle:          "white",
 		LogErrorFormat:     "[ERROR] ",
-		LogErrorColor:      color.Red,
+		LogErrorColor:      "red",
 		LogWarningFormat:   "[WARNING] ",
-		LogWarningColor:    color.Yellow,
+		LogWarningColor:    "yellow",
 		LogInfoFormat:      "[INFO] ",
-		LogInfoColor:       color.Green,
+		LogInfoColor:       "green",
 		BuiltinModeConfigs: builtinModeConfigs,
 		CustomModeConfigs: []ModeConfig{
 			{
