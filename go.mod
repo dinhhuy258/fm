@@ -7,6 +7,7 @@ require (
 	github.com/deckarep/golang-set/v2 v2.1.0
 	github.com/dinhhuy258/gocui v0.5.1-0.20220521133016-2b24a7728451
 	github.com/gookit/color v1.4.2
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
 
 require (

@@ -21,7 +21,9 @@ func main() {
 		os.Exit(0)
 	}
 
-	config.LoadConfig()
+	if err := config.LoadConfig(); err != nil {
+		log.Fatalf("failed to load application configuration %v", err)
+	}
 
 	app := app.NewApp()
 

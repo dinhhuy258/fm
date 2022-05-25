@@ -1,233 +1,66 @@
 package config
 
 type CommandConfig struct {
-	Name string
-	Args []string
+	Name string   `yaml:"name"`
+	Args []string `yaml:"args"`
 }
 
 type ActionConfig struct {
-	Help     string
-	Commands []*CommandConfig
+	Help     string           `yaml:"help"`
+	Commands []*CommandConfig `yaml:"commands"`
 }
 
 type KeyBindingsConfig struct {
-	OnKeys  map[string]*ActionConfig
-	Default *ActionConfig
+	OnKeys  map[string]*ActionConfig `yaml:"onKeys"`
+	Default *ActionConfig            `yaml:"default"`
 }
 
 type ModeConfig struct {
-	Name        string
-	KeyBindings KeyBindingsConfig
+	Name        string            `yaml:"name"`
+	KeyBindings KeyBindingsConfig `yaml:"keyBindings"`
 }
 
 type Config struct {
-	SelectionColor     string
-	DirectoryColor     string
-	SizeStyle          string
-	LogErrorColor      string
-	LogWarningColor    string
-	LogInfoColor       string
-	FocusBg            string
-	FocusFg            string
-	ShowHidden         bool
-	IndexHeader        string
-	IndexPercentage    int
-	PathHeader         string
-	PathPercentage     int
-	SizeHeader         string
-	SizePercentage     int
-	PathPrefix         string
-	PathSuffix         string
-	FocusPrefix        string
-	FocusSuffix        string
-	SelectionPrefix    string
-	SelectionSuffix    string
-	FolderIcon         string
-	FileIcon           string
-	LogErrorFormat     string
-	LogWarningFormat   string
-	LogInfoFormat      string
-	CustomModeConfigs  []ModeConfig
-	BuiltinModeConfigs []ModeConfig
-	DefaultModeConfig  ModeConfig
+	SelectionColor     string       `yaml:"selectionColor"`
+	DirectoryColor     string       `yaml:"directoryColor"`
+	SizeStyle          string       `yaml:"sizeStyle"`
+	LogErrorColor      string       `yaml:"logErrorColor"`
+	LogWarningColor    string       `yaml:"logWarningColor"`
+	LogInfoColor       string       `yaml:"logInfoColor"`
+	FocusBg            string       `yaml:"focusBg"`
+	FocusFg            string       `yaml:"focusFg"`
+	ShowHidden         bool         `yaml:"showHidden"`
+	IndexHeader        string       `yaml:"indexHeader"`
+	IndexPercentage    int          `yaml:"indexPercentage"`
+	PathHeader         string       `yaml:"pathHeader"`
+	PathPercentage     int          `yaml:"pathPercentage"`
+	SizeHeader         string       `yaml:"sizeHeader"`
+	SizePercentage     int          `yaml:"sizePercentage"`
+	PathPrefix         string       `yaml:"pathPrefix"`
+	PathSuffix         string       `yaml:"pathSuffix"`
+	FocusPrefix        string       `yaml:"focusPrefix"`
+	FocusSuffix        string       `yaml:"focusSuffix"`
+	SelectionPrefix    string       `yaml:"selectionPrefix"`
+	SelectionSuffix    string       `yaml:"selectionSuffix"`
+	FolderIcon         string       `yaml:"folderIcon"`
+	FileIcon           string       `yaml:"fileIcon"`
+	LogErrorFormat     string       `yaml:"logErrorFormat"`
+	LogWarningFormat   string       `yaml:"logWarningFormat"`
+	LogInfoFormat      string       `yaml:"logInfoFormat"`
+	CustomModeConfigs  []ModeConfig `yaml:"customModeConfigs"`
+	BuiltinModeConfigs []ModeConfig `yaml:"builtinModeConfigs"`
+	DefaultModeConfig  ModeConfig   `yaml:"defaultModeConfig"`
 }
 
 var AppConfig *Config
 
-func LoadConfig() {
-	AppConfig = &Config{
-		ShowHidden:         false,
-		IndexHeader:        "index",
-		IndexPercentage:    10,
-		PathHeader:         "╭──── path",
-		PathPercentage:     70,
-		SizeHeader:         "size",
-		SizePercentage:     20,
-		PathPrefix:         "├─",
-		PathSuffix:         "╰─",
-		FocusPrefix:        "▸[",
-		FocusSuffix:        "]",
-		FocusBg:            "black",
-		FocusFg:            "blue",
-		SelectionPrefix:    "{",
-		SelectionSuffix:    "}",
-		SelectionColor:     "green",
-		FolderIcon:         "",
-		FileIcon:           "",
-		DirectoryColor:     "cyan",
-		SizeStyle:          "white",
-		LogErrorFormat:     "[ERROR] ",
-		LogErrorColor:      "red",
-		LogWarningFormat:   "[WARNING] ",
-		LogWarningColor:    "yellow",
-		LogInfoFormat:      "[INFO] ",
-		LogInfoColor:       "green",
-		BuiltinModeConfigs: builtinModeConfigs,
-		CustomModeConfigs: []ModeConfig{
-			{
-				Name: "go-to",
-				KeyBindings: KeyBindingsConfig{
-					OnKeys: map[string]*ActionConfig{
-						"~": {
-							Help: "Home",
-							Commands: []*CommandConfig{
-								{
-									Name: "ChangeDirectory",
-									Args: []string{"/Users/dinhhuy258"},
-								},
-								{
-									Name: "PopMode",
-								},
-							},
-						},
-						"d": {
-							Help: "Downloads",
-							Commands: []*CommandConfig{
-								{
-									Name: "ChangeDirectory",
-									Args: []string{"/Users/dinhhuy258/Downloads"},
-								},
-								{
-									Name: "PopMode",
-								},
-							},
-						},
-						"D": {
-							Help: "Documents",
-							Commands: []*CommandConfig{
-								{
-									Name: "ChangeDirectory",
-									Args: []string{"/Users/dinhhuy258/Documents"},
-								},
-								{
-									Name: "PopMode",
-								},
-							},
-						},
-						"w": {
-							Help: "Workspace",
-							Commands: []*CommandConfig{
-								{
-									Name: "ChangeDirectory",
-									Args: []string{"/Users/dinhhuy258/Workspace"},
-								},
-								{
-									Name: "PopMode",
-								},
-							},
-						},
-						"h": {
-							Help: "Desktop",
-							Commands: []*CommandConfig{
-								{
-									Name: "ChangeDirectory",
-									Args: []string{"/Users/dinhhuy258/Desktop"},
-								},
-								{
-									Name: "PopMode",
-								},
-							},
-						},
-						"g": {
-							Help: "focus first",
-							Commands: []*CommandConfig{
-								{
-									Name: "FocusFirst",
-								},
-								{
-									Name: "PopMode",
-								},
-							},
-						},
-						"q": {
-							Help: "quit",
-							Commands: []*CommandConfig{
-								{
-									Name: "Quit",
-								},
-							},
-						},
-						"esc": {
-							Help: "cancel",
-							Commands: []*CommandConfig{
-								{
-									Name: "PopMode",
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		DefaultModeConfig: ModeConfig{
-			Name: "default",
-			KeyBindings: KeyBindingsConfig{
-				OnKeys: map[string]*ActionConfig{
-					"g": {
-						Help: "go to",
-						Commands: []*CommandConfig{
-							{
-								Name: "SwitchMode",
-								Args: []string{"go-to"},
-							},
-						},
-					},
-					"G": {
-						Help: "focus last",
-						Commands: []*CommandConfig{
-							{
-								Name: "FocusLast",
-							},
-						},
-					},
-					"n": {
-						Help: "new file",
-						Commands: []*CommandConfig{
-							{
-								Name: "SwitchMode",
-								Args: []string{"new-file"},
-							},
-							{
-								Name: "SetInputBuffer",
-								Args: []string{""},
-							},
-						},
-					},
-					"/": {
-						Help: "search",
-						Commands: []*CommandConfig{
-							{
-								Name: "SwitchMode",
-								Args: []string{"search"},
-							},
-							{
-								Name: "SetInputBuffer",
-								Args: []string{""},
-							},
-						},
-					},
-				},
-			},
-		},
+func LoadConfig() error {
+	configFilePath, err := getConfigFileOrCreateIfMissing()
+	if err != nil {
+		return err
 	}
+
+	AppConfig, err = loadConfigFromFile(*configFilePath)
+
+	return err
 }
