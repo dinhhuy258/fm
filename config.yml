@@ -1,0 +1,98 @@
+selectionColor: green
+directoryColor: cyan
+sizeStyle: white
+logErrorColor: red
+logWarningColor: yellow
+logInfoColor: green
+focusBg: black
+focusFg: blue
+showHidden: false
+indexHeader: index
+indexPercentage: 10
+pathHeader: ╭──── path
+pathPercentage: 70
+sizeHeader: size
+sizePercentage: 20
+pathPrefix: ├─
+pathSuffix: ╰─
+focusPrefix: ▸[
+focusSuffix: ']'
+selectionPrefix: '{'
+selectionSuffix: '}'
+folderIcon: 
+fileIcon: 
+logErrorFormat: '[ERROR] '
+logWarningFormat: '[WARNING] '
+logInfoFormat: '[INFO] '
+customModeConfigs:
+    go-to:
+        keyBindings:
+            onKeys:
+                "~":
+                    help: Home
+                    commands:
+                      - name: ChangeDirectory
+                        args:
+                          - /Users/dinhhuy258
+                      - name: PopMode
+                        args: []
+                D:
+                    help: Documents
+                    commands:
+                      - name: ChangeDirectory
+                        args:
+                          - /Users/dinhhuy258/Documents
+                      - name: PopMode
+                        args: []
+                d:
+                    help: Downloads
+                    commands:
+                      - name: ChangeDirectory
+                        args:
+                          - /Users/dinhhuy258/Downloads
+                      - name: PopMode
+                        args: []
+                g:
+                    help: focus first
+                    commands:
+                      - name: FocusFirst
+                        args: []
+                      - name: PopMode
+                        args: []
+                h:
+                    help: Desktop
+                    commands:
+                      - name: ChangeDirectory
+                        args:
+                          - /Users/dinhhuy258/Desktop
+                      - name: PopMode
+                        args: []
+                q:
+                    help: quit
+                    commands:
+                      - name: Quit
+                        args: []
+                w:
+                    help: Workspace
+                    commands:
+                      - name: ChangeDirectory
+                        args:
+                          - /Users/dinhhuy258/Workspace
+                      - name: PopMode
+                        args: []
+            default:
+                    help: cancel
+                    commands:
+                      - name: PopMode
+                        args: []
+builtinModeConfigs:
+    default:
+        keyBindings:
+            onKeys:
+                g:
+                    help: go to
+                    commands:
+                      - name: SwitchMode
+                        args:
+                          - go-to
+            default: null
