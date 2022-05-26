@@ -53,6 +53,30 @@ type Config struct {
 
 var AppConfig *Config
 
+func mergeUserModeConfig(userConfig *Config) {
+	for name, mode := range userConfig.CustomModeConfigs {
+		mode.Name = name
+	}
+
+	AppConfig.CustomModeConfigs = userConfig.CustomModeConfigs
+
+	for builtinUserConfigName, builtinUserConfig := range userConfig.BuiltinModeConfigs {
+		builtinMode, hasBuiltinConfig := AppConfig.BuiltinModeConfigs[builtinUserConfigName]
+
+		if !hasBuiltinConfig {
+			continue
+		}
+
+		for key, action := range builtinUserConfig.KeyBindings.OnKeys {
+			builtinMode.KeyBindings.OnKeys[key] = action
+		}
+
+		if builtinUserConfig.KeyBindings.Default != nil {
+			builtinMode.KeyBindings.Default = builtinUserConfig.KeyBindings.Default
+		}
+	}
+}
+
 func mergeUserConfig(userConfig *Config) {
 	if userConfig.SelectionColor != "" {
 		AppConfig.SelectionColor = userConfig.SelectionColor
@@ -156,29 +180,11 @@ func mergeUserConfig(userConfig *Config) {
 
 	AppConfig.ShowHidden = userConfig.ShowHidden
 
-	for name, mode := range userConfig.CustomModeConfigs {
-		mode.Name = name
-	}
-	AppConfig.CustomModeConfigs = userConfig.CustomModeConfigs
-
-	for builtinUserConfigName, builtinUserConfig := range userConfig.BuiltinModeConfigs {
-		builtinMode, hasBuiltinConfig := AppConfig.BuiltinModeConfigs[builtinUserConfigName]
-
-		if !hasBuiltinConfig {
-			continue
-		}
-
-		for key, action := range builtinUserConfig.KeyBindings.OnKeys {
-			builtinMode.KeyBindings.OnKeys[key] = action
-		}
-
-		if builtinUserConfig.KeyBindings.Default != nil {
-			builtinMode.KeyBindings.Default = builtinUserConfig.KeyBindings.Default
-		}
-	}
+	mergeUserModeConfig(userConfig)
 }
 
 func LoadConfig() error {
+	//TODO: Consider to remove code to create config file on missing
 	configFilePath, err := getConfigFileOrCreateIfMissing()
 	if err != nil {
 		return err
