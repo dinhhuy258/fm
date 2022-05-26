@@ -54,13 +54,125 @@ type Config struct {
 
 var AppConfig *Config
 
+func mergeConfig(config *Config) {
+	if config.SelectionColor != "" {
+		AppConfig.SelectionColor = config.SelectionColor
+	}
+
+	if config.DirectoryColor != "" {
+		AppConfig.DirectoryColor = config.DirectoryColor
+	}
+
+	if config.SizeStyle != "" {
+		AppConfig.SizeStyle = config.SizeStyle
+	}
+
+	if config.LogErrorColor != "" {
+		AppConfig.LogErrorColor = config.LogErrorColor
+	}
+
+	if config.LogWarningColor != "" {
+		AppConfig.LogWarningColor = config.LogWarningColor
+	}
+
+	if config.LogInfoColor != "" {
+		AppConfig.LogInfoColor = config.LogInfoColor
+	}
+
+	if config.FocusBg != "" {
+		AppConfig.FocusBg = config.FocusBg
+	}
+
+	if config.FocusFg != "" {
+		AppConfig.FocusFg = config.FocusFg
+	}
+
+	if config.IndexHeader != "" {
+		AppConfig.IndexHeader = config.IndexHeader
+	}
+
+	if config.IndexPercentage != 0 {
+		AppConfig.IndexPercentage = config.IndexPercentage
+	}
+
+	if config.PathHeader != "" {
+		AppConfig.PathHeader = config.PathHeader
+	}
+
+	if config.PathPercentage != 0 {
+		AppConfig.PathPercentage = config.PathPercentage
+	}
+
+	if config.SizeHeader != "" {
+		AppConfig.SizeHeader = config.SizeHeader
+	}
+
+	if config.SizePercentage != 0 {
+		AppConfig.SizePercentage = config.SizePercentage
+	}
+
+	if config.PathPrefix != "" {
+		AppConfig.PathPrefix = config.PathPrefix
+	}
+
+	if config.PathSuffix != "" {
+		AppConfig.PathSuffix = config.PathSuffix
+	}
+
+	if config.FocusPrefix != "" {
+		AppConfig.FocusPrefix = config.FocusPrefix
+	}
+
+	if config.FocusSuffix != "" {
+		AppConfig.FocusSuffix = config.FocusSuffix
+	}
+
+	if config.SelectionPrefix != "" {
+		AppConfig.SelectionPrefix = config.SelectionPrefix
+	}
+
+	if config.SelectionSuffix != "" {
+		AppConfig.SelectionSuffix = config.SelectionSuffix
+	}
+
+	if config.FolderIcon != "" {
+		AppConfig.FolderIcon = config.FolderIcon
+	}
+
+	if config.FileIcon != "" {
+		AppConfig.FileIcon = config.FileIcon
+	}
+
+	if config.LogErrorFormat != "" {
+		AppConfig.LogErrorFormat = config.LogErrorFormat
+	}
+
+	if config.LogWarningFormat != "" {
+		AppConfig.LogWarningFormat = config.LogWarningFormat
+	}
+
+	if config.LogInfoFormat != "" {
+		AppConfig.LogInfoFormat = config.LogInfoFormat
+	}
+
+	AppConfig.ShowHidden = config.ShowHidden
+	AppConfig.CustomModeConfigs = config.CustomModeConfigs
+}
+
 func LoadConfig() error {
 	configFilePath, err := getConfigFileOrCreateIfMissing()
 	if err != nil {
 		return err
 	}
 
-	AppConfig, err = loadConfigFromFile(*configFilePath)
+	AppConfig = getDefaultConfig()
 
-	return err
+	config, err := loadConfigFromFile(*configFilePath)
+	if err != nil {
+		return err
+	}
+
+	mergeConfig(config)
+
+	return nil
 }
