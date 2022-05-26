@@ -6,7 +6,7 @@ var defaultModeConfig = ModeConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
 				Help: "quit",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
 					},
@@ -14,7 +14,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			"j": {
 				Help: "down",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "FocusNext",
 					},
@@ -22,7 +22,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			"k": {
 				Help: "up",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "FocusPrevious",
 					},
@@ -30,7 +30,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			"l": {
 				Help: "enter",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "Enter",
 					},
@@ -38,7 +38,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			"h": {
 				Help: "back",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "Back",
 					},
@@ -46,7 +46,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			"m": {
 				Help: "mark save",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
 						Args: []string{"mark-save"},
@@ -55,7 +55,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			"`": {
 				Help: "mark load",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
 						Args: []string{"mark-load"},
@@ -64,7 +64,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			"d": {
 				Help: "delete",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
 						Args: []string{"delete"},
@@ -73,7 +73,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			"p": {
 				Help: "copy",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "PasteSelections",
 						Args: []string{"copy"},
@@ -82,7 +82,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			"x": {
 				Help: "cut",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "PasteSelections",
 						Args: []string{"cut"},
@@ -91,7 +91,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			"ctrl+r": {
 				Help: "refresh",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "Refresh",
 					},
@@ -99,7 +99,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			"space": {
 				Help: "toggle selection",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "ToggleSelection",
 					},
@@ -107,7 +107,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			"ctrl+space": {
 				Help: "clear selection",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "ClearSelection",
 					},
@@ -115,7 +115,7 @@ var defaultModeConfig = ModeConfig{
 			},
 			".": {
 				Help: "toggle hidden",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "ToggleHidden",
 					},
@@ -131,7 +131,7 @@ var markSaveModeConfig = ModeConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
 				Help: "quit",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
 					},
@@ -139,7 +139,7 @@ var markSaveModeConfig = ModeConfig{
 			},
 			"esc": {
 				Help: "cancel",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "FocusNext",
 					},
@@ -147,7 +147,7 @@ var markSaveModeConfig = ModeConfig{
 			},
 		},
 		Default: &ActionConfig{
-			Commands: []*CommandConfig{
+			Messages: []*MessageConfig{
 				{
 					Name: "MarkSave",
 				},
@@ -165,7 +165,7 @@ var markLoadModeConfig = ModeConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
 				Help: "quit",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
 					},
@@ -173,7 +173,7 @@ var markLoadModeConfig = ModeConfig{
 			},
 			"esc": {
 				Help: "cancel",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "FocusNext",
 					},
@@ -181,7 +181,7 @@ var markLoadModeConfig = ModeConfig{
 			},
 		},
 		Default: &ActionConfig{
-			Commands: []*CommandConfig{
+			Messages: []*MessageConfig{
 				{
 					Name: "MarkLoad",
 				},
@@ -199,7 +199,7 @@ var newFileModeConfig = ModeConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
 				Help: "quit",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
 					},
@@ -207,7 +207,7 @@ var newFileModeConfig = ModeConfig{
 			},
 			"enter": {
 				Help: "new file",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "NewFileFromInput",
 					},
@@ -218,7 +218,7 @@ var newFileModeConfig = ModeConfig{
 			},
 			"esc": {
 				Help: "cancel",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "PopMode",
 					},
@@ -226,7 +226,7 @@ var newFileModeConfig = ModeConfig{
 			},
 		},
 		Default: &ActionConfig{
-			Commands: []*CommandConfig{
+			Messages: []*MessageConfig{
 				{
 					Name: "UpdateInputBufferFromKey",
 				},
@@ -241,7 +241,7 @@ var searchModeConfig = ModeConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
 				Help: "quit",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
 					},
@@ -249,7 +249,7 @@ var searchModeConfig = ModeConfig{
 			},
 			"enter": {
 				Help: "search",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "SearchFromInput",
 					},
@@ -260,7 +260,7 @@ var searchModeConfig = ModeConfig{
 			},
 			"esc": {
 				Help: "cancel",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "PopMode",
 					},
@@ -268,7 +268,7 @@ var searchModeConfig = ModeConfig{
 			},
 		},
 		Default: &ActionConfig{
-			Commands: []*CommandConfig{
+			Messages: []*MessageConfig{
 				{
 					Name: "UpdateInputBufferFromKey",
 				},
@@ -283,7 +283,7 @@ var deleteModeConfig = ModeConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
 				Help: "quit",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
 					},
@@ -291,7 +291,7 @@ var deleteModeConfig = ModeConfig{
 			},
 			"d": {
 				Help: "delete current",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "SetInputBuffer",
 						Args: []string{"Do you want to delete this file? (y/n) "},
@@ -304,7 +304,7 @@ var deleteModeConfig = ModeConfig{
 			},
 			"s": {
 				Help: "delete selections",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "SetInputBuffer",
 						Args: []string{"Do you want to delete selected files? (y/n) "},
@@ -317,7 +317,7 @@ var deleteModeConfig = ModeConfig{
 			},
 			"esc": {
 				Help: "cancel",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "PopMode",
 					},
@@ -333,7 +333,7 @@ var deleteCurrentModeConfig = ModeConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
 				Help: "quit",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
 					},
@@ -341,7 +341,7 @@ var deleteCurrentModeConfig = ModeConfig{
 			},
 			"y": {
 				Help: "delete",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "DeleteCurrent",
 					},
@@ -356,7 +356,7 @@ var deleteCurrentModeConfig = ModeConfig{
 		},
 		Default: &ActionConfig{
 			Help: "cancel",
-			Commands: []*CommandConfig{
+			Messages: []*MessageConfig{
 				{
 					Name: "PopMode",
 				},
@@ -374,7 +374,7 @@ var deleteSelectionsModeConfig = ModeConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
 				Help: "quit",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
 					},
@@ -382,7 +382,7 @@ var deleteSelectionsModeConfig = ModeConfig{
 			},
 			"y": {
 				Help: "delete selections",
-				Commands: []*CommandConfig{
+				Messages: []*MessageConfig{
 					{
 						Name: "DeleteSelections",
 					},
@@ -397,7 +397,7 @@ var deleteSelectionsModeConfig = ModeConfig{
 		},
 		Default: &ActionConfig{
 			Help: "cancel",
-			Commands: []*CommandConfig{
+			Messages: []*MessageConfig{
 				{
 					Name: "PopMode",
 				},

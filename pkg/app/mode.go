@@ -3,9 +3,9 @@ package app
 import (
 	"errors"
 
-	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/key"
+	"github.com/dinhhuy258/fm/pkg/message"
 )
 
 var (
@@ -15,7 +15,7 @@ var (
 
 type Action struct {
 	Help     string
-	Commands []*command.Command
+	Messages []*message.Message
 }
 
 type Help struct {
@@ -111,10 +111,10 @@ func (m *Mode) GetHelp() []*Help {
 		})
 	}
 
-	for key, command := range keybindings.OnKeys {
+	for key, message := range keybindings.OnKeys {
 		helps = append(helps, &Help{
 			Key: key,
-			Msg: command.Help,
+			Msg: message.Help,
 		})
 	}
 

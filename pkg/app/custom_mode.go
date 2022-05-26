@@ -1,9 +1,9 @@
 package app
 
 import (
-	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/key"
+	"github.com/dinhhuy258/fm/pkg/message"
 )
 
 type CustomMode struct {
@@ -36,13 +36,13 @@ func createCustomMode(name string, keyBindings config.KeyBindingsConfig) *Custom
 		key := key.GetKey(k)
 
 		customMode.keyBindings.OnKeys[key] = &Action{
-			Commands: []*command.Command{},
+			Messages: []*message.Message{},
 		}
 
-		for _, commandConfig := range actionConfig.Commands {
-			customMode.keyBindings.OnKeys[key].Commands = append(
-				customMode.keyBindings.OnKeys[key].Commands,
-				toCommand(commandConfig),
+		for _, messageConfig := range actionConfig.Messages {
+			customMode.keyBindings.OnKeys[key].Messages = append(
+				customMode.keyBindings.OnKeys[key].Messages,
+				toMessage(messageConfig),
 			)
 		}
 
@@ -54,13 +54,13 @@ func createCustomMode(name string, keyBindings config.KeyBindingsConfig) *Custom
 
 	if keyBindings.Default != nil {
 		customMode.keyBindings.Default = &Action{
-			Commands: []*command.Command{},
+			Messages: []*message.Message{},
 		}
 
-		for _, commandConfig := range keyBindings.Default.Commands {
-			customMode.keyBindings.Default.Commands = append(
-				customMode.keyBindings.Default.Commands,
-				toCommand(commandConfig),
+		for _, messageConfig := range keyBindings.Default.Messages {
+			customMode.keyBindings.Default.Messages = append(
+				customMode.keyBindings.Default.Messages,
+				toMessage(messageConfig),
 			)
 		}
 	}
@@ -68,102 +68,102 @@ func createCustomMode(name string, keyBindings config.KeyBindingsConfig) *Custom
 	return &customMode
 }
 
-// TODO: Find a better way to convert string to command
-func toCommand(commandConfig *config.CommandConfig) *command.Command {
-	commandString := commandConfig.Name
+// TODO: Find a better way to convert string to message
+func toMessage(messageConfig *config.MessageConfig) *message.Message {
+	messageName := messageConfig.Name
 
-	switch commandString {
+	switch messageName {
 	case "Quit":
-		return &command.Command{
-			Func: command.Quit,
+		return &message.Message{
+			Func: message.Quit,
 		}
 	case "SwitchMode":
-		return &command.Command{
-			Func: command.SwitchMode,
-			Args: commandConfig.Args,
+		return &message.Message{
+			Func: message.SwitchMode,
+			Args: messageConfig.Args,
 		}
 	case "PopMode":
-		return &command.Command{
-			Func: command.PopMode,
+		return &message.Message{
+			Func: message.PopMode,
 		}
 	case "FocusNext":
-		return &command.Command{
-			Func: command.FocusNext,
+		return &message.Message{
+			Func: message.FocusNext,
 		}
 	case "FocusPrevious":
-		return &command.Command{
-			Func: command.FocusPrevious,
+		return &message.Message{
+			Func: message.FocusPrevious,
 		}
 	case "FocusFirst":
-		return &command.Command{
-			Func: command.FocusFirst,
+		return &message.Message{
+			Func: message.FocusFirst,
 		}
 	case "FocusLast":
-		return &command.Command{
-			Func: command.FocusLast,
+		return &message.Message{
+			Func: message.FocusLast,
 		}
 	case "Enter":
-		return &command.Command{
-			Func: command.Enter,
+		return &message.Message{
+			Func: message.Enter,
 		}
 	case "Back":
-		return &command.Command{
-			Func: command.Back,
+		return &message.Message{
+			Func: message.Back,
 		}
 	case "ChangeDirectory":
-		return &command.Command{
-			Func: command.ChangeDirectory,
-			Args: commandConfig.Args,
+		return &message.Message{
+			Func: message.ChangeDirectory,
+			Args: messageConfig.Args,
 		}
 	case "PasteSelections":
-		return &command.Command{
-			Func: command.ChangeDirectory,
-			Args: commandConfig.Args,
+		return &message.Message{
+			Func: message.ChangeDirectory,
+			Args: messageConfig.Args,
 		}
 	case "UpdateInputBufferFromKey":
-		return &command.Command{
-			Func: command.UpdateInputBufferFromKey,
+		return &message.Message{
+			Func: message.UpdateInputBufferFromKey,
 		}
 	case "SetInputBuffer":
-		return &command.Command{
-			Func: command.SetInputBuffer,
-			Args: commandConfig.Args,
+		return &message.Message{
+			Func: message.SetInputBuffer,
+			Args: messageConfig.Args,
 		}
 	case "NewFileFromInput":
-		return &command.Command{
-			Func: command.NewFileFromInput,
+		return &message.Message{
+			Func: message.NewFileFromInput,
 		}
 	case "DeleteCurrent":
-		return &command.Command{
-			Func: command.DeleteCurrent,
+		return &message.Message{
+			Func: message.DeleteCurrent,
 		}
 	case "DeleteSelections":
-		return &command.Command{
-			Func: command.DeleteSelections,
+		return &message.Message{
+			Func: message.DeleteSelections,
 		}
 	case "SearchFromInput":
-		return &command.Command{
-			Func: command.SearchFromInput,
+		return &message.Message{
+			Func: message.SearchFromInput,
 		}
 	case "Refresh":
-		return &command.Command{
-			Func: command.Refresh,
+		return &message.Message{
+			Func: message.Refresh,
 		}
 	case "ToggleSelection":
-		return &command.Command{
-			Func: command.ToggleSelection,
+		return &message.Message{
+			Func: message.ToggleSelection,
 		}
 	case "ClearSelection":
-		return &command.Command{
-			Func: command.ClearSelection,
+		return &message.Message{
+			Func: message.ClearSelection,
 		}
 	case "MarkSave":
-		return &command.Command{
-			Func: command.MarkSave,
+		return &message.Message{
+			Func: message.MarkSave,
 		}
 	case "MarkLoad":
-		return &command.Command{
-			Func: command.MarkLoad,
+		return &message.Message{
+			Func: message.MarkLoad,
 		}
 	}
 

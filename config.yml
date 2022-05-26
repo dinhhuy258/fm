@@ -30,7 +30,7 @@ customModeConfigs:
             onKeys:
                 "~":
                     help: Home
-                    commands:
+                    messages:
                       - name: ChangeDirectory
                         args:
                           - /Users/dinhhuy258
@@ -38,7 +38,7 @@ customModeConfigs:
                         args: []
                 D:
                     help: Documents
-                    commands:
+                    messages:
                       - name: ChangeDirectory
                         args:
                           - /Users/dinhhuy258/Documents
@@ -46,7 +46,7 @@ customModeConfigs:
                         args: []
                 d:
                     help: Downloads
-                    commands:
+                    messages:
                       - name: ChangeDirectory
                         args:
                           - /Users/dinhhuy258/Downloads
@@ -54,14 +54,14 @@ customModeConfigs:
                         args: []
                 g:
                     help: focus first
-                    commands:
+                    messages:
                       - name: FocusFirst
                         args: []
                       - name: PopMode
                         args: []
                 h:
                     help: Desktop
-                    commands:
+                    messages:
                       - name: ChangeDirectory
                         args:
                           - /Users/dinhhuy258/Desktop
@@ -69,12 +69,12 @@ customModeConfigs:
                         args: []
                 q:
                     help: quit
-                    commands:
+                    messages:
                       - name: Quit
                         args: []
                 w:
                     help: Workspace
-                    commands:
+                    messages:
                       - name: ChangeDirectory
                         args:
                           - /Users/dinhhuy258/Workspace
@@ -82,7 +82,7 @@ customModeConfigs:
                         args: []
             default:
                     help: cancel
-                    commands:
+                    messages:
                       - name: PopMode
                         args: []
 builtinModeConfigs:
@@ -91,7 +91,7 @@ builtinModeConfigs:
             onKeys:
                 g:
                     help: go to
-                    commands:
+                    messages:
                       - name: SwitchMode
                         args:
                           - go-to

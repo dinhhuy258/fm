@@ -1,4 +1,4 @@
-package command
+package message
 
 import (
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
@@ -20,7 +20,7 @@ type IApp interface {
 	PushMode(mode string)
 }
 
-type Command struct {
+type Message struct {
 	Func func(app IApp, params ...string)
 	Args []string
 }

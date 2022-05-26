@@ -5,10 +5,10 @@ import (
 	"os"
 
 	"github.com/alitto/pond"
-	"github.com/dinhhuy258/fm/pkg/app/command"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/key"
+	"github.com/dinhhuy258/fm/pkg/message"
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -18,7 +18,7 @@ type App struct {
 	modes      *Modes
 	pressedKey key.Key
 
-	commandWorkerPool *pond.WorkerPool
+	messageWorkerPool *pond.WorkerPool
 }
 
 // NewApp bootstrap a new application
@@ -26,7 +26,7 @@ func NewApp() *App {
 	app := &App{
 		gui:               gui.NewGui(),
 		marks:             map[string]string{},
-		commandWorkerPool: pond.New(1 /* we only need one woker to avoid concurency issue */, 10),
+		messageWorkerPool: pond.New(1 /* we only need one worker to avoid concurrency issue */, 10),
 	}
 
 	app.modes = CreateAllModes(app.marks)
@@ -109,26 +109,26 @@ func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 
 	switch {
 	case hasKey:
-		for _, cmd := range action.Commands {
+		for _, cmd := range action.Messages {
 			cmd := cmd
 
-			app.commandWorkerPool.Submit(func() {
+			app.messageWorkerPool.Submit(func() {
 				cmd.Func(app, cmd.Args...)
 			})
 		}
 	case keybindings.OnAlphabet != nil:
-		for _, cmd := range keybindings.OnAlphabet.Commands {
+		for _, cmd := range keybindings.OnAlphabet.Messages {
 			cmd := cmd
 
-			app.commandWorkerPool.Submit(func() {
+			app.messageWorkerPool.Submit(func() {
 				cmd.Func(app, cmd.Args...)
 			})
 		}
 	case keybindings.Default != nil:
-		for _, cmd := range keybindings.Default.Commands {
+		for _, cmd := range keybindings.Default.Messages {
 			cmd := cmd
 
-			app.commandWorkerPool.Submit(func() {
+			app.messageWorkerPool.Submit(func() {
 				cmd.Func(app, cmd.Args...)
 			})
 		}
@@ -149,5 +149,5 @@ func (app *App) onGuiReady() {
 		log.Fatalf("failed to get current working directory %v", err)
 	}
 
-	command.ChangeDirectory(app, wd)
+	message.ChangeDirectory(app, wd)
 }

@@ -1,13 +1,13 @@
 package config
 
-type CommandConfig struct {
+type MessageConfig struct {
 	Name string   `yaml:"name"`
 	Args []string `yaml:"args"`
 }
 
 type ActionConfig struct {
 	Help     string           `yaml:"help"`
-	Commands []*CommandConfig `yaml:"commands"`
+	Messages []*MessageConfig `yaml:"messages"`
 }
 
 type KeyBindingsConfig struct {
@@ -184,7 +184,7 @@ func mergeUserConfig(userConfig *Config) {
 }
 
 func LoadConfig() error {
-	//TODO: Consider to remove code to create config file on missing
+	// TODO: Consider to remove code to create config file on missing
 	configFilePath, err := getConfigFileOrCreateIfMissing()
 	if err != nil {
 		return err
