@@ -16,147 +16,166 @@ type KeyBindingsConfig struct {
 }
 
 type ModeConfig struct {
-	Name        string            `yaml:"name"`
+	Name        string            `yaml:"-"`
 	KeyBindings KeyBindingsConfig `yaml:"keyBindings"`
 }
 
 type Config struct {
-	SelectionColor     string       `yaml:"selectionColor"`
-	DirectoryColor     string       `yaml:"directoryColor"`
-	SizeStyle          string       `yaml:"sizeStyle"`
-	LogErrorColor      string       `yaml:"logErrorColor"`
-	LogWarningColor    string       `yaml:"logWarningColor"`
-	LogInfoColor       string       `yaml:"logInfoColor"`
-	FocusBg            string       `yaml:"focusBg"`
-	FocusFg            string       `yaml:"focusFg"`
-	ShowHidden         bool         `yaml:"showHidden"`
-	IndexHeader        string       `yaml:"indexHeader"`
-	IndexPercentage    int          `yaml:"indexPercentage"`
-	PathHeader         string       `yaml:"pathHeader"`
-	PathPercentage     int          `yaml:"pathPercentage"`
-	SizeHeader         string       `yaml:"sizeHeader"`
-	SizePercentage     int          `yaml:"sizePercentage"`
-	PathPrefix         string       `yaml:"pathPrefix"`
-	PathSuffix         string       `yaml:"pathSuffix"`
-	FocusPrefix        string       `yaml:"focusPrefix"`
-	FocusSuffix        string       `yaml:"focusSuffix"`
-	SelectionPrefix    string       `yaml:"selectionPrefix"`
-	SelectionSuffix    string       `yaml:"selectionSuffix"`
-	FolderIcon         string       `yaml:"folderIcon"`
-	FileIcon           string       `yaml:"fileIcon"`
-	LogErrorFormat     string       `yaml:"logErrorFormat"`
-	LogWarningFormat   string       `yaml:"logWarningFormat"`
-	LogInfoFormat      string       `yaml:"logInfoFormat"`
-	CustomModeConfigs  []ModeConfig `yaml:"customModeConfigs"`
-	BuiltinModeConfigs []ModeConfig `yaml:"builtinModeConfigs"`
-	DefaultModeConfig  ModeConfig   `yaml:"defaultModeConfig"`
+	SelectionColor     string                 `yaml:"selectionColor"`
+	DirectoryColor     string                 `yaml:"directoryColor"`
+	SizeStyle          string                 `yaml:"sizeStyle"`
+	LogErrorColor      string                 `yaml:"logErrorColor"`
+	LogWarningColor    string                 `yaml:"logWarningColor"`
+	LogInfoColor       string                 `yaml:"logInfoColor"`
+	FocusBg            string                 `yaml:"focusBg"`
+	FocusFg            string                 `yaml:"focusFg"`
+	ShowHidden         bool                   `yaml:"showHidden"`
+	IndexHeader        string                 `yaml:"indexHeader"`
+	IndexPercentage    int                    `yaml:"indexPercentage"`
+	PathHeader         string                 `yaml:"pathHeader"`
+	PathPercentage     int                    `yaml:"pathPercentage"`
+	SizeHeader         string                 `yaml:"sizeHeader"`
+	SizePercentage     int                    `yaml:"sizePercentage"`
+	PathPrefix         string                 `yaml:"pathPrefix"`
+	PathSuffix         string                 `yaml:"pathSuffix"`
+	FocusPrefix        string                 `yaml:"focusPrefix"`
+	FocusSuffix        string                 `yaml:"focusSuffix"`
+	SelectionPrefix    string                 `yaml:"selectionPrefix"`
+	SelectionSuffix    string                 `yaml:"selectionSuffix"`
+	FolderIcon         string                 `yaml:"folderIcon"`
+	FileIcon           string                 `yaml:"fileIcon"`
+	LogErrorFormat     string                 `yaml:"logErrorFormat"`
+	LogWarningFormat   string                 `yaml:"logWarningFormat"`
+	LogInfoFormat      string                 `yaml:"logInfoFormat"`
+	CustomModeConfigs  map[string]*ModeConfig `yaml:"customModeConfigs"`
+	BuiltinModeConfigs map[string]*ModeConfig `yaml:"builtinModeConfigs"`
 }
 
 var AppConfig *Config
 
-func mergeConfig(config *Config) {
-	if config.SelectionColor != "" {
-		AppConfig.SelectionColor = config.SelectionColor
+func mergeUserConfig(userConfig *Config) {
+	if userConfig.SelectionColor != "" {
+		AppConfig.SelectionColor = userConfig.SelectionColor
 	}
 
-	if config.DirectoryColor != "" {
-		AppConfig.DirectoryColor = config.DirectoryColor
+	if userConfig.DirectoryColor != "" {
+		AppConfig.DirectoryColor = userConfig.DirectoryColor
 	}
 
-	if config.SizeStyle != "" {
-		AppConfig.SizeStyle = config.SizeStyle
+	if userConfig.SizeStyle != "" {
+		AppConfig.SizeStyle = userConfig.SizeStyle
 	}
 
-	if config.LogErrorColor != "" {
-		AppConfig.LogErrorColor = config.LogErrorColor
+	if userConfig.LogErrorColor != "" {
+		AppConfig.LogErrorColor = userConfig.LogErrorColor
 	}
 
-	if config.LogWarningColor != "" {
-		AppConfig.LogWarningColor = config.LogWarningColor
+	if userConfig.LogWarningColor != "" {
+		AppConfig.LogWarningColor = userConfig.LogWarningColor
 	}
 
-	if config.LogInfoColor != "" {
-		AppConfig.LogInfoColor = config.LogInfoColor
+	if userConfig.LogInfoColor != "" {
+		AppConfig.LogInfoColor = userConfig.LogInfoColor
 	}
 
-	if config.FocusBg != "" {
-		AppConfig.FocusBg = config.FocusBg
+	if userConfig.FocusBg != "" {
+		AppConfig.FocusBg = userConfig.FocusBg
 	}
 
-	if config.FocusFg != "" {
-		AppConfig.FocusFg = config.FocusFg
+	if userConfig.FocusFg != "" {
+		AppConfig.FocusFg = userConfig.FocusFg
 	}
 
-	if config.IndexHeader != "" {
-		AppConfig.IndexHeader = config.IndexHeader
+	if userConfig.IndexHeader != "" {
+		AppConfig.IndexHeader = userConfig.IndexHeader
 	}
 
-	if config.IndexPercentage != 0 {
-		AppConfig.IndexPercentage = config.IndexPercentage
+	if userConfig.IndexPercentage != 0 {
+		AppConfig.IndexPercentage = userConfig.IndexPercentage
 	}
 
-	if config.PathHeader != "" {
-		AppConfig.PathHeader = config.PathHeader
+	if userConfig.PathHeader != "" {
+		AppConfig.PathHeader = userConfig.PathHeader
 	}
 
-	if config.PathPercentage != 0 {
-		AppConfig.PathPercentage = config.PathPercentage
+	if userConfig.PathPercentage != 0 {
+		AppConfig.PathPercentage = userConfig.PathPercentage
 	}
 
-	if config.SizeHeader != "" {
-		AppConfig.SizeHeader = config.SizeHeader
+	if userConfig.SizeHeader != "" {
+		AppConfig.SizeHeader = userConfig.SizeHeader
 	}
 
-	if config.SizePercentage != 0 {
-		AppConfig.SizePercentage = config.SizePercentage
+	if userConfig.SizePercentage != 0 {
+		AppConfig.SizePercentage = userConfig.SizePercentage
 	}
 
-	if config.PathPrefix != "" {
-		AppConfig.PathPrefix = config.PathPrefix
+	if userConfig.PathPrefix != "" {
+		AppConfig.PathPrefix = userConfig.PathPrefix
 	}
 
-	if config.PathSuffix != "" {
-		AppConfig.PathSuffix = config.PathSuffix
+	if userConfig.PathSuffix != "" {
+		AppConfig.PathSuffix = userConfig.PathSuffix
 	}
 
-	if config.FocusPrefix != "" {
-		AppConfig.FocusPrefix = config.FocusPrefix
+	if userConfig.FocusPrefix != "" {
+		AppConfig.FocusPrefix = userConfig.FocusPrefix
 	}
 
-	if config.FocusSuffix != "" {
-		AppConfig.FocusSuffix = config.FocusSuffix
+	if userConfig.FocusSuffix != "" {
+		AppConfig.FocusSuffix = userConfig.FocusSuffix
 	}
 
-	if config.SelectionPrefix != "" {
-		AppConfig.SelectionPrefix = config.SelectionPrefix
+	if userConfig.SelectionPrefix != "" {
+		AppConfig.SelectionPrefix = userConfig.SelectionPrefix
 	}
 
-	if config.SelectionSuffix != "" {
-		AppConfig.SelectionSuffix = config.SelectionSuffix
+	if userConfig.SelectionSuffix != "" {
+		AppConfig.SelectionSuffix = userConfig.SelectionSuffix
 	}
 
-	if config.FolderIcon != "" {
-		AppConfig.FolderIcon = config.FolderIcon
+	if userConfig.FolderIcon != "" {
+		AppConfig.FolderIcon = userConfig.FolderIcon
 	}
 
-	if config.FileIcon != "" {
-		AppConfig.FileIcon = config.FileIcon
+	if userConfig.FileIcon != "" {
+		AppConfig.FileIcon = userConfig.FileIcon
 	}
 
-	if config.LogErrorFormat != "" {
-		AppConfig.LogErrorFormat = config.LogErrorFormat
+	if userConfig.LogErrorFormat != "" {
+		AppConfig.LogErrorFormat = userConfig.LogErrorFormat
 	}
 
-	if config.LogWarningFormat != "" {
-		AppConfig.LogWarningFormat = config.LogWarningFormat
+	if userConfig.LogWarningFormat != "" {
+		AppConfig.LogWarningFormat = userConfig.LogWarningFormat
 	}
 
-	if config.LogInfoFormat != "" {
-		AppConfig.LogInfoFormat = config.LogInfoFormat
+	if userConfig.LogInfoFormat != "" {
+		AppConfig.LogInfoFormat = userConfig.LogInfoFormat
 	}
 
-	AppConfig.ShowHidden = config.ShowHidden
-	AppConfig.CustomModeConfigs = config.CustomModeConfigs
+	AppConfig.ShowHidden = userConfig.ShowHidden
+
+	for name, mode := range userConfig.CustomModeConfigs {
+		mode.Name = name
+	}
+	AppConfig.CustomModeConfigs = userConfig.CustomModeConfigs
+
+	for builtinUserConfigName, builtinUserConfig := range userConfig.BuiltinModeConfigs {
+		builtinMode, hasBuiltinConfig := AppConfig.BuiltinModeConfigs[builtinUserConfigName]
+
+		if !hasBuiltinConfig {
+			continue
+		}
+
+		for key, action := range builtinUserConfig.KeyBindings.OnKeys {
+			builtinMode.KeyBindings.OnKeys[key] = action
+		}
+
+		if builtinUserConfig.KeyBindings.Default != nil {
+			builtinMode.KeyBindings.Default = builtinUserConfig.KeyBindings.Default
+		}
+	}
 }
 
 func LoadConfig() error {
@@ -167,12 +186,12 @@ func LoadConfig() error {
 
 	AppConfig = getDefaultConfig()
 
-	config, err := loadConfigFromFile(*configFilePath)
+	userConfig, err := loadConfigFromFile(*configFilePath)
 	if err != nil {
 		return err
 	}
 
-	mergeConfig(config)
+	mergeUserConfig(userConfig)
 
 	return nil
 }

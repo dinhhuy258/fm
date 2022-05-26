@@ -29,56 +29,6 @@ func getDefaultConfig() *Config {
 		LogInfoFormat:      "[INFO] ",
 		LogInfoColor:       "green",
 		BuiltinModeConfigs: builtinModeConfigs,
-		CustomModeConfigs:  []ModeConfig{},
-		DefaultModeConfig: ModeConfig{
-			Name: "default",
-			KeyBindings: KeyBindingsConfig{
-				OnKeys: map[string]*ActionConfig{
-					"g": {
-						Help: "go to",
-						Commands: []*CommandConfig{
-							{
-								Name: "SwitchMode",
-								Args: []string{"go-to"},
-							},
-						},
-					},
-					"G": {
-						Help: "focus last",
-						Commands: []*CommandConfig{
-							{
-								Name: "FocusLast",
-							},
-						},
-					},
-					"n": {
-						Help: "new file",
-						Commands: []*CommandConfig{
-							{
-								Name: "SwitchMode",
-								Args: []string{"new-file"},
-							},
-							{
-								Name: "SetInputBuffer",
-								Args: []string{""},
-							},
-						},
-					},
-					"/": {
-						Help: "search",
-						Commands: []*CommandConfig{
-							{
-								Name: "SwitchMode",
-								Args: []string{"search"},
-							},
-							{
-								Name: "SetInputBuffer",
-								Args: []string{""},
-							},
-						},
-					},
-				},
-			},
-		},
+		CustomModeConfigs:  map[string]*ModeConfig{},
 	}
 }

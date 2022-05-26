@@ -58,26 +58,6 @@ func CreateAllModes(marks map[string]string) *Modes {
 		builtinModes[builtinMode.Name] = createCustomMode(builtinMode.Name, builtinMode.KeyBindings)
 	}
 
-	defaultMode, _ := builtinModes["default"].(*CustomMode)
-	defaultModeConfig := config.AppConfig.DefaultModeConfig
-
-	for k, actionConfig := range defaultModeConfig.KeyBindings.OnKeys {
-		key := key.GetKey(k)
-
-		defaultMode.keyBindings.OnKeys[key] = &Action{
-			Commands: []*command.Command{},
-		}
-
-		for _, commandConfig := range actionConfig.Commands {
-			defaultMode.keyBindings.OnKeys[key].Commands = append(
-				defaultMode.keyBindings.OnKeys[key].Commands,
-				toCommand(commandConfig),
-			)
-		}
-
-		defaultMode.keyBindings.OnKeys[key].Help = actionConfig.Help
-	}
-
 	customModes := make(map[string]IMode)
 	for _, customMode := range config.AppConfig.CustomModeConfigs {
 		customModes[customMode.Name] = createCustomMode(customMode.Name, customMode.KeyBindings)

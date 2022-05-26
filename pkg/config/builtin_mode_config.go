@@ -409,13 +409,13 @@ var deleteSelectionsModeConfig = ModeConfig{
 	},
 }
 
-var builtinModeConfigs = []ModeConfig{
-	defaultModeConfig,
-	markSaveModeConfig,
-	markLoadModeConfig,
-	newFileModeConfig,
-	searchModeConfig,
-	deleteModeConfig,
-	deleteCurrentModeConfig,
-	deleteSelectionsModeConfig,
+var builtinModeConfigs = map[string]*ModeConfig{
+	"default":           &defaultModeConfig,
+	"mark-save":         &markSaveModeConfig,
+	"mark-load":         &markLoadModeConfig,
+	"new-file":          &newFileModeConfig,
+	"search":            &searchModeConfig,
+	"delete":            &deleteModeConfig,
+	"delete-current":    &deleteCurrentModeConfig,
+	"delete-selections": &deleteSelectionsModeConfig,
 }
