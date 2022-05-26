@@ -15,7 +15,7 @@ sizeHeader: size
 sizePercentage: 20
 pathPrefix: ├─
 pathSuffix: ╰─
-focusPrefix: ▸[
+focusPrefix: '▸['
 focusSuffix: ']'
 selectionPrefix: '{'
 selectionSuffix: '}'
@@ -25,74 +25,74 @@ logErrorFormat: '[ERROR] '
 logWarningFormat: '[WARNING] '
 logInfoFormat: '[INFO] '
 customModeConfigs:
-    go-to:
-        keyBindings:
-            onKeys:
-                "~":
-                    help: Home
-                    messages:
-                      - name: ChangeDirectory
-                        args:
-                          - /Users/dinhhuy258
-                      - name: PopMode
-                        args: []
-                D:
-                    help: Documents
-                    messages:
-                      - name: ChangeDirectory
-                        args:
-                          - /Users/dinhhuy258/Documents
-                      - name: PopMode
-                        args: []
-                d:
-                    help: Downloads
-                    messages:
-                      - name: ChangeDirectory
-                        args:
-                          - /Users/dinhhuy258/Downloads
-                      - name: PopMode
-                        args: []
-                g:
-                    help: focus first
-                    messages:
-                      - name: FocusFirst
-                        args: []
-                      - name: PopMode
-                        args: []
-                h:
-                    help: Desktop
-                    messages:
-                      - name: ChangeDirectory
-                        args:
-                          - /Users/dinhhuy258/Desktop
-                      - name: PopMode
-                        args: []
-                q:
-                    help: quit
-                    messages:
-                      - name: Quit
-                        args: []
-                w:
-                    help: Workspace
-                    messages:
-                      - name: ChangeDirectory
-                        args:
-                          - /Users/dinhhuy258/Workspace
-                      - name: PopMode
-                        args: []
-            default:
-                    help: cancel
-                    messages:
-                      - name: PopMode
-                        args: []
+  go-to:
+    keyBindings:
+      onKeys:
+        '~':
+          help: Home
+          messages:
+            - name: ChangeDirectory
+              args:
+                - /Users/dinhhuy258
+            - name: PopMode
+              args: []
+        D:
+          help: Documents
+          messages:
+            - name: ChangeDirectory
+              args:
+                - /Users/dinhhuy258/Documents
+            - name: PopMode
+              args: []
+        d:
+          help: Downloads
+          messages:
+            - name: ChangeDirectory
+              args:
+                - /Users/dinhhuy258/Downloads
+            - name: PopMode
+              args: []
+        g:
+          help: focus first
+          messages:
+            - name: FocusFirst
+              args: []
+            - name: PopMode
+              args: []
+        h:
+          help: Desktop
+          messages:
+            - name: ChangeDirectory
+              args:
+                - /Users/dinhhuy258/Desktop
+            - name: PopMode
+              args: []
+        ctrl+c:
+          help: quit
+          messages:
+            - name: Quit
+              args: []
+        w:
+          help: Workspace
+          messages:
+            - name: ChangeDirectory
+              args:
+                - /Users/dinhhuy258/Workspace
+            - name: PopMode
+              args: []
+      default:
+        help: cancel
+        messages:
+          - name: PopMode
+            args: []
 builtinModeConfigs:
-    default:
-        keyBindings:
-            onKeys:
-                g:
-                    help: go to
-                    messages:
-                      - name: SwitchMode
-                        args:
-                          - go-to
-            default: null
+  default:
+    keyBindings:
+      onKeys:
+        g:
+          help: go to
+          messages:
+            - name: SwitchMode
+              args:
+                - go-to
+      default: null
