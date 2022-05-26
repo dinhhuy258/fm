@@ -121,6 +121,19 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
+			"/": {
+				Help: "search",
+				Messages: []*MessageConfig{
+					{
+						Name: "SetInputBuffer",
+						Args: []string{""},
+					},
+					{
+						Name: "SwitchMode",
+						Args: []string{"search"},
+					},
+				},
+			},
 		},
 	},
 }
