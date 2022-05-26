@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"log"
 
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/key"
@@ -29,42 +30,45 @@ type KeyBindings struct {
 	Default    *Action
 }
 
-// TODO: Remove interface???
-type IMode interface {
-	GetName() string
-	GetKeyBindings() *KeyBindings
-	GetHelp() []*Help
+type Mode struct {
+	*Mode
+	name        string
+	keyBindings *KeyBindings
+	helps       []*Help
 }
 
-type Mode struct {
-	IMode
-	keyBindings *KeyBindings
+func (m *Mode) GetName() string {
+	return m.name
 }
 
 func (m *Mode) GetKeyBindings() *KeyBindings {
 	return m.keyBindings
 }
 
+func (m *Mode) GetHelp() []*Help {
+	return m.helps
+}
+
 type Modes struct {
-	Modes        []IMode
-	BuiltinModes map[string]IMode
-	CustomModes  map[string]IMode
+	Modes        []*Mode
+	BuiltinModes map[string]*Mode
+	CustomModes  map[string]*Mode
 }
 
 func CreateAllModes(marks map[string]string) *Modes {
-	builtinModes := make(map[string]IMode)
+	builtinModes := make(map[string]*Mode)
 
 	for _, builtinMode := range config.AppConfig.BuiltinModeConfigs {
-		builtinModes[builtinMode.Name] = createCustomMode(builtinMode.Name, builtinMode.KeyBindings)
+		builtinModes[builtinMode.Name] = createMode(builtinMode.Name, builtinMode.KeyBindings)
 	}
 
-	customModes := make(map[string]IMode)
+	customModes := make(map[string]*Mode)
 	for _, customMode := range config.AppConfig.CustomModeConfigs {
-		customModes[customMode.Name] = createCustomMode(customMode.Name, customMode.KeyBindings)
+		customModes[customMode.Name] = createMode(customMode.Name, customMode.KeyBindings)
 	}
 
 	return &Modes{
-		Modes:        make([]IMode, 0, 5),
+		Modes:        make([]*Mode, 0, 5),
 		BuiltinModes: builtinModes,
 		CustomModes:  customModes,
 	}
@@ -96,27 +100,62 @@ func (m *Modes) Pop() error {
 	return nil
 }
 
-func (m *Modes) Peek() IMode {
+func (m *Modes) Peek() *Mode {
 	return m.Modes[len(m.Modes)-1]
 }
 
-func (m *Mode) GetHelp() []*Help {
-	helps := make([]*Help, 0, len(m.keyBindings.OnKeys)+1)
-	keybindings := m.keyBindings
-
-	if keybindings.OnAlphabet != nil {
-		helps = append(helps, &Help{
-			Key: "alphabet",
-			Msg: keybindings.OnAlphabet.Help,
-		})
+func createMode(name string, keyBindings config.KeyBindingsConfig) *Mode {
+	mode := Mode{
+		name: name,
+		keyBindings: &KeyBindings{
+			OnKeys:  map[key.Key]*Action{},
+			Default: nil,
+		},
+		helps: []*Help{},
 	}
 
-	for key, message := range keybindings.OnKeys {
-		helps = append(helps, &Help{
+	for k, actionConfig := range keyBindings.OnKeys {
+		key := key.GetKey(k)
+
+		mode.keyBindings.OnKeys[key] = &Action{
+			Messages: []*message.Message{},
+		}
+
+		for _, messageConfig := range actionConfig.Messages {
+			message, err := message.NewMessage(messageConfig.Name, messageConfig.Args...)
+			if err != nil {
+				log.Fatalf("message not found: %s", messageConfig.Name)
+			}
+
+			mode.keyBindings.OnKeys[key].Messages = append(
+				mode.keyBindings.OnKeys[key].Messages,
+				message,
+			)
+		}
+
+		mode.helps = append(mode.helps, &Help{
 			Key: key,
-			Msg: message.Help,
+			Msg: actionConfig.Help,
 		})
 	}
 
-	return helps
+	if keyBindings.Default != nil {
+		mode.keyBindings.Default = &Action{
+			Messages: []*message.Message{},
+		}
+
+		for _, messageConfig := range keyBindings.Default.Messages {
+			message, err := message.NewMessage(messageConfig.Name, messageConfig.Args...)
+			if err != nil {
+				log.Fatalf("message not found: %s", messageConfig.Name)
+			}
+
+			mode.keyBindings.Default.Messages = append(
+				mode.keyBindings.Default.Messages,
+				message,
+			)
+		}
+	}
+
+	return &mode
 }
