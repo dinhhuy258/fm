@@ -29,14 +29,14 @@ func newExplorerView(g *gocui.Gui, v *gocui.View, hv *gocui.View) *ExplorerView 
 		hv:           newView(g, hv),
 		headerRow:    newRow(optional.NewEmpty[color.Color]()),
 		fileRow:      newRow(optional.NewEmpty[color.Color]()),
-		directoryRow: newRow(optional.New(toColor(config.AppConfig.DirectoryColor))),
-		selectionRow: newRow(optional.New(toColor(config.AppConfig.SelectionColor))),
+		directoryRow: newRow(optional.New(style.StringToColor(config.AppConfig.DirectoryColor))),
+		selectionRow: newRow(optional.New(style.StringToColor(config.AppConfig.SelectionColor))),
 	}
 
 	mv.v.Frame = false
 	mv.v.Highlight = true
-	mv.v.SelBgColor = toGocuiAttribute(toColor(config.AppConfig.FocusBg))
-	mv.v.SelFgColor = toGocuiAttribute(toColor(config.AppConfig.FocusFg))
+	mv.v.SelBgColor = style.StringToGoCuiColor(config.AppConfig.FocusBg)
+	mv.v.SelFgColor = style.StringToGoCuiColor(config.AppConfig.FocusFg)
 
 	return mv
 }
