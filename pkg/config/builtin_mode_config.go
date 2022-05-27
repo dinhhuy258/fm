@@ -62,6 +62,19 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
+			"n": {
+				Help: "new file",
+				Messages: []*MessageConfig{
+					{
+						Name: "SetInputBuffer",
+						Args: []string{""},
+					},
+					{
+						Name: "SwitchMode",
+						Args: []string{"new-file"},
+					},
+				},
+			},
 			"d": {
 				Help: "delete",
 				Messages: []*MessageConfig{

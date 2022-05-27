@@ -40,8 +40,14 @@ func (iv *InputView) UpdateInputBufferFromKey(key key.Key) {
 			iv.v.TextArea.TypeRune(key.(rune))
 		case gocui.Key:
 			switch {
+			case key == gocui.KeySpace:
+				iv.v.TextArea.TypeRune(' ')
 			case k == gocui.KeyBackspace || k == gocui.KeyBackspace2:
-				iv.v.TextArea.DeleteChar()
+				x, _ := iv.v.Cursor()
+
+				if x > len(iv.prompt) {
+					iv.v.TextArea.BackSpaceChar()
+				}
 			case k == gocui.KeyArrowLeft:
 				x, _ := iv.v.Cursor()
 
@@ -50,6 +56,10 @@ func (iv *InputView) UpdateInputBufferFromKey(key key.Key) {
 				}
 			case k == gocui.KeyArrowRight:
 				iv.v.TextArea.MoveCursorRight()
+			case key == gocui.KeyCtrlA || key == gocui.KeyHome:
+				iv.v.TextArea.SetCursor2D(len(iv.prompt), 0)
+			case key == gocui.KeyCtrlE || key == gocui.KeyEnd:
+				iv.v.TextArea.GoToEndOfLine()
 			}
 		}
 
