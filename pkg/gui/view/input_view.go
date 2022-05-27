@@ -19,15 +19,18 @@ func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
 	}
 
 	iv.SetTitle(" Input ")
+	iv.SetAsCurrentView()
 
 	return iv
 }
 
 func (iv *InputView) SetInputBuffer(input string) {
-	iv.v.TextArea.TypeString(iv.prompt + input)
+	textArea := iv.GetTextArea()
+
+	textArea.Clear()
+	textArea.TypeString(iv.prompt + input)
 	iv.v.RenderTextArea()
 
-	_, _ = iv.g.SetCurrentView(iv.v.Name())
 	iv.SetViewOnTop()
 }
 
@@ -37,35 +40,37 @@ func (iv *InputView) GetInputBuffer() string {
 
 func (iv *InputView) UpdateInputBufferFromKey(key key.Key) {
 	iv.g.Update(func(g *gocui.Gui) error {
+		textArea := iv.GetTextArea()
+
 		switch k := key.(type) {
 		case rune:
-			iv.v.TextArea.TypeRune(key.(rune))
+			textArea.TypeRune(key.(rune))
 		case gocui.Key:
 			switch {
 			case key == gocui.KeySpace:
-				iv.v.TextArea.TypeRune(' ')
+				textArea.TypeRune(' ')
 			case k == gocui.KeyBackspace || k == gocui.KeyBackspace2:
 				x, _ := iv.v.Cursor()
 
 				if x > len(iv.prompt) {
-					iv.v.TextArea.BackSpaceChar()
+					textArea.BackSpaceChar()
 				}
 			case k == gocui.KeyArrowLeft:
 				x, _ := iv.v.Cursor()
 
 				if x > len(iv.prompt) {
-					iv.v.TextArea.MoveCursorLeft()
+					textArea.MoveCursorLeft()
 				}
 			case k == gocui.KeyArrowRight:
-				iv.v.TextArea.MoveCursorRight()
+				textArea.MoveCursorRight()
 			case key == gocui.KeyCtrlA || key == gocui.KeyHome:
-				iv.v.TextArea.SetCursor2D(len(iv.prompt), 0)
+				textArea.SetCursor2D(len(iv.prompt), 0)
 			case key == gocui.KeyCtrlE || key == gocui.KeyEnd:
-				iv.v.TextArea.GoToEndOfLine()
+				textArea.GoToEndOfLine()
 			}
 		}
 
-		iv.v.RenderTextArea()
+		iv.RenderTextArea()
 
 		return nil
 	})

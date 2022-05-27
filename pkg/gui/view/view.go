@@ -111,6 +111,18 @@ func (view *View) SetViewContent(displayStrings []string) {
 	})
 }
 
+func (view *View) GetTextArea() *gocui.TextArea {
+	return view.v.TextArea
+}
+
+func (view *View) RenderTextArea() {
+	view.v.RenderTextArea()
+}
+
+func (view *View) SetAsCurrentView() {
+	_, _ = view.g.SetCurrentView(view.v.Name())
+}
+
 func (view *View) Size() (x, y int) {
 	return view.v.Size()
 }
