@@ -115,6 +115,10 @@ func (view *View) NextCursor() error {
 	return nil
 }
 
+func (view *View) FocusPoint(cx, cy int) {
+	view.v.FocusPoint(cx, cy)
+}
+
 func (view *View) PreviousCursor() error {
 	cx, cy := view.v.Cursor()
 	if err := view.v.SetCursor(cx, cy-1); err != nil {

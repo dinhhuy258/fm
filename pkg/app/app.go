@@ -8,7 +8,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/key"
-	"github.com/dinhhuy258/fm/pkg/message"
+	"github.com/dinhhuy258/fm/pkg/msg"
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -47,16 +47,16 @@ func (app *App) onModeChanged() {
 
 	helps := currentMode.GetHelp()
 
-	keys := make([]string, 0, len(helps))
-	msgs := make([]string, 0, len(helps))
+	helpKeys := make([]string, 0, len(helps))
+	helpMsgs := make([]string, 0, len(helps))
 
 	for _, h := range helps {
-		keys = append(keys, key.GetKeyDisplay(h.Key))
-		msgs = append(msgs, h.Msg)
+		helpKeys = append(helpKeys, key.GetKeyDisplay(h.Key))
+		helpMsgs = append(helpMsgs, h.Msg)
 	}
 
 	helpController, _ := app.GetController(controller.Help).(*controller.HelpController)
-	helpController.SetHelp(currentMode.GetName(), keys, msgs)
+	helpController.SetHelp(currentMode.GetName(), helpKeys, helpMsgs)
 	helpController.UpdateView()
 }
 
@@ -161,5 +161,5 @@ func (app *App) onGuiReady() {
 		log.Fatalf("failed to get current working directory %v", err)
 	}
 
-	message.ChangeDirectory(app, wd)
+	msg.ChangeDirectory(app, wd)
 }

@@ -88,13 +88,17 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Opti
 	})
 }
 
+func (ec *ExplorerController) Focus() {
+	ec.view.FocusPoint(0, ec.focus)
+}
+
 func (ec *ExplorerController) FocusPrevious() {
 	if ec.focus <= 0 {
 		return
 	}
 
-	_ = ec.view.PreviousCursor()
 	ec.focus--
+	ec.Focus()
 }
 
 func (ec *ExplorerController) FocusNext() {
@@ -102,20 +106,18 @@ func (ec *ExplorerController) FocusNext() {
 		return
 	}
 
-	_ = ec.view.NextCursor()
 	ec.focus++
+	ec.Focus()
 }
 
 func (ec *ExplorerController) FocusFirst() {
-	_ = ec.view.ResetCursor()
-
 	ec.focus = 0
+	ec.Focus()
 }
 
 func (ec *ExplorerController) FocusLast() {
-	for ec.focus < len(ec.entries)-1 {
-		ec.FocusNext()
-	}
+	ec.focus = len(ec.entries) - 1
+	ec.Focus()
 }
 
 func (ec *ExplorerController) FocusPath(path string) {
@@ -143,9 +145,6 @@ func (ec *ExplorerController) focusPath(path string) {
 
 	_ = ec.view.ResetCursor()
 
-	for i := 0; i < focus; i++ {
-		_ = ec.view.NextCursor()
-	}
-
 	ec.focus = focus
+	ec.Focus()
 }

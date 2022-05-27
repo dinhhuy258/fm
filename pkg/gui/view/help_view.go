@@ -31,14 +31,14 @@ func (hv *HelpView) layout() {
 	hv.helpRow.SetWidth(x)
 }
 
-func (hv *HelpView) UpdateView(title string, keys []string, msgs []string) {
-	lines := make([]string, 0, len(keys))
+func (hv *HelpView) UpdateView(title string, helpKeys []string, helpMsgs []string) {
+	lines := make([]string, 0, len(helpKeys))
 
-	for i := 0; i < len(keys); i++ {
-		key := keys[i]
-		msg := msgs[i]
+	for i := 0; i < len(helpKeys); i++ {
+		helpKey := helpKeys[i]
+		helpMsg := helpMsgs[i]
 
-		line, err := hv.helpRow.Sprint([]string{key, msg})
+		line, err := hv.helpRow.Sprint([]string{helpKey, helpMsg})
 		if err != nil {
 			log.Fatalf("failed to set content for help view %v", err)
 		}
