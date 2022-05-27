@@ -7,42 +7,67 @@ import (
 	set "github.com/deckarep/golang-set/v2"
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
-	"github.com/dinhhuy258/fm/pkg/gui/view/row"
 	"github.com/dinhhuy258/fm/pkg/gui/view/style"
 	"github.com/dinhhuy258/fm/pkg/optional"
 	"github.com/dinhhuy258/gocui"
 	"github.com/gookit/color"
 )
 
-type ExplorerView struct {
+type ExplorerHeaderView struct {
 	*View
-	hv           *View
-	headerRow    *row.Row
-	fileRow      *row.Row
-	directoryRow *row.Row
-	selectionRow *row.Row
+	headerRow *style.Row
 }
 
-func newExplorerView(g *gocui.Gui, v *gocui.View, hv *gocui.View) *ExplorerView {
-	mv := &ExplorerView{
+func newExplorerHeaderView(g *gocui.Gui, v *gocui.View) *ExplorerHeaderView {
+	ehv := &ExplorerHeaderView{
+		View:      newView(g, v),
+		headerRow: newRow(optional.NewEmpty[color.Color]()),
+	}
+
+	return ehv
+}
+
+func (ehv *ExplorerHeaderView) layout() error {
+	x, _ := ehv.Size()
+	ehv.headerRow.SetWidth(x)
+
+	rowString, err := ehv.headerRow.Sprint(
+		[]string{config.AppConfig.IndexHeader, config.AppConfig.PathHeader, config.AppConfig.SizeHeader},
+	)
+	if err != nil {
+		return err
+	}
+
+	ehv.SetViewContent([]string{rowString})
+
+	return nil
+}
+
+type ExplorerView struct {
+	*View
+	fileRow      *style.Row
+	directoryRow *style.Row
+	selectionRow *style.Row
+}
+
+func newExplorerView(g *gocui.Gui, v *gocui.View) *ExplorerView {
+	ev := &ExplorerView{
 		View:         newView(g, v),
-		hv:           newView(g, hv),
-		headerRow:    newRow(optional.NewEmpty[color.Color]()),
 		fileRow:      newRow(optional.NewEmpty[color.Color]()),
 		directoryRow: newRow(optional.New(style.StringToColor(config.AppConfig.DirectoryColor))),
 		selectionRow: newRow(optional.New(style.StringToColor(config.AppConfig.SelectionColor))),
 	}
 
-	mv.v.Frame = false
-	mv.v.Highlight = true
-	mv.v.SelBgColor = style.StringToGoCuiColor(config.AppConfig.FocusBg)
-	mv.v.SelFgColor = style.StringToGoCuiColor(config.AppConfig.FocusFg)
+	ev.v.Frame = false
+	ev.v.Highlight = true
+	ev.v.SelBgColor = style.StringToGoCuiColor(config.AppConfig.FocusBg)
+	ev.v.SelFgColor = style.StringToGoCuiColor(config.AppConfig.FocusFg)
 
-	return mv
+	return ev
 }
 
-func newRow(pathColor optional.Optional[color.Color]) *row.Row {
-	r := &row.Row{}
+func newRow(pathColor optional.Optional[color.Color]) *style.Row {
+	r := &style.Row{}
 	r.AddCell(config.AppConfig.IndexPercentage, true, nil)
 
 	pathColor.IfPresentOrElse(func(c *color.Color) {
@@ -57,7 +82,7 @@ func newRow(pathColor optional.Optional[color.Color]) *row.Row {
 	return r
 }
 
-func (mv *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[string], focus int) {
+func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[string], focus int) {
 	entriesSize := len(entries)
 	lines := make([]string, entriesSize)
 	cfg := config.AppConfig
@@ -87,11 +112,11 @@ func (mv *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 			path = cfg.PathPrefix + path
 		}
 
-		r := mv.fileRow
+		r := ev.fileRow
 		if isSelected {
-			r = mv.selectionRow
+			r = ev.selectionRow
 		} else if entry.IsDirectory() {
-			r = mv.directoryRow
+			r = ev.directoryRow
 		}
 
 		size := fs.Humanize(entry.GetSize())
@@ -105,35 +130,14 @@ func (mv *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 		lines[idx] = line
 	}
 
-	mv.SetViewContent(lines)
+	ev.SetViewContent(lines)
 }
 
-func (mv *ExplorerView) SetTitle(title string) {
-	mv.hv.SetTitle(title)
-}
-
-func (mv *ExplorerView) SetAsCurrentView() {
-	_, err := mv.g.SetCurrentView(mv.v.Name())
-	if err != nil {
-		log.Fatalf("failed to set explorer view as the current view %v", err)
-	}
-}
-
-func (mv *ExplorerView) layout() error {
-	x, _ := mv.v.Size()
-	mv.headerRow.SetWidth(x)
-	mv.directoryRow.SetWidth(x)
-	mv.fileRow.SetWidth(x)
-	mv.selectionRow.SetWidth(x)
-
-	rowString, err := mv.headerRow.Sprint(
-		[]string{config.AppConfig.IndexHeader, config.AppConfig.PathHeader, config.AppConfig.SizeHeader},
-	)
-	if err != nil {
-		return err
-	}
-
-	mv.hv.SetViewContent([]string{rowString})
+func (ev *ExplorerView) layout() error {
+	x, _ := ev.Size()
+	ev.directoryRow.SetWidth(x)
+	ev.fileRow.SetWidth(x)
+	ev.selectionRow.SetWidth(x)
 
 	return nil
 }

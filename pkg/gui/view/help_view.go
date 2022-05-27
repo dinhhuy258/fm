@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/dinhhuy258/fm/pkg/gui/view/row"
+	"github.com/dinhhuy258/fm/pkg/gui/view/style"
+
 	"github.com/dinhhuy258/gocui"
 )
 
 type HelpView struct {
 	*View
 
-	helpRow *row.Row
+	helpRow *style.Row
 }
 
 func newHelpView(g *gocui.Gui, v *gocui.View) *HelpView {
@@ -19,16 +20,11 @@ func newHelpView(g *gocui.Gui, v *gocui.View) *HelpView {
 		View: newView(g, v),
 	}
 
-	hv.helpRow = &row.Row{}
+	hv.helpRow = &style.Row{}
 	hv.helpRow.AddCell(35, true, nil)
 	hv.helpRow.AddCell(65, true, nil)
 
 	return hv
-}
-
-func (hv *HelpView) layout() {
-	x, _ := hv.v.Size()
-	hv.helpRow.SetWidth(x)
 }
 
 func (hv *HelpView) UpdateView(title string, helpKeys []string, helpMsgs []string) {
@@ -48,4 +44,11 @@ func (hv *HelpView) UpdateView(title string, helpKeys []string, helpMsgs []strin
 
 	hv.SetViewContent(lines)
 	hv.SetTitle(fmt.Sprintf(" Help [%s] ", title))
+}
+
+func (hv *HelpView) layout() error {
+	x, _ := hv.Size()
+	hv.helpRow.SetWidth(x)
+
+	return nil
 }

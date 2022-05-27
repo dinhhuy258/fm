@@ -18,16 +18,19 @@ type ExplorerController struct {
 	entries    []fs.IEntry
 	selections set.Set[string]
 
-	view *view.ExplorerView
+	view       *view.ExplorerView
+	headerView *view.ExplorerHeaderView
 }
 
 func newExplorerController(baseController *BaseController,
 	view *view.ExplorerView,
+	headerView *view.ExplorerHeaderView,
 	selections set.Set[string],
 ) *ExplorerController {
 	return &ExplorerController{
 		BaseController: baseController,
 		view:           view,
+		headerView:     headerView,
 
 		focus:      0,
 		selections: selections,
@@ -79,7 +82,7 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Opti
 	ec.entries = entries
 
 	title := " " + path + " (" + strconv.Itoa(len(ec.entries)) + ") "
-	ec.view.SetTitle(title)
+	ec.headerView.SetTitle(title)
 
 	focusPath.IfPresentOrElse(func(focusPath *string) {
 		ec.focusPath(*focusPath)

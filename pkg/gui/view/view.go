@@ -9,12 +9,13 @@ import (
 )
 
 type Views struct {
-	Explorer  *ExplorerView
-	Selection *SelectionView
-	Help      *HelpView
-	Input     *InputView
-	Log       *LogView
-	Progress  *ProgressView
+	Explorer       *ExplorerView
+	ExplorerHeader *ExplorerHeaderView
+	Selection      *SelectionView
+	Help           *HelpView
+	Input          *InputView
+	Log            *LogView
+	Progress       *ProgressView
 }
 
 func CreateAllViews(g *gocui.Gui) *Views {
@@ -47,19 +48,42 @@ func CreateAllViews(g *gocui.Gui) *Views {
 	}
 
 	return &Views{
-		Explorer:  newExplorerView(g, explorer, explorerHeader),
-		Selection: newSelectionView(g, selection),
-		Help:      newHelpView(g, help),
-		Input:     newInputView(g, input),
-		Log:       newLogView(g, log),
-		Progress:  newProgressView(g, progress),
+		Explorer:       newExplorerView(g, explorer),
+		ExplorerHeader: newExplorerHeaderView(g, explorerHeader),
+		Selection:      newSelectionView(g, selection),
+		Help:           newHelpView(g, help),
+		Input:          newInputView(g, input),
+		Log:            newLogView(g, log),
+		Progress:       newProgressView(g, progress),
 	}
 }
 
 func (v *Views) Layout() error {
-	v.Help.layout()
-
 	if err := v.Explorer.layout(); err != nil {
+		return err
+	}
+
+	if err := v.ExplorerHeader.layout(); err != nil {
+		return err
+	}
+
+	if err := v.Selection.layout(); err != nil {
+		return err
+	}
+
+	if err := v.Help.layout(); err != nil {
+		return err
+	}
+
+	if err := v.Input.layout(); err != nil {
+		return err
+	}
+
+	if err := v.Log.layout(); err != nil {
+		return err
+	}
+
+	if err := v.Progress.layout(); err != nil {
 		return err
 	}
 
@@ -87,7 +111,7 @@ func (view *View) SetViewContent(displayStrings []string) {
 	})
 }
 
-func (view *View) Size() (int, int) {
+func (view *View) Size() (x, y int) {
 	return view.v.Size()
 }
 
@@ -103,4 +127,8 @@ func (view *View) SetViewOnTop() {
 	if _, err := view.g.SetViewOnTop(view.v.Name()); err != nil {
 		log.Fatalf("failed to set view %s on top. Error: %v", view.v.Name(), err)
 	}
+}
+
+func (view *View) layout() error {
+	return nil
 }

@@ -19,8 +19,7 @@ const (
 type Event int8
 
 const (
-	InputDone Event = iota
-	ShowErrorLog
+	ShowErrorLog Event = iota
 )
 
 type Mediator interface {
@@ -49,7 +48,8 @@ func CreateAllControllers(views *view.Views) *Controllers {
 	}
 
 	c.controllers = make(map[Type]IController)
-	c.controllers[Explorer] = newExplorerController(baseController, views.Explorer, selections)
+	c.controllers[Explorer] = newExplorerController(baseController, views.Explorer,
+		views.ExplorerHeader, selections)
 	c.controllers[Sellection] = newSelectionController(baseController, views.Selection, selections)
 	c.controllers[Help] = newHelpController(baseController, views.Help)
 	c.controllers[Progress] = newProgressController(baseController, views.Progress)
@@ -64,13 +64,9 @@ func (c *Controllers) GetController(controllerType Type) IController {
 }
 
 func (c *Controllers) notify(event Event, data string) {
-	explorerController, _ := c.controllers[Explorer].(*ExplorerController)
 	logController, _ := c.controllers[Log].(*LogController)
 
-	if event == InputDone {
-		explorerController.view.SetAsCurrentView()
-		logController.view.SetViewOnTop()
-	} else if event == ShowErrorLog {
+	if event == ShowErrorLog {
 		logController.SetLog(view.Error, data)
 	}
 }

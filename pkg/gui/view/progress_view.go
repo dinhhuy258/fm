@@ -26,7 +26,7 @@ func newProgressView(g *gocui.Gui, v *gocui.View) *ProgressView {
 func (pv *ProgressView) UpdateView(current int, total int) {
 	percent := float32(current) / float32(total)
 
-	x, _ := pv.v.Size()
+	x, _ := pv.Size()
 
 	progressBar := ""
 	fullCount := int(float32(x) * percent)
