@@ -5,6 +5,8 @@ import (
 	"github.com/dinhhuy258/gocui"
 )
 
+const inputPrompt = "> "
+
 type InputView struct {
 	*View
 	prompt string
@@ -12,11 +14,11 @@ type InputView struct {
 
 func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
 	iv := &InputView{
-		View: newView(g, v),
+		View:   newView(g, v),
+		prompt: inputPrompt,
 	}
 
-	iv.prompt = "> "
-	iv.v.Title = " Input "
+	iv.SetTitle(" Input ")
 
 	return iv
 }

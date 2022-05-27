@@ -78,7 +78,7 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Opti
 
 	ec.entries = entries
 
-	title := (" " + path + " (" + strconv.Itoa(len(ec.entries)) + ") ")
+	title := " " + path + " (" + strconv.Itoa(len(ec.entries)) + ") "
 	ec.view.SetTitle(title)
 
 	focusPath.IfPresentOrElse(func(focusPath *string) {
@@ -142,8 +142,6 @@ func (ec *ExplorerController) focusPath(path string) {
 			break
 		}
 	}
-
-	_ = ec.view.ResetCursor()
 
 	ec.focus = focus
 	ec.Focus()

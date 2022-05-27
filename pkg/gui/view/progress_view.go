@@ -40,7 +40,7 @@ func (pv *ProgressView) UpdateView(current int, total int) {
 		progressBar += progressEmpty
 	}
 
-	pv.v.Title = fmt.Sprintf(" Progress (%s) ", fmt.Sprintf("%0.0f%%", percent*100))
+	pv.SetTitle(fmt.Sprintf(" Progress (%s) ", fmt.Sprintf("%0.0f%%", percent*100)))
 	pv.SetViewContent([]string{progressBar})
 	pv.SetViewOnTop()
 }

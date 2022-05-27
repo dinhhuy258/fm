@@ -109,7 +109,7 @@ func (mv *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 }
 
 func (mv *ExplorerView) SetTitle(title string) {
-	mv.hv.v.Title = title
+	mv.hv.SetTitle(title)
 }
 
 func (mv *ExplorerView) SetAsCurrentView() {

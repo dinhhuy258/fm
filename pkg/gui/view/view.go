@@ -91,56 +91,12 @@ func (view *View) Size() (int, int) {
 	return view.v.Size()
 }
 
-func (view *View) SetOrigin(x, y int) error {
-	return view.v.SetOrigin(x, y)
-}
-
-func (view *View) SetCursor(x, y int) error {
-	return view.v.SetCursor(x, y)
-}
-
 func (view *View) SetTitle(title string) {
 	view.v.Title = title
 }
 
-func (view *View) NextCursor() error {
-	cx, cy := view.v.Cursor()
-	if err := view.v.SetCursor(cx, cy+1); err != nil {
-		ox, oy := view.v.Origin()
-		if err := view.v.SetOrigin(ox, oy+1); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (view *View) FocusPoint(cx, cy int) {
 	view.v.FocusPoint(cx, cy)
-}
-
-func (view *View) PreviousCursor() error {
-	cx, cy := view.v.Cursor()
-	if err := view.v.SetCursor(cx, cy-1); err != nil {
-		ox, oy := view.v.Origin()
-		if err := view.v.SetOrigin(ox, oy-1); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (view *View) ResetCursor() error {
-	if err := view.SetCursor(0, 0); err != nil {
-		return err
-	}
-
-	if err := view.SetOrigin(0, 0); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (view *View) SetViewOnTop() {

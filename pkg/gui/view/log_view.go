@@ -23,7 +23,7 @@ func newLogView(g *gocui.Gui, v *gocui.View) *LogView {
 		newView(g, v),
 	}
 
-	lv.v.Title = " Logs "
+	lv.SetTitle(" Logs ")
 	lv.SetViewOnTop()
 
 	return lv

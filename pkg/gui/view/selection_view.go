@@ -26,5 +26,5 @@ func (sv *SelectionView) UpdateView(selections []string) {
 }
 
 func (sv *SelectionView) setTitle(selectionsNum int) {
-	sv.v.Title = fmt.Sprintf(" Selection (%d) ", selectionsNum)
+	sv.SetTitle(fmt.Sprintf(" Selection (%d) ", selectionsNum))
 }
