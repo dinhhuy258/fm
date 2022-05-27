@@ -27,6 +27,11 @@ func (lc *LogController) SetLog(level view.LogLevel, msgFormat string, args ...i
 	lc.msg = fmt.Sprintf(msgFormat, args...)
 }
 
+func (lc *LogController) SetVisible(visible bool) {
+	lc.view.SetVisible(visible)
+}
+
 func (lc *LogController) UpdateView() {
+	lc.SetVisible(true)
 	lc.view.UpdateView(lc.level, lc.msg)
 }

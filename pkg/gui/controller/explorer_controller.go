@@ -63,7 +63,7 @@ func (ec *ExplorerController) GetPath() string {
 
 func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Optional[string]) {
 	if !fs.IsDir(path) {
-		ec.mediator.notify(ShowErrorLog, path+" is not a directory")
+		ec.mediator.notify(ShowErrorLog, optional.New(path+" is not a directory"))
 
 		return
 	}
@@ -74,7 +74,7 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Opti
 
 	entries, err := fs.LoadEntries(path, cfg.ShowHidden)
 	if err != nil {
-		ec.mediator.notify(ShowErrorLog, "Failed to load directory: "+path)
+		ec.mediator.notify(ShowErrorLog, optional.New("Failed to load directory: "+path))
 
 		return
 	}

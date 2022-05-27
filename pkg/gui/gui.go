@@ -33,6 +33,11 @@ func (gui *Gui) Run(onGuiReady func()) error {
 	gui.g.SetManager(gocui.ManagerFunc(gui.layout))
 
 	gui.views = view.CreateAllViews(gui.g)
+
+	if _, err := gui.g.SetCurrentView(gui.views.Input.GetName()); err != nil {
+		return err
+	}
+
 	gui.controllers = controller.CreateAllControllers(gui.views)
 
 	if err := gui.layout(gui.g); err != nil {

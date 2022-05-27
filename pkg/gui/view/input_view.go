@@ -19,7 +19,6 @@ func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
 	}
 
 	iv.SetTitle(" Input ")
-	iv.SetAsCurrentView()
 
 	return iv
 }
@@ -30,8 +29,6 @@ func (iv *InputView) SetInputBuffer(input string) {
 	textArea.Clear()
 	textArea.TypeString(iv.prompt + input)
 	iv.v.RenderTextArea()
-
-	iv.SetViewOnTop()
 }
 
 func (iv *InputView) GetInputBuffer() string {

@@ -3,6 +3,7 @@ package controller
 import (
 	set "github.com/deckarep/golang-set/v2"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
+	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 type Type int8
@@ -20,10 +21,11 @@ type Event int8
 
 const (
 	ShowErrorLog Event = iota
+	LogHidden
 )
 
 type Mediator interface {
-	notify(Event, string)
+	notify(Event, optional.Optional[string])
 }
 
 type IController interface{}
@@ -63,10 +65,15 @@ func (c *Controllers) GetController(controllerType Type) IController {
 	return c.controllers[controllerType]
 }
 
-func (c *Controllers) notify(event Event, data string) {
+func (c *Controllers) notify(event Event, data optional.Optional[string]) {
 	logController, _ := c.controllers[Log].(*LogController)
 
-	if event == ShowErrorLog {
-		logController.SetLog(view.Error, data)
+	switch event {
+	case ShowErrorLog:
+		data.IfPresent(func(logMsg *string) {
+			logController.SetLog(view.Error, *logMsg)
+		})
+	case LogHidden:
+		logController.SetVisible(false)
 	}
 }

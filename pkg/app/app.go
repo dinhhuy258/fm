@@ -80,6 +80,9 @@ func (app *App) PopMode() {
 		log.Fatalf("failed to pop mode %v", err)
 	}
 
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
+	logController.SetVisible(true)
+
 	app.onModeChanged()
 }
 

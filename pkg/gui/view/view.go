@@ -2,7 +2,6 @@ package view
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/dinhhuy258/gocui"
@@ -37,9 +36,9 @@ func CreateAllViews(g *gocui.Gui) *Views {
 		{viewPtr: &explorer, name: "explorer"},
 		{viewPtr: &selection, name: "selection"},
 		{viewPtr: &help, name: "help"},
+		{viewPtr: &progress, name: "progress"},
 		{viewPtr: &input, name: "input"},
 		{viewPtr: &log, name: "log"},
-		{viewPtr: &progress, name: "progress"},
 	}
 
 	for _, mapping := range viewNameMappings {
@@ -111,6 +110,10 @@ func (view *View) SetViewContent(displayStrings []string) {
 	})
 }
 
+func (view *View) SetVisible(visible bool) {
+	view.v.Visible = visible
+}
+
 func (view *View) GetTextArea() *gocui.TextArea {
 	return view.v.TextArea
 }
@@ -119,8 +122,8 @@ func (view *View) RenderTextArea() {
 	view.v.RenderTextArea()
 }
 
-func (view *View) SetAsCurrentView() {
-	_, _ = view.g.SetCurrentView(view.v.Name())
+func (view *View) GetName() string {
+	return view.v.Name()
 }
 
 func (view *View) Size() (x, y int) {
@@ -133,12 +136,6 @@ func (view *View) SetTitle(title string) {
 
 func (view *View) FocusPoint(cx, cy int) {
 	view.v.FocusPoint(cx, cy)
-}
-
-func (view *View) SetViewOnTop() {
-	if _, err := view.g.SetViewOnTop(view.v.Name()); err != nil {
-		log.Fatalf("failed to set view %s on top. Error: %v", view.v.Name(), err)
-	}
 }
 
 func (view *View) layout() error {
