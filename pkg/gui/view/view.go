@@ -43,7 +43,7 @@ func CreateAllViews(g *gocui.Gui) *Views {
 
 	for _, mapping := range viewNameMappings {
 		// No need to handle error here, since we are creating views
-		*mapping.viewPtr, _ = g.SetView(mapping.name, 0, 0, 10, 10)
+		*mapping.viewPtr, _ = g.SetView(mapping.name, 0, 0, 10, 10, 0)
 	}
 
 	return &Views{

@@ -36,22 +36,22 @@ func (iv *InputView) GetInputBuffer() string {
 func (iv *InputView) UpdateInputBufferFromKey(key key.Key) {
 	switch k := key.(type) {
 	case rune:
-		iv.v.v.EditWrite(k)
+		// iv.v.v.EditWrite(k)
 	case gocui.Key:
 		switch {
 		case k == gocui.KeyBackspace || k == gocui.KeyBackspace2:
 			x, _ := iv.v.v.Cursor()
 			if x > len(iv.prompt) {
-				iv.v.v.EditDelete(true)
+				// iv.v.v.EditDelete(true)
 			}
 		case k == gocui.KeyArrowLeft:
 			x, _ := iv.v.v.Cursor()
 
 			if x > len(iv.prompt) {
-				iv.v.v.MoveCursor(-1, 0, false)
+				// iv.v.v.MoveCursor(-1, 0, false)
 			}
 		case k == gocui.KeyArrowRight:
-			iv.v.v.MoveCursor(1, 0, false)
+			// iv.v.v.MoveCursor(1, 0, false)
 		}
 	}
 }

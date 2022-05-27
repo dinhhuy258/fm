@@ -18,6 +18,9 @@ type IApp interface {
 	// Mode
 	PopMode()
 	PushMode(mode string)
+	// UI
+	Resume()
+	Suspend()
 }
 
 type Message struct {

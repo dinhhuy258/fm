@@ -96,6 +96,14 @@ func (app *App) Quit() {
 	app.gui.Quit()
 }
 
+func (app *App) Suspend() {
+	app.gui.Suspend()
+}
+
+func (app *App) Resume() {
+	app.gui.Resume()
+}
+
 func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 	keybindings := app.modes.Peek().GetKeyBindings()
 

@@ -92,7 +92,7 @@ func (gui *Gui) setViewDimensions() error {
 
 	for _, mapping := range viewNameMappings {
 		dimension := mapping.dimension
-		_, err := gui.g.SetView(mapping.name, dimension.x0, dimension.y0, dimension.x1, dimension.y1)
+		_, err := gui.g.SetView(mapping.name, dimension.x0, dimension.y0, dimension.x1, dimension.y1, 0)
 
 		if err != nil && !errors.Is(err, gocui.ErrUnknownView) {
 			return err
