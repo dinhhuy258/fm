@@ -14,29 +14,6 @@ type Gui struct {
 	controllers *controller.Controllers
 }
 
-func (gui *Gui) Suspend() {
-	gui.g.Update(func(g *gocui.Gui) error {
-		_ = gui.g.Suspend()
-
-		return nil
-	})
-}
-
-func (gui *Gui) Resume() {
-	gui.g.Update(func(g *gocui.Gui) error {
-		_ = gui.g.Resume()
-
-		return nil
-	})
-
-	explorerController, _ := gui.GetController(controller.Explorer).(*controller.ExplorerController)
-	explorerController.UpdateView()
-}
-
-func (gui *Gui) GetController(controllerType controller.Type) controller.IController {
-	return gui.controllers.GetController(controllerType)
-}
-
 func NewGui() *Gui {
 	return &Gui{}
 }
@@ -81,4 +58,22 @@ func (gui *Gui) Quit() {
 	gui.g.Update(func(g *gocui.Gui) error {
 		return gocui.ErrQuit
 	})
+}
+
+func (gui *Gui) OnUIThread(f func() error) {
+	gui.g.Update(func(*gocui.Gui) error {
+		return f()
+	})
+}
+
+func (gui *Gui) Suspend() error {
+	return gui.g.Suspend()
+}
+
+func (gui *Gui) Resume() error {
+	return gui.g.Resume()
+}
+
+func (gui *Gui) GetController(controllerType controller.Type) controller.IController {
+	return gui.controllers.GetController(controllerType)
 }

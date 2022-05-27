@@ -38,6 +38,10 @@ func (app *App) Run() error {
 	return app.gui.Run(app.onGuiReady)
 }
 
+func (app *App) OnUIThread(f func() error) {
+	app.gui.OnUIThread(f)
+}
+
 func (app *App) onModeChanged() {
 	currentMode := app.modes.Peek()
 
@@ -96,12 +100,12 @@ func (app *App) Quit() {
 	app.gui.Quit()
 }
 
-func (app *App) Suspend() {
-	app.gui.Suspend()
+func (app *App) Suspend() error {
+	return app.gui.Suspend()
 }
 
-func (app *App) Resume() {
-	app.gui.Resume()
+func (app *App) Resume() error {
+	return app.gui.Resume()
 }
 
 func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {

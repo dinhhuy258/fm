@@ -18,9 +18,10 @@ type IApp interface {
 	// Mode
 	PopMode()
 	PushMode(mode string)
-	// UI
-	Resume()
-	Suspend()
+	// GUI
+	OnUIThread(f func() error)
+	Resume() error
+	Suspend() error
 }
 
 type Message struct {
