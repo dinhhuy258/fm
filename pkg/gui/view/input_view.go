@@ -22,8 +22,8 @@ func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
 }
 
 func (iv *InputView) SetInputBuffer(input string) {
-	iv.v.SetViewContent([]string{iv.prompt + input})
-	_ = iv.v.v.SetCursor(len(iv.prompt)+len(input), 0)
+	iv.v.v.TextArea.TypeString(iv.prompt + input)
+	iv.v.v.RenderTextArea()
 
 	_, _ = iv.v.g.SetCurrentView(iv.v.v.Name())
 	iv.v.SetViewOnTop()
@@ -34,24 +34,27 @@ func (iv *InputView) GetInputBuffer() string {
 }
 
 func (iv *InputView) UpdateInputBufferFromKey(key key.Key) {
-	switch k := key.(type) {
-	case rune:
-		// iv.v.v.EditWrite(k)
-	case gocui.Key:
-		switch {
-		case k == gocui.KeyBackspace || k == gocui.KeyBackspace2:
-			x, _ := iv.v.v.Cursor()
-			if x > len(iv.prompt) {
-				// iv.v.v.EditDelete(true)
-			}
-		case k == gocui.KeyArrowLeft:
-			x, _ := iv.v.v.Cursor()
+	iv.v.g.Update(func(g *gocui.Gui) error {
+		switch k := key.(type) {
+		case rune:
+			iv.v.v.TextArea.TypeRune(key.(rune))
+		case gocui.Key:
+			switch {
+			case k == gocui.KeyBackspace || k == gocui.KeyBackspace2:
+				iv.v.v.TextArea.DeleteChar()
+			case k == gocui.KeyArrowLeft:
+				x, _ := iv.v.v.Cursor()
 
-			if x > len(iv.prompt) {
-				// iv.v.v.MoveCursor(-1, 0, false)
+				if x > len(iv.prompt) {
+					iv.v.v.TextArea.MoveCursorLeft()
+				}
+			case k == gocui.KeyArrowRight:
+				iv.v.v.TextArea.MoveCursorRight()
 			}
-		case k == gocui.KeyArrowRight:
-			// iv.v.v.MoveCursor(1, 0, false)
 		}
-	}
+
+		iv.v.v.RenderTextArea()
+
+		return nil
+	})
 }
