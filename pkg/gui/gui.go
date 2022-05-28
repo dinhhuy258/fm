@@ -14,40 +14,38 @@ type Gui struct {
 	controllers *controller.Controllers
 }
 
-func NewGui() *Gui {
-	return &Gui{}
-}
+func NewGui() (*Gui, error) {
+	gui := &Gui{}
 
-func (gui *Gui) Run(onGuiReady func()) error {
 	g, err := gocui.NewGui(gocui.OutputNormal, false, gocui.NORMAL, false, map[rune]string{})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	gui.g = g
 	gui.g.Cursor = true
 	gui.g.InputEsc = true
-
-	defer gui.g.Close()
-
 	gui.g.SetManager(gocui.ManagerFunc(gui.layout))
 
-	gui.views = view.CreateAllViews(gui.g)
+	gui.views = view.CreateViews(gui.g)
 
 	if _, err := gui.g.SetCurrentView(gui.views.Input.Name()); err != nil {
-		return err
+		return nil, err
 	}
 
-	gui.controllers = controller.CreateAllControllers(gui.views)
+	gui.controllers = controller.CreateControllers(gui.views)
 
 	if err := gui.layout(gui.g); err != nil {
-		return err
+		return nil, err
 	}
 
-	onGuiReady()
+	return gui, nil
+}
 
-	err = gui.g.MainLoop()
+func (gui *Gui) Run() error {
+	defer gui.g.Close()
 
+	err := gui.g.MainLoop()
 	if err != nil && !errors.Is(err, gocui.ErrQuit) {
 		return err
 	}

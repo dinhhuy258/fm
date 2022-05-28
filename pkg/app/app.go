@@ -22,20 +22,39 @@ type App struct {
 }
 
 // NewApp bootstrap a new application
-func NewApp() *App {
+func NewApp() (*App, error) {
+	gui, err := gui.NewGui()
+	if err != nil {
+		return nil, err
+	}
+
 	app := &App{
-		gui:               gui.NewGui(),
+		gui:               gui,
 		marks:             map[string]string{},
 		messageWorkerPool: pond.New(1 /* we only need one worker to avoid concurrency issue */, 10),
 	}
 
-	app.modes = CreateAllModes(app.marks)
+	app.modes = CreateModes(app.marks)
 
-	return app
+	return app, nil
 }
 
 func (app *App) Run() error {
-	return app.gui.Run(app.onGuiReady)
+	// Push the default mode
+	// TODO: Remove hard code here
+	app.PushMode("default")
+
+	// Set on key handler
+	app.gui.SetOnKeyFunc(app.onKey)
+
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil
+	}
+
+	msg.ChangeDirectory(app, wd)
+
+	return app.gui.Run()
 }
 
 func (app *App) OnUIThread(f func() error) {
@@ -146,19 +165,4 @@ func (app *App) submitMessages(messages []*msg.Message) {
 	app.messageWorkerPool.Submit(func() {
 		app.gui.Render()
 	})
-}
-
-func (app *App) onGuiReady() {
-	// Push the default mode
-	app.PushMode("default")
-
-	// Set on key handler
-	app.gui.SetOnKeyFunc(app.onKey)
-
-	wd, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("failed to get current working directory %v", err)
-	}
-
-	msg.ChangeDirectory(app, wd)
 }

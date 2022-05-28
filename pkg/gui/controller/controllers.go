@@ -40,7 +40,7 @@ type Controllers struct {
 	controllers map[Type]IController
 }
 
-func CreateAllControllers(views *view.Views) *Controllers {
+func CreateControllers(views *view.Views) *Controllers {
 	// Selections object to share between explorer and selection controllers
 	selections := set.NewSet[string]()
 	c := &Controllers{}

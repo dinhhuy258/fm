@@ -25,7 +25,10 @@ func main() {
 		log.Fatalf("failed to load application configuration %v", err)
 	}
 
-	app := app.NewApp()
+	app, err := app.NewApp()
+	if err != nil {
+		log.Fatalf("failed to run fm %v", err)
+	}
 
 	if err := app.Run(); err != nil {
 		log.Fatalf("failed to run fm %v", err)

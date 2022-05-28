@@ -16,7 +16,7 @@ type Views struct {
 	Progress       *ProgressView
 }
 
-func CreateAllViews(g *gocui.Gui) *Views {
+func CreateViews(g *gocui.Gui) *Views {
 	var (
 		explorerHeader *gocui.View
 		explorer       *gocui.View

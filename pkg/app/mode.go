@@ -54,7 +54,7 @@ type Modes struct {
 	CustomModes  map[string]*Mode
 }
 
-func CreateAllModes(marks map[string]string) *Modes {
+func CreateModes(marks map[string]string) *Modes {
 	builtinModes := make(map[string]*Mode)
 
 	for _, builtinMode := range config.AppConfig.BuiltinModeConfigs {
