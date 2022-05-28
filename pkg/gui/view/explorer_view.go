@@ -58,10 +58,10 @@ func newExplorerView(g *gocui.Gui, v *gocui.View) *ExplorerView {
 		selectionRow: newRow(optional.New(style.StringToColor(config.AppConfig.SelectionColor))),
 	}
 
-	ev.v.Frame = false
-	ev.v.Highlight = true
-	ev.v.SelBgColor = style.StringToGoCuiColor(config.AppConfig.FocusBg)
-	ev.v.SelFgColor = style.StringToGoCuiColor(config.AppConfig.FocusFg)
+	ev.Frame = false
+	ev.Highlight = true
+	ev.SelBgColor = style.StringToGoCuiColor(config.AppConfig.FocusBg)
+	ev.SelFgColor = style.StringToGoCuiColor(config.AppConfig.FocusFg)
 
 	return ev
 }

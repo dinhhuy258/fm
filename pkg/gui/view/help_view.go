@@ -43,7 +43,7 @@ func (hv *HelpView) UpdateView(title string, helpKeys []string, helpMsgs []strin
 	}
 
 	hv.SetViewContent(lines)
-	hv.SetTitle(fmt.Sprintf(" Help [%s] ", title))
+	hv.Title = fmt.Sprintf(" Help [%s] ", title)
 }
 
 func (hv *HelpView) layout() error {

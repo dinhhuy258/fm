@@ -28,7 +28,7 @@ func (lc *LogController) SetLog(level view.LogLevel, msgFormat string, args ...i
 }
 
 func (lc *LogController) SetVisible(visible bool) {
-	lc.view.SetVisible(visible)
+	lc.view.Visible = visible
 }
 
 func (lc *LogController) UpdateView() {

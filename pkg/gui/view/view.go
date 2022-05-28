@@ -1,7 +1,6 @@
 package view
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/dinhhuy258/gocui"
@@ -90,52 +89,20 @@ func (v *Views) Layout() error {
 }
 
 type View struct {
+	*gocui.View
+
 	g *gocui.Gui
-	v *gocui.View
 }
 
 func newView(g *gocui.Gui, v *gocui.View) *View {
 	return &View{
+		View: v,
 		g: g,
-		v: v,
 	}
 }
 
 func (view *View) SetViewContent(displayStrings []string) {
-	view.g.Update(func(g *gocui.Gui) error {
-		view.v.Clear()
-		_, err := fmt.Fprint(view.v, strings.Join(displayStrings, "\n"))
-
-		return err
-	})
-}
-
-func (view *View) SetVisible(visible bool) {
-	view.v.Visible = visible
-}
-
-func (view *View) GetTextArea() *gocui.TextArea {
-	return view.v.TextArea
-}
-
-func (view *View) RenderTextArea() {
-	view.v.RenderTextArea()
-}
-
-func (view *View) GetName() string {
-	return view.v.Name()
-}
-
-func (view *View) Size() (x, y int) {
-	return view.v.Size()
-}
-
-func (view *View) SetTitle(title string) {
-	view.v.Title = title
-}
-
-func (view *View) FocusPoint(cx, cy int) {
-	view.v.FocusPoint(cx, cy)
+	view.SetContent(strings.Join(displayStrings, "\n"))
 }
 
 func (view *View) layout() error {

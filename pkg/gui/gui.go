@@ -34,7 +34,7 @@ func (gui *Gui) Run(onGuiReady func()) error {
 
 	gui.views = view.CreateAllViews(gui.g)
 
-	if _, err := gui.g.SetCurrentView(gui.views.Input.GetName()); err != nil {
+	if _, err := gui.g.SetCurrentView(gui.views.Input.Name()); err != nil {
 		return err
 	}
 
