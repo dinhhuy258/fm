@@ -42,8 +42,13 @@ func Rename(oldPath, newPath string) error {
 	return os.Rename(oldPath, newPath)
 }
 
-func CreateFile(name string) error {
-	f, err := os.OpenFile(name, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+func CreateFile(name string, override bool) error {
+	flags := os.O_APPEND | os.O_CREATE | os.O_WRONLY
+	if override {
+		flags = os.O_TRUNC | os.O_CREATE | os.O_WRONLY
+	}
+
+	f, err := os.OpenFile(name, flags, 0o644)
 	if err != nil {
 		return err
 	}

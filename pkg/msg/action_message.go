@@ -28,7 +28,7 @@ func NewFileFromInput(app IApp, _ ...string) {
 	if strings.HasSuffix(name, "/") {
 		err = fs.CreateDirectory(name)
 	} else {
-		err = fs.CreateFile(name)
+		err = fs.CreateFile(name, false)
 	}
 
 	if err != nil {
