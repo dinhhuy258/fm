@@ -24,7 +24,6 @@ func newInputController(baseController *BaseController, view *view.InputView) *I
 func (ic *InputController) SetInputBuffer(input string) {
 	ic.view.SetInputBuffer(input)
 	ic.mediator.notify(LogHidden, optional.NewEmpty[string]())
-
 }
 
 func (ic *InputController) GetInputBuffer() string {

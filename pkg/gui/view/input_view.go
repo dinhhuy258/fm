@@ -40,7 +40,8 @@ func (iv *InputView) UpdateInputBufferFromKey(key key.Key) {
 
 	switch k := key.(type) {
 	case rune:
-		textArea.TypeRune(key.(rune))
+		r, _ := key.(rune)
+		textArea.TypeRune(r)
 	case gocui.Key:
 		switch {
 		case key == gocui.KeySpace:

@@ -113,7 +113,8 @@ func (gui *Gui) layout(_ *gocui.Gui) error {
 	}
 
 	// Re-focus explorer on resize
-	explorerController := gui.controllers.GetController(controller.Explorer).(*controller.ExplorerController)
+	// FIXME: Is there any better way to do this?
+	explorerController, _ := gui.controllers.GetController(controller.Explorer).(*controller.ExplorerController)
 	explorerController.Focus()
 
 	return nil

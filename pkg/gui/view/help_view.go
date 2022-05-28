@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/dinhhuy258/fm/pkg/gui/view/style"
-
 	"github.com/dinhhuy258/gocui"
 )
 
