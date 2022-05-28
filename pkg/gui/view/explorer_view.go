@@ -18,9 +18,9 @@ type ExplorerHeaderView struct {
 	headerRow *style.Row
 }
 
-func newExplorerHeaderView(g *gocui.Gui, v *gocui.View) *ExplorerHeaderView {
+func newExplorerHeaderView(v *gocui.View) *ExplorerHeaderView {
 	ehv := &ExplorerHeaderView{
-		View:      newView(g, v),
+		View:      newView(v),
 		headerRow: newRow(optional.NewEmpty[color.Color]()),
 	}
 
@@ -50,9 +50,9 @@ type ExplorerView struct {
 	selectionRow *style.Row
 }
 
-func newExplorerView(g *gocui.Gui, v *gocui.View) *ExplorerView {
+func newExplorerView(v *gocui.View) *ExplorerView {
 	ev := &ExplorerView{
-		View:         newView(g, v),
+		View:         newView(v),
 		fileRow:      newRow(optional.NewEmpty[color.Color]()),
 		directoryRow: newRow(optional.New(style.StringToColor(config.AppConfig.DirectoryColor))),
 		selectionRow: newRow(optional.New(style.StringToColor(config.AppConfig.SelectionColor))),

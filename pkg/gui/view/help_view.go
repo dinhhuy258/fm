@@ -15,9 +15,9 @@ type HelpView struct {
 	helpRow *style.Row
 }
 
-func newHelpView(g *gocui.Gui, v *gocui.View) *HelpView {
+func newHelpView(v *gocui.View) *HelpView {
 	hv := &HelpView{
-		View: newView(g, v),
+		View: newView(v),
 	}
 
 	hv.helpRow = &style.Row{}

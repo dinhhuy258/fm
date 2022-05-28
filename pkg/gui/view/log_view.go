@@ -18,9 +18,9 @@ type LogView struct {
 	*View
 }
 
-func newLogView(g *gocui.Gui, v *gocui.View) *LogView {
+func newLogView(v *gocui.View) *LogView {
 	lv := &LogView{
-		newView(g, v),
+		newView(v),
 	}
 
 	lv.Title = " Logs "

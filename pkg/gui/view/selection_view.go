@@ -10,9 +10,9 @@ type SelectionView struct {
 	*View
 }
 
-func newSelectionView(g *gocui.Gui, v *gocui.View) *SelectionView {
+func newSelectionView(v *gocui.View) *SelectionView {
 	sv := &SelectionView{
-		newView(g, v),
+		newView(v),
 	}
 
 	sv.setTitle(0)

@@ -46,13 +46,13 @@ func CreateAllViews(g *gocui.Gui) *Views {
 	}
 
 	return &Views{
-		Explorer:       newExplorerView(g, explorer),
-		ExplorerHeader: newExplorerHeaderView(g, explorerHeader),
-		Selection:      newSelectionView(g, selection),
-		Help:           newHelpView(g, help),
-		Input:          newInputView(g, input),
-		Log:            newLogView(g, log),
-		Progress:       newProgressView(g, progress),
+		Explorer:       newExplorerView(explorer),
+		ExplorerHeader: newExplorerHeaderView(explorerHeader),
+		Selection:      newSelectionView(selection),
+		Help:           newHelpView(help),
+		Input:          newInputView(input),
+		Log:            newLogView(log),
+		Progress:       newProgressView(progress),
 	}
 }
 
@@ -90,14 +90,11 @@ func (v *Views) Layout() error {
 
 type View struct {
 	*gocui.View
-
-	g *gocui.Gui
 }
 
-func newView(g *gocui.Gui, v *gocui.View) *View {
+func newView(v *gocui.View) *View {
 	return &View{
 		View: v,
-		g: g,
 	}
 }
 

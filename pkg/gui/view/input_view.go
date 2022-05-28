@@ -12,9 +12,9 @@ type InputView struct {
 	prompt string
 }
 
-func newInputView(g *gocui.Gui, v *gocui.View) *InputView {
+func newInputView(v *gocui.View) *InputView {
 	iv := &InputView{
-		View:   newView(g, v),
+		View:   newView(v),
 		prompt: inputPrompt,
 	}
 
@@ -36,39 +36,35 @@ func (iv *InputView) GetInputBuffer() string {
 }
 
 func (iv *InputView) UpdateInputBufferFromKey(key key.Key) {
-	iv.g.Update(func(g *gocui.Gui) error {
-		textArea := iv.TextArea
+	textArea := iv.TextArea
 
-		switch k := key.(type) {
-		case rune:
-			textArea.TypeRune(key.(rune))
-		case gocui.Key:
-			switch {
-			case key == gocui.KeySpace:
-				textArea.TypeRune(' ')
-			case k == gocui.KeyBackspace || k == gocui.KeyBackspace2:
-				x, _ := iv.Cursor()
+	switch k := key.(type) {
+	case rune:
+		textArea.TypeRune(key.(rune))
+	case gocui.Key:
+		switch {
+		case key == gocui.KeySpace:
+			textArea.TypeRune(' ')
+		case k == gocui.KeyBackspace || k == gocui.KeyBackspace2:
+			x, _ := iv.Cursor()
 
-				if x > len(iv.prompt) {
-					textArea.BackSpaceChar()
-				}
-			case k == gocui.KeyArrowLeft:
-				x, _ := iv.Cursor()
-
-				if x > len(iv.prompt) {
-					textArea.MoveCursorLeft()
-				}
-			case k == gocui.KeyArrowRight:
-				textArea.MoveCursorRight()
-			case key == gocui.KeyCtrlA || key == gocui.KeyHome:
-				textArea.SetCursor2D(len(iv.prompt), 0)
-			case key == gocui.KeyCtrlE || key == gocui.KeyEnd:
-				textArea.GoToEndOfLine()
+			if x > len(iv.prompt) {
+				textArea.BackSpaceChar()
 			}
+		case k == gocui.KeyArrowLeft:
+			x, _ := iv.Cursor()
+
+			if x > len(iv.prompt) {
+				textArea.MoveCursorLeft()
+			}
+		case k == gocui.KeyArrowRight:
+			textArea.MoveCursorRight()
+		case key == gocui.KeyCtrlA || key == gocui.KeyHome:
+			textArea.SetCursor2D(len(iv.prompt), 0)
+		case key == gocui.KeyCtrlE || key == gocui.KeyEnd:
+			textArea.GoToEndOfLine()
 		}
+	}
 
-		iv.RenderTextArea()
-
-		return nil
-	})
+	iv.RenderTextArea()
 }

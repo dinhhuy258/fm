@@ -15,9 +15,9 @@ type ProgressView struct {
 	*View
 }
 
-func newProgressView(g *gocui.Gui, v *gocui.View) *ProgressView {
+func newProgressView(v *gocui.View) *ProgressView {
 	pv := &ProgressView{
-		newView(g, v),
+		newView(v),
 	}
 
 	return pv
