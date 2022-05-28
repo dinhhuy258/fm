@@ -3,9 +3,11 @@ package msg
 import (
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/key"
+	"github.com/dinhhuy258/fm/pkg/pipe"
 )
 
 type IApp interface {
+	GetPipe() *pipe.Pipe
 	// Controller
 	GetController(controller.Type) controller.IController
 	// Key

@@ -27,10 +27,9 @@ func main() {
 
 	app, err := app.NewApp()
 	if err != nil {
-		log.Fatalf("failed to run fm %v", err)
+		log.Fatalf("failed to new app %v", err)
 	}
 
-	if err := app.Run(); err != nil {
-		log.Fatalf("failed to run fm %v", err)
-	}
+	_ = app.Run()
+	app.OnQuit()
 }

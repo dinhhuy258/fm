@@ -3,20 +3,26 @@ package app
 import (
 	"log"
 	"os"
+	"regexp"
+	"strings"
 
 	"github.com/alitto/pond"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/key"
 	"github.com/dinhhuy258/fm/pkg/msg"
+	"github.com/dinhhuy258/fm/pkg/pipe"
 	"github.com/dinhhuy258/gocui"
 )
+
+var messageInRegexp = regexp.MustCompile(`[^\s"]+|'([^']*)`)
 
 type App struct {
 	gui        *gui.Gui
 	marks      map[string]string
 	modes      *Modes
 	pressedKey key.Key
+	pipe       *pipe.Pipe
 
 	messageWorkerPool *pond.WorkerPool
 }
@@ -28,9 +34,15 @@ func NewApp() (*App, error) {
 		return nil, err
 	}
 
+	pipe, err := pipe.NewPipe()
+	if err != nil {
+		return nil, err
+	}
+
 	app := &App{
 		gui:               gui,
 		marks:             map[string]string{},
+		pipe:              pipe,
 		messageWorkerPool: pond.New(1 /* we only need one worker to avoid concurrency issue */, 10),
 	}
 
@@ -40,6 +52,8 @@ func NewApp() (*App, error) {
 }
 
 func (app *App) Run() error {
+	// Start watcher for the pipe
+	app.pipe.StartWatcher(app.onMessageIn)
 	// Push the default mode
 	// TODO: Remove hard code here
 	app.PushMode("default")
@@ -55,6 +69,10 @@ func (app *App) Run() error {
 	msg.ChangeDirectory(app, wd)
 
 	return app.gui.Run()
+}
+
+func (app *App) GetPipe() *pipe.Pipe {
+	return app.pipe
 }
 
 func (app *App) OnUIThread(f func() error) {
@@ -130,6 +148,10 @@ func (app *App) Resume() error {
 	return app.gui.Resume()
 }
 
+func (app *App) OnQuit() {
+	app.pipe.StopWatcher()
+}
+
 func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 	keybindings := app.modes.Peek().GetKeyBindings()
 
@@ -165,4 +187,28 @@ func (app *App) submitMessages(messages []*msg.Message) {
 	app.messageWorkerPool.Submit(func() {
 		app.gui.Render()
 	})
+}
+
+func (app *App) onMessageIn(messageIn string) {
+	if messageIn == "" {
+		// Ignore empty message
+		return
+	}
+
+	components := messageInRegexp.FindAllString(messageIn, -1)
+	if len(components) == 0 {
+		return
+	}
+
+	args := components[1:]
+	for idx, arg := range args {
+		args[idx] = strings.Trim(arg, "'")
+	}
+
+	message, err := msg.NewMessage(components[0], args...)
+	if err != nil {
+		return
+	}
+
+	app.submitMessages([]*msg.Message{message})
 }
