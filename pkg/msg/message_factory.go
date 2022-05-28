@@ -1,4 +1,4 @@
-package message
+package msg
 
 import "errors"
 
@@ -22,6 +22,7 @@ func (mf *MessageFactory) New(args ...string) *Message {
 }
 
 var messageFactories = map[string]*MessageFactory{
+	"BashExec":     newMessageFactory(BashExec),
 	"ToggleHidden": newMessageFactory(ToggleHidden),
 	"Refresh":      newMessageFactory(Refresh),
 	"Quit":         newMessageFactory(Quit),

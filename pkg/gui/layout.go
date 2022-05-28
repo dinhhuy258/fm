@@ -3,6 +3,7 @@ package gui
 import (
 	"errors"
 
+	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -92,7 +93,7 @@ func (gui *Gui) setViewDimensions() error {
 
 	for _, mapping := range viewNameMappings {
 		dimension := mapping.dimension
-		_, err := gui.g.SetView(mapping.name, dimension.x0, dimension.y0, dimension.x1, dimension.y1)
+		_, err := gui.g.SetView(mapping.name, dimension.x0, dimension.y0, dimension.x1, dimension.y1, 0)
 
 		if err != nil && !errors.Is(err, gocui.ErrUnknownView) {
 			return err
@@ -110,6 +111,11 @@ func (gui *Gui) layout(_ *gocui.Gui) error {
 	if err := gui.views.Layout(); err != nil {
 		return err
 	}
+
+	// Re-focus explorer on resize
+	// FIXME: Is there any better way to do this?
+	explorerController, _ := gui.controllers.GetController(controller.Explorer).(*controller.ExplorerController)
+	explorerController.Focus()
 
 	return nil
 }

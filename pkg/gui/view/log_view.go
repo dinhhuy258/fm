@@ -18,13 +18,12 @@ type LogView struct {
 	*View
 }
 
-func newLogView(g *gocui.Gui, v *gocui.View) *LogView {
+func newLogView(v *gocui.View) *LogView {
 	lv := &LogView{
-		newView(g, v),
+		newView(v),
 	}
 
-	lv.v.Title = " Logs "
-	lv.SetViewOnTop()
+	lv.Title = " Logs "
 
 	return lv
 }
@@ -45,5 +44,4 @@ func (lv *LogView) UpdateView(level LogLevel, log string) {
 	}
 
 	lv.SetViewContent([]string{logStyle.Sprint(log)})
-	lv.SetViewOnTop()
 }

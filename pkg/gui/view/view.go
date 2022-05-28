@@ -1,20 +1,19 @@
 package view
 
 import (
-	"fmt"
-	"log"
 	"strings"
 
 	"github.com/dinhhuy258/gocui"
 )
 
 type Views struct {
-	Explorer  *ExplorerView
-	Selection *SelectionView
-	Help      *HelpView
-	Input     *InputView
-	Log       *LogView
-	Progress  *ProgressView
+	Explorer       *ExplorerView
+	ExplorerHeader *ExplorerHeaderView
+	Selection      *SelectionView
+	Help           *HelpView
+	Input          *InputView
+	Log            *LogView
+	Progress       *ProgressView
 }
 
 func CreateAllViews(g *gocui.Gui) *Views {
@@ -36,30 +35,53 @@ func CreateAllViews(g *gocui.Gui) *Views {
 		{viewPtr: &explorer, name: "explorer"},
 		{viewPtr: &selection, name: "selection"},
 		{viewPtr: &help, name: "help"},
+		{viewPtr: &progress, name: "progress"},
 		{viewPtr: &input, name: "input"},
 		{viewPtr: &log, name: "log"},
-		{viewPtr: &progress, name: "progress"},
 	}
 
 	for _, mapping := range viewNameMappings {
 		// No need to handle error here, since we are creating views
-		*mapping.viewPtr, _ = g.SetView(mapping.name, 0, 0, 10, 10)
+		*mapping.viewPtr, _ = g.SetView(mapping.name, 0, 0, 10, 10, 0)
 	}
 
 	return &Views{
-		Explorer:  newExplorerView(g, explorer, explorerHeader),
-		Selection: newSelectionView(g, selection),
-		Help:      newHelpView(g, help),
-		Input:     newInputView(g, input),
-		Log:       newLogView(g, log),
-		Progress:  newProgressView(g, progress),
+		Explorer:       newExplorerView(explorer),
+		ExplorerHeader: newExplorerHeaderView(explorerHeader),
+		Selection:      newSelectionView(selection),
+		Help:           newHelpView(help),
+		Input:          newInputView(input),
+		Log:            newLogView(log),
+		Progress:       newProgressView(progress),
 	}
 }
 
 func (v *Views) Layout() error {
-	v.Help.layout()
-
 	if err := v.Explorer.layout(); err != nil {
+		return err
+	}
+
+	if err := v.ExplorerHeader.layout(); err != nil {
+		return err
+	}
+
+	if err := v.Selection.layout(); err != nil {
+		return err
+	}
+
+	if err := v.Help.layout(); err != nil {
+		return err
+	}
+
+	if err := v.Input.layout(); err != nil {
+		return err
+	}
+
+	if err := v.Log.layout(); err != nil {
+		return err
+	}
+
+	if err := v.Progress.layout(); err != nil {
 		return err
 	}
 
@@ -67,80 +89,19 @@ func (v *Views) Layout() error {
 }
 
 type View struct {
-	g *gocui.Gui
-	v *gocui.View
+	*gocui.View
 }
 
-func newView(g *gocui.Gui, v *gocui.View) *View {
+func newView(v *gocui.View) *View {
 	return &View{
-		g: g,
-		v: v,
+		View: v,
 	}
 }
 
 func (view *View) SetViewContent(displayStrings []string) {
-	view.g.Update(func(g *gocui.Gui) error {
-		view.v.Clear()
-		_, err := fmt.Fprint(view.v, strings.Join(displayStrings, "\n"))
-
-		return err
-	})
+	view.SetContent(strings.Join(displayStrings, "\n"))
 }
 
-func (view *View) Size() (int, int) {
-	return view.v.Size()
-}
-
-func (view *View) SetOrigin(x, y int) error {
-	return view.v.SetOrigin(x, y)
-}
-
-func (view *View) SetCursor(x, y int) error {
-	return view.v.SetCursor(x, y)
-}
-
-func (view *View) SetTitle(title string) {
-	view.v.Title = title
-}
-
-func (view *View) NextCursor() error {
-	cx, cy := view.v.Cursor()
-	if err := view.v.SetCursor(cx, cy+1); err != nil {
-		ox, oy := view.v.Origin()
-		if err := view.v.SetOrigin(ox, oy+1); err != nil {
-			return err
-		}
-	}
-
+func (view *View) layout() error {
 	return nil
-}
-
-func (view *View) PreviousCursor() error {
-	cx, cy := view.v.Cursor()
-	if err := view.v.SetCursor(cx, cy-1); err != nil {
-		ox, oy := view.v.Origin()
-		if err := view.v.SetOrigin(ox, oy-1); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (view *View) ResetCursor() error {
-	if err := view.SetCursor(0, 0); err != nil {
-		return err
-	}
-
-	if err := view.SetOrigin(0, 0); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (view *View) SetViewOnTop() {
-	if _, err := view.g.SetViewOnTop(view.v.Name()); err != nil {
-		log.Fatalf("failed to set view %s on top. Error: %v", view.v.Name(), err)
-	}
 }

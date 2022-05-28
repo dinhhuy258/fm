@@ -18,16 +18,19 @@ type ExplorerController struct {
 	entries    []fs.IEntry
 	selections set.Set[string]
 
-	view *view.ExplorerView
+	view       *view.ExplorerView
+	headerView *view.ExplorerHeaderView
 }
 
 func newExplorerController(baseController *BaseController,
 	view *view.ExplorerView,
+	headerView *view.ExplorerHeaderView,
 	selections set.Set[string],
 ) *ExplorerController {
 	return &ExplorerController{
 		BaseController: baseController,
 		view:           view,
+		headerView:     headerView,
 
 		focus:      0,
 		selections: selections,
@@ -60,7 +63,7 @@ func (ec *ExplorerController) GetPath() string {
 
 func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Optional[string]) {
 	if !fs.IsDir(path) {
-		ec.mediator.notify(ShowErrorLog, path+" is not a directory")
+		ec.mediator.notify(ShowErrorLog, optional.New(path+" is not a directory"))
 
 		return
 	}
@@ -71,15 +74,13 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Opti
 
 	entries, err := fs.LoadEntries(path, cfg.ShowHidden)
 	if err != nil {
-		ec.mediator.notify(ShowErrorLog, "Failed to load directory: "+path)
+		ec.mediator.notify(ShowErrorLog, optional.New("Failed to load directory: "+path))
 
 		return
 	}
 
 	ec.entries = entries
-
-	title := (" " + path + " (" + strconv.Itoa(len(ec.entries)) + ") ")
-	ec.view.SetTitle(title)
+	ec.headerView.Title = " " + path + " (" + strconv.Itoa(len(ec.entries)) + ") "
 
 	focusPath.IfPresentOrElse(func(focusPath *string) {
 		ec.focusPath(*focusPath)
@@ -88,13 +89,17 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Opti
 	})
 }
 
+func (ec *ExplorerController) Focus() {
+	ec.view.FocusPoint(0, ec.focus)
+}
+
 func (ec *ExplorerController) FocusPrevious() {
 	if ec.focus <= 0 {
 		return
 	}
 
-	_ = ec.view.PreviousCursor()
 	ec.focus--
+	ec.Focus()
 }
 
 func (ec *ExplorerController) FocusNext() {
@@ -102,20 +107,18 @@ func (ec *ExplorerController) FocusNext() {
 		return
 	}
 
-	_ = ec.view.NextCursor()
 	ec.focus++
+	ec.Focus()
 }
 
 func (ec *ExplorerController) FocusFirst() {
-	_ = ec.view.ResetCursor()
-
 	ec.focus = 0
+	ec.Focus()
 }
 
 func (ec *ExplorerController) FocusLast() {
-	for ec.focus < len(ec.entries)-1 {
-		ec.FocusNext()
-	}
+	ec.focus = len(ec.entries) - 1
+	ec.Focus()
 }
 
 func (ec *ExplorerController) FocusPath(path string) {
@@ -141,11 +144,6 @@ func (ec *ExplorerController) focusPath(path string) {
 		}
 	}
 
-	_ = ec.view.ResetCursor()
-
-	for i := 0; i < focus; i++ {
-		_ = ec.view.NextCursor()
-	}
-
 	ec.focus = focus
+	ec.Focus()
 }

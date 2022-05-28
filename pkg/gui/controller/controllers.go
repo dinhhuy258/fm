@@ -3,6 +3,7 @@ package controller
 import (
 	set "github.com/deckarep/golang-set/v2"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
+	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 type Type int8
@@ -19,12 +20,12 @@ const (
 type Event int8
 
 const (
-	InputDone Event = iota
-	ShowErrorLog
+	ShowErrorLog Event = iota
+	LogHidden
 )
 
 type Mediator interface {
-	notify(Event, string)
+	notify(Event, optional.Optional[string])
 }
 
 type IController interface{}
@@ -49,7 +50,8 @@ func CreateAllControllers(views *view.Views) *Controllers {
 	}
 
 	c.controllers = make(map[Type]IController)
-	c.controllers[Explorer] = newExplorerController(baseController, views.Explorer, selections)
+	c.controllers[Explorer] = newExplorerController(baseController, views.Explorer,
+		views.ExplorerHeader, selections)
 	c.controllers[Sellection] = newSelectionController(baseController, views.Selection, selections)
 	c.controllers[Help] = newHelpController(baseController, views.Help)
 	c.controllers[Progress] = newProgressController(baseController, views.Progress)
@@ -63,14 +65,15 @@ func (c *Controllers) GetController(controllerType Type) IController {
 	return c.controllers[controllerType]
 }
 
-func (c *Controllers) notify(event Event, data string) {
-	explorerController, _ := c.controllers[Explorer].(*ExplorerController)
+func (c *Controllers) notify(event Event, data optional.Optional[string]) {
 	logController, _ := c.controllers[Log].(*LogController)
 
-	if event == InputDone {
-		explorerController.view.SetAsCurrentView()
-		logController.view.SetViewOnTop()
-	} else if event == ShowErrorLog {
-		logController.SetLog(view.Error, data)
+	switch event {
+	case ShowErrorLog:
+		data.IfPresent(func(logMsg *string) {
+			logController.SetLog(view.Error, *logMsg)
+		})
+	case LogHidden:
+		logController.SetVisible(false)
 	}
 }

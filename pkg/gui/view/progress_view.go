@@ -15,9 +15,9 @@ type ProgressView struct {
 	*View
 }
 
-func newProgressView(g *gocui.Gui, v *gocui.View) *ProgressView {
+func newProgressView(v *gocui.View) *ProgressView {
 	pv := &ProgressView{
-		newView(g, v),
+		newView(v),
 	}
 
 	return pv
@@ -26,7 +26,7 @@ func newProgressView(g *gocui.Gui, v *gocui.View) *ProgressView {
 func (pv *ProgressView) UpdateView(current int, total int) {
 	percent := float32(current) / float32(total)
 
-	x, _ := pv.v.Size()
+	x, _ := pv.Size()
 
 	progressBar := ""
 	fullCount := int(float32(x) * percent)
@@ -40,7 +40,6 @@ func (pv *ProgressView) UpdateView(current int, total int) {
 		progressBar += progressEmpty
 	}
 
-	pv.v.Title = fmt.Sprintf(" Progress (%s) ", fmt.Sprintf("%0.0f%%", percent*100))
+	pv.Title = fmt.Sprintf(" Progress (%s) ", fmt.Sprintf("%0.0f%%", percent*100))
 	pv.SetViewContent([]string{progressBar})
-	pv.SetViewOnTop()
 }

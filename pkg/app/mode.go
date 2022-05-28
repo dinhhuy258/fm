@@ -6,7 +6,7 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/key"
-	"github.com/dinhhuy258/fm/pkg/message"
+	"github.com/dinhhuy258/fm/pkg/msg"
 )
 
 var (
@@ -16,7 +16,7 @@ var (
 
 type Action struct {
 	Help     string
-	Messages []*message.Message
+	Messages []*msg.Message
 }
 
 type Help struct {
@@ -118,11 +118,11 @@ func createMode(name string, keyBindings config.KeyBindingsConfig) *Mode {
 		key := key.GetKey(k)
 
 		mode.keyBindings.OnKeys[key] = &Action{
-			Messages: []*message.Message{},
+			Messages: []*msg.Message{},
 		}
 
 		for _, messageConfig := range actionConfig.Messages {
-			message, err := message.NewMessage(messageConfig.Name, messageConfig.Args...)
+			message, err := msg.NewMessage(messageConfig.Name, messageConfig.Args...)
 			if err != nil {
 				log.Fatalf("message not found: %s", messageConfig.Name)
 			}
@@ -141,11 +141,11 @@ func createMode(name string, keyBindings config.KeyBindingsConfig) *Mode {
 
 	if keyBindings.Default != nil {
 		mode.keyBindings.Default = &Action{
-			Messages: []*message.Message{},
+			Messages: []*msg.Message{},
 		}
 
 		for _, messageConfig := range keyBindings.Default.Messages {
-			message, err := message.NewMessage(messageConfig.Name, messageConfig.Args...)
+			message, err := msg.NewMessage(messageConfig.Name, messageConfig.Args...)
 			if err != nil {
 				log.Fatalf("message not found: %s", messageConfig.Name)
 			}

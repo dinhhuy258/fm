@@ -1,4 +1,4 @@
-package row
+package style
 
 import (
 	"strings"

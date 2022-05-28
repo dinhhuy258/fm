@@ -4,41 +4,36 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/dinhhuy258/fm/pkg/gui/view/row"
+	"github.com/dinhhuy258/fm/pkg/gui/view/style"
 	"github.com/dinhhuy258/gocui"
 )
 
 type HelpView struct {
 	*View
 
-	helpRow *row.Row
+	helpRow *style.Row
 }
 
-func newHelpView(g *gocui.Gui, v *gocui.View) *HelpView {
+func newHelpView(v *gocui.View) *HelpView {
 	hv := &HelpView{
-		View: newView(g, v),
+		View: newView(v),
 	}
 
-	hv.helpRow = &row.Row{}
+	hv.helpRow = &style.Row{}
 	hv.helpRow.AddCell(35, true, nil)
 	hv.helpRow.AddCell(65, true, nil)
 
 	return hv
 }
 
-func (hv *HelpView) layout() {
-	x, _ := hv.v.Size()
-	hv.helpRow.SetWidth(x)
-}
+func (hv *HelpView) UpdateView(title string, helpKeys []string, helpMsgs []string) {
+	lines := make([]string, 0, len(helpKeys))
 
-func (hv *HelpView) UpdateView(title string, keys []string, msgs []string) {
-	lines := make([]string, 0, len(keys))
+	for i := 0; i < len(helpKeys); i++ {
+		helpKey := helpKeys[i]
+		helpMsg := helpMsgs[i]
 
-	for i := 0; i < len(keys); i++ {
-		key := keys[i]
-		msg := msgs[i]
-
-		line, err := hv.helpRow.Sprint([]string{key, msg})
+		line, err := hv.helpRow.Sprint([]string{helpKey, helpMsg})
 		if err != nil {
 			log.Fatalf("failed to set content for help view %v", err)
 		}
@@ -47,5 +42,12 @@ func (hv *HelpView) UpdateView(title string, keys []string, msgs []string) {
 	}
 
 	hv.SetViewContent(lines)
-	hv.v.Title = fmt.Sprintf(" Help [%s] ", title)
+	hv.Title = fmt.Sprintf(" Help [%s] ", title)
+}
+
+func (hv *HelpView) layout() error {
+	x, _ := hv.Size()
+	hv.helpRow.SetWidth(x)
+
+	return nil
 }

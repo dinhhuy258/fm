@@ -14,16 +14,12 @@ type Gui struct {
 	controllers *controller.Controllers
 }
 
-func (gui *Gui) GetController(controllerType controller.Type) controller.IController {
-	return gui.controllers.GetController(controllerType)
-}
-
 func NewGui() *Gui {
 	return &Gui{}
 }
 
 func (gui *Gui) Run(onGuiReady func()) error {
-	g, err := gocui.NewGui(gocui.OutputNormal)
+	g, err := gocui.NewGui(gocui.OutputNormal, false, gocui.NORMAL, false, map[rune]string{})
 	if err != nil {
 		return err
 	}
@@ -37,6 +33,11 @@ func (gui *Gui) Run(onGuiReady func()) error {
 	gui.g.SetManager(gocui.ManagerFunc(gui.layout))
 
 	gui.views = view.CreateAllViews(gui.g)
+
+	if _, err := gui.g.SetCurrentView(gui.views.Input.Name()); err != nil {
+		return err
+	}
+
 	gui.controllers = controller.CreateAllControllers(gui.views)
 
 	if err := gui.layout(gui.g); err != nil {
@@ -62,4 +63,22 @@ func (gui *Gui) Quit() {
 	gui.g.Update(func(g *gocui.Gui) error {
 		return gocui.ErrQuit
 	})
+}
+
+func (gui *Gui) OnUIThread(f func() error) {
+	gui.g.Update(func(*gocui.Gui) error {
+		return f()
+	})
+}
+
+func (gui *Gui) Suspend() error {
+	return gui.g.Suspend()
+}
+
+func (gui *Gui) Resume() error {
+	return gui.g.Resume()
+}
+
+func (gui *Gui) GetController(controllerType controller.Type) controller.IController {
+	return gui.controllers.GetController(controllerType)
 }

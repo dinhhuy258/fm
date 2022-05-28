@@ -1,10 +1,8 @@
-package row
+package style
 
 import (
 	"errors"
 	"fmt"
-
-	"github.com/dinhhuy258/fm/pkg/gui/view/style"
 )
 
 var ErrInvalidRowData = errors.New("invalid row data")
@@ -18,7 +16,7 @@ func (r *Row) SetWidth(width int) {
 	r.width = width
 }
 
-func (r *Row) AddCell(percentage int, leftAlign bool, textStyle *style.TextStyle) {
+func (r *Row) AddCell(percentage int, leftAlign bool, textStyle *TextStyle) {
 	r.cells = append(r.cells, &rowCell{
 		percentage: percentage,
 		leftAlign:  leftAlign,
@@ -45,7 +43,7 @@ func (r *Row) Sprint(cells []string) (string, error) {
 type rowCell struct {
 	percentage int
 	leftAlign  bool
-	textStyle  *style.TextStyle
+	textStyle  *TextStyle
 }
 
 func (rc *rowCell) sprint(t string, w int) string {

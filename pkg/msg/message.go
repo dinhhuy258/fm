@@ -1,4 +1,4 @@
-package message
+package msg
 
 import (
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
@@ -18,6 +18,10 @@ type IApp interface {
 	// Mode
 	PopMode()
 	PushMode(mode string)
+	// GUI
+	OnUIThread(f func() error)
+	Resume() error
+	Suspend() error
 }
 
 type Message struct {

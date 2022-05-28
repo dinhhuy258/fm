@@ -1,4 +1,4 @@
-package message
+package msg
 
 import (
 	"github.com/dinhhuy258/fm/pkg/fs"
