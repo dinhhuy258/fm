@@ -47,7 +47,6 @@ var messageFactories = map[string]*MessageFactory{
 	"SetInputBuffer":           newMessageFactory(SetInputBuffer),
 
 	"PasteSelections":  newMessageFactory(PasteSelections),
-	"NewFileFromInput": newMessageFactory(NewFileFromInput),
 	"DeleteCurrent":    newMessageFactory(DeleteCurrent),
 	"DeleteSelections": newMessageFactory(DeleteSelections),
 	"SearchFromInput":  newMessageFactory(SearchFromInput),

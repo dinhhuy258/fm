@@ -250,10 +250,33 @@ var newFileModeConfig = ModeConfig{
 				Help: "new file",
 				Messages: []*MessageConfig{
 					{
-						Name: "NewFileFromInput",
-					},
-					{
-						Name: "PopMode",
+						Name: "BashExecSilently",
+						Args: []string{`
+							CURRENT_PATH="${FM_FOCUS_PATH:?}"
+              PTH="${FM_INPUT_BUFFER}"
+
+							if [[ "${PTH}" && $PTH == */ ]] ; then
+							  PTH=${PTH%?}
+								if [ -z "${PTH}" ]; then
+									echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+								else
+									mkdir -p -- "${PTH:?}" \
+									&& echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
+									&& echo LogSuccess "'"$PTH created"'" >> "${FM_PIPE_MSG_IN:?}" \
+									&& echo FocusPath "'"$(dirname "$CURRENT_PATH")/$PTH"'" >> "${FM_PIPE_MSG_IN:?}" \
+									&& echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+								fi
+							elif [[ "${PTH}" ]] ; then
+								mkdir -p -- "$(dirname $PTH)" \
+								&& touch -- "$PTH" \
+								&& echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
+								&& echo LogSuccess "'"$PTH created"'" >> "${FM_PIPE_MSG_IN:?}" \
+								&& echo FocusPath "'"$(dirname "$CURRENT_PATH")/$PTH"'" >> "${FM_PIPE_MSG_IN:?}" \
+								&& echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+							else
+								echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+              fi
+						`},
 					},
 				},
 			},
@@ -295,20 +318,21 @@ var renameModeConfig = ModeConfig{
 						Name: "BashExecSilently",
 						Args: []string{`
 							SRC="${FM_FOCUS_PATH:?}"
-              TARGET="${FM_INPUT_BUFFER:?}"
+              TARGET="${FM_INPUT_BUFFER}"
 
-              if [ -e "${TARGET:?}" ]; then
+							if [ -z "${TARGET}" ]; then
+								echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+							elif [ -e "${TARGET:?}" ]; then
                 echo LogError "'"$TARGET already exists"'" >> "${FM_PIPE_MSG_IN:?}"
+								echo PopMode >> "${FM_PIPE_MSG_IN:?}"
               else
                 mv -- "${SRC:?}" "${TARGET:?}" \
                   && echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
                   && echo FocusPath "'"$(dirname "$SRC")/$TARGET"'" >> "${FM_PIPE_MSG_IN:?}" \
-                  && echo LogSuccess "'"$(basename "$SRC") renamed to $TARGET"'" >> "${FM_PIPE_MSG_IN:?}"
+                  && echo LogSuccess "'"$(basename "$SRC") renamed to $TARGET"'" >> "${FM_PIPE_MSG_IN:?}" \
+									&& echo PopMode >> "${FM_PIPE_MSG_IN:?}"
               fi
 						`},
-					},
-					{
-						Name: "PopMode",
 					},
 				},
 			},
