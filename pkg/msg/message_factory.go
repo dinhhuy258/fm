@@ -28,11 +28,15 @@ var messageFactories = map[string]*MessageFactory{
 	"Refresh":          newMessageFactory(Refresh),
 	"Quit":             newMessageFactory(Quit),
 
+	"LogSuccess": newMessageFactory(LogSuccess),
+	"LogError":   newMessageFactory(LogError),
+
 	"SwitchMode": newMessageFactory(SwitchMode),
 	"PopMode":    newMessageFactory(PopMode),
 
 	"FocusNext":       newMessageFactory(FocusNext),
 	"FocusPrevious":   newMessageFactory(FocusPrevious),
+	"FocusPath":       newMessageFactory(FocusPath),
 	"FocusFirst":      newMessageFactory(FocusFirst),
 	"FocusLast":       newMessageFactory(FocusLast),
 	"Enter":           newMessageFactory(Enter),
@@ -44,7 +48,6 @@ var messageFactories = map[string]*MessageFactory{
 
 	"PasteSelections":  newMessageFactory(PasteSelections),
 	"NewFileFromInput": newMessageFactory(NewFileFromInput),
-	"RenameFromInput":  newMessageFactory(RenameFromInput),
 	"DeleteCurrent":    newMessageFactory(DeleteCurrent),
 	"DeleteSelections": newMessageFactory(DeleteSelections),
 	"SearchFromInput":  newMessageFactory(SearchFromInput),

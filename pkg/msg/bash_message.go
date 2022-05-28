@@ -57,11 +57,14 @@ func BashExecSilently(app IApp, params ...string) {
 
 func getEnv(app IApp) []string {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
+	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 
 	currentEntry := explorerController.GetCurrentEntry()
 
 	env := os.Environ()
+
 	env = append(env, fmt.Sprintf("FM_FOCUS_PATH=%s", currentEntry.GetPath()))
+	env = append(env, fmt.Sprintf("FM_INPUT_BUFFER=%s", inputController.GetInputBuffer()))
 	env = append(env, fmt.Sprintf("FM_PIPE_MSG_IN=%s", app.GetPipe().GetMsgInPath()))
 
 	return env

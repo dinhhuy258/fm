@@ -32,7 +32,12 @@ func (iv *InputView) SetInputBuffer(input string) {
 }
 
 func (iv *InputView) GetInputBuffer() string {
-	return iv.BufferLines()[0][len(iv.prompt):]
+	inputContent := iv.TextArea.GetContent()
+	if len(inputContent) <= len(iv.prompt) {
+		return ""
+	}
+
+	return inputContent[len(iv.prompt):]
 }
 
 func (iv *InputView) UpdateInputBufferFromKey(key key.Key) {

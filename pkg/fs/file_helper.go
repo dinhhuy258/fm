@@ -38,10 +38,6 @@ func Humanize(size int64) string {
 	return ""
 }
 
-func Rename(oldPath, newPath string) error {
-	return os.Rename(oldPath, newPath)
-}
-
 func CreateFile(name string, override bool) error {
 	flags := os.O_APPEND | os.O_CREATE | os.O_WRONLY
 	if override {

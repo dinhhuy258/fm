@@ -15,7 +15,7 @@ import (
 	"github.com/dinhhuy258/gocui"
 )
 
-var messageInRegexp = regexp.MustCompile(`[^\s"]+|'([^']*)`)
+var messageInRegexp = regexp.MustCompile(`[^\s']+|'([^']*)'`)
 
 type App struct {
 	gui        *gui.Gui

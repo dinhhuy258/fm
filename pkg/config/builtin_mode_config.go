@@ -292,7 +292,20 @@ var renameModeConfig = ModeConfig{
 				Help: "rename",
 				Messages: []*MessageConfig{
 					{
-						Name: "RenameFromInput",
+						Name: "BashExecSilently",
+						Args: []string{`
+							SRC="${FM_FOCUS_PATH:?}"
+              TARGET="${FM_INPUT_BUFFER:?}"
+
+              if [ -e "${TARGET:?}" ]; then
+                echo LogError "'"$TARGET already exists"'" >> "${FM_PIPE_MSG_IN:?}"
+              else
+                mv -- "${SRC:?}" "${TARGET:?}" \
+                  && echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
+                  && echo FocusPath "'"$(dirname "$SRC")/$TARGET"'" >> "${FM_PIPE_MSG_IN:?}" \
+                  && echo LogSuccess "'"$(basename "$SRC") renamed to $TARGET"'" >> "${FM_PIPE_MSG_IN:?}"
+              fi
+						`},
 					},
 					{
 						Name: "PopMode",

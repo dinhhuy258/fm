@@ -43,32 +43,3 @@ func NewFileFromInput(app IApp, _ ...string) {
 		loadDirectory(app, explorerController.GetPath(), optional.New(focusPath))
 	}
 }
-
-func RenameFromInput(app IApp, _ ...string) {
-	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
-	logController, _ := app.GetController(controller.Log).(*controller.LogController)
-	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
-
-	newName := inputController.GetInputBuffer()
-	if newName == "" {
-		logController.SetLog(view.Warning, "File name is empty")
-		logController.UpdateView()
-
-		return
-	}
-
-	currentEntry := explorerController.GetCurrentEntry()
-
-	err := fs.Rename(currentEntry.GetPath(), path.Join(explorerController.GetPath(), newName))
-	if err != nil {
-		logController.SetLog(view.Error, "Failed to rename file %s", newName)
-		logController.UpdateView()
-	} else {
-		logController.SetLog(view.Info, "File %s were renamed successfully", newName)
-		logController.UpdateView()
-
-		// Reload the current directory in case file were renamed successfully
-		focusPath := path.Join(explorerController.GetPath(), newName)
-		loadDirectory(app, explorerController.GetPath(), optional.New(focusPath))
-	}
-}
