@@ -4,6 +4,7 @@ import (
 	set "github.com/deckarep/golang-set/v2"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/fm/pkg/optional"
+	"github.com/dinhhuy258/gocui"
 )
 
 type Type int8
@@ -22,6 +23,8 @@ type Event int8
 const (
 	ShowErrorLog Event = iota
 	LogHidden
+	CursorEnabled
+	CursorDisabled
 )
 
 type Mediator interface {
@@ -37,13 +40,16 @@ type BaseController struct {
 }
 
 type Controllers struct {
+	g           *gocui.Gui
 	controllers map[Type]IController
 }
 
-func CreateControllers(views *view.Views) *Controllers {
+func CreateControllers(g *gocui.Gui, views *view.Views) *Controllers {
 	// Selections object to share between explorer and selection controllers
 	selections := set.NewSet[string]()
-	c := &Controllers{}
+	c := &Controllers{
+		g: g,
+	}
 
 	baseController := &BaseController{
 		mediator: c,
@@ -75,5 +81,9 @@ func (c *Controllers) notify(event Event, data optional.Optional[string]) {
 		})
 	case LogHidden:
 		logController.SetVisible(false)
+	case CursorEnabled:
+		c.g.Cursor = true
+	case CursorDisabled:
+		c.g.Cursor = false
 	}
 }

@@ -23,7 +23,7 @@ func NewGui() (*Gui, error) {
 	}
 
 	gui.g = g
-	gui.g.Cursor = true
+	gui.g.Cursor = false
 	gui.g.InputEsc = true
 	gui.g.SetManager(gocui.ManagerFunc(gui.layout))
 
@@ -33,7 +33,7 @@ func NewGui() (*Gui, error) {
 		return nil, err
 	}
 
-	gui.controllers = controller.CreateControllers(gui.views)
+	gui.controllers = controller.CreateControllers(gui.g, gui.views)
 
 	if err := gui.layout(gui.g); err != nil {
 		return nil, err

@@ -3,6 +3,7 @@ package view
 import (
 	"log"
 	"strconv"
+	"strings"
 
 	set "github.com/deckarep/golang-set/v2"
 	"github.com/dinhhuy258/fm/pkg/config"
@@ -38,7 +39,7 @@ func (ehv *ExplorerHeaderView) layout() error {
 		return err
 	}
 
-	ehv.SetViewContent([]string{rowString})
+	ehv.SetContent(rowString)
 
 	return nil
 }
@@ -130,7 +131,7 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 		lines[idx] = line
 	}
 
-	ev.SetViewContent(lines)
+	ev.SetContent(strings.Join(lines, "\n"))
 }
 
 func (ev *ExplorerView) layout() error {

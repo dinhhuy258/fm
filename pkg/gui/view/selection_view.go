@@ -2,6 +2,7 @@ package view
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/dinhhuy258/gocui"
 )
@@ -22,7 +23,7 @@ func newSelectionView(v *gocui.View) *SelectionView {
 
 func (sv *SelectionView) UpdateView(selections []string) {
 	sv.setTitle(len(selections))
-	sv.SetViewContent(selections)
+	sv.SetContent(strings.Join(selections, "\n"))
 }
 
 func (sv *SelectionView) setTitle(selectionsNum int) {

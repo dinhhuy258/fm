@@ -43,5 +43,5 @@ func (lv *LogView) UpdateView(level LogLevel, log string) {
 		logStyle = style.FromBasicFg(style.StringToColor(config.AppConfig.LogErrorColor))
 	}
 
-	lv.SetViewContent([]string{logStyle.Sprint(log)})
+	lv.SetContent(logStyle.Sprint(log))
 }

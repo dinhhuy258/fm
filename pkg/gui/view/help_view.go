@@ -3,6 +3,7 @@ package view
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/dinhhuy258/fm/pkg/gui/view/style"
 	"github.com/dinhhuy258/gocui"
@@ -41,7 +42,7 @@ func (hv *HelpView) UpdateView(title string, helpKeys []string, helpMsgs []strin
 		lines = append(lines, line)
 	}
 
-	hv.SetViewContent(lines)
+	hv.SetContent(strings.Join(lines, "\n"))
 	hv.Title = fmt.Sprintf(" Help [%s] ", title)
 }
 

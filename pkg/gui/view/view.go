@@ -1,8 +1,6 @@
 package view
 
 import (
-	"strings"
-
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -96,10 +94,6 @@ func newView(v *gocui.View) *View {
 	return &View{
 		View: v,
 	}
-}
-
-func (view *View) SetViewContent(displayStrings []string) {
-	view.SetContent(strings.Join(displayStrings, "\n"))
 }
 
 func (view *View) layout() error {

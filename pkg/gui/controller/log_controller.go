@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dinhhuy258/fm/pkg/gui/view"
+	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 type LogController struct {
@@ -29,6 +30,12 @@ func (lc *LogController) SetLog(level view.LogLevel, msgFormat string, args ...i
 
 func (lc *LogController) SetVisible(visible bool) {
 	lc.view.Visible = visible
+
+	if visible {
+		lc.mediator.notify(CursorDisabled, optional.NewEmpty[string]())
+	} else {
+		lc.mediator.notify(CursorEnabled, optional.NewEmpty[string]())
+	}
 }
 
 func (lc *LogController) UpdateView() {
