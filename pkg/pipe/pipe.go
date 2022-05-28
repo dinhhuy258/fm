@@ -9,7 +9,8 @@ import (
 )
 
 type Pipe struct {
-	sessionpath      string
+	sessionPath      string
+	selectionPath    string
 	messageInPath    string
 	messageInWatcher *tail.Tail
 	watcherStop      chan bool
@@ -31,21 +32,31 @@ func NewPipe() (*Pipe, error) {
 		return nil, err
 	}
 
+	selectionPath := filepath.Join(sessionPath, "sellection")
+	if err := fs.CreateFile(selectionPath, true); err != nil {
+		return nil, err
+	}
+
 	messageInWatcher, err := tail.TailFile(messageInPath, tail.Config{Follow: true})
 	if err != nil {
 		return nil, err
 	}
 
 	return &Pipe{
-		sessionpath:      sessionPath,
+		sessionPath:      sessionPath,
+		selectionPath:    selectionPath,
 		messageInPath:    messageInPath,
 		messageInWatcher: messageInWatcher,
 		watcherStop:      make(chan bool),
 	}, nil
 }
 
-func (p *Pipe) GetMsgInPath() string {
+func (p *Pipe) GetMessageInPath() string {
 	return p.messageInPath
+}
+
+func (p *Pipe) GetSelectionPath() string {
+	return p.selectionPath
 }
 
 func (p *Pipe) StartWatcher(onMessageIn func(string)) {

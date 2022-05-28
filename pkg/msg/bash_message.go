@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
@@ -58,14 +59,19 @@ func BashExecSilently(app IApp, params ...string) {
 func getEnv(app IApp) []string {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
+	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
 
 	currentEntry := explorerController.GetCurrentEntry()
+	pipe := app.GetPipe()
+
+	// Write selected files to pipe
+	fs.WriteToFile(pipe.GetSelectionPath(), selectionController.GetSelections(), true)
 
 	env := os.Environ()
-
 	env = append(env, fmt.Sprintf("FM_FOCUS_PATH=%s", currentEntry.GetPath()))
 	env = append(env, fmt.Sprintf("FM_INPUT_BUFFER=%s", inputController.GetInputBuffer()))
-	env = append(env, fmt.Sprintf("FM_PIPE_MSG_IN=%s", app.GetPipe().GetMsgInPath()))
+	env = append(env, fmt.Sprintf("FM_PIPE_MSG_IN=%s", pipe.GetMessageInPath()))
+	env = append(env, fmt.Sprintf("FM_PIPE_SELECTION=%s", pipe.GetSelectionPath()))
 
 	return env
 }

@@ -227,6 +227,26 @@ func LoadEntries(path string, showHidden bool) ([]IEntry, error) {
 	return entries, nil
 }
 
+func WriteToFile(filePath string, lines []string, override bool) {
+	flags := os.O_APPEND | os.O_CREATE | os.O_WRONLY
+	if override {
+		flags = os.O_TRUNC | os.O_CREATE | os.O_WRONLY
+	}
+
+	file, err := os.OpenFile(filePath, flags, 0o644)
+	if err != nil {
+		return
+	}
+
+	defer file.Close()
+
+	for _, line := range lines {
+		if _, err = file.WriteString(line + "\n"); err != nil {
+			return
+		}
+	}
+}
+
 func isHidden(filename string) bool {
 	return filename[0:1] == "."
 }
