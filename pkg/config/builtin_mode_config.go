@@ -463,18 +463,23 @@ var deleteCurrentModeConfig = ModeConfig{
 				Help: "delete",
 				Messages: []*MessageConfig{
 					{
-						Name: "BashExecSilently",
+						Name: "BashExec",
 						Args: []string{`
+							clear
+
 							CURRENT="${FM_FOCUS_PATH:?}"
 
 							if rm -rfv -- "${CURRENT}"; then
-								echo LogSuccess "'"$(basename "$CURRENT") deleted"'" >> "${FM_PIPE_MSG_IN:?}"
+								echo "$CURRENT" deleted
 							else
-								echo LogError "'"Failed to delete $(basename "$CURRENT")"'" >> "${FM_PIPE_MSG_IN:?}"
+								echo Failed to delete "$CURRENT"
 							fi
 
+							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
 							echo PopMode >> "${FM_PIPE_MSG_IN:?}"
 							echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+
+							read -p "[Press enter to continue]"
 						`},
 					},
 				},
@@ -510,13 +515,25 @@ var deleteSelectionsModeConfig = ModeConfig{
 				Help: "delete selections",
 				Messages: []*MessageConfig{
 					{
-						Name: "DeleteSelections",
-					},
-					{
-						Name: "PopMode",
-					},
-					{
-						Name: "PopMode",
+						Name: "BashExec",
+						Args: []string{`
+							clear
+
+							(while IFS= read -r line; do
+								if rm -rfv -- "${line:?}"; then
+									echo "${line:?}" deleted
+								else
+									echo Failed to delete "${line:?}"
+								fi
+              done < "${FM_PIPE_SELECTION:?}")
+
+							read -p "[Press enter to continue]"
+
+							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
+							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
+							echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+							echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+						`},
 					},
 				},
 			},

@@ -59,25 +59,6 @@ func Dir(path string) string {
 	return filepath.Dir(path)
 }
 
-func Delete(paths []string, onSuccess func(), onError func(error), onComplete func(int, int)) {
-	successCount := 0
-	errorCount := 0
-
-	for _, path := range paths {
-		if err := os.RemoveAll(path); err != nil {
-			errorCount++
-
-			onError(err)
-		} else {
-			successCount++
-
-			onSuccess()
-		}
-	}
-
-	onComplete(successCount, errorCount)
-}
-
 func Copy(srcPaths []string, destDir string, onSuccess func(), onError func(error), onComplete func(int, int)) {
 	successCount := 0
 	errorCount := 0
