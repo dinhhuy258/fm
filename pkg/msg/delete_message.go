@@ -25,14 +25,6 @@ func DeleteSelections(app IApp, _ ...string) {
 	selectionController.UpdateView()
 }
 
-func DeleteCurrent(app IApp, _ ...string) {
-	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
-
-	entry := explorerController.GetCurrentEntry()
-
-	deletePaths(app, []string{entry.GetPath()})
-}
-
 func deletePaths(app IApp, paths []string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)

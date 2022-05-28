@@ -463,13 +463,19 @@ var deleteCurrentModeConfig = ModeConfig{
 				Help: "delete",
 				Messages: []*MessageConfig{
 					{
-						Name: "DeleteCurrent",
-					},
-					{
-						Name: "PopMode",
-					},
-					{
-						Name: "PopMode",
+						Name: "BashExecSilently",
+						Args: []string{`
+							CURRENT="${FM_FOCUS_PATH:?}"
+
+							if rm -rfv -- "${CURRENT}"; then
+								echo LogSuccess "'"$(basename "$CURRENT") deleted"'" >> "${FM_PIPE_MSG_IN:?}"
+							else
+								echo LogError "'"Failed to delete $(basename "$CURRENT")"'" >> "${FM_PIPE_MSG_IN:?}"
+							fi
+
+							echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+							echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+						`},
 					},
 				},
 			},

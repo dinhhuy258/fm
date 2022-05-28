@@ -49,8 +49,7 @@ func BashExecSilently(app IApp, params ...string) {
 	cmd := exec.Command("bash", "-c", command)
 	cmd.Env = getEnv(app)
 
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		logController.SetLog(view.Error, "Failed to execute script")
 		logController.UpdateView()
 	}
