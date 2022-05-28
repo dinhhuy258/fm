@@ -83,7 +83,7 @@ var defaultModeConfig = ModeConfig{
 						Args: []string{"rename"},
 					},
 					{
-						Name: "BashExec",
+						Name: "BashExecSilently",
 						Args: []string{`
               echo SetInputBuffer "'"$(basename "${FM_FOCUS_PATH}")"'" >> "${FM_PIPE_MSG_IN:?}"
 						`},

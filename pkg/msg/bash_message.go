@@ -7,6 +7,7 @@ import (
 	"os/exec"
 
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
+	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
 func BashExec(app IApp, params ...string) {
@@ -40,8 +41,23 @@ func BashExec(app IApp, params ...string) {
 	})
 }
 
+func BashExecSilently(app IApp, params ...string) {
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
+
+	command := params[0]
+	cmd := exec.Command("bash", "-c", command)
+	cmd.Env = getEnv(app)
+
+	err := cmd.Run()
+	if err != nil {
+		logController.SetLog(view.Error, "Failed to execute script")
+		logController.UpdateView()
+	}
+}
+
 func getEnv(app IApp) []string {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
+
 	currentEntry := explorerController.GetCurrentEntry()
 
 	env := os.Environ()
