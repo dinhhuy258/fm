@@ -103,17 +103,47 @@ var defaultModeConfig = ModeConfig{
 				Help: "copy",
 				Messages: []*MessageConfig{
 					{
-						Name: "PasteSelections",
-						Args: []string{"copy"},
+						Name: "BashExec",
+						Args: []string{`
+							clear
+
+							(while IFS= read -r line; do
+								if cp -vr -- "${line:?}" ./; then
+									echo "${line:?}" copied to $PWD
+								else
+									echo Failed to copy "${line:?}" to $PWD
+								fi
+              done < "${FM_PIPE_SELECTION:?}")
+
+							read -p "[Press enter to continue]"
+
+							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
+							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
+						`},
 					},
 				},
 			},
 			"x": {
-				Help: "cut",
+				Help: "move",
 				Messages: []*MessageConfig{
 					{
-						Name: "PasteSelections",
-						Args: []string{"cut"},
+						Name: "BashExec",
+						Args: []string{`
+							clear
+
+							(while IFS= read -r line; do
+								if mv -v -- "${line:?}" ./; then
+									echo "${line:?}" moved to $PWD
+								else
+									echo Failed to move "${line:?}" to $PWD
+								fi
+              done < "${FM_PIPE_SELECTION:?}")
+
+							read -p "[Press enter to continue]"
+
+							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
+							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
+						`},
 					},
 				},
 			},

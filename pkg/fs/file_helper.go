@@ -2,7 +2,6 @@ package fs
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 )
@@ -57,88 +56,6 @@ func CreateFile(name string, override bool) error {
 
 func Dir(path string) string {
 	return filepath.Dir(path)
-}
-
-func Copy(srcPaths []string, destDir string, onSuccess func(), onError func(error), onComplete func(int, int)) {
-	successCount := 0
-	errorCount := 0
-
-	for _, srcPath := range srcPaths {
-		srcPath := srcPath
-		dst := filepath.Join(destDir, filepath.Base(srcPath))
-		_, err := os.Lstat(dst)
-
-		if !os.IsNotExist(err) {
-			var newPath string
-
-			for i := 1; !os.IsNotExist(err); i++ {
-				newPath = fmt.Sprintf("%s.~%d~", dst, i)
-				_, err = os.Lstat(newPath)
-			}
-
-			dst = newPath
-		}
-
-		walkFunc := func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-
-			return copyPath(srcPath, path, dst, info)
-		}
-
-		if err := filepath.Walk(srcPath, walkFunc); err != nil {
-			errorCount++
-
-			onError(err)
-		} else {
-			successCount++
-
-			onSuccess()
-		}
-	}
-
-	onComplete(successCount, errorCount)
-}
-
-func Move(srcPaths []string, destDir string, onSuccess func(), onError func(error), onComplete func(int, int)) {
-	successCount := 0
-	errorCount := 0
-
-	for _, src := range srcPaths {
-		dst := filepath.Join(destDir, filepath.Base(src))
-		if dst == src {
-			successCount++
-
-			onSuccess()
-
-			continue
-		}
-
-		_, err := os.Stat(dst)
-		if !os.IsNotExist(err) {
-			var newPath string
-
-			for i := 1; !os.IsNotExist(err); i++ {
-				newPath = fmt.Sprintf("%s.~%d~", dst, i)
-				_, err = os.Lstat(newPath)
-			}
-
-			dst = newPath
-		}
-
-		if err := os.Rename(src, dst); err != nil {
-			errorCount++
-
-			onError(err)
-		} else {
-			successCount++
-
-			onSuccess()
-		}
-	}
-
-	onComplete(successCount, errorCount)
 }
 
 func IsDir(path string) bool {
@@ -230,82 +147,4 @@ func WriteToFile(filePath string, lines []string, override bool) {
 
 func isHidden(filename string) bool {
 	return filename[0:1] == "."
-}
-
-func copyFile(src, dst string, info os.FileInfo) error {
-	buf := make([]byte, 4096)
-
-	r, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-
-	defer func(r *os.File) {
-		_ = r.Close()
-	}(r)
-
-	w, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-
-	for {
-		n, err := r.Read(buf)
-		if err != nil && err != io.EOF {
-			_ = w.Close()
-			_ = os.Remove(dst)
-
-			return err
-		}
-
-		if n == 0 {
-			break
-		}
-
-		if _, err := w.Write(buf[:n]); err != nil {
-			return err
-		}
-	}
-
-	if err := w.Close(); err != nil {
-		_ = os.Remove(dst)
-
-		return err
-	}
-
-	if err := os.Chmod(dst, info.Mode()); err != nil {
-		_ = os.Remove(dst)
-
-		return err
-	}
-
-	return nil
-}
-
-func copyPath(src, path, dst string, info os.FileInfo) error {
-	rel, err := filepath.Rel(src, path)
-	if err != nil {
-		return err
-	}
-
-	newPath := filepath.Join(dst, rel)
-
-	switch {
-	case info.IsDir():
-		if err := os.MkdirAll(newPath, info.Mode()); err != nil {
-			return err
-		}
-	case info.Mode()&os.ModeSymlink != 0: // Symlink
-		if rlink, err := os.Readlink(path); err != nil {
-			return err
-		} else if err := os.Symlink(rlink, newPath); err != nil {
-			return err
-		}
-	default:
-		if err := copyFile(path, newPath, info); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
