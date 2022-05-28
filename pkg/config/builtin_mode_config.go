@@ -75,6 +75,21 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
+			"r": {
+				Help: "rename",
+				Messages: []*MessageConfig{
+					{
+						Name: "SwitchMode",
+						Args: []string{"rename"},
+					},
+					{
+						Name: "BashExec",
+						Args: []string{`
+              echo SetInputBuffer "'"$(basename "${FM_FOCUS_PATH}")"'" >> "${FM_PIPE_MSG_IN:?}"
+						`},
+					},
+				},
+			},
 			"d": {
 				Help: "delete",
 				Messages: []*MessageConfig{
@@ -236,6 +251,48 @@ var newFileModeConfig = ModeConfig{
 				Messages: []*MessageConfig{
 					{
 						Name: "NewFileFromInput",
+					},
+					{
+						Name: "PopMode",
+					},
+				},
+			},
+			"esc": {
+				Help: "cancel",
+				Messages: []*MessageConfig{
+					{
+						Name: "PopMode",
+					},
+				},
+			},
+		},
+		Default: &ActionConfig{
+			Messages: []*MessageConfig{
+				{
+					Name: "UpdateInputBufferFromKey",
+				},
+			},
+		},
+	},
+}
+
+var renameModeConfig = ModeConfig{
+	Name: "rename",
+	KeyBindings: KeyBindingsConfig{
+		OnKeys: map[string]*ActionConfig{
+			"ctrl+c": {
+				Help: "quit",
+				Messages: []*MessageConfig{
+					{
+						Name: "Quit",
+					},
+				},
+			},
+			"enter": {
+				Help: "rename",
+				Messages: []*MessageConfig{
+					{
+						Name: "RenameFromInput",
 					},
 					{
 						Name: "PopMode",
@@ -440,6 +497,7 @@ var builtinModeConfigs = map[string]*ModeConfig{
 	"mark-save":         &markSaveModeConfig,
 	"mark-load":         &markLoadModeConfig,
 	"new-file":          &newFileModeConfig,
+	"rename":            &renameModeConfig,
 	"search":            &searchModeConfig,
 	"delete":            &deleteModeConfig,
 	"delete-current":    &deleteCurrentModeConfig,

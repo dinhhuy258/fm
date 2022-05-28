@@ -43,6 +43,7 @@ var messageFactories = map[string]*MessageFactory{
 
 	"PasteSelections":  newMessageFactory(PasteSelections),
 	"NewFileFromInput": newMessageFactory(NewFileFromInput),
+	"RenameFromInput":  newMessageFactory(RenameFromInput),
 	"DeleteCurrent":    newMessageFactory(DeleteCurrent),
 	"DeleteSelections": newMessageFactory(DeleteSelections),
 	"SearchFromInput":  newMessageFactory(SearchFromInput),
