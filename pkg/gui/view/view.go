@@ -11,7 +11,6 @@ type Views struct {
 	Help           *HelpView
 	Input          *InputView
 	Log            *LogView
-	Progress       *ProgressView
 }
 
 func CreateViews(g *gocui.Gui) *Views {
@@ -22,7 +21,6 @@ func CreateViews(g *gocui.Gui) *Views {
 		help           *gocui.View
 		input          *gocui.View
 		log            *gocui.View
-		progress       *gocui.View
 	)
 
 	viewNameMappings := []struct {
@@ -33,7 +31,6 @@ func CreateViews(g *gocui.Gui) *Views {
 		{viewPtr: &explorer, name: "explorer"},
 		{viewPtr: &selection, name: "selection"},
 		{viewPtr: &help, name: "help"},
-		{viewPtr: &progress, name: "progress"},
 		{viewPtr: &input, name: "input"},
 		{viewPtr: &log, name: "log"},
 	}
@@ -50,7 +47,6 @@ func CreateViews(g *gocui.Gui) *Views {
 		Help:           newHelpView(help),
 		Input:          newInputView(input),
 		Log:            newLogView(log),
-		Progress:       newProgressView(progress),
 	}
 }
 
@@ -76,10 +72,6 @@ func (v *Views) Layout() error {
 	}
 
 	if err := v.Log.layout(); err != nil {
-		return err
-	}
-
-	if err := v.Progress.layout(); err != nil {
 		return err
 	}
 

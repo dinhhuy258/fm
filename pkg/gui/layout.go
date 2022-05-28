@@ -63,15 +63,6 @@ func (gui *Gui) setViewDimensions() error {
 			},
 		},
 		{
-			name: "progress",
-			dimension: viewDimension{
-				x0: 0,
-				y0: height - logSize,
-				x1: int(float32(width)*0.7) - horizontalMargin,
-				y1: height,
-			},
-		},
-		{
 			name: "selection",
 			dimension: viewDimension{
 				x0: int(float32(width) * 0.7),

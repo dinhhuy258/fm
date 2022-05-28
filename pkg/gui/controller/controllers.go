@@ -13,7 +13,6 @@ const (
 	Explorer Type = iota
 	Help
 	Sellection
-	Progress
 	Log
 	Input
 )
@@ -60,7 +59,6 @@ func CreateControllers(g *gocui.Gui, views *view.Views) *Controllers {
 		views.ExplorerHeader, selections)
 	c.controllers[Sellection] = newSelectionController(baseController, views.Selection, selections)
 	c.controllers[Help] = newHelpController(baseController, views.Help)
-	c.controllers[Progress] = newProgressController(baseController, views.Progress)
 	c.controllers[Log] = newLogController(baseController, views.Log)
 	c.controllers[Input] = newInputController(baseController, views.Input)
 
