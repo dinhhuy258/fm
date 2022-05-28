@@ -65,6 +65,11 @@ func (gui *Gui) Quit() {
 	})
 }
 
+// Render re-render all views
+func (gui *Gui) Render() {
+	gui.OnUIThread(func() error { return nil })
+}
+
 func (gui *Gui) OnUIThread(f func() error) {
 	gui.g.Update(func(*gocui.Gui) error {
 		return f()

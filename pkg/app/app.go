@@ -124,32 +124,28 @@ func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 
 	switch {
 	case hasKey:
-		for _, cmd := range action.Messages {
-			cmd := cmd
-
-			app.messageWorkerPool.Submit(func() {
-				cmd.Func(app, cmd.Args...)
-			})
-		}
-	case keybindings.OnAlphabet != nil:
-		for _, cmd := range keybindings.OnAlphabet.Messages {
-			cmd := cmd
-
-			app.messageWorkerPool.Submit(func() {
-				cmd.Func(app, cmd.Args...)
-			})
-		}
+		app.submitMessages(action.Messages)
 	case keybindings.Default != nil:
-		for _, cmd := range keybindings.Default.Messages {
-			cmd := cmd
-
-			app.messageWorkerPool.Submit(func() {
-				cmd.Func(app, cmd.Args...)
-			})
-		}
+		app.submitMessages(keybindings.Default.Messages)
 	}
 
 	return nil
+}
+
+// submitMessages submit messages to the message worker pool
+func (app *App) submitMessages(messages []*msg.Message) {
+	for _, message := range messages {
+		message := message // This will make scopelint happy
+
+		app.messageWorkerPool.Submit(func() {
+			message.Func(app, message.Args...)
+		})
+	}
+
+	// Request re-render the GUI after each action
+	app.messageWorkerPool.Submit(func() {
+		app.gui.Render()
+	})
 }
 
 func (app *App) onGuiReady() {

@@ -25,9 +25,8 @@ type Help struct {
 }
 
 type KeyBindings struct {
-	OnKeys     map[key.Key]*Action
-	OnAlphabet *Action
-	Default    *Action
+	OnKeys  map[key.Key]*Action
+	Default *Action
 }
 
 type Mode struct {
