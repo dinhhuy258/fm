@@ -47,6 +47,10 @@ type rowCell struct {
 }
 
 func (rc *rowCell) sprint(t string, w int) string {
+	if len(t) > w {
+		t = t[:w-1]
+	}
+
 	if rc.leftAlign {
 		t = Right(t, w, " ")
 	} else {

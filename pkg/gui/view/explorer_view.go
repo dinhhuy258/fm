@@ -132,7 +132,7 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 			r = ev.directoryRow
 		}
 
-		index := strconv.Itoa(idx-focus) + "|" + strconv.Itoa(idx)
+		index := strconv.Itoa(idx + 1)
 		fileMode := entry.GetFileMode()
 		size := fs.Humanize(entry.GetSize())
 
