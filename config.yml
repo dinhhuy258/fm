@@ -1,6 +1,4 @@
 selectionColor: green
-directoryColor: cyan
-sizeStyle: white
 logErrorColor: red
 logWarningColor: yellow
 logInfoColor: green
@@ -21,11 +19,91 @@ focusPrefix: '▸['
 focusSuffix: ']'
 selectionPrefix: '{'
 selectionSuffix: '}'
-folderIcon: 
-fileIcon: 
 logErrorFormat: '[ERROR] '
 logWarningFormat: '[WARNING] '
 logInfoFormat: '[INFO] '
+nodeTypes:
+  extensions:
+    .go:
+      icon: 
+    .c:
+      icon: 
+    .cc:
+      icon: 
+    .cpp:
+      icon: 
+    .h:
+      icon: 
+    .hh:
+      icon: 
+    .hpp:
+      icon: 
+    .css:
+      icon: 
+    .html:
+      icon: 
+    .java:
+      icon: 
+    .js:
+      icon: 
+    .json:
+      icon: 
+    .lua:
+      icon: 
+    .md:
+      icon: 
+    .php:
+      icon: 
+    .py:
+      icon: 
+    .rb:
+      icon: 
+    .ts:
+      icon: 
+    .vim:
+      icon: 
+    .midi:
+      icon: 
+    .mp3:
+      icon: 
+    .m4a:
+      icon: 
+    .mid:
+      icon: 
+    .flac:
+      icon: 
+    .flv:
+      icon: 
+    .mp4:
+      icon: 
+    .mpeg:
+      icon: 
+    .gif:
+      icon: 
+    .mjpeg:
+      icon: 
+    .mjpg:
+      icon: 
+    .jpeg:
+      icon: 
+    .jpg:
+      icon: 
+    .7z:
+      icon: 
+    .rar:
+      icon: 
+    .jar:
+      icon: 
+    .zip:
+      icon: 
+    .tar:
+      icon: 
+    .zsh:
+      icon: 
+    .sh:
+      icon: 
+    .bash:
+      icon: 
 customModeConfigs:
   go-to:
     keyBindings:

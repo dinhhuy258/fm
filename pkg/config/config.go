@@ -24,11 +24,21 @@ type ModeConfig struct {
 	KeyBindings KeyBindingsConfig `yaml:"keyBindings"`
 }
 
+// NodeTypeConfig represents the config for the node type (file/directory).
+type NodeTypeConfig struct {
+	Color string `yaml:"color"`
+	Icon  string `yaml:"icon"`
+}
+
+type NodeTypesConfig struct {
+	File       *NodeTypeConfig            `yaml:"file"`
+	Directory  *NodeTypeConfig            `yaml:"directory"`
+	Extensions map[string]*NodeTypeConfig `yaml:"extensions"`
+}
+
 // Config represents the config for the application.
 type Config struct {
 	SelectionColor     string                 `yaml:"selectionColor"`
-	DirectoryColor     string                 `yaml:"directoryColor"`
-	SizeStyle          string                 `yaml:"sizeStyle"`
 	LogErrorColor      string                 `yaml:"logErrorColor"`
 	LogWarningColor    string                 `yaml:"logWarningColor"`
 	LogInfoColor       string                 `yaml:"logInfoColor"`
@@ -49,11 +59,10 @@ type Config struct {
 	FocusSuffix        string                 `yaml:"focusSuffix"`
 	SelectionPrefix    string                 `yaml:"selectionPrefix"`
 	SelectionSuffix    string                 `yaml:"selectionSuffix"`
-	FolderIcon         string                 `yaml:"folderIcon"`
-	FileIcon           string                 `yaml:"fileIcon"`
 	LogErrorFormat     string                 `yaml:"logErrorFormat"`
 	LogWarningFormat   string                 `yaml:"logWarningFormat"`
 	LogInfoFormat      string                 `yaml:"logInfoFormat"`
+	NodeTypesConfig    *NodeTypesConfig       `yaml:"nodeTypes"`
 	CustomModeConfigs  map[string]*ModeConfig `yaml:"customModeConfigs"`
 	BuiltinModeConfigs map[string]*ModeConfig `yaml:"builtinModeConfigs"`
 }
@@ -77,15 +86,48 @@ func LoadConfig() error {
 	return nil
 }
 
+// mergeUserNodeTypesConfig merges the user node types config.
+func mergeUserNodeTypesConfig(userNodeTypesConfig *NodeTypesConfig) {
+	if userNodeTypesConfig == nil {
+		return
+	}
+
+	if userNodeTypesConfig.File != nil {
+		if AppConfig.NodeTypesConfig.File.Color == "" {
+			AppConfig.NodeTypesConfig.File.Color = userNodeTypesConfig.File.Color
+		}
+
+		if AppConfig.NodeTypesConfig.File.Icon == "" {
+			AppConfig.NodeTypesConfig.File.Icon = userNodeTypesConfig.File.Icon
+		}
+	}
+
+	if userNodeTypesConfig.Directory != nil {
+		if AppConfig.NodeTypesConfig.Directory.Color == "" {
+			AppConfig.NodeTypesConfig.Directory.Color = userNodeTypesConfig.Directory.Color
+		}
+
+		if AppConfig.NodeTypesConfig.Directory.Icon == "" {
+			AppConfig.NodeTypesConfig.Directory.Icon = userNodeTypesConfig.Directory.Icon
+		}
+	}
+
+	// Currently, the default extension node type is not configurable.
+	// We can assign it to the user config if it is set.
+	if userNodeTypesConfig.Extensions != nil {
+		AppConfig.NodeTypesConfig.Extensions = userNodeTypesConfig.Extensions
+	}
+}
+
 // mergeUserModeConfig merges the user mode config.
-func mergeUserModeConfig(userConfig *Config) {
-	for name, mode := range userConfig.CustomModeConfigs {
+func mergeUserModeConfig(customModeConfigs map[string]*ModeConfig, builtinModeConfigs map[string]*ModeConfig) {
+	for name, mode := range customModeConfigs {
 		mode.Name = name
 	}
 
-	AppConfig.CustomModeConfigs = userConfig.CustomModeConfigs
+	AppConfig.CustomModeConfigs = customModeConfigs
 
-	for builtinUserConfigName, builtinUserConfig := range userConfig.BuiltinModeConfigs {
+	for builtinUserConfigName, builtinUserConfig := range builtinModeConfigs {
 		builtinMode, hasBuiltinConfig := AppConfig.BuiltinModeConfigs[builtinUserConfigName]
 
 		if !hasBuiltinConfig {
@@ -106,14 +148,6 @@ func mergeUserModeConfig(userConfig *Config) {
 func mergeUserConfig(userConfig *Config) {
 	if userConfig.SelectionColor != "" {
 		AppConfig.SelectionColor = userConfig.SelectionColor
-	}
-
-	if userConfig.DirectoryColor != "" {
-		AppConfig.DirectoryColor = userConfig.DirectoryColor
-	}
-
-	if userConfig.SizeStyle != "" {
-		AppConfig.SizeStyle = userConfig.SizeStyle
 	}
 
 	if userConfig.LogErrorColor != "" {
@@ -192,14 +226,6 @@ func mergeUserConfig(userConfig *Config) {
 		AppConfig.SelectionSuffix = userConfig.SelectionSuffix
 	}
 
-	if userConfig.FolderIcon != "" {
-		AppConfig.FolderIcon = userConfig.FolderIcon
-	}
-
-	if userConfig.FileIcon != "" {
-		AppConfig.FileIcon = userConfig.FileIcon
-	}
-
 	if userConfig.LogErrorFormat != "" {
 		AppConfig.LogErrorFormat = userConfig.LogErrorFormat
 	}
@@ -214,5 +240,6 @@ func mergeUserConfig(userConfig *Config) {
 
 	AppConfig.ShowHidden = userConfig.ShowHidden
 
-	mergeUserModeConfig(userConfig)
+	mergeUserModeConfig(userConfig.CustomModeConfigs, userConfig.BuiltinModeConfigs)
+	mergeUserNodeTypesConfig(userConfig.NodeTypesConfig)
 }

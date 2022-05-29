@@ -59,8 +59,8 @@ type ExplorerView struct {
 func newExplorerView(v *gocui.View) *ExplorerView {
 	ev := &ExplorerView{
 		View:         newView(v),
-		fileRow:      newRow(optional.NewEmpty[color.Color]()),
-		directoryRow: newRow(optional.New(style.StringToColor(config.AppConfig.DirectoryColor))),
+		fileRow:      newRow(optional.New(style.StringToColor(config.AppConfig.NodeTypesConfig.File.Color))),
+		directoryRow: newRow(optional.New(style.StringToColor(config.AppConfig.NodeTypesConfig.Directory.Color))),
 		selectionRow: newRow(optional.New(style.StringToColor(config.AppConfig.SelectionColor))),
 	}
 
@@ -94,11 +94,16 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 	entriesSize := len(entries)
 	lines := make([]string, entriesSize)
 	cfg := config.AppConfig
+	extensionNodeTypesConfig := cfg.NodeTypesConfig.Extensions
 
 	for idx, entry := range entries {
-		fileIcon := cfg.FileIcon + " "
+		fileIcon := cfg.NodeTypesConfig.File.Icon + " "
 		if entry.IsDirectory() {
-			fileIcon = cfg.FolderIcon + " "
+			fileIcon = cfg.NodeTypesConfig.Directory.Icon + " "
+		}
+
+		if nodeTypeConfig, hasConfig := extensionNodeTypesConfig[entry.GetExt()]; hasConfig && nodeTypeConfig.Icon != "" {
+			fileIcon = nodeTypeConfig.Icon + " "
 		}
 
 		isSelected := selections.Contains(entry.GetPath())

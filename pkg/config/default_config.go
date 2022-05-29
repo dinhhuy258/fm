@@ -21,16 +21,23 @@ func getDefaultConfig() *Config {
 		SelectionPrefix:    "{",
 		SelectionSuffix:    "}",
 		SelectionColor:     "green",
-		FolderIcon:         "",
-		FileIcon:           "",
-		DirectoryColor:     "cyan",
-		SizeStyle:          "white",
 		LogErrorFormat:     "[ERROR] ",
 		LogErrorColor:      "red",
 		LogWarningFormat:   "[WARNING] ",
 		LogWarningColor:    "yellow",
 		LogInfoFormat:      "[INFO] ",
 		LogInfoColor:       "green",
+		NodeTypesConfig: &NodeTypesConfig{
+			File: &NodeTypeConfig{
+				Color: "white",
+				Icon:  "",
+			},
+			Directory: &NodeTypeConfig{
+				Color: "cyan",
+				Icon:  "",
+			},
+			Extensions: map[string]*NodeTypeConfig{},
+		},
 		BuiltinModeConfigs: builtinModeConfigs,
 		CustomModeConfigs:  map[string]*ModeConfig{},
 	}
