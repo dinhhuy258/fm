@@ -33,7 +33,12 @@ func (ehv *ExplorerHeaderView) layout() error {
 	ehv.headerRow.SetWidth(x)
 
 	rowString, err := ehv.headerRow.Sprint(
-		[]string{config.AppConfig.IndexHeader, config.AppConfig.PathHeader, config.AppConfig.SizeHeader},
+		[]string{
+			config.AppConfig.IndexHeader,
+			config.AppConfig.PathHeader,
+			config.AppConfig.FileModeHeader,
+			config.AppConfig.SizeHeader,
+		},
 	)
 	if err != nil {
 		return err
@@ -78,6 +83,8 @@ func newRow(pathColor optional.Optional[color.Color]) *style.Row {
 		r.AddCell(config.AppConfig.PathPercentage, true, nil)
 	})
 
+	r.AddCell(config.AppConfig.FileModePercentage, true, nil)
+
 	r.AddCell(config.AppConfig.SizePercentage, false, nil)
 
 	return r
@@ -120,10 +127,11 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 			r = ev.directoryRow
 		}
 
-		size := fs.Humanize(entry.GetSize())
 		index := strconv.Itoa(idx-focus) + "|" + strconv.Itoa(idx)
+		fileMode := entry.GetFileMode()
+		size := fs.Humanize(entry.GetSize())
 
-		line, err := r.Sprint([]string{index, path, size})
+		line, err := r.Sprint([]string{index, path, fileMode, size})
 		if err != nil {
 			log.Fatalf("failed to sprint row %v", err)
 		}

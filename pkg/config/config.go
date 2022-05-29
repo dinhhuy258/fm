@@ -39,6 +39,8 @@ type Config struct {
 	IndexPercentage    int                    `yaml:"indexPercentage"`
 	PathHeader         string                 `yaml:"pathHeader"`
 	PathPercentage     int                    `yaml:"pathPercentage"`
+	FileModeHeader     string                 `yaml:"fileModeHeader"`
+	FileModePercentage int                    `yaml:"fileModePercentage"`
 	SizeHeader         string                 `yaml:"sizeHeader"`
 	SizePercentage     int                    `yaml:"sizePercentage"`
 	PathPrefix         string                 `yaml:"pathPrefix"`
@@ -148,6 +150,14 @@ func mergeUserConfig(userConfig *Config) {
 
 	if userConfig.PathPercentage != 0 {
 		AppConfig.PathPercentage = userConfig.PathPercentage
+	}
+
+	if userConfig.FileModeHeader != "" {
+		AppConfig.FileModeHeader = userConfig.FileModeHeader
+	}
+
+	if userConfig.FileModePercentage != 0 {
+		AppConfig.FileModePercentage = userConfig.FileModePercentage
 	}
 
 	if userConfig.SizeHeader != "" {

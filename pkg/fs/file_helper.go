@@ -115,5 +115,6 @@ func ReadFromFile(filePath string) []string {
 
 func IsFileExists(filePath string) bool {
 	_, err := os.Stat(filePath)
+
 	return err == nil
 }

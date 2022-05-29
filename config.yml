@@ -10,9 +10,11 @@ showHidden: false
 indexHeader: index
 indexPercentage: 10
 pathHeader: ╭──── path
-pathPercentage: 70
+pathPercentage: 65
+fileModeHeader: permissions
+fileModePercentage: 15
 sizeHeader: size
-sizePercentage: 20
+sizePercentage: 10
 pathPrefix: ├─
 pathSuffix: ╰─
 focusPrefix: '▸['
