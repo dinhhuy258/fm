@@ -7,17 +7,17 @@ focusFg: blue
 showHidden: false
 indexHeader: index
 indexPercentage: 10
-pathHeader: ╭──── path
+pathHeader: ┌──── path
 pathPercentage: 65
 fileModeHeader: permissions
 fileModePercentage: 15
 sizeHeader: size
 sizePercentage: 10
 pathPrefix: ├─
-pathSuffix: ╰─
+pathSuffix: └─
 focusPrefix: '▸['
 focusSuffix: ']'
-selectionPrefix: '{'
+selectionPrefix: ' {'
 selectionSuffix: '}'
 logErrorFormat: '[ERROR] '
 logWarningFormat: '[WARNING] '
