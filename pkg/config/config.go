@@ -60,20 +60,17 @@ var AppConfig *Config
 
 // LoadConfig loads the config from config file and default config then merges them.
 func LoadConfig() error {
-	// TODO: Consider to remove code to create config file on missing
-	configFilePath, err := getConfigFileOrCreateIfMissing()
-	if err != nil {
-		return err
-	}
-
+	configFilePath := getConfigFilePath()
 	AppConfig = getDefaultConfig()
 
-	userConfig, err := loadConfigFromFile(*configFilePath)
-	if err != nil {
-		return err
-	}
+	if configFilePath.IsPresent() {
+		userConfig, err := loadConfigFromFile(*configFilePath.Get())
+		if err != nil {
+			return err
+		}
 
-	mergeUserConfig(userConfig)
+		mergeUserConfig(userConfig)
+	}
 
 	return nil
 }

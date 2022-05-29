@@ -112,3 +112,8 @@ func ReadFromFile(filePath string) []string {
 
 	return lines
 }
+
+func IsFileExists(filePath string) bool {
+	_, err := os.Stat(filePath)
+	return err == nil
+}
