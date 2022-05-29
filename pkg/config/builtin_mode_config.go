@@ -195,7 +195,7 @@ var markSaveModeConfig = ModeConfig{
 				Help: "cancel",
 				Messages: []*MessageConfig{
 					{
-						Name: "FocusNext",
+						Name: "PopMode",
 					},
 				},
 			},
@@ -229,7 +229,7 @@ var markLoadModeConfig = ModeConfig{
 				Help: "cancel",
 				Messages: []*MessageConfig{
 					{
-						Name: "FocusNext",
+						Name: "PopMode",
 					},
 				},
 			},

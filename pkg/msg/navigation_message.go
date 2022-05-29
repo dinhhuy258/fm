@@ -3,6 +3,7 @@ package msg
 import (
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
+	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
@@ -36,9 +37,15 @@ func FocusPrevious(app IApp, _ ...string) {
 
 func FocusPath(app IApp, params ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 
-	// TODO Verify path
 	path := params[0]
+	if !fs.IsDir(path) {
+		logController.SetLog(view.Error, "Path is not a directory: "+path)
+
+		return
+	}
+
 	explorerController.FocusPath(path)
 	explorerController.UpdateView()
 }

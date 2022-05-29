@@ -1,7 +1,6 @@
 package app
 
 import (
-	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -9,6 +8,7 @@ import (
 	"github.com/alitto/pond"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
+	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/fm/pkg/key"
 	"github.com/dinhhuy258/fm/pkg/msg"
 	"github.com/dinhhuy258/fm/pkg/pipe"
@@ -61,9 +61,6 @@ func NewApp() (*App, error) {
 func (app *App) Run() error {
 	// Start watcher for the pipe
 	app.pipe.StartWatcher(app.onMessageIn)
-	// Push the default mode
-	// TODO: Remove hard code here
-	app.PushMode("default")
 
 	// Set on key handler
 	app.gui.SetOnKeyFunc(app.onKey)
@@ -113,20 +110,23 @@ func (app *App) GetController(controllerType controller.Type) controller.IContro
 
 // PopMode pops the current mode
 func (app *App) PopMode() {
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
+
 	if err := app.modes.Pop(); err != nil {
-		// TODO: Better error handling???
-		log.Fatalf("failed to pop mode %v", err)
+		logController.SetLog(view.Error, "You can't pop the root mode")
+		logController.UpdateView()
 	}
 
-	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 	logController.SetVisible(true)
 }
 
 // PushMode pushes the given mode
 func (app *App) PushMode(mode string) {
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
+
 	if err := app.modes.Push(mode); err != nil {
-		// TODO: Better error handling???
-		log.Fatalf("failed to push mode %v", err)
+		logController.SetLog(view.Error, "Mode not found: "+mode)
+		logController.UpdateView()
 	}
 }
 

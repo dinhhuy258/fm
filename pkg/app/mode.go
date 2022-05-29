@@ -77,12 +77,17 @@ func CreateModes(onModeChange func(*Mode)) *Modes {
 		customModes[customMode.Name] = createMode(customMode.Name, customMode.KeyBindings)
 	}
 
-	return &Modes{
+	modes := &Modes{
 		modes:        make([]*Mode, 0, 5),
 		builtinModes: builtinModes,
 		customModes:  customModes,
 		onModeChange: onModeChange,
 	}
+
+	// The application starts with the default mode
+	_ = modes.Push("default")
+
+	return modes
 }
 
 // Push pushes a mode to the mode stack.
