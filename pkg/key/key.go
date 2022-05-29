@@ -11,6 +11,7 @@ import (
 
 type Key interface{} // FIXME: find out how to get `gocui.Key | rune`
 
+// GetKeyDisplay returns the display name of the key
 func GetKeyDisplay(key Key) string {
 	keyInt := 0
 
@@ -29,6 +30,7 @@ func GetKeyDisplay(key Key) string {
 	return fmt.Sprintf("%c", keyInt)
 }
 
+// GetKey returns the key from the display name
 func GetKey(key string) Key {
 	runeCount := utf8.RuneCountInString(key)
 	if runeCount > 1 {

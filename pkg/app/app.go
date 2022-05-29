@@ -17,6 +17,14 @@ import (
 
 var messageInRegexp = regexp.MustCompile(`[^\s']+|'([^']*)'`)
 
+const (
+	// The number of worker in the message worker pool should be 1 to avoid concurrency issue
+	maxMessageWorkers = 1
+	// The maximum number of messages that can be queued
+	maxMessageCapacity = 10
+)
+
+// App is the main application
 type App struct {
 	gui        *gui.Gui
 	modes      *Modes
@@ -41,14 +49,15 @@ func NewApp() (*App, error) {
 	app := &App{
 		gui:               gui,
 		pipe:              pipe,
-		messageWorkerPool: pond.New(1 /* we only need one worker to avoid concurrency issue */, 10),
+		messageWorkerPool: pond.New(maxMessageWorkers, maxMessageCapacity),
 	}
 
-	app.modes = CreateModes()
+	app.modes = CreateModes(app.onModeChange)
 
 	return app, nil
 }
 
+// Run the application
 func (app *App) Run() error {
 	// Start watcher for the pipe
 	app.pipe.StartWatcher(app.onMessageIn)
@@ -59,6 +68,7 @@ func (app *App) Run() error {
 	// Set on key handler
 	app.gui.SetOnKeyFunc(app.onKey)
 
+	// Get the current directory and load files/folder in it
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil
@@ -69,25 +79,26 @@ func (app *App) Run() error {
 	return app.gui.Run()
 }
 
+// GetPipe returns the pipe
 func (app *App) GetPipe() *pipe.Pipe {
 	return app.pipe
 }
 
+// OnUIThread is called to handle messages from the UI thread
 func (app *App) OnUIThread(f func() error) {
 	app.gui.OnUIThread(f)
 }
 
-func (app *App) onModeChanged() {
-	currentMode := app.modes.Peek()
-
+// onModeChange is called when the mode is changed
+func (app *App) onModeChange(currentMode *Mode) {
 	helps := currentMode.GetHelp()
 
 	helpKeys := make([]string, 0, len(helps))
 	helpMsgs := make([]string, 0, len(helps))
 
 	for _, h := range helps {
-		helpKeys = append(helpKeys, key.GetKeyDisplay(h.Key))
-		helpMsgs = append(helpMsgs, h.Msg)
+		helpKeys = append(helpKeys, key.GetKeyDisplay(h.key))
+		helpMsgs = append(helpMsgs, h.msg)
 	}
 
 	helpController, _ := app.GetController(controller.Help).(*controller.HelpController)
@@ -95,10 +106,12 @@ func (app *App) onModeChanged() {
 	helpController.UpdateView()
 }
 
+// GetController returns the controller with the given name
 func (app *App) GetController(controllerType controller.Type) controller.IController {
 	return app.gui.GetController(controllerType)
 }
 
+// PopMode pops the current mode
 func (app *App) PopMode() {
 	if err := app.modes.Pop(); err != nil {
 		// TODO: Better error handling???
@@ -107,39 +120,42 @@ func (app *App) PopMode() {
 
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 	logController.SetVisible(true)
-
-	app.onModeChanged()
 }
 
+// PushMode pushes the given mode
 func (app *App) PushMode(mode string) {
 	if err := app.modes.Push(mode); err != nil {
 		// TODO: Better error handling???
 		log.Fatalf("failed to push mode %v", err)
 	}
-
-	app.onModeChanged()
 }
 
+// GetPressedKey returns the previous pressed key
 func (app *App) GetPressedKey() key.Key {
 	return app.pressedKey
 }
 
+// Quit the application
 func (app *App) Quit() {
 	app.gui.Quit()
 }
 
+// Suspend the application
 func (app *App) Suspend() error {
 	return app.gui.Suspend()
 }
 
+// Resume the application
 func (app *App) Resume() error {
 	return app.gui.Resume()
 }
 
+// OnQuit is called when the application is about to quit
 func (app *App) OnQuit() {
 	app.pipe.StopWatcher()
 }
 
+// onKey is called from gocui when a key is pressed
 func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 	keybindings := app.modes.Peek().GetKeyBindings()
 
@@ -149,13 +165,13 @@ func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 		app.pressedKey = ch
 	}
 
-	action, hasKey := keybindings.OnKeys[app.pressedKey]
+	action, hasKey := keybindings.onKeys[app.pressedKey]
 
 	switch {
 	case hasKey:
-		app.submitMessages(action.Messages)
-	case keybindings.Default != nil:
-		app.submitMessages(keybindings.Default.Messages)
+		app.submitMessages(action.messages)
+	case keybindings.defaultAction != nil:
+		app.submitMessages(keybindings.defaultAction.messages)
 	}
 
 	return nil
@@ -177,6 +193,7 @@ func (app *App) submitMessages(messages []*msg.Message) {
 	})
 }
 
+// onMessageIn is called when a message is received from the pipe
 func (app *App) onMessageIn(messageIn string) {
 	if messageIn == "" {
 		// Ignore empty message

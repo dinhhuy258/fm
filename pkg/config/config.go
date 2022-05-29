@@ -1,25 +1,30 @@
 package config
 
+// MessageConfig represents the config for the message.
 type MessageConfig struct {
 	Name string   `yaml:"name"`
 	Args []string `yaml:"args"`
 }
 
+// ActionConfig represents the config for the action.
 type ActionConfig struct {
 	Help     string           `yaml:"help"`
 	Messages []*MessageConfig `yaml:"messages"`
 }
 
+// KeyBindingsConfig represents the config for the key bindings.
 type KeyBindingsConfig struct {
 	OnKeys  map[string]*ActionConfig `yaml:"onKeys"`
 	Default *ActionConfig            `yaml:"default"`
 }
 
+// ModeConfig represents the config for the mode.
 type ModeConfig struct {
 	Name        string            `yaml:"-"`
 	KeyBindings KeyBindingsConfig `yaml:"keyBindings"`
 }
 
+// Config represents the config for the application.
 type Config struct {
 	SelectionColor     string                 `yaml:"selectionColor"`
 	DirectoryColor     string                 `yaml:"directoryColor"`
@@ -53,6 +58,27 @@ type Config struct {
 
 var AppConfig *Config
 
+// LoadConfig loads the config from config file and default config then merges them.
+func LoadConfig() error {
+	// TODO: Consider to remove code to create config file on missing
+	configFilePath, err := getConfigFileOrCreateIfMissing()
+	if err != nil {
+		return err
+	}
+
+	AppConfig = getDefaultConfig()
+
+	userConfig, err := loadConfigFromFile(*configFilePath)
+	if err != nil {
+		return err
+	}
+
+	mergeUserConfig(userConfig)
+
+	return nil
+}
+
+// mergeUserModeConfig merges the user mode config.
 func mergeUserModeConfig(userConfig *Config) {
 	for name, mode := range userConfig.CustomModeConfigs {
 		mode.Name = name
@@ -77,6 +103,7 @@ func mergeUserModeConfig(userConfig *Config) {
 	}
 }
 
+// mergeUserConfig merges the user config.
 func mergeUserConfig(userConfig *Config) {
 	if userConfig.SelectionColor != "" {
 		AppConfig.SelectionColor = userConfig.SelectionColor
@@ -181,23 +208,4 @@ func mergeUserConfig(userConfig *Config) {
 	AppConfig.ShowHidden = userConfig.ShowHidden
 
 	mergeUserModeConfig(userConfig)
-}
-
-func LoadConfig() error {
-	// TODO: Consider to remove code to create config file on missing
-	configFilePath, err := getConfigFileOrCreateIfMissing()
-	if err != nil {
-		return err
-	}
-
-	AppConfig = getDefaultConfig()
-
-	userConfig, err := loadConfigFromFile(*configFilePath)
-	if err != nil {
-		return err
-	}
-
-	mergeUserConfig(userConfig)
-
-	return nil
 }

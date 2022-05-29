@@ -8,6 +8,7 @@ import (
 	"github.com/hpcloud/tail"
 )
 
+// Pipe is a pipe to communicate with fm
 type Pipe struct {
 	sessionPath      string
 	messageInPath    string
@@ -17,6 +18,7 @@ type Pipe struct {
 	watcherStop      chan bool
 }
 
+// NewPipe creates a new pipe
 func NewPipe() (*Pipe, error) {
 	runtime := os.Getenv("XDG_RUNTIME_DIR")
 	if runtime == "" {
@@ -58,18 +60,22 @@ func NewPipe() (*Pipe, error) {
 	}, nil
 }
 
+// GetMessageInPath returns the path to the message in file
 func (p *Pipe) GetMessageInPath() string {
 	return p.messageInPath
 }
 
+// GetSelectionPath returns the path to the selection file
 func (p *Pipe) GetSelectionPath() string {
 	return p.selectionPath
 }
 
+// GetMarkPath returns the path to the mark file
 func (p *Pipe) GetMarkPath() string {
 	return p.markPath
 }
 
+// StartWatcher starts the watcher for message in file
 func (p *Pipe) StartWatcher(onMessageIn func(string)) {
 	go func() {
 		for {
@@ -83,6 +89,7 @@ func (p *Pipe) StartWatcher(onMessageIn func(string)) {
 	}()
 }
 
+// StopWatcher stops the watcher for message in file
 func (p *Pipe) StopWatcher() {
 	p.watcherStop <- true
 	p.messageInWatcher.Cleanup()

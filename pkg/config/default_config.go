@@ -1,5 +1,6 @@
 package config
 
+// getDefaultConfig returns the default configuration for the application.
 func getDefaultConfig() *Config {
 	return &Config{
 		ShowHidden:         false,

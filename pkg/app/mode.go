@@ -14,49 +14,60 @@ var (
 	ErrEmptyModes   = errors.New("empty modes")
 )
 
+// Action represents an action.
 type Action struct {
-	Help     string
-	Messages []*msg.Message
+	messages []*msg.Message
 }
 
+// Help represents a help for the mode.
 type Help struct {
-	Key key.Key
-	Msg string
+	key key.Key
+	msg string
 }
 
+// KeyBindings represents a key bindings config for the mode.
 type KeyBindings struct {
-	OnKeys  map[key.Key]*Action
-	Default *Action
+	onKeys        map[key.Key]*Action
+	defaultAction *Action
 }
 
+// Mode represents a mode.
 type Mode struct {
-	*Mode
 	name        string
 	keyBindings *KeyBindings
 	helps       []*Help
 }
 
+// GetName returns the name of the mode.
 func (m *Mode) GetName() string {
 	return m.name
 }
 
+// GetKeyBindings returns the key bindings of the mode.
 func (m *Mode) GetKeyBindings() *KeyBindings {
 	return m.keyBindings
 }
 
+// GetHelp returns the help for the mode.
 func (m *Mode) GetHelp() []*Help {
 	return m.helps
 }
 
+// Modes contains a list of modes.
 type Modes struct {
-	Modes        []*Mode
-	BuiltinModes map[string]*Mode
-	CustomModes  map[string]*Mode
+	// The current mode.
+	modes []*Mode
+	// The list of builtin modes.
+	builtinModes map[string]*Mode
+	// The list of user config modes.
+	customModes map[string]*Mode
+	// The callback function when the mode changes.
+	onModeChange func(*Mode)
 }
 
-func CreateModes() *Modes {
+// CreateModes creates modes from config.
+func CreateModes(onModeChange func(*Mode)) *Modes {
 	builtinModes := make(map[string]*Mode)
-
 	for _, builtinMode := range config.AppConfig.BuiltinModeConfigs {
 		builtinModes[builtinMode.Name] = createMode(builtinMode.Name, builtinMode.KeyBindings)
 	}
@@ -67,21 +78,25 @@ func CreateModes() *Modes {
 	}
 
 	return &Modes{
-		Modes:        make([]*Mode, 0, 5),
-		BuiltinModes: builtinModes,
-		CustomModes:  customModes,
+		modes:        make([]*Mode, 0, 5),
+		builtinModes: builtinModes,
+		customModes:  customModes,
+		onModeChange: onModeChange,
 	}
 }
 
+// Push pushes a mode to the mode stack.
 func (m *Modes) Push(mode string) error {
-	if builtinMode, hasBuiltinMode := m.BuiltinModes[mode]; hasBuiltinMode {
-		m.Modes = append(m.Modes, builtinMode)
+	if builtinMode, hasBuiltinMode := m.builtinModes[mode]; hasBuiltinMode {
+		m.modes = append(m.modes, builtinMode)
+		m.onModeChange(builtinMode)
 
 		return nil
 	}
 
-	if customMode, hasCustomMode := m.CustomModes[mode]; hasCustomMode {
-		m.Modes = append(m.Modes, customMode)
+	if customMode, hasCustomMode := m.customModes[mode]; hasCustomMode {
+		m.modes = append(m.modes, customMode)
+		m.onModeChange(customMode)
 
 		return nil
 	}
@@ -89,26 +104,30 @@ func (m *Modes) Push(mode string) error {
 	return ErrModeNotFound
 }
 
+// Pop pops a mode from the mode stack.
 func (m *Modes) Pop() error {
-	if len(m.Modes) <= 1 {
+	if len(m.modes) <= 1 {
 		return ErrEmptyModes
 	}
 
-	m.Modes = m.Modes[:len(m.Modes)-1]
+	m.modes = m.modes[:len(m.modes)-1]
+	m.onModeChange(m.modes[len(m.modes)-1])
 
 	return nil
 }
 
+// Peek returns the current mode.
 func (m *Modes) Peek() *Mode {
-	return m.Modes[len(m.Modes)-1]
+	return m.modes[len(m.modes)-1]
 }
 
+// createMode creates a mode from config.
 func createMode(name string, keyBindings config.KeyBindingsConfig) *Mode {
 	mode := Mode{
 		name: name,
 		keyBindings: &KeyBindings{
-			OnKeys:  map[key.Key]*Action{},
-			Default: nil,
+			onKeys:        map[key.Key]*Action{},
+			defaultAction: nil,
 		},
 		helps: []*Help{},
 	}
@@ -116,8 +135,8 @@ func createMode(name string, keyBindings config.KeyBindingsConfig) *Mode {
 	for k, actionConfig := range keyBindings.OnKeys {
 		key := key.GetKey(k)
 
-		mode.keyBindings.OnKeys[key] = &Action{
-			Messages: []*msg.Message{},
+		mode.keyBindings.onKeys[key] = &Action{
+			messages: []*msg.Message{},
 		}
 
 		for _, messageConfig := range actionConfig.Messages {
@@ -126,21 +145,21 @@ func createMode(name string, keyBindings config.KeyBindingsConfig) *Mode {
 				log.Fatalf("message not found: %s", messageConfig.Name)
 			}
 
-			mode.keyBindings.OnKeys[key].Messages = append(
-				mode.keyBindings.OnKeys[key].Messages,
+			mode.keyBindings.onKeys[key].messages = append(
+				mode.keyBindings.onKeys[key].messages,
 				message,
 			)
 		}
 
 		mode.helps = append(mode.helps, &Help{
-			Key: key,
-			Msg: actionConfig.Help,
+			key: key,
+			msg: actionConfig.Help,
 		})
 	}
 
 	if keyBindings.Default != nil {
-		mode.keyBindings.Default = &Action{
-			Messages: []*msg.Message{},
+		mode.keyBindings.defaultAction = &Action{
+			messages: []*msg.Message{},
 		}
 
 		for _, messageConfig := range keyBindings.Default.Messages {
@@ -149,8 +168,8 @@ func createMode(name string, keyBindings config.KeyBindingsConfig) *Mode {
 				log.Fatalf("message not found: %s", messageConfig.Name)
 			}
 
-			mode.keyBindings.Default.Messages = append(
-				mode.keyBindings.Default.Messages,
+			mode.keyBindings.defaultAction.messages = append(
+				mode.keyBindings.defaultAction.messages,
 				message,
 			)
 		}

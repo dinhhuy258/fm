@@ -11,6 +11,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
+// ExplorerController is the controller for the explorer view
 type ExplorerController struct {
 	*BaseController
 
@@ -23,6 +24,7 @@ type ExplorerController struct {
 	headerView *view.ExplorerHeaderView
 }
 
+// newExplorerController creates a new explorer controller
 func newExplorerController(baseController *BaseController,
 	view *view.ExplorerView,
 	headerView *view.ExplorerHeaderView,
@@ -38,30 +40,31 @@ func newExplorerController(baseController *BaseController,
 	}
 }
 
+// GetFocus returns the index of the focused entry
 func (ec *ExplorerController) GetFocus() int {
 	return ec.focus
 }
 
-func (ec *ExplorerController) GetEntry(idx int) fs.IEntry {
-	if idx < 0 || idx >= len(ec.entries) {
+// GetCurrentEntry returns the current entry
+func (ec *ExplorerController) GetCurrentEntry() fs.IEntry {
+	if ec.focus < 0 || ec.focus >= len(ec.entries) {
 		return nil
 	}
 
-	return ec.entries[idx]
+	return ec.entries[ec.focus]
 }
 
-func (ec *ExplorerController) GetCurrentEntry() fs.IEntry {
-	return ec.GetEntry(ec.focus)
-}
-
+// GetEntries returns the list of entries
 func (ec *ExplorerController) GetEntries() []fs.IEntry {
 	return ec.entries
 }
 
+// GetPath returns the current path
 func (ec *ExplorerController) GetPath() string {
 	return ec.path
 }
 
+// LoadDirectory loads the directory at the given path
 func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Optional[string]) {
 	if !fs.IsDir(path) {
 		ec.mediator.notify(ShowErrorLog, optional.New(path+" is not a directory"))
@@ -95,10 +98,12 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Opti
 	})
 }
 
+// Focus focuses cusor to the current entry
 func (ec *ExplorerController) Focus() {
 	ec.view.FocusPoint(0, ec.focus)
 }
 
+// FocusPrevious focuses the previous entry
 func (ec *ExplorerController) FocusPrevious() {
 	if ec.focus <= 0 {
 		return
@@ -108,6 +113,7 @@ func (ec *ExplorerController) FocusPrevious() {
 	ec.Focus()
 }
 
+// FocusNext focuses the next entry
 func (ec *ExplorerController) FocusNext() {
 	if ec.focus >= len(ec.entries)-1 {
 		return
@@ -117,16 +123,19 @@ func (ec *ExplorerController) FocusNext() {
 	ec.Focus()
 }
 
+// FocusFirst focuses the first entry
 func (ec *ExplorerController) FocusFirst() {
 	ec.focus = 0
 	ec.Focus()
 }
 
+// FocusLast focuses the last entry
 func (ec *ExplorerController) FocusLast() {
 	ec.focus = len(ec.entries) - 1
 	ec.Focus()
 }
 
+// FocusPath focuses the entry with the given path
 func (ec *ExplorerController) FocusPath(path string) {
 	if parentPath := fs.Dir(path); ec.path != parentPath {
 		ec.LoadDirectory(parentPath, optional.New(path))
@@ -135,10 +144,12 @@ func (ec *ExplorerController) FocusPath(path string) {
 	}
 }
 
+// UpdateView updates the view
 func (ec *ExplorerController) UpdateView() {
 	ec.view.UpdateView(ec.entries, ec.selections, ec.focus)
 }
 
+// focusPath focuses the entry with the given path
 func (ec *ExplorerController) focusPath(path string) {
 	focus := 0
 	// Iterate through the list of entries and find the idx for the current path

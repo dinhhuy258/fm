@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 )
 
+// Humanize returns a human-readable string of the size.
 func Humanize(size int64) string {
 	if size < 1000 {
 		return fmt.Sprintf("%d B", size)
@@ -37,6 +38,8 @@ func Humanize(size int64) string {
 	return ""
 }
 
+// CreateFile creates a file with the given path,
+// if the override flag is true, the file will be overwritten.
 func CreateFile(name string, override bool) error {
 	flags := os.O_APPEND | os.O_CREATE | os.O_WRONLY
 	if override {
@@ -55,10 +58,12 @@ func CreateFile(name string, override bool) error {
 	return err
 }
 
+// Dir returns the parent directory of the given path.
 func Dir(path string) string {
 	return filepath.Dir(path)
 }
 
+// IsDir returns true if the given path is a directory.
 func IsDir(path string) bool {
 	info, err := os.Stat(path)
 	if err != nil {
@@ -68,64 +73,7 @@ func IsDir(path string) bool {
 	return info.IsDir()
 }
 
-func LoadEntries(path string, showHidden bool) ([]IEntry, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-
-	names, err := f.Readdirnames(-1)
-	if err := f.Close(); err != nil {
-		return nil, err
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	entries := make([]IEntry, 0, len(names))
-
-	for _, name := range names {
-		absolutePath := filepath.Join(path, name)
-
-		lstat, err := os.Lstat(absolutePath)
-		if err != nil {
-			if os.IsNotExist(err) {
-				continue
-			}
-
-			return nil, err
-		}
-
-		if !showHidden && isHidden(name) {
-			continue
-		}
-
-		isDir := lstat.IsDir()
-		size := lstat.Size()
-
-		if isDir {
-			entries = append(entries, &Directory{
-				&Entry{
-					name: name,
-					path: absolutePath,
-					size: size,
-				},
-			})
-		} else {
-			entries = append(entries, &File{
-				&Entry{
-					name: name,
-					path: absolutePath,
-					size: size,
-				},
-			})
-		}
-	}
-
-	return entries, nil
-}
-
+// WriteToFile writes the given lines to the given file.
 func WriteToFile(filePath string, lines []string, override bool) {
 	flags := os.O_APPEND | os.O_CREATE | os.O_WRONLY
 	if override {
@@ -146,6 +94,7 @@ func WriteToFile(filePath string, lines []string, override bool) {
 	}
 }
 
+// ReadFromFile reads the lines from the given file.
 func ReadFromFile(filePath string) []string {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -162,8 +111,4 @@ func ReadFromFile(filePath string) []string {
 	}
 
 	return lines
-}
-
-func isHidden(filename string) bool {
-	return filename[0:1] == "."
 }
