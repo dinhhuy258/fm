@@ -89,6 +89,10 @@ builtinModeConfigs:
   default:
     keyBindings:
       onKeys:
+        G:
+          help: focus last
+          messages:
+            - name: FocusLast
         g:
           help: go to
           messages:

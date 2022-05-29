@@ -56,7 +56,13 @@ func Refresh(app IApp, params ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	entry := explorerController.GetCurrentEntry()
-	loadDirectory(app, explorerController.GetPath(), optional.New(entry.GetPath()))
+
+	focusPath := optional.NewEmpty[string]()
+	if entry != nil {
+		focusPath = optional.New(entry.GetPath())
+	}
+
+	loadDirectory(app, explorerController.GetPath(), focusPath)
 }
 
 func Quit(app IApp, _ ...string) {
