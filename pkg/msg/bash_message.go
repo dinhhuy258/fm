@@ -21,7 +21,7 @@ func BashExec(app IApp, params ...string) {
 			_ = app.Resume()
 		}()
 
-		// Clear the termianl screen first
+		// Clear the terminal screen first
 		cmd := exec.Command("clear")
 		cmd.Stdout = os.Stdout
 

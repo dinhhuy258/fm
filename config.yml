@@ -85,6 +85,101 @@ customModeConfigs:
         messages:
           - name: PopMode
             args: []
+  yarn:
+    keyBindings:
+      onKeys:
+        'p':
+          help: yarn path
+          messages:
+            - name: BashExecSilently
+              args:
+                - |
+                  FOCUS="${FM_FOCUS_PATH}"
+                  if [ "$FOCUS" ]; then
+                    echo -n $FOCUS | pbcopy -selection clipboard
+                    echo LogSuccess "'"$FOCUS was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
+                  fi
+
+                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+        'n':
+          help: yarn name
+          messages:
+            - name: BashExecSilently
+              args:
+                - |
+                  FOCUS="${FM_FOCUS_PATH}"
+                  if [ "$FOCUS" ]; then
+                    echo -n $(basename $FOCUS) | pbcopy -selection clipboard
+                    echo LogSuccess "'"$(basename "$FOCUS") was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
+                  fi
+
+                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+        'd':
+          help: yarn directory
+          messages:
+            - name: BashExecSilently
+              args:
+                - |
+                  FOCUS="${FM_FOCUS_PATH}"
+                  if [ "$FOCUS" ]; then
+                    echo -n $(dirname $FOCUS) | pbcopy -selection clipboard
+                    echo LogSuccess "'"$(dirname "$FOCUS") was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
+                  fi
+
+                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+      default:
+        help: cancel
+        messages:
+          - name: PopMode
+            args: []
+  open:
+    keyBindings:
+      onKeys:
+        'f':
+          help: open in Finder
+          messages:
+            - name: BashExecSilently
+              args:
+                - |
+                  FOCUS="${FM_FOCUS_PATH}"
+                  if [ "$FOCUS" ]; then
+                    open -R "${FOCUS}"
+                  fi
+
+                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+        'c':
+          help: open in Visual Studio Code
+          messages:
+            - name: BashExecSilently
+              args:
+                - |
+                  FOCUS="${FM_FOCUS_PATH}"
+                  if [ "$FOCUS" ]; then
+                    open -a "Visual Studio Code" "${FOCUS}"
+                  fi
+
+                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+        'o':
+          help: open
+          messages:
+            - name: BashExec
+              args:
+                - |
+                  FOCUS="${FM_FOCUS_PATH}"
+                  if [ "$FOCUS" ]; then
+                    case $(file --mime-type ${FOCUS} -b) in
+                        text/*) nvim ${FOCUS};;
+                        application/json) nvim ${FOCUS};;
+                        *) open "${FOCUS}"
+                    esac
+                  fi
+
+                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+      default:
+        help: cancel
+        messages:
+          - name: PopMode
+            args: []
 builtinModeConfigs:
   default:
     keyBindings:
@@ -99,6 +194,18 @@ builtinModeConfigs:
             - name: SwitchMode
               args:
                 - go-to
+        o:
+          help: open
+          messages:
+            - name: SwitchMode
+              args:
+                - open
+        y:
+          help: yarn
+          messages:
+            - name: SwitchMode
+              args:
+                - yarn
         /:
           help: search
           messages:
