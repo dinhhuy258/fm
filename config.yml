@@ -95,4 +95,14 @@ builtinModeConfigs:
             - name: SwitchMode
               args:
                 - go-to
+        /:
+          help: search
+          messages:
+            - name: BashExec
+              args:
+                - |
+                  SELECTED=$(ls | fzf --no-sort)
+                  if [ "$SELECTED" ]; then
+                    echo FocusPath "'"$PWD/$SELECTED"'" >> "${FM_PIPE_MSG_IN:?}"
+                  fi
       default: null

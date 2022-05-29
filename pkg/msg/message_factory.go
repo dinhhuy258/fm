@@ -46,8 +46,6 @@ var messageFactories = map[string]*MessageFactory{
 	"UpdateInputBufferFromKey": newMessageFactory(UpdateInputBufferFromKey),
 	"SetInputBuffer":           newMessageFactory(SetInputBuffer),
 
-	"SearchFromInput": newMessageFactory(SearchFromInput),
-
 	"ToggleSelection": newMessageFactory(ToggleSelection),
 	"ClearSelection":  newMessageFactory(ClearSelection),
 

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"os"
 	"strconv"
 
 	set "github.com/deckarep/golang-set/v2"
@@ -78,6 +79,11 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Opti
 
 		return
 	}
+
+	// Change the working directory according to the new path
+	// We can be sure that the path is a directory and its existence is checked before => no need to
+	// check the error here
+	_ = os.Chdir(ec.path)
 
 	ec.entries = entries
 	ec.headerView.Title = " " + path + " (" + strconv.Itoa(len(ec.entries)) + ") "

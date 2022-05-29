@@ -105,8 +105,6 @@ var defaultModeConfig = ModeConfig{
 					{
 						Name: "BashExec",
 						Args: []string{`
-							clear
-
 							(while IFS= read -r line; do
 								if cp -vr -- "${line:?}" ./; then
 									echo "${line:?}" copied to $PWD
@@ -129,8 +127,6 @@ var defaultModeConfig = ModeConfig{
 					{
 						Name: "BashExec",
 						Args: []string{`
-							clear
-
 							(while IFS= read -r line; do
 								if mv -v -- "${line:?}" ./; then
 									echo "${line:?}" moved to $PWD
@@ -176,19 +172,6 @@ var defaultModeConfig = ModeConfig{
 				Messages: []*MessageConfig{
 					{
 						Name: "ToggleHidden",
-					},
-				},
-			},
-			"/": {
-				Help: "search",
-				Messages: []*MessageConfig{
-					{
-						Name: "SetInputBuffer",
-						Args: []string{""},
-					},
-					{
-						Name: "SwitchMode",
-						Args: []string{"search"},
 					},
 				},
 			},
@@ -385,48 +368,6 @@ var renameModeConfig = ModeConfig{
 	},
 }
 
-var searchModeConfig = ModeConfig{
-	Name: "search",
-	KeyBindings: KeyBindingsConfig{
-		OnKeys: map[string]*ActionConfig{
-			"ctrl+c": {
-				Help: "quit",
-				Messages: []*MessageConfig{
-					{
-						Name: "Quit",
-					},
-				},
-			},
-			"enter": {
-				Help: "search",
-				Messages: []*MessageConfig{
-					{
-						Name: "SearchFromInput",
-					},
-					{
-						Name: "PopMode",
-					},
-				},
-			},
-			"esc": {
-				Help: "cancel",
-				Messages: []*MessageConfig{
-					{
-						Name: "PopMode",
-					},
-				},
-			},
-		},
-		Default: &ActionConfig{
-			Messages: []*MessageConfig{
-				{
-					Name: "UpdateInputBufferFromKey",
-				},
-			},
-		},
-	},
-}
-
 var deleteModeConfig = ModeConfig{
 	Name: "delete",
 	KeyBindings: KeyBindingsConfig{
@@ -495,8 +436,6 @@ var deleteCurrentModeConfig = ModeConfig{
 					{
 						Name: "BashExec",
 						Args: []string{`
-							clear
-
 							CURRENT="${FM_FOCUS_PATH:?}"
 
 							if rm -rfv -- "${CURRENT}"; then
@@ -547,8 +486,6 @@ var deleteSelectionsModeConfig = ModeConfig{
 					{
 						Name: "BashExec",
 						Args: []string{`
-							clear
-
 							(while IFS= read -r line; do
 								if rm -rfv -- "${line:?}"; then
 									echo "${line:?}" deleted
@@ -588,7 +525,6 @@ var builtinModeConfigs = map[string]*ModeConfig{
 	"mark-load":         &markLoadModeConfig,
 	"new-file":          &newFileModeConfig,
 	"rename":            &renameModeConfig,
-	"search":            &searchModeConfig,
 	"delete":            &deleteModeConfig,
 	"delete-current":    &deleteCurrentModeConfig,
 	"delete-selections": &deleteSelectionsModeConfig,
