@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -143,6 +144,24 @@ func WriteToFile(filePath string, lines []string, override bool) {
 			return
 		}
 	}
+}
+
+func ReadFromFile(filePath string) []string {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil
+	}
+
+	defer file.Close()
+
+	var lines []string
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	return lines
 }
 
 func isHidden(filename string) bool {

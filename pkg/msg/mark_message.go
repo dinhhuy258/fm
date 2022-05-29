@@ -7,16 +7,26 @@ import (
 
 func MarkSave(app IApp, params ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
+	marController, _ := app.GetController(controller.Mark).(*controller.MarkController)
 
 	entry := explorerController.GetCurrentEntry()
+	if entry == nil {
+		return
+	}
+
 	k := key.GetKeyDisplay(app.GetPressedKey())
-	app.MarkSave(k, entry.GetPath())
+
+	marController.SaveMark(k, entry.GetPath())
 }
 
 func MarkLoad(app IApp, params ...string) {
+	marController, _ := app.GetController(controller.Mark).(*controller.MarkController)
+
 	k := key.GetKeyDisplay(app.GetPressedKey())
 
-	if path, hasKey := app.MarkLoad(k); hasKey {
-		FocusPath(app, path)
-	}
+	path := marController.LoadMark(k)
+
+	path.IfPresent(func(p *string) {
+		FocusPath(app, *p)
+	})
 }

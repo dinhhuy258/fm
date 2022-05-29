@@ -14,9 +14,6 @@ type IApp interface {
 	GetPressedKey() key.Key
 	// Quit
 	Quit()
-	// Mark
-	MarkSave(key, path string)
-	MarkLoad(key string) (string, bool)
 	// Mode
 	PopMode()
 	PushMode(mode string)

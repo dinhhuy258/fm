@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
+	"github.com/dinhhuy258/fm/pkg/pipe"
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -14,7 +15,7 @@ type Gui struct {
 	controllers *controller.Controllers
 }
 
-func NewGui() (*Gui, error) {
+func NewGui(pipe *pipe.Pipe) (*Gui, error) {
 	gui := &Gui{}
 
 	g, err := gocui.NewGui(gocui.OutputNormal, false, gocui.NORMAL, false, map[rune]string{})
@@ -33,7 +34,7 @@ func NewGui() (*Gui, error) {
 		return nil, err
 	}
 
-	gui.controllers = controller.CreateControllers(gui.g, gui.views)
+	gui.controllers = controller.CreateControllers(gui.g, gui.views, pipe)
 
 	if err := gui.layout(gui.g); err != nil {
 		return nil, err

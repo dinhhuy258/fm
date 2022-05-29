@@ -4,6 +4,7 @@ import (
 	set "github.com/deckarep/golang-set/v2"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/fm/pkg/optional"
+	"github.com/dinhhuy258/fm/pkg/pipe"
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -15,6 +16,7 @@ const (
 	Sellection
 	Log
 	Input
+	Mark
 )
 
 type Event int8
@@ -43,7 +45,7 @@ type Controllers struct {
 	controllers map[Type]IController
 }
 
-func CreateControllers(g *gocui.Gui, views *view.Views) *Controllers {
+func CreateControllers(g *gocui.Gui, views *view.Views, pipe *pipe.Pipe) *Controllers {
 	// Selections object to share between explorer and selection controllers
 	selections := set.NewSet[string]()
 	c := &Controllers{
@@ -61,6 +63,7 @@ func CreateControllers(g *gocui.Gui, views *view.Views) *Controllers {
 	c.controllers[Help] = newHelpController(baseController, views.Help)
 	c.controllers[Log] = newLogController(baseController, views.Log)
 	c.controllers[Input] = newInputController(baseController, views.Input)
+	c.controllers[Mark] = newMarkController(baseController, pipe)
 
 	return c
 }

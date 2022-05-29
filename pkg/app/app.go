@@ -19,7 +19,6 @@ var messageInRegexp = regexp.MustCompile(`[^\s']+|'([^']*)'`)
 
 type App struct {
 	gui        *gui.Gui
-	marks      map[string]string
 	modes      *Modes
 	pressedKey key.Key
 	pipe       *pipe.Pipe
@@ -29,24 +28,23 @@ type App struct {
 
 // NewApp bootstrap a new application
 func NewApp() (*App, error) {
-	gui, err := gui.NewGui()
+	pipe, err := pipe.NewPipe()
 	if err != nil {
 		return nil, err
 	}
 
-	pipe, err := pipe.NewPipe()
+	gui, err := gui.NewGui(pipe)
 	if err != nil {
 		return nil, err
 	}
 
 	app := &App{
 		gui:               gui,
-		marks:             map[string]string{},
 		pipe:              pipe,
 		messageWorkerPool: pond.New(1 /* we only need one worker to avoid concurrency issue */, 10),
 	}
 
-	app.modes = CreateModes(app.marks)
+	app.modes = CreateModes()
 
 	return app, nil
 }
@@ -99,16 +97,6 @@ func (app *App) onModeChanged() {
 
 func (app *App) GetController(controllerType controller.Type) controller.IController {
 	return app.gui.GetController(controllerType)
-}
-
-func (app *App) MarkSave(key, path string) {
-	app.marks[key] = path
-}
-
-func (app *App) MarkLoad(key string) (string, bool) {
-	path, hasKey := app.marks[key]
-
-	return path, hasKey
 }
 
 func (app *App) PopMode() {
