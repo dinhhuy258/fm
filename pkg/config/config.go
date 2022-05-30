@@ -121,6 +121,7 @@ func mergeUserNodeTypesConfig(userNodeTypesConfig *NodeTypesConfig) {
 			if ntc.Color == "" {
 				ntc.Color = AppConfig.NodeTypesConfig.File.Color
 			}
+
 			if ntc.Icon == "" {
 				ntc.Icon = AppConfig.NodeTypesConfig.File.Icon
 			}

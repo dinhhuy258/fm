@@ -32,7 +32,7 @@ func (ehv *ExplorerHeaderView) layout() error {
 	ehv.headerRow.SetWidth(x)
 
 	rowString, err := ehv.headerRow.Sprint(
-		[]string{
+		[]style.CellValue{
 			config.AppConfig.IndexHeader,
 			config.AppConfig.PathHeader,
 			config.AppConfig.FileModeHeader,
@@ -51,10 +51,6 @@ func (ehv *ExplorerHeaderView) layout() error {
 type nodeType struct {
 	icon  string
 	style style.TextStyle
-}
-
-func (i nodeType) sprint() string {
-	return i.style.Sprint(i.icon)
 }
 
 type nodeTypes struct {
@@ -143,9 +139,8 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 		entryIcon := ev.getEntryIcon(entry, isEntrySelected)
 
 		name := entry.GetName()
-		var prefix string
-		var suffix string
-		var entryPrefix string
+
+		var prefix, suffix, entryTreePrefix string
 
 		switch {
 		case idx == focus:
@@ -161,22 +156,41 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 		}
 
 		if idx == entriesSize-1 {
-			entryPrefix = cfg.PathSuffix
+			entryTreePrefix = cfg.PathSuffix
 		} else {
-			entryPrefix = cfg.PathPrefix
+			entryTreePrefix = cfg.PathPrefix
 		}
 
 		index := strconv.Itoa(idx + 1)
 		fileMode := entry.GetFileMode()
 		size := fs.Humanize(entry.GetSize())
 
-		path := entryPrefix
-		path += entryTextStyle.Sprint(prefix)
-		path += entryIcon.sprint() + " "
-		path += entryTextStyle.Sprint(name)
-		path += entryTextStyle.Sprint(suffix)
-
-		line, err := ev.explorerRow.Sprint([]string{index, path, fileMode, size})
+		line, err := ev.explorerRow.Sprint([]style.CellValue{index, []style.CellValueComponent{
+			{
+				Value: entryTreePrefix,
+				Style: nil,
+			},
+			{
+				Value: prefix,
+				Style: &entryTextStyle,
+			},
+			{
+				Value: entryIcon.icon,
+				Style: &entryIcon.style,
+			},
+			{
+				Value: " ",
+				Style: nil,
+			},
+			{
+				Value: name,
+				Style: &entryTextStyle,
+			},
+			{
+				Value: suffix,
+				Style: &entryTextStyle,
+			},
+		}, fileMode, size})
 		if err != nil {
 			log.Fatalf("failed to sprint row %v", err)
 		}

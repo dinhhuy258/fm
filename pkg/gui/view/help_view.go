@@ -34,7 +34,7 @@ func (hv *HelpView) UpdateView(title string, helpKeys []string, helpMsgs []strin
 		helpKey := helpKeys[i]
 		helpMsg := helpMsgs[i]
 
-		line, err := hv.helpRow.Sprint([]string{helpKey, helpMsg})
+		line, err := hv.helpRow.Sprint([]style.CellValue{helpKey, helpMsg})
 		if err != nil {
 			log.Fatalf("failed to set content for help view %v", err)
 		}
