@@ -150,7 +150,7 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 			prefix = cfg.SelectionPrefix
 			suffix = cfg.SelectionSuffix
 		default:
-			// TODO: Configurate these values
+			// TODO: Confiure these values
 			prefix = "  "
 			suffix = ""
 		}
@@ -222,11 +222,14 @@ func (ev *ExplorerView) getEntryTextStyle(entry fs.IEntry, isEntrySelected bool)
 func (ev *ExplorerView) getEntryIcon(entry fs.IEntry, isEntrySelected bool) nodeType {
 	var icon nodeType
 
-	if i, hasIcon := ev.icons.extensions[entry.GetExt()]; hasIcon {
-		icon = i
-	} else if entry.IsDirectory() {
+	extensionIcon, hasIcon := ev.icons.extensions[entry.GetExt()]
+
+	switch {
+	case hasIcon:
+		icon = extensionIcon
+	case entry.IsDirectory():
 		icon = ev.icons.directory
-	} else {
+	default:
 		icon = ev.icons.file
 	}
 

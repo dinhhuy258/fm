@@ -53,6 +53,81 @@ type cell struct {
 	leftAlign  bool
 }
 
+func styleString(val string, style *TextStyle) string {
+	if style != nil {
+		return style.Sprint(val)
+	}
+
+	return val
+}
+
+func (c *cell) sprintCellComponents(cellComponents []CellValueComponent, w int) string {
+	originalLine := ""
+	for _, cellComponent := range cellComponents {
+		originalLine += cellComponent.Value
+	}
+
+	if utf8.RuneCountInString(originalLine) > w {
+		originalLine = originalLine[:w-1]
+	}
+
+	originalLineSize := len(originalLine)
+	spaceCount := 0
+
+	if c.leftAlign {
+		originalLine = paddingRight(originalLine, w, " ")
+		spaceCount = len(originalLine) - originalLineSize
+	} else {
+		originalLine = fmt.Sprintf("%"+fmt.Sprintf("%v", w)+"s", originalLine)
+		spaceCount = len(originalLine) - originalLineSize
+	}
+
+	originalLineSize = len(originalLine)
+
+	line := ""
+	lineSize := 0
+
+	for _, cellComponent := range cellComponents {
+		cellVal := cellComponent.Value
+		lineSize += len(cellVal)
+
+		if lineSize <= originalLineSize {
+			line += styleString(cellVal, cellComponent.Style)
+		} else {
+			// lineSize > originalLineSize
+			discardSize := lineSize - originalLineSize
+			cellVal = cellVal[:len(cellVal)-discardSize]
+			line += styleString(cellVal, cellComponent.Style)
+
+			break
+		}
+	}
+
+	if c.leftAlign {
+		line += strings.Repeat(" ", spaceCount)
+	} else {
+		line = strings.Repeat(" ", spaceCount) + line
+	}
+
+	return line
+}
+
+func (c *cell) sprintString(val string, w int) string {
+	line := val
+
+	if utf8.RuneCountInString(line) > w {
+		line = line[:w-1]
+	}
+
+	if c.leftAlign {
+		line = paddingRight(line, w, " ")
+	} else {
+		line = fmt.Sprintf("%"+fmt.Sprintf("%v", w)+"s", line)
+	}
+
+	return line
+}
+
 func (c *cell) sprint(cv CellValue, w int) string {
 	if w <= 0 {
 		return ""
@@ -60,77 +135,9 @@ func (c *cell) sprint(cv CellValue, w int) string {
 
 	switch cellValue := cv.(type) {
 	case string:
-		line := cellValue
-
-		if utf8.RuneCountInString(line) > w {
-			line = line[:w-1]
-		}
-
-		if c.leftAlign {
-			line = paddingRight(line, w, " ")
-		} else {
-			line = fmt.Sprintf("%"+fmt.Sprintf("%v", w)+"s", line)
-		}
-
-		return line
+		return c.sprintString(cellValue, w)
 	case []CellValueComponent:
-		cellComponents := cellValue
-
-		originalLine := ""
-		for _, cellComponent := range cellComponents {
-			originalLine += cellComponent.Value
-		}
-
-		if utf8.RuneCountInString(originalLine) > w {
-			originalLine = originalLine[:w-1]
-		}
-
-		originalLineSize := len(originalLine)
-		spaceCount := 0
-
-		if c.leftAlign {
-			originalLine = paddingRight(originalLine, w, " ")
-			spaceCount = len(originalLine) - originalLineSize
-		} else {
-			originalLine = fmt.Sprintf("%"+fmt.Sprintf("%v", w)+"s", originalLine)
-			spaceCount = len(originalLine) - originalLineSize
-		}
-
-		originalLineSize = len(originalLine)
-
-		line := ""
-		lineSize := 0
-		for _, cellComponent := range cellComponents {
-			cellVal := cellComponent.Value
-			lineSize += len(cellVal)
-
-			if lineSize <= originalLineSize {
-				if cellComponent.Style != nil {
-					line += cellComponent.Style.Sprint(cellVal)
-				} else {
-					line += cellVal
-				}
-			} else {
-				// lineSize > originalLineSize
-				discardSize := lineSize - originalLineSize
-				cellVal = cellVal[:len(cellVal)-discardSize]
-				if cellComponent.Style != nil {
-					line += cellComponent.Style.Sprint(cellVal)
-				} else {
-					line += cellVal
-				}
-
-				break
-			}
-		}
-
-		if c.leftAlign {
-			line += strings.Repeat(" ", spaceCount)
-		} else {
-			line = strings.Repeat(" ", spaceCount) + line
-		}
-
-		return line
+		return c.sprintCellComponents(cellValue, w)
 	}
 
 	return ""
