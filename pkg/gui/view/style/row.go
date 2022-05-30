@@ -3,24 +3,25 @@ package style
 import (
 	"errors"
 	"fmt"
+	"strings"
+	"unicode/utf8"
 )
 
 var ErrInvalidRowData = errors.New("invalid row data")
 
 type Row struct {
 	width int
-	cells []*rowCell
+	cells []*cell
 }
 
 func (r *Row) SetWidth(width int) {
 	r.width = width
 }
 
-func (r *Row) AddCell(percentage int, leftAlign bool, textStyle *TextStyle) {
-	r.cells = append(r.cells, &rowCell{
+func (r *Row) AddCell(percentage int, leftAlign bool) {
+	r.cells = append(r.cells, &cell{
 		percentage: percentage,
 		leftAlign:  leftAlign,
-		textStyle:  textStyle,
 	})
 }
 
@@ -40,26 +41,26 @@ func (r *Row) Sprint(cells []string) (string, error) {
 	return t, nil
 }
 
-type rowCell struct {
+type cell struct {
 	percentage int
 	leftAlign  bool
-	textStyle  *TextStyle
 }
 
-func (rc *rowCell) sprint(t string, w int) string {
-	if len(t) > w {
+func (c *cell) sprint(t string, w int) string {
+	if utf8.RuneCountInString(t) > w {
 		t = t[:w-1]
 	}
 
-	if rc.leftAlign {
-		t = Right(t, w, " ")
+	if c.leftAlign {
+		t = paddingRight(t, w, " ")
 	} else {
 		t = fmt.Sprintf("%"+fmt.Sprintf("%v", w)+"s", t)
 	}
 
-	if rc.textStyle != nil {
-		return rc.textStyle.Sprint(t)
-	}
-
 	return t
+}
+
+// paddingRight right-pads the string with pad up to len runes
+func paddingRight(str string, length int, pad string) string {
+	return str + strings.Repeat(pad, length-utf8.RuneCountInString(str))
 }

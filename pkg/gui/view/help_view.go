@@ -21,8 +21,8 @@ func newHelpView(v *gocui.View) *HelpView {
 	}
 
 	hv.helpRow = &style.Row{}
-	hv.helpRow.AddCell(35, true, nil)
-	hv.helpRow.AddCell(65, true, nil)
+	hv.helpRow.AddCell(35, true)
+	hv.helpRow.AddCell(65, true)
 
 	return hv
 }
