@@ -48,11 +48,26 @@ func (ehv *ExplorerHeaderView) layout() error {
 	return nil
 }
 
+type icon struct {
+	val   string
+	style style.TextStyle
+}
+
+func (i icon) sprint() string {
+	return i.style.Sprint(i.val)
+}
+
+type icons struct {
+	file       icon
+	directory  icon
+	extensions map[string]icon
+}
+
 type ExplorerView struct {
 	*View
 
 	explorerRow        *style.Row
-	iconTextStyles     map[string]style.TextStyle
+	icons              icons
 	fileTextStyle      style.TextStyle
 	directoryTextStyle style.TextStyle
 }
@@ -73,17 +88,30 @@ func newExplorerView(v *gocui.View) *ExplorerView {
 
 	ev.directoryTextStyle = style.FromBasicFg(style.StringToColor(cfg.NodeTypesConfig.Directory.Color))
 	ev.fileTextStyle = style.FromBasicFg(style.StringToColor(cfg.NodeTypesConfig.File.Color))
-	ev.iconTextStyles = map[string]style.TextStyle{}
 
-	extensionNodeTypesConfig := cfg.NodeTypesConfig.Extensions
+	ev.icons = icons{
+		file: icon{
+			val:   cfg.NodeTypesConfig.File.Icon,
+			style: ev.fileTextStyle,
+		},
+		directory: icon{
+			val:   cfg.NodeTypesConfig.Directory.Icon,
+			style: ev.directoryTextStyle,
+		},
+		extensions: map[string]icon{},
+	}
 
-	ev.iconTextStyles[cfg.NodeTypesConfig.File.Icon] = ev.fileTextStyle
-	ev.iconTextStyles[cfg.NodeTypesConfig.Directory.Icon] = ev.directoryTextStyle
-	for _, ntc := range extensionNodeTypesConfig {
+	for ext, ntc := range cfg.NodeTypesConfig.Extensions {
 		if ntc.Color != "" {
-			ev.iconTextStyles[ntc.Icon] = style.FromBasicFg(style.StringToColor(ntc.Color))
+			ev.icons.extensions[ext] = icon{
+				val:   ntc.Icon,
+				style: style.FromBasicFg(style.StringToColor(ntc.Color)),
+			}
 		} else {
-			ev.iconTextStyles[ntc.Icon] = ev.fileTextStyle
+			ev.icons.extensions[ext] = icon{
+				val:   ntc.Icon,
+				style: ev.fileTextStyle,
+			}
 		}
 	}
 
@@ -105,21 +133,21 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 	entriesSize := len(entries)
 	lines := make([]string, entriesSize)
 	cfg := config.AppConfig
-	extensionNodeTypesConfig := cfg.NodeTypesConfig.Extensions
-	var nameTextStyle style.TextStyle
 
 	for idx, entry := range entries {
-		var icon string
-		if nodeTypeConfig, hasConfig := extensionNodeTypesConfig[entry.GetExt()]; hasConfig &&
-			nodeTypeConfig.Icon != "" {
-			icon = nodeTypeConfig.Icon
-			nameTextStyle = ev.fileTextStyle
-		} else if entry.IsDirectory() {
-			icon = cfg.NodeTypesConfig.Directory.Icon
-			nameTextStyle = ev.directoryTextStyle
+		var nameTextStyle *style.TextStyle
+		var icon icon
+
+		if entry.IsDirectory() {
+			nameTextStyle = &ev.directoryTextStyle
+			icon = ev.icons.directory
 		} else {
-			nameTextStyle = ev.fileTextStyle
-			icon = cfg.NodeTypesConfig.File.Icon
+			nameTextStyle = &ev.fileTextStyle
+			icon = ev.icons.file
+		}
+
+		if i, hasIcon := ev.icons.extensions[entry.GetExt()]; hasIcon {
+			icon = i
 		}
 
 		name := entry.GetName()
@@ -150,7 +178,7 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 		fileMode := entry.GetFileMode()
 		size := fs.Humanize(entry.GetSize())
 
-		path := rowPrefix + ev.iconTextStyles[icon].Sprint(icon) + nameTextStyle.Sprint(prefix+name+suffix)
+		path := rowPrefix + icon.sprint() + nameTextStyle.Sprint(prefix+name+suffix)
 		line, err := ev.explorerRow.Sprint([]string{index, path, fileMode, size})
 		if err != nil {
 			log.Fatalf("failed to sprint row %v", err)
