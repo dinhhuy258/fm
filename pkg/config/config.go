@@ -115,7 +115,18 @@ func mergeUserNodeTypesConfig(userNodeTypesConfig *NodeTypesConfig) {
 	// Currently, the default extension node type is not configurable.
 	// We can assign it to the user config if it is set.
 	if userNodeTypesConfig.Extensions != nil {
-		AppConfig.NodeTypesConfig.Extensions = userNodeTypesConfig.Extensions
+		AppConfig.NodeTypesConfig.Extensions = map[string]*NodeTypeConfig{}
+
+		for ext, ntc := range userNodeTypesConfig.Extensions {
+			if ntc.Color == "" {
+				ntc.Color = AppConfig.NodeTypesConfig.File.Color
+			}
+			if ntc.Icon == "" {
+				ntc.Icon = AppConfig.NodeTypesConfig.File.Icon
+			}
+
+			AppConfig.NodeTypesConfig.Extensions[ext] = ntc
+		}
 	}
 }
 

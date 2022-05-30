@@ -48,28 +48,29 @@ func (ehv *ExplorerHeaderView) layout() error {
 	return nil
 }
 
-type icon struct {
-	val   string
+type nodeType struct {
+	icon  string
 	style style.TextStyle
 }
 
-func (i icon) sprint() string {
-	return i.style.Sprint(i.val)
+func (i nodeType) sprint() string {
+	return i.style.Sprint(i.icon)
 }
 
-type icons struct {
-	file       icon
-	directory  icon
-	extensions map[string]icon
+type nodeTypes struct {
+	file       nodeType
+	directory  nodeType
+	extensions map[string]nodeType
 }
 
 type ExplorerView struct {
 	*View
 
 	explorerRow        *style.Row
-	icons              icons
+	icons              nodeTypes
 	fileTextStyle      style.TextStyle
 	directoryTextStyle style.TextStyle
+	selectionTextStyle style.TextStyle
 }
 
 func newExplorerView(v *gocui.View) *ExplorerView {
@@ -88,28 +89,29 @@ func newExplorerView(v *gocui.View) *ExplorerView {
 
 	ev.directoryTextStyle = style.FromBasicFg(style.StringToColor(cfg.NodeTypesConfig.Directory.Color))
 	ev.fileTextStyle = style.FromBasicFg(style.StringToColor(cfg.NodeTypesConfig.File.Color))
+	ev.selectionTextStyle = style.FromBasicFg(style.StringToColor(cfg.SelectionColor))
 
-	ev.icons = icons{
-		file: icon{
-			val:   cfg.NodeTypesConfig.File.Icon,
+	ev.icons = nodeTypes{
+		file: nodeType{
+			icon:  cfg.NodeTypesConfig.File.Icon,
 			style: ev.fileTextStyle,
 		},
-		directory: icon{
-			val:   cfg.NodeTypesConfig.Directory.Icon,
+		directory: nodeType{
+			icon:  cfg.NodeTypesConfig.Directory.Icon,
 			style: ev.directoryTextStyle,
 		},
-		extensions: map[string]icon{},
+		extensions: map[string]nodeType{},
 	}
 
 	for ext, ntc := range cfg.NodeTypesConfig.Extensions {
 		if ntc.Color != "" {
-			ev.icons.extensions[ext] = icon{
-				val:   ntc.Icon,
+			ev.icons.extensions[ext] = nodeType{
+				icon:  ntc.Icon,
 				style: style.FromBasicFg(style.StringToColor(ntc.Color)),
 			}
 		} else {
-			ev.icons.extensions[ext] = icon{
-				val:   ntc.Icon,
+			ev.icons.extensions[ext] = nodeType{
+				icon:  ntc.Icon,
 				style: ev.fileTextStyle,
 			}
 		}
@@ -135,31 +137,21 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 	cfg := config.AppConfig
 
 	for idx, entry := range entries {
-		var nameTextStyle *style.TextStyle
-		var icon icon
+		isEntrySelected := selections.Contains(entry.GetPath())
 
-		if entry.IsDirectory() {
-			nameTextStyle = &ev.directoryTextStyle
-			icon = ev.icons.directory
-		} else {
-			nameTextStyle = &ev.fileTextStyle
-			icon = ev.icons.file
-		}
-
-		if i, hasIcon := ev.icons.extensions[entry.GetExt()]; hasIcon {
-			icon = i
-		}
+		entryTextStyle := ev.getEntryTextStyle(entry, isEntrySelected)
+		entryIcon := ev.getEntryIcon(entry, isEntrySelected)
 
 		name := entry.GetName()
 		var prefix string
 		var suffix string
-		var rowPrefix string
+		var entryPrefix string
 
 		switch {
 		case idx == focus:
 			prefix = cfg.FocusPrefix
 			suffix = cfg.FocusSuffix
-		case selections.Contains(entry.GetPath()):
+		case isEntrySelected:
 			prefix = cfg.SelectionPrefix
 			suffix = cfg.SelectionSuffix
 		default:
@@ -169,16 +161,21 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 		}
 
 		if idx == entriesSize-1 {
-			rowPrefix = cfg.PathSuffix
+			entryPrefix = cfg.PathSuffix
 		} else {
-			rowPrefix = cfg.PathPrefix
+			entryPrefix = cfg.PathPrefix
 		}
 
 		index := strconv.Itoa(idx + 1)
 		fileMode := entry.GetFileMode()
 		size := fs.Humanize(entry.GetSize())
 
-		path := rowPrefix + icon.sprint() + nameTextStyle.Sprint(prefix+name+suffix)
+		path := entryPrefix
+		path += entryTextStyle.Sprint(prefix)
+		path += entryIcon.sprint() + " "
+		path += entryTextStyle.Sprint(name)
+		path += entryTextStyle.Sprint(suffix)
+
 		line, err := ev.explorerRow.Sprint([]string{index, path, fileMode, size})
 		if err != nil {
 			log.Fatalf("failed to sprint row %v", err)
@@ -195,4 +192,33 @@ func (ev *ExplorerView) layout() error {
 	ev.explorerRow.SetWidth(x)
 
 	return nil
+}
+
+func (ev *ExplorerView) getEntryTextStyle(entry fs.IEntry, isEntrySelected bool) style.TextStyle {
+	switch {
+	case isEntrySelected:
+		return ev.selectionTextStyle
+	case entry.IsDirectory():
+		return ev.directoryTextStyle
+	default:
+		return ev.fileTextStyle
+	}
+}
+
+func (ev *ExplorerView) getEntryIcon(entry fs.IEntry, isEntrySelected bool) nodeType {
+	var icon nodeType
+
+	if i, hasIcon := ev.icons.extensions[entry.GetExt()]; hasIcon {
+		icon = i
+	} else if entry.IsDirectory() {
+		icon = ev.icons.directory
+	} else {
+		icon = ev.icons.file
+	}
+
+	if isEntrySelected {
+		icon.style = ev.selectionTextStyle
+	}
+
+	return icon
 }
