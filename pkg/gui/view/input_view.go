@@ -1,7 +1,7 @@
 package view
 
 import (
-	"github.com/dinhhuy258/fm/pkg/key"
+	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"github.com/dinhhuy258/gocui"
 )
 

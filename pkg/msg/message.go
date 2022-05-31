@@ -2,7 +2,7 @@ package msg
 
 import (
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
-	"github.com/dinhhuy258/fm/pkg/key"
+	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"github.com/dinhhuy258/fm/pkg/pipe"
 )
 

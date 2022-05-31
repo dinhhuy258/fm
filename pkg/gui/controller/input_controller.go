@@ -1,8 +1,8 @@
 package controller
 
 import (
+	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
-	"github.com/dinhhuy258/fm/pkg/key"
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
