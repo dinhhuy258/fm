@@ -240,16 +240,16 @@ func (gc GeneralConfig) merge(other *GeneralConfig) *GeneralConfig {
 		return &gc
 	}
 
-	gc.DefaultUI.merge(other.DefaultUI)
-	gc.FocusUI.merge(other.FocusUI)
-	gc.SelectionUI.merge(other.SelectionUI)
-	gc.FocusSelectionUI.merge(other.FocusSelectionUI)
+	gc.DefaultUI = gc.DefaultUI.merge(other.DefaultUI)
+	gc.FocusUI = gc.FocusUI.merge(other.FocusUI)
+	gc.SelectionUI = gc.SelectionUI.merge(other.SelectionUI)
+	gc.FocusSelectionUI = gc.FocusSelectionUI.merge(other.FocusSelectionUI)
 
-	gc.LogInfoUI.merge(other.LogInfoUI)
-	gc.LogWarningUI.merge(other.LogWarningUI)
-	gc.LogErrorUI.merge(other.LogErrorUI)
+	gc.LogInfoUI = gc.LogInfoUI.merge(other.LogInfoUI)
+	gc.LogWarningUI = gc.LogWarningUI.merge(other.LogWarningUI)
+	gc.LogErrorUI = gc.LogErrorUI.merge(other.LogErrorUI)
 
-	gc.ExplorerTable.merge(other.ExplorerTable)
+	gc.ExplorerTable = gc.ExplorerTable.merge(other.ExplorerTable)
 
 	gc.ShowHidden = other.ShowHidden
 
