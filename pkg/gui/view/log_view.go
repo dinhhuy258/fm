@@ -34,13 +34,13 @@ func (lv *LogView) UpdateView(level LogLevel, log string) {
 	switch {
 	case level == Info:
 		log = config.AppConfig.LogInfoFormat + log
-		logStyle = style.FromBasicFg(style.StringToColor(config.AppConfig.LogInfoColor))
+		logStyle = style.ColorMap[config.AppConfig.LogInfoColor].Foreground
 	case level == Warning:
 		log = config.AppConfig.LogWarningFormat + log
-		logStyle = style.FromBasicFg(style.StringToColor(config.AppConfig.LogWarningColor))
+		logStyle = style.ColorMap[config.AppConfig.LogWarningColor].Foreground
 	default:
 		log = config.AppConfig.LogErrorFormat + log
-		logStyle = style.FromBasicFg(style.StringToColor(config.AppConfig.LogErrorColor))
+		logStyle = style.ColorMap[config.AppConfig.LogErrorColor].Foreground
 	}
 
 	lv.SetContent(logStyle.Sprint(log))

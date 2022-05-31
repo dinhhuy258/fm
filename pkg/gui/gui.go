@@ -18,7 +18,7 @@ type Gui struct {
 func NewGui(pipe *pipe.Pipe) (*Gui, error) {
 	gui := &Gui{}
 
-	g, err := gocui.NewGui(gocui.OutputNormal, false, gocui.NORMAL, false, map[rune]string{})
+	g, err := gocui.NewGui(gocui.OutputTrue, false, gocui.NORMAL, false, map[rune]string{})
 	if err != nil {
 		return nil, err
 	}

@@ -1,57 +1,42 @@
 package style
 
 import (
-	"github.com/dinhhuy258/gocui"
 	"github.com/gookit/color"
 )
 
-var stringToColorMap = map[string]color.Color{
-	"black":   color.Black,
-	"red":     color.Red,
-	"green":   color.Green,
-	"yellow":  color.Yellow,
-	"blue":    color.Blue,
-	"magenta": color.Magenta,
-	"cyan":    color.Cyan,
-	"white":   color.White,
-}
-
-var stringToGoCuiColorMap = map[string]gocui.Attribute{
-	"black":   gocui.ColorBlack,
-	"red":     gocui.ColorRed,
-	"green":   gocui.ColorGreen,
-	"yellow":  gocui.ColorYellow,
-	"blue":    gocui.ColorBlue,
-	"magenta": gocui.ColorMagenta,
-	"cyan":    gocui.ColorCyan,
-	"white":   gocui.ColorWhite,
-}
-
-func StringToGoCuiColor(colorStr string) gocui.Attribute {
-	c, hasColor := stringToGoCuiColorMap[colorStr]
-	if !hasColor {
-		c = gocui.ColorWhite
-	}
-
-	return c
-}
-
-func StringToColor(colorStr string) color.Color {
-	c, hasColor := stringToColorMap[colorStr]
-	if !hasColor {
-		c = color.White
-	}
-
-	return c
-}
-
 type Color struct {
-	basic *color.Basic
+	rgb   *color.RGBColor
+	basic *color.Color
 }
 
-func NewBasicColor(cl color.Basic) Color {
+func NewRGBColor(cl color.RGBColor) Color {
+	c := Color{}
+	c.rgb = &cl
+
+	return c
+}
+
+func NewBasicColor(cl color.Color) Color {
 	c := Color{}
 	c.basic = &cl
-
 	return c
+}
+
+func (c Color) IsRGB() bool {
+	return c.rgb != nil
+}
+
+func (c Color) ToRGB(isBg bool) Color {
+	if c.IsRGB() {
+		return c
+	}
+
+	if isBg {
+		// We need to convert bg color to fg color
+		// This is a gookit/color bug,
+		// https://github.com/gookit/color/issues/39
+		return NewRGBColor((*c.basic - 10).RGB())
+	}
+
+	return NewRGBColor(c.basic.RGB())
 }

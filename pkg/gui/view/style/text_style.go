@@ -70,6 +70,11 @@ func (b TextStyle) deriveStyle() Sprinter {
 		return color.Style(b.decoration.ToOpts())
 	}
 
+	isRgb := (b.fg != nil && b.fg.IsRGB()) || (b.bg != nil && b.bg.IsRGB())
+	if isRgb {
+		return b.deriveRGBStyle()
+	}
+
 	return b.deriveBasicStyle()
 }
 
@@ -87,4 +92,22 @@ func (b TextStyle) deriveBasicStyle() color.Style {
 	style = append(style, b.decoration.ToOpts()...)
 
 	return color.Style(style)
+}
+
+func (b TextStyle) deriveRGBStyle() *color.RGBStyle {
+	style := &color.RGBStyle{}
+
+	if b.fg != nil {
+		style.SetFg(*b.fg.ToRGB(false).rgb)
+	}
+
+	if b.bg != nil {
+		// We need to convert the bg firstly to a foreground color,
+		// For more info see
+		style.SetBg(*b.bg.ToRGB(true).rgb)
+	}
+
+	style.SetOpts(b.decoration.ToOpts())
+
+	return style
 }

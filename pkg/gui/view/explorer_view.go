@@ -80,12 +80,12 @@ func newExplorerView(v *gocui.View) *ExplorerView {
 	ev.Frame = false
 	ev.Highlight = true
 
-	ev.SelBgColor = style.StringToGoCuiColor(config.AppConfig.FocusBg)
-	ev.SelFgColor = style.StringToGoCuiColor(config.AppConfig.FocusFg)
+	ev.SelBgColor = gocui.GetColor(config.AppConfig.FocusBg)
+	ev.SelFgColor = gocui.GetColor(config.AppConfig.FocusFg)
 
-	ev.directoryTextStyle = style.FromBasicFg(style.StringToColor(cfg.NodeTypesConfig.Directory.Color))
-	ev.fileTextStyle = style.FromBasicFg(style.StringToColor(cfg.NodeTypesConfig.File.Color))
-	ev.selectionTextStyle = style.FromBasicFg(style.StringToColor(cfg.SelectionColor))
+	ev.directoryTextStyle = style.ColorMap[cfg.NodeTypesConfig.Directory.Color].Foreground
+	ev.fileTextStyle = style.ColorMap[cfg.NodeTypesConfig.File.Color].Foreground
+	ev.selectionTextStyle = style.ColorMap[cfg.SelectionColor].Foreground
 
 	ev.icons = nodeTypes{
 		file: nodeType{
@@ -103,7 +103,7 @@ func newExplorerView(v *gocui.View) *ExplorerView {
 		if ntc.Color != "" {
 			ev.icons.extensions[ext] = nodeType{
 				icon:  ntc.Icon,
-				style: style.FromBasicFg(style.StringToColor(ntc.Color)),
+				style: style.ColorMap[ntc.Color].Foreground,
 			}
 		} else {
 			ev.icons.extensions[ext] = nodeType{
