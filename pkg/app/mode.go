@@ -68,13 +68,13 @@ type Modes struct {
 // CreateModes creates modes from config.
 func CreateModes(onModeChange func(*Mode)) *Modes {
 	builtinModes := make(map[string]*Mode)
-	for _, builtinMode := range config.AppConfig.BuiltinModeConfigs {
-		builtinModes[builtinMode.Name] = createMode(builtinMode.Name, builtinMode.KeyBindings)
+	for _, builtin := range config.AppConfig.Modes.Builtins {
+		builtinModes[builtin.Name] = createMode(builtin.Name, builtin.KeyBindings)
 	}
 
 	customModes := make(map[string]*Mode)
-	for _, customMode := range config.AppConfig.CustomModeConfigs {
-		customModes[customMode.Name] = createMode(customMode.Name, customMode.KeyBindings)
+	for _, custom := range config.AppConfig.Modes.Customs {
+		customModes[custom.Name] = createMode(custom.Name, custom.KeyBindings)
 	}
 
 	modes := &Modes{

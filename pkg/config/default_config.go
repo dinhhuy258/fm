@@ -94,11 +94,12 @@ func getDefaultConfig() *Config {
 					Name:       "size",
 					Percentage: 10,
 				},
+				FirstEntryPrefix: "├─",
+				EntryPrefix:      "├─",
+				LastEntryPrefix:  "└─",
 			},
 			ShowHidden: false,
 		},
-		PathPrefix: "├─",
-		PathSuffix: "└─",
 		NodeTypesConfig: &NodeTypesConfig{
 			File: &NodeTypeConfig{
 				Style: &StyleConfig{
@@ -114,7 +115,9 @@ func getDefaultConfig() *Config {
 			},
 			Extensions: map[string]*NodeTypeConfig{},
 		},
-		BuiltinModeConfigs: builtinModeConfigs,
-		CustomModeConfigs:  map[string]*ModeConfig{},
+		Modes: &ModesConfig{
+			Builtins: builtinModeConfigs,
+			Customs:  map[string]*ModeConfig{},
+		},
 	}
 }

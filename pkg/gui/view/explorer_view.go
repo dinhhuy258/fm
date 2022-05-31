@@ -214,10 +214,13 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 			}
 		}
 
-		if idx == entriesSize-1 {
-			entryTreePrefix = cfg.PathSuffix
-		} else {
-			entryTreePrefix = cfg.PathPrefix
+		switch {
+		case idx == entriesSize-1:
+			entryTreePrefix = cfg.General.ExplorerTable.LastEntryPrefix
+		case idx == 0:
+			entryTreePrefix = cfg.General.ExplorerTable.FirstEntryPrefix
+		default:
+			entryTreePrefix = cfg.General.ExplorerTable.EntryPrefix
 		}
 
 		index := strconv.Itoa(idx + 1)

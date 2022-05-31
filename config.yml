@@ -1,31 +1,81 @@
-selectionColor: green
-logErrorColor: red
-logWarningColor: yellow
-logInfoColor: green
-focusBg: black
-focusFg: blue
-showHidden: false
-indexHeader: index
-indexPercentage: 10
-pathHeader: ┌──── path
-pathPercentage: 65
-fileModeHeader: permissions
-fileModePercentage: 15
-sizeHeader: size
-sizePercentage: 10
-pathPrefix: ├─
-pathSuffix: └─
-focusPrefix: '▸['
-focusSuffix: ']'
-selectionPrefix: ' {'
-selectionSuffix: '}'
-logErrorFormat: '[ERROR] '
-logWarningFormat: '[WARNING] '
-logInfoFormat: '[INFO] '
+general:
+  defaultUi:
+    prefix: '  '
+    suffix: ''
+    fileStyle:
+      fg: white
+    directoryStyle:
+      fg: cyan
+  focusUi:
+    prefix: '▸['
+    suffix: ']'
+    fileStyle:
+      fg: white
+      decorations:
+        - bold
+    directoryStyle:
+      fg: cyan
+      decorations:
+        - bold
+  selectionUi:
+    prefix: ' {'
+    suffix: '}'
+    fileStyle:
+      fg: green
+    directoryStyle:
+      fg: green
+  focusSelectionUi:
+    prefix: '▸['
+    suffix: ']'
+    fileStyle:
+      fg: green
+      decorations:
+        - bold
+    directoryStyle:
+      fg: green
+      decorations:
+        - bold
+  logInfoUi:
+    prefix: '[Info] '
+    suffix: ''
+    style:
+      fg: green
+  logWarningUi:
+    prefix: '[Warning] '
+    suffix: ''
+    style:
+      fg: yellow
+  logErrorUi:
+    prefix: '[Error] '
+    suffix: ''
+    style:
+      fg: red
+  explorerTable:
+    indexHeader:
+      name: index
+      percentage: 10
+      style: null
+    nameHeader:
+      name: ┌──── name
+      percentage: 65
+      style: null
+    permissionsHeader:
+      name: permissions
+      percentage: 15
+      style: null
+    sizeHeader:
+      name: size
+      percentage: 10
+      style: null
+    firstEntryPrefix: ├─
+    entryPrefix: ├─
+    lastEntryPrefix: └─
+  showHidden: false
 nodeTypes:
   extensions:
     .go:
       icon: 
+      color: cyan
     .c:
       icon: 
     .cc:
@@ -104,196 +154,197 @@ nodeTypes:
       icon: 
     .bash:
       icon: 
-customModeConfigs:
-  go-to:
-    keyBindings:
-      onKeys:
-        '~':
-          help: Home
+modes:
+  customs:
+    go-to:
+      keyBindings:
+        onKeys:
+          '~':
+            help: Home
+            messages:
+              - name: ChangeDirectory
+                args:
+                  - /Users/dinhhuy258
+              - name: PopMode
+                args: []
+          D:
+            help: Documents
+            messages:
+              - name: ChangeDirectory
+                args:
+                  - /Users/dinhhuy258/Documents
+              - name: PopMode
+                args: []
+          d:
+            help: Downloads
+            messages:
+              - name: ChangeDirectory
+                args:
+                  - /Users/dinhhuy258/Downloads
+              - name: PopMode
+                args: []
+          g:
+            help: focus first
+            messages:
+              - name: FocusFirst
+                args: []
+              - name: PopMode
+                args: []
+          h:
+            help: Desktop
+            messages:
+              - name: ChangeDirectory
+                args:
+                  - /Users/dinhhuy258/Desktop
+              - name: PopMode
+                args: []
+          ctrl+c:
+            help: quit
+            messages:
+              - name: Quit
+                args: []
+          w:
+            help: Workspace
+            messages:
+              - name: ChangeDirectory
+                args:
+                  - /Users/dinhhuy258/Workspace
+              - name: PopMode
+                args: []
+        default:
+          help: cancel
           messages:
-            - name: ChangeDirectory
-              args:
-                - /Users/dinhhuy258
             - name: PopMode
               args: []
-        D:
-          help: Documents
+    yarn:
+      keyBindings:
+        onKeys:
+          p:
+            help: yarn path
+            messages:
+              - name: BashExecSilently
+                args:
+                  - |
+                    FOCUS="${FM_FOCUS_PATH}"
+                    if [ "$FOCUS" ]; then
+                      echo -n $FOCUS | pbcopy -selection clipboard
+                      echo LogSuccess "'"$FOCUS was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
+                    fi
+
+                    echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+          'n':
+            help: yarn name
+            messages:
+              - name: BashExecSilently
+                args:
+                  - |
+                    FOCUS="${FM_FOCUS_PATH}"
+                    if [ "$FOCUS" ]; then
+                      echo -n $(basename $FOCUS) | pbcopy -selection clipboard
+                      echo LogSuccess "'"$(basename "$FOCUS") was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
+                    fi
+
+                    echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+          d:
+            help: yarn directory
+            messages:
+              - name: BashExecSilently
+                args:
+                  - |
+                    FOCUS="${FM_FOCUS_PATH}"
+                    if [ "$FOCUS" ]; then
+                      echo -n $(dirname $FOCUS) | pbcopy -selection clipboard
+                      echo LogSuccess "'"$(dirname "$FOCUS") was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
+                    fi
+
+                    echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+        default:
+          help: cancel
           messages:
-            - name: ChangeDirectory
-              args:
-                - /Users/dinhhuy258/Documents
             - name: PopMode
               args: []
-        d:
-          help: Downloads
+    open:
+      keyBindings:
+        onKeys:
+          f:
+            help: open in Finder
+            messages:
+              - name: BashExecSilently
+                args:
+                  - |
+                    FOCUS="${FM_FOCUS_PATH}"
+                    if [ "$FOCUS" ]; then
+                      open -R "${FOCUS}"
+                    fi
+
+                    echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+          c:
+            help: open in Visual Studio Code
+            messages:
+              - name: BashExecSilently
+                args:
+                  - |
+                    FOCUS="${FM_FOCUS_PATH}"
+                    if [ "$FOCUS" ]; then
+                      open -a "Visual Studio Code" "${FOCUS}"
+                    fi
+
+                    echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+          o:
+            help: open
+            messages:
+              - name: BashExec
+                args:
+                  - |
+                    FOCUS="${FM_FOCUS_PATH}"
+                    if [ "$FOCUS" ]; then
+                      case $(file --mime-type ${FOCUS} -b) in
+                          text/*) nvim ${FOCUS};;
+                          application/json) nvim ${FOCUS};;
+                          *) open "${FOCUS}"
+                      esac
+                    fi
+
+                    echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+        default:
+          help: cancel
           messages:
-            - name: ChangeDirectory
-              args:
-                - /Users/dinhhuy258/Downloads
             - name: PopMode
               args: []
-        g:
-          help: focus first
-          messages:
-            - name: FocusFirst
-              args: []
-            - name: PopMode
-              args: []
-        h:
-          help: Desktop
-          messages:
-            - name: ChangeDirectory
-              args:
-                - /Users/dinhhuy258/Desktop
-            - name: PopMode
-              args: []
-        ctrl+c:
-          help: quit
-          messages:
-            - name: Quit
-              args: []
-        w:
-          help: Workspace
-          messages:
-            - name: ChangeDirectory
-              args:
-                - /Users/dinhhuy258/Workspace
-            - name: PopMode
-              args: []
-      default:
-        help: cancel
-        messages:
-          - name: PopMode
-            args: []
-  yarn:
-    keyBindings:
-      onKeys:
-        'p':
-          help: yarn path
-          messages:
-            - name: BashExecSilently
-              args:
-                - |
-                  FOCUS="${FM_FOCUS_PATH}"
-                  if [ "$FOCUS" ]; then
-                    echo -n $FOCUS | pbcopy -selection clipboard
-                    echo LogSuccess "'"$FOCUS was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
-                  fi
-
-                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
-        'n':
-          help: yarn name
-          messages:
-            - name: BashExecSilently
-              args:
-                - |
-                  FOCUS="${FM_FOCUS_PATH}"
-                  if [ "$FOCUS" ]; then
-                    echo -n $(basename $FOCUS) | pbcopy -selection clipboard
-                    echo LogSuccess "'"$(basename "$FOCUS") was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
-                  fi
-
-                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
-        'd':
-          help: yarn directory
-          messages:
-            - name: BashExecSilently
-              args:
-                - |
-                  FOCUS="${FM_FOCUS_PATH}"
-                  if [ "$FOCUS" ]; then
-                    echo -n $(dirname $FOCUS) | pbcopy -selection clipboard
-                    echo LogSuccess "'"$(dirname "$FOCUS") was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
-                  fi
-
-                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
-      default:
-        help: cancel
-        messages:
-          - name: PopMode
-            args: []
-  open:
-    keyBindings:
-      onKeys:
-        'f':
-          help: open in Finder
-          messages:
-            - name: BashExecSilently
-              args:
-                - |
-                  FOCUS="${FM_FOCUS_PATH}"
-                  if [ "$FOCUS" ]; then
-                    open -R "${FOCUS}"
-                  fi
-
-                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
-        'c':
-          help: open in Visual Studio Code
-          messages:
-            - name: BashExecSilently
-              args:
-                - |
-                  FOCUS="${FM_FOCUS_PATH}"
-                  if [ "$FOCUS" ]; then
-                    open -a "Visual Studio Code" "${FOCUS}"
-                  fi
-
-                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
-        'o':
-          help: open
-          messages:
-            - name: BashExec
-              args:
-                - |
-                  FOCUS="${FM_FOCUS_PATH}"
-                  if [ "$FOCUS" ]; then
-                    case $(file --mime-type ${FOCUS} -b) in
-                        text/*) nvim ${FOCUS};;
-                        application/json) nvim ${FOCUS};;
-                        *) open "${FOCUS}"
-                    esac
-                  fi
-
-                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
-      default:
-        help: cancel
-        messages:
-          - name: PopMode
-            args: []
-builtinModeConfigs:
-  default:
-    keyBindings:
-      onKeys:
-        G:
-          help: focus last
-          messages:
-            - name: FocusLast
-        g:
-          help: go to
-          messages:
-            - name: SwitchMode
-              args:
-                - go-to
-        o:
-          help: open
-          messages:
-            - name: SwitchMode
-              args:
-                - open
-        y:
-          help: yarn
-          messages:
-            - name: SwitchMode
-              args:
-                - yarn
-        /:
-          help: search
-          messages:
-            - name: BashExec
-              args:
-                - |
-                  SELECTED=$(ls | fzf --no-sort)
-                  if [ "$SELECTED" ]; then
-                    echo FocusPath "'"$PWD/$SELECTED"'" >> "${FM_PIPE_MSG_IN:?}"
-                  fi
-      default: null
+  builtins:
+    default:
+      keyBindings:
+        onKeys:
+          G:
+            help: focus last
+            messages:
+              - name: FocusLast
+          g:
+            help: go to
+            messages:
+              - name: SwitchMode
+                args:
+                  - go-to
+          o:
+            help: open
+            messages:
+              - name: SwitchMode
+                args:
+                  - open
+          'y':
+            help: yarn
+            messages:
+              - name: SwitchMode
+                args:
+                  - yarn
+          /:
+            help: search
+            messages:
+              - name: BashExec
+                args:
+                  - |
+                    SELECTED=$(ls | fzf --no-sort)
+                    if [ "$SELECTED" ]; then
+                      echo FocusPath "'"$PWD/$SELECTED"'" >> "${FM_PIPE_MSG_IN:?}"
+                    fi
+        default: null

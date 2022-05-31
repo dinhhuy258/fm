@@ -80,6 +80,25 @@ type NodeTypesConfig struct {
 	Extensions map[string]*NodeTypeConfig `yaml:"extensions"`
 }
 
+func (ntc NodeTypesConfig) merge(other *NodeTypesConfig) *NodeTypesConfig {
+	if other == nil {
+		return &ntc
+	}
+
+	ntc.File = ntc.File.merge(other.File)
+	ntc.Directory = ntc.Directory.merge(other.Directory)
+
+	if other.Extensions != nil {
+		ntc.Extensions = map[string]*NodeTypeConfig{}
+
+		for ext, extConfig := range other.Extensions {
+			ntc.Extensions[ext] = ntc.File.merge(extConfig)
+		}
+	}
+
+	return &ntc
+}
+
 // UIConfig represents the config for UI
 type UIConfig struct {
 	Prefix         string       `yaml:"prefix"`
@@ -155,7 +174,8 @@ func (ethc ExplorerTableHeaderConfig) merge(other *ExplorerTableHeaderConfig) *E
 		ethc.Percentage = other.Percentage
 	}
 
-	ethc.Style = ethc.Style.merge(other.Style)
+	// By dèault the style is null
+	ethc.Style = other.Style
 
 	return &ethc
 }
@@ -166,6 +186,10 @@ type ExplorerTableConfig struct {
 	NameHeader        *ExplorerTableHeaderConfig `yaml:"nameHeader"`
 	PermissionsHeader *ExplorerTableHeaderConfig `yaml:"permissionsHeader"`
 	SizeHeader        *ExplorerTableHeaderConfig `yaml:"sizeHeader"`
+
+	FirstEntryPrefix string `yaml:"firstEntryPrefix"`
+	EntryPrefix      string `yaml:"entryPrefix"`
+	LastEntryPrefix  string `yaml:"lastEntryPrefix"`
 }
 
 // merge user config with default config.
@@ -179,14 +203,26 @@ func (etc ExplorerTableConfig) merge(other *ExplorerTableConfig) *ExplorerTableC
 	etc.PermissionsHeader = etc.PermissionsHeader.merge(other.PermissionsHeader)
 	etc.SizeHeader = etc.SizeHeader.merge(other.SizeHeader)
 
+	if other.FirstEntryPrefix != "" {
+		etc.FirstEntryPrefix = other.FirstEntryPrefix
+	}
+
+	if other.EntryPrefix != "" {
+		etc.EntryPrefix = other.EntryPrefix
+	}
+
+	if other.LastEntryPrefix != "" {
+		etc.LastEntryPrefix = other.LastEntryPrefix
+	}
+
 	return &etc
 }
 
 // GeneralConfig represents the general config for the application.
 type GeneralConfig struct {
-	SelectionUI      *UIConfig `yaml:"selectionUi"`
-	FocusUI          *UIConfig `yaml:"focusUi"`
 	DefaultUI        *UIConfig `yaml:"defaultUi"`
+	FocusUI          *UIConfig `yaml:"focusUi"`
+	SelectionUI      *UIConfig `yaml:"selectionUi"`
 	FocusSelectionUI *UIConfig `yaml:"focusSelectionUi"`
 
 	LogInfoUI    *LogUIConfig `yaml:"logInfoUi"`
@@ -220,15 +256,50 @@ func (gc GeneralConfig) merge(other *GeneralConfig) *GeneralConfig {
 	return &gc
 }
 
+// ModesConfig represents the config for the custom and builtin modes.
+type ModesConfig struct {
+	Customs  map[string]*ModeConfig `yaml:"customs"`
+	Builtins map[string]*ModeConfig `yaml:"builtins"`
+}
+
+func (m ModesConfig) merge(other *ModesConfig) *ModesConfig {
+	if other == nil {
+		return &m
+	}
+
+	if other.Customs != nil {
+		for name, mode := range other.Customs {
+			mode.Name = name
+		}
+
+		m.Customs = other.Customs
+	}
+
+	if other.Builtins != nil {
+		for builtinModeName, builtinUserConfig := range other.Builtins {
+			builtinMode, hasBuiltinConfig := m.Builtins[builtinModeName]
+			if !hasBuiltinConfig {
+				continue
+			}
+
+			for key, action := range builtinUserConfig.KeyBindings.OnKeys {
+				builtinMode.KeyBindings.OnKeys[key] = action
+			}
+
+			if builtinUserConfig.KeyBindings.Default != nil {
+				builtinMode.KeyBindings.Default = builtinUserConfig.KeyBindings.Default
+			}
+		}
+	}
+
+	return &m
+}
+
 // Config represents the config for the application.
 type Config struct {
-	General    *GeneralConfig `yaml:"general"`
-	PathPrefix string         `yaml:"pathPrefix"`
-	PathSuffix string         `yaml:"pathSuffix"`
-
-	NodeTypesConfig    *NodeTypesConfig       `yaml:"nodeTypes"`
-	CustomModeConfigs  map[string]*ModeConfig `yaml:"customModeConfigs"`
-	BuiltinModeConfigs map[string]*ModeConfig `yaml:"builtinModeConfigs"`
+	General         *GeneralConfig   `yaml:"general"`
+	Modes           *ModesConfig     `yaml:"modes"`
+	NodeTypesConfig *NodeTypesConfig `yaml:"nodeTypes"`
 }
 
 var AppConfig *Config
@@ -244,67 +315,11 @@ func LoadConfig() error {
 			return err
 		}
 
-		mergeUserConfig(userConfig)
+		// Merge user config with default config.
+		AppConfig.General = AppConfig.General.merge(userConfig.General)
+		AppConfig.NodeTypesConfig = AppConfig.NodeTypesConfig.merge(userConfig.NodeTypesConfig)
+		AppConfig.Modes = AppConfig.Modes.merge(userConfig.Modes)
 	}
 
 	return nil
-}
-
-// mergeUserNodeTypesConfig merges the user node types config.
-func mergeUserNodeTypesConfig(userNodeTypesConfig *NodeTypesConfig) {
-	if userNodeTypesConfig == nil {
-		return
-	}
-
-	AppConfig.NodeTypesConfig.File = AppConfig.NodeTypesConfig.File.merge(userNodeTypesConfig.File)
-	AppConfig.NodeTypesConfig.Directory = AppConfig.NodeTypesConfig.Directory.merge(userNodeTypesConfig.Directory)
-
-	if userNodeTypesConfig.Extensions != nil {
-		AppConfig.NodeTypesConfig.Extensions = map[string]*NodeTypeConfig{}
-
-		for ext, ntc := range userNodeTypesConfig.Extensions {
-			AppConfig.NodeTypesConfig.Extensions[ext] = AppConfig.NodeTypesConfig.File.merge(ntc)
-		}
-	}
-}
-
-// mergeUserModeConfig merges the user mode config.
-func mergeUserModeConfig(customModeConfigs map[string]*ModeConfig, builtinModeConfigs map[string]*ModeConfig) {
-	for name, mode := range customModeConfigs {
-		mode.Name = name
-	}
-
-	AppConfig.CustomModeConfigs = customModeConfigs
-
-	for builtinUserConfigName, builtinUserConfig := range builtinModeConfigs {
-		builtinMode, hasBuiltinConfig := AppConfig.BuiltinModeConfigs[builtinUserConfigName]
-
-		if !hasBuiltinConfig {
-			continue
-		}
-
-		for key, action := range builtinUserConfig.KeyBindings.OnKeys {
-			builtinMode.KeyBindings.OnKeys[key] = action
-		}
-
-		if builtinUserConfig.KeyBindings.Default != nil {
-			builtinMode.KeyBindings.Default = builtinUserConfig.KeyBindings.Default
-		}
-	}
-}
-
-// mergeUserConfig merges the user config.
-func mergeUserConfig(userConfig *Config) {
-	AppConfig.General = AppConfig.General.merge(userConfig.General)
-
-	if userConfig.PathPrefix != "" {
-		AppConfig.PathPrefix = userConfig.PathPrefix
-	}
-
-	if userConfig.PathSuffix != "" {
-		AppConfig.PathSuffix = userConfig.PathSuffix
-	}
-
-	mergeUserModeConfig(userConfig.CustomModeConfigs, userConfig.BuiltinModeConfigs)
-	mergeUserNodeTypesConfig(userConfig.NodeTypesConfig)
 }
