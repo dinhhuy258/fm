@@ -28,15 +28,42 @@ func newExplorerHeaderView(v *gocui.View) *ExplorerHeaderView {
 }
 
 func (ehv *ExplorerHeaderView) layout() error {
+	explorerTableConfig := config.AppConfig.General.ExplorerTable
+
+	indexHeaderTextStyle := style.FromStyleConfig(explorerTableConfig.IndexHeader.Style)
+	nameHeaderTextStyle := style.FromStyleConfig(explorerTableConfig.NameHeader.Style)
+	permissionsHeaderTextStyle := style.FromStyleConfig(explorerTableConfig.PermissionsHeader.Style)
+	sizeHeaderTextStyle := style.FromStyleConfig(explorerTableConfig.SizeHeader.Style)
+
 	x, _ := ehv.Size()
 	ehv.headerRow.SetWidth(x)
 
 	rowString, err := ehv.headerRow.Sprint(
 		[]ColumnValue{
-			config.AppConfig.IndexHeader,
-			config.AppConfig.PathHeader,
-			config.AppConfig.FileModeHeader,
-			config.AppConfig.SizeHeader,
+			[]ColumnValueComponent{
+				{
+					Value: explorerTableConfig.IndexHeader.Name,
+					Style: &indexHeaderTextStyle,
+				},
+			},
+			[]ColumnValueComponent{
+				{
+					Value: explorerTableConfig.NameHeader.Name,
+					Style: &nameHeaderTextStyle,
+				},
+			},
+			[]ColumnValueComponent{
+				{
+					Value: explorerTableConfig.PermissionsHeader.Name,
+					Style: &permissionsHeaderTextStyle,
+				},
+			},
+			[]ColumnValueComponent{
+				{
+					Value: explorerTableConfig.SizeHeader.Name,
+					Style: &sizeHeaderTextStyle,
+				},
+			},
 		},
 	)
 	if err != nil {
@@ -119,12 +146,14 @@ func newExplorerView(v *gocui.View) *ExplorerView {
 }
 
 func newExplorerRow() *Row {
+	explorerTableConfig := config.AppConfig.General.ExplorerTable
+
 	r := &Row{}
 
-	r.AddColumn(config.AppConfig.IndexPercentage, true)
-	r.AddColumn(config.AppConfig.PathPercentage, true)
-	r.AddColumn(config.AppConfig.FileModePercentage, true)
-	r.AddColumn(config.AppConfig.SizePercentage, false)
+	r.AddColumn(explorerTableConfig.IndexHeader.Percentage, true)
+	r.AddColumn(explorerTableConfig.NameHeader.Percentage, true)
+	r.AddColumn(explorerTableConfig.PermissionsHeader.Percentage, true)
+	r.AddColumn(explorerTableConfig.SizeHeader.Percentage, false)
 
 	return r
 }
@@ -195,32 +224,37 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 		fileMode := entry.GetFileMode()
 		size := fs.Humanize(entry.GetSize())
 
-		line, err := ev.explorerRow.Sprint([]ColumnValue{index, []ColumnValueComponent{
-			{
-				Value: entryTreePrefix,
-				Style: nil,
+		line, err := ev.explorerRow.Sprint([]ColumnValue{
+			index,
+			[]ColumnValueComponent{
+				{
+					Value: entryTreePrefix,
+					Style: nil,
+				},
+				{
+					Value: prefix,
+					Style: &entryTextStyle,
+				},
+				{
+					Value: entryIcon.icon,
+					Style: &entryIcon.style,
+				},
+				{
+					Value: " ",
+					Style: nil,
+				},
+				{
+					Value: name,
+					Style: &entryTextStyle,
+				},
+				{
+					Value: suffix,
+					Style: &entryTextStyle,
+				},
 			},
-			{
-				Value: prefix,
-				Style: &entryTextStyle,
-			},
-			{
-				Value: entryIcon.icon,
-				Style: &entryIcon.style,
-			},
-			{
-				Value: " ",
-				Style: nil,
-			},
-			{
-				Value: name,
-				Style: &entryTextStyle,
-			},
-			{
-				Value: suffix,
-				Style: &entryTextStyle,
-			},
-		}, fileMode, size})
+			fileMode,
+			size,
+		})
 		if err != nil {
 			log.Fatalf("failed to sprint row %v", err)
 		}

@@ -108,12 +108,94 @@ func (ui UIConfig) merge(other *UIConfig) *UIConfig {
 	return &ui
 }
 
+// LogUIConfig represents the config for logging UI.
+type LogUIConfig struct {
+	Prefix string       `yaml:"prefix"`
+	Suffix string       `yaml:"suffix"`
+	Style  *StyleConfig `yaml:"style"`
+}
+
+// merge user config with default config.
+func (luc LogUIConfig) merge(other *LogUIConfig) *LogUIConfig {
+	if other == nil {
+		return &luc
+	}
+
+	if other.Prefix != "" {
+		luc.Prefix = other.Prefix
+	}
+
+	if other.Suffix != "" {
+		luc.Suffix = other.Suffix
+	}
+
+	luc.Style = luc.Style.merge(other.Style)
+
+	return &luc
+}
+
+// ExplorerTableHeaderConfig represents the config for the explorer table header.
+type ExplorerTableHeaderConfig struct {
+	Name       string       `yaml:"name"`
+	Percentage int          `yaml:"percentage"`
+	Style      *StyleConfig `yaml:"style"`
+}
+
+// merge user config with default config.
+func (ethc ExplorerTableHeaderConfig) merge(other *ExplorerTableHeaderConfig) *ExplorerTableHeaderConfig {
+	if other == nil {
+		return &ethc
+	}
+
+	if other.Name != "" {
+		ethc.Name = other.Name
+	}
+
+	if other.Percentage != 0 {
+		ethc.Percentage = other.Percentage
+	}
+
+	ethc.Style = ethc.Style.merge(other.Style)
+
+	return &ethc
+}
+
+// ExplorerTableConfig represents the config for the explorer table.
+type ExplorerTableConfig struct {
+	IndexHeader       *ExplorerTableHeaderConfig `yaml:"indexHeader"`
+	NameHeader        *ExplorerTableHeaderConfig `yaml:"nameHeader"`
+	PermissionsHeader *ExplorerTableHeaderConfig `yaml:"permissionsHeader"`
+	SizeHeader        *ExplorerTableHeaderConfig `yaml:"sizeHeader"`
+}
+
+// merge user config with default config.
+func (etc ExplorerTableConfig) merge(other *ExplorerTableConfig) *ExplorerTableConfig {
+	if other == nil {
+		return &etc
+	}
+
+	etc.IndexHeader = etc.IndexHeader.merge(other.IndexHeader)
+	etc.NameHeader = etc.NameHeader.merge(other.NameHeader)
+	etc.PermissionsHeader = etc.PermissionsHeader.merge(other.PermissionsHeader)
+	etc.SizeHeader = etc.SizeHeader.merge(other.SizeHeader)
+
+	return &etc
+}
+
 // GeneralConfig represents the general config for the application.
 type GeneralConfig struct {
 	SelectionUI      *UIConfig `yaml:"selectionUi"`
 	FocusUI          *UIConfig `yaml:"focusUi"`
 	DefaultUI        *UIConfig `yaml:"defaultUi"`
 	FocusSelectionUI *UIConfig `yaml:"focusSelectionUi"`
+
+	LogInfoUI    *LogUIConfig `yaml:"logInfoUi"`
+	LogWarningUI *LogUIConfig `yaml:"logWarningUi"`
+	LogErrorUI   *LogUIConfig `yaml:"logErrorUi"`
+
+	ExplorerTable *ExplorerTableConfig `yaml:"explorerTable"`
+
+	ShowHidden bool `yaml:"showHidden"`
 }
 
 // merge user config with default config.
@@ -127,29 +209,23 @@ func (gc GeneralConfig) merge(other *GeneralConfig) *GeneralConfig {
 	gc.SelectionUI.merge(other.SelectionUI)
 	gc.FocusSelectionUI.merge(other.FocusSelectionUI)
 
+	gc.LogInfoUI.merge(other.LogInfoUI)
+	gc.LogWarningUI.merge(other.LogWarningUI)
+	gc.LogErrorUI.merge(other.LogErrorUI)
+
+	gc.ExplorerTable.merge(other.ExplorerTable)
+
+	gc.ShowHidden = other.ShowHidden
+
 	return &gc
 }
 
 // Config represents the config for the application.
 type Config struct {
-	General            *GeneralConfig         `yaml:"general"`
-	PathPrefix         string                 `yaml:"pathPrefix"`
-	PathSuffix         string                 `yaml:"pathSuffix"`
-	LogErrorColor      string                 `yaml:"logErrorColor"`
-	LogWarningColor    string                 `yaml:"logWarningColor"`
-	LogInfoColor       string                 `yaml:"logInfoColor"`
-	ShowHidden         bool                   `yaml:"showHidden"`
-	IndexHeader        string                 `yaml:"indexHeader"`
-	IndexPercentage    int                    `yaml:"indexPercentage"`
-	PathHeader         string                 `yaml:"pathHeader"`
-	PathPercentage     int                    `yaml:"pathPercentage"`
-	FileModeHeader     string                 `yaml:"fileModeHeader"`
-	FileModePercentage int                    `yaml:"fileModePercentage"`
-	SizeHeader         string                 `yaml:"sizeHeader"`
-	SizePercentage     int                    `yaml:"sizePercentage"`
-	LogErrorFormat     string                 `yaml:"logErrorFormat"`
-	LogWarningFormat   string                 `yaml:"logWarningFormat"`
-	LogInfoFormat      string                 `yaml:"logInfoFormat"`
+	General    *GeneralConfig `yaml:"general"`
+	PathPrefix string         `yaml:"pathPrefix"`
+	PathSuffix string         `yaml:"pathSuffix"`
+
 	NodeTypesConfig    *NodeTypesConfig       `yaml:"nodeTypes"`
 	CustomModeConfigs  map[string]*ModeConfig `yaml:"customModeConfigs"`
 	BuiltinModeConfigs map[string]*ModeConfig `yaml:"builtinModeConfigs"`
@@ -221,50 +297,6 @@ func mergeUserModeConfig(customModeConfigs map[string]*ModeConfig, builtinModeCo
 func mergeUserConfig(userConfig *Config) {
 	AppConfig.General = AppConfig.General.merge(userConfig.General)
 
-	if userConfig.LogErrorColor != "" {
-		AppConfig.LogErrorColor = userConfig.LogErrorColor
-	}
-
-	if userConfig.LogWarningColor != "" {
-		AppConfig.LogWarningColor = userConfig.LogWarningColor
-	}
-
-	if userConfig.LogInfoColor != "" {
-		AppConfig.LogInfoColor = userConfig.LogInfoColor
-	}
-
-	if userConfig.IndexHeader != "" {
-		AppConfig.IndexHeader = userConfig.IndexHeader
-	}
-
-	if userConfig.IndexPercentage != 0 {
-		AppConfig.IndexPercentage = userConfig.IndexPercentage
-	}
-
-	if userConfig.PathHeader != "" {
-		AppConfig.PathHeader = userConfig.PathHeader
-	}
-
-	if userConfig.PathPercentage != 0 {
-		AppConfig.PathPercentage = userConfig.PathPercentage
-	}
-
-	if userConfig.FileModeHeader != "" {
-		AppConfig.FileModeHeader = userConfig.FileModeHeader
-	}
-
-	if userConfig.FileModePercentage != 0 {
-		AppConfig.FileModePercentage = userConfig.FileModePercentage
-	}
-
-	if userConfig.SizeHeader != "" {
-		AppConfig.SizeHeader = userConfig.SizeHeader
-	}
-
-	if userConfig.SizePercentage != 0 {
-		AppConfig.SizePercentage = userConfig.SizePercentage
-	}
-
 	if userConfig.PathPrefix != "" {
 		AppConfig.PathPrefix = userConfig.PathPrefix
 	}
@@ -272,20 +304,6 @@ func mergeUserConfig(userConfig *Config) {
 	if userConfig.PathSuffix != "" {
 		AppConfig.PathSuffix = userConfig.PathSuffix
 	}
-
-	if userConfig.LogErrorFormat != "" {
-		AppConfig.LogErrorFormat = userConfig.LogErrorFormat
-	}
-
-	if userConfig.LogWarningFormat != "" {
-		AppConfig.LogWarningFormat = userConfig.LogWarningFormat
-	}
-
-	if userConfig.LogInfoFormat != "" {
-		AppConfig.LogInfoFormat = userConfig.LogInfoFormat
-	}
-
-	AppConfig.ShowHidden = userConfig.ShowHidden
 
 	mergeUserModeConfig(userConfig.CustomModeConfigs, userConfig.BuiltinModeConfigs)
 	mergeUserNodeTypesConfig(userConfig.NodeTypesConfig)

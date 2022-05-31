@@ -76,7 +76,7 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Opti
 
 	cfg := config.AppConfig
 
-	entries, err := fs.LoadEntries(path, cfg.ShowHidden)
+	entries, err := fs.LoadEntries(path, cfg.General.ShowHidden)
 	if err != nil {
 		ec.mediator.notify(ShowErrorLog, optional.New("Failed to load directory: "+path))
 

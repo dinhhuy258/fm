@@ -26,7 +26,7 @@ func ToggleSelection(app IApp, _ ...string) {
 func ToggleHidden(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
-	config.AppConfig.ShowHidden = !config.AppConfig.ShowHidden
+	config.AppConfig.General.ShowHidden = !config.AppConfig.General.ShowHidden
 
 	entry := explorerController.GetCurrentEntry()
 	loadDirectory(app, explorerController.GetPath(), optional.New(entry.GetPath()))

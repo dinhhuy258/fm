@@ -56,24 +56,49 @@ func getDefaultConfig() *Config {
 					},
 				},
 			},
+			LogInfoUI: &LogUIConfig{
+				Prefix: "[Info] ",
+				Suffix: "",
+				Style: &StyleConfig{
+					Fg: "green",
+				},
+			},
+			LogWarningUI: &LogUIConfig{
+				Prefix: "[Warning] ",
+				Suffix: "",
+				Style: &StyleConfig{
+					Fg: "yellow",
+				},
+			},
+			LogErrorUI: &LogUIConfig{
+				Prefix: "[Error] ",
+				Suffix: "",
+				Style: &StyleConfig{
+					Fg: "red",
+				},
+			},
+			ExplorerTable: &ExplorerTableConfig{
+				IndexHeader: &ExplorerTableHeaderConfig{
+					Name:       "index",
+					Percentage: 10,
+				},
+				NameHeader: &ExplorerTableHeaderConfig{
+					Name:       "┌──── name",
+					Percentage: 65,
+				},
+				PermissionsHeader: &ExplorerTableHeaderConfig{
+					Name:       "permissions",
+					Percentage: 15,
+				},
+				SizeHeader: &ExplorerTableHeaderConfig{
+					Name:       "size",
+					Percentage: 10,
+				},
+			},
+			ShowHidden: false,
 		},
-		ShowHidden:         false,
-		IndexHeader:        "index",
-		IndexPercentage:    10,
-		PathHeader:         "┌──── path",
-		PathPercentage:     65,
-		FileModeHeader:     "permissions",
-		FileModePercentage: 15,
-		SizeHeader:         "size",
-		SizePercentage:     10,
-		PathPrefix:         "├─",
-		PathSuffix:         "└─",
-		LogErrorFormat:     "[ERROR] ",
-		LogErrorColor:      "red",
-		LogWarningFormat:   "[WARNING] ",
-		LogWarningColor:    "yellow",
-		LogInfoFormat:      "[INFO] ",
-		LogInfoColor:       "green",
+		PathPrefix: "├─",
+		PathSuffix: "└─",
 		NodeTypesConfig: &NodeTypesConfig{
 			File: &NodeTypeConfig{
 				Style: &StyleConfig{

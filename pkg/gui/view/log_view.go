@@ -16,31 +16,43 @@ const (
 
 type LogView struct {
 	*View
+
+	logInfoTextStyle    style.TextStyle
+	logWarningTextStyle style.TextStyle
+	logErrorTextStyle   style.TextStyle
 }
 
 func newLogView(v *gocui.View) *LogView {
+	cfg := config.AppConfig
+
 	lv := &LogView{
-		newView(v),
+		View: newView(v),
 	}
 
 	lv.Title = " Logs "
+	lv.logInfoTextStyle = style.FromStyleConfig(cfg.General.LogInfoUI.Style)
+	lv.logWarningTextStyle = style.FromStyleConfig(cfg.General.LogWarningUI.Style)
+	lv.logErrorTextStyle = style.FromStyleConfig(cfg.General.LogErrorUI.Style)
 
 	return lv
 }
 
 func (lv *LogView) UpdateView(level LogLevel, log string) {
+	cfg := config.AppConfig
+
 	var logStyle style.TextStyle
 
 	switch {
 	case level == Info:
-		log = config.AppConfig.LogInfoFormat + log
-		logStyle = style.FromBasicFg(style.ColorMap[config.AppConfig.LogInfoColor].Foreground)
+		log = cfg.General.LogInfoUI.Prefix + log + cfg.General.LogInfoUI.Suffix
+		logStyle = lv.logInfoTextStyle
 	case level == Warning:
-		log = config.AppConfig.LogWarningFormat + log
-		logStyle = style.FromBasicFg(style.ColorMap[config.AppConfig.LogWarningColor].Foreground)
+		log = cfg.General.LogWarningUI.Prefix + log + cfg.General.LogWarningUI.Suffix
+		logStyle = lv.logWarningTextStyle
 	default:
-		log = config.AppConfig.LogErrorFormat + log
-		logStyle = style.FromBasicFg(style.ColorMap[config.AppConfig.LogErrorColor].Foreground)
+		// Error
+		log = cfg.General.LogErrorUI.Prefix + log + cfg.General.LogErrorUI.Suffix
+		logStyle = lv.logErrorTextStyle
 	}
 
 	lv.SetContent(logStyle.Sprint(log))
