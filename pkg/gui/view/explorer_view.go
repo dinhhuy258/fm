@@ -15,7 +15,7 @@ import (
 type ExplorerHeaderView struct {
 	*View
 
-	headerRow *style.Row
+	headerRow *Row
 }
 
 func newExplorerHeaderView(v *gocui.View) *ExplorerHeaderView {
@@ -32,7 +32,7 @@ func (ehv *ExplorerHeaderView) layout() error {
 	ehv.headerRow.SetWidth(x)
 
 	rowString, err := ehv.headerRow.Sprint(
-		[]style.CellValue{
+		[]ColumnValue{
 			config.AppConfig.IndexHeader,
 			config.AppConfig.PathHeader,
 			config.AppConfig.FileModeHeader,
@@ -62,7 +62,7 @@ type nodeTypes struct {
 type ExplorerView struct {
 	*View
 
-	explorerRow             *style.Row
+	explorerRow             *Row
 	icons                   nodeTypes
 	defaultTextStyle        style.TextStyle
 	selectionTextStyle      style.TextStyle
@@ -110,13 +110,13 @@ func newExplorerView(v *gocui.View) *ExplorerView {
 	return ev
 }
 
-func newExplorerRow() *style.Row {
-	r := &style.Row{}
+func newExplorerRow() *Row {
+	r := &Row{}
 
-	r.AddCell(config.AppConfig.IndexPercentage, true)
-	r.AddCell(config.AppConfig.PathPercentage, true)
-	r.AddCell(config.AppConfig.FileModePercentage, true)
-	r.AddCell(config.AppConfig.SizePercentage, false)
+	r.AddColumn(config.AppConfig.IndexPercentage, true)
+	r.AddColumn(config.AppConfig.PathPercentage, true)
+	r.AddColumn(config.AppConfig.FileModePercentage, true)
+	r.AddColumn(config.AppConfig.SizePercentage, false)
 
 	return r
 }
@@ -135,6 +135,7 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 		name := entry.GetName()
 
 		var prefix, suffix, entryTreePrefix string
+
 		var entryTextStyle style.TextStyle
 
 		switch {
@@ -170,7 +171,7 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 		fileMode := entry.GetFileMode()
 		size := fs.Humanize(entry.GetSize())
 
-		line, err := ev.explorerRow.Sprint([]style.CellValue{index, []style.CellValueComponent{
+		line, err := ev.explorerRow.Sprint([]ColumnValue{index, []ColumnValueComponent{
 			{
 				Value: entryTreePrefix,
 				Style: nil,

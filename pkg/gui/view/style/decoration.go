@@ -3,10 +3,10 @@ package style
 import "github.com/gookit/color"
 
 type Decoration struct {
-	bold      bool
+	bold       bool
 	underscore bool
-	reverse   bool
-	italic    bool
+	reverse    bool
+	italic     bool
 }
 
 func (d *Decoration) SetBold() {

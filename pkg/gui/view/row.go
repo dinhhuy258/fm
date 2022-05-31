@@ -1,46 +1,48 @@
-package style
+package view
 
 import (
 	"errors"
 	"fmt"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/dinhhuy258/fm/pkg/gui/view/style"
 )
 
 var ErrInvalidRowData = errors.New("invalid row data")
 
-type CellValueComponent struct {
+type ColumnValueComponent struct {
 	Value string
-	Style *TextStyle
+	Style *style.TextStyle
 }
 
-type CellValue interface{} // FIXME: find out how to get `string| []CellValueComponent`
+type ColumnValue interface{} // FIXME: find out how to get `string| []ColumnValueComponent`
 
 type Row struct {
-	width int
-	cells []*cell
+	width   int
+	columns []*column
 }
 
 func (r *Row) SetWidth(width int) {
 	r.width = width
 }
 
-func (r *Row) AddCell(percentage int, leftAlign bool) {
-	r.cells = append(r.cells, &cell{
+func (r *Row) AddColumn(percentage int, leftAlign bool) {
+	r.columns = append(r.columns, &column{
 		percentage: percentage,
 		leftAlign:  leftAlign,
 	})
 }
 
-func (r *Row) Sprint(cellVals []CellValue) (string, error) {
-	if len(cellVals) != len(r.cells) {
+func (r *Row) Sprint(colVals []ColumnValue) (string, error) {
+	if len(colVals) != len(r.columns) {
 		return "", ErrInvalidRowData
 	}
 
 	t := ""
 
-	for i, v := range cellVals {
-		c := r.cells[i]
+	for i, v := range colVals {
+		c := r.columns[i]
 		w := int(float32(c.percentage) / 100.0 * float32(r.width))
 		t += c.sprint(v, w)
 	}
@@ -48,12 +50,12 @@ func (r *Row) Sprint(cellVals []CellValue) (string, error) {
 	return t, nil
 }
 
-type cell struct {
+type column struct {
 	percentage int
 	leftAlign  bool
 }
 
-func styleString(val string, style *TextStyle) string {
+func styleString(val string, style *style.TextStyle) string {
 	if style != nil {
 		return style.Sprint(val)
 	}
@@ -61,10 +63,10 @@ func styleString(val string, style *TextStyle) string {
 	return val
 }
 
-func (c *cell) sprintCellComponents(cellComponents []CellValueComponent, w int) string {
+func (c *column) sprintColumnComponents(columnValueComponents []ColumnValueComponent, w int) string {
 	originalLine := ""
-	for _, cellComponent := range cellComponents {
-		originalLine += cellComponent.Value
+	for _, columnValueComponent := range columnValueComponents {
+		originalLine += columnValueComponent.Value
 	}
 
 	if utf8.RuneCountInString(originalLine) > w {
@@ -87,17 +89,17 @@ func (c *cell) sprintCellComponents(cellComponents []CellValueComponent, w int) 
 	line := ""
 	lineSize := 0
 
-	for _, cellComponent := range cellComponents {
-		cellVal := cellComponent.Value
-		lineSize += len(cellVal)
+	for _, columnValueComponent := range columnValueComponents {
+		columnValue := columnValueComponent.Value
+		lineSize += len(columnValue)
 
 		if lineSize <= originalLineSize {
-			line += styleString(cellVal, cellComponent.Style)
+			line += styleString(columnValue, columnValueComponent.Style)
 		} else {
 			// lineSize > originalLineSize
 			discardSize := lineSize - originalLineSize
-			cellVal = cellVal[:len(cellVal)-discardSize]
-			line += styleString(cellVal, cellComponent.Style)
+			columnValue = columnValue[:len(columnValue)-discardSize]
+			line += styleString(columnValue, columnValueComponent.Style)
 
 			break
 		}
@@ -112,7 +114,7 @@ func (c *cell) sprintCellComponents(cellComponents []CellValueComponent, w int) 
 	return line
 }
 
-func (c *cell) sprintString(val string, w int) string {
+func (c *column) sprintString(val string, w int) string {
 	line := val
 
 	if utf8.RuneCountInString(line) > w {
@@ -128,16 +130,16 @@ func (c *cell) sprintString(val string, w int) string {
 	return line
 }
 
-func (c *cell) sprint(cv CellValue, w int) string {
+func (c *column) sprint(cv ColumnValue, w int) string {
 	if w <= 0 {
 		return ""
 	}
 
-	switch cellValue := cv.(type) {
+	switch columnValue := cv.(type) {
 	case string:
-		return c.sprintString(cellValue, w)
-	case []CellValueComponent:
-		return c.sprintCellComponents(cellValue, w)
+		return c.sprintString(columnValue, w)
+	case []ColumnValueComponent:
+		return c.sprintColumnComponents(columnValue, w)
 	}
 
 	return ""

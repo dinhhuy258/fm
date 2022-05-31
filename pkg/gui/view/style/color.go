@@ -34,6 +34,7 @@ func NewRGBColor(cl color.RGBColor) Color {
 func NewBasicColor(cl color.Color) Color {
 	c := Color{}
 	c.basic = &cl
+
 	return c
 }
 
@@ -63,7 +64,7 @@ func getColor(val string, isBg bool) Color {
 
 	color, hasValue := ColorMap[val]
 	if !hasValue {
-		color, _ = ColorMap["default"]
+		color = ColorMap["default"]
 	}
 
 	if isBg {

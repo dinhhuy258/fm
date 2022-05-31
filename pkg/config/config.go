@@ -31,7 +31,7 @@ type StyleConfig struct {
 	Decorations []string `yaml:"decorations"`
 }
 
-// merge two StyleConfig objects
+// merge user config with default config.
 func (sc StyleConfig) merge(other *StyleConfig) *StyleConfig {
 	if other == nil {
 		return &sc
@@ -58,7 +58,7 @@ type NodeTypeConfig struct {
 	Style *StyleConfig `yaml:"style"`
 }
 
-// merge two NodeTypeConfig objects
+// merge user config with default config.
 func (ntc NodeTypeConfig) merge(other *NodeTypeConfig) *NodeTypeConfig {
 	if other == nil {
 		return &ntc
@@ -82,12 +82,12 @@ type NodeTypesConfig struct {
 
 // UIConfig represents the config for UI
 type UIConfig struct {
-	Prefix string
-	Suffix string
-	Style  *StyleConfig
+	Prefix string       `yaml:"prefix"`
+	Suffix string       `yaml:"suffix"`
+	Style  *StyleConfig `yaml:"style"`
 }
 
-// merge two UIConfig objects
+// merge user config with default config.
 func (ui UIConfig) merge(other *UIConfig) *UIConfig {
 	if other == nil {
 		return &ui
@@ -108,13 +108,13 @@ func (ui UIConfig) merge(other *UIConfig) *UIConfig {
 
 // GeneralConfig represents the general config for the application.
 type GeneralConfig struct {
-	SelectionUI      *UIConfig `yaml:"selectionUI"`
-	FocusUI          *UIConfig `yaml:"focusUI"`
-	DefaultUI        *UIConfig `yaml:"defaultUI"`
-	FocusSelectionUI *UIConfig `yaml:"focusSelectionUI"`
+	SelectionUI      *UIConfig `yaml:"selectionUi"`
+	FocusUI          *UIConfig `yaml:"focusUi"`
+	DefaultUI        *UIConfig `yaml:"defaultUi"`
+	FocusSelectionUI *UIConfig `yaml:"focusSelectionUi"`
 }
 
-// merge two GeneralConfig objects
+// merge user config with default config.
 func (gc GeneralConfig) merge(other *GeneralConfig) *GeneralConfig {
 	if other == nil {
 		return &gc

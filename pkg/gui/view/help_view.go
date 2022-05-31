@@ -5,14 +5,13 @@ import (
 	"log"
 	"strings"
 
-	"github.com/dinhhuy258/fm/pkg/gui/view/style"
 	"github.com/dinhhuy258/gocui"
 )
 
 type HelpView struct {
 	*View
 
-	helpRow *style.Row
+	helpRow *Row
 }
 
 func newHelpView(v *gocui.View) *HelpView {
@@ -20,9 +19,9 @@ func newHelpView(v *gocui.View) *HelpView {
 		View: newView(v),
 	}
 
-	hv.helpRow = &style.Row{}
-	hv.helpRow.AddCell(35, true)
-	hv.helpRow.AddCell(65, true)
+	hv.helpRow = &Row{}
+	hv.helpRow.AddColumn(35, true)
+	hv.helpRow.AddColumn(65, true)
 
 	return hv
 }
@@ -34,7 +33,7 @@ func (hv *HelpView) UpdateView(title string, helpKeys []string, helpMsgs []strin
 		helpKey := helpKeys[i]
 		helpMsg := helpMsgs[i]
 
-		line, err := hv.helpRow.Sprint([]style.CellValue{helpKey, helpMsg})
+		line, err := hv.helpRow.Sprint([]ColumnValue{helpKey, helpMsg})
 		if err != nil {
 			log.Fatalf("failed to set content for help view %v", err)
 		}
