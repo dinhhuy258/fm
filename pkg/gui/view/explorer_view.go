@@ -62,12 +62,18 @@ type nodeTypes struct {
 type ExplorerView struct {
 	*View
 
-	explorerRow             *Row
-	icons                   nodeTypes
-	defaultTextStyle        style.TextStyle
-	selectionTextStyle      style.TextStyle
-	focusTextStyle          style.TextStyle
-	focusSelectionTextStyle style.TextStyle
+	explorerRow *Row
+	icons       nodeTypes
+
+	defaultFileTextStyle        style.TextStyle
+	focusFileTextStyle          style.TextStyle
+	selectionFileTextStyle      style.TextStyle
+	focusSelectionFileTextStyle style.TextStyle
+
+	defaultDirectoryTextStyle        style.TextStyle
+	focusDirectoryTextStyle          style.TextStyle
+	selectionDirectoryTextStyle      style.TextStyle
+	focusSelectionDirectoryTextStyle style.TextStyle
 }
 
 func newExplorerView(v *gocui.View) *ExplorerView {
@@ -79,14 +85,16 @@ func newExplorerView(v *gocui.View) *ExplorerView {
 	}
 
 	ev.Frame = false
-	// ev.Highlight = true
-	// ev.SelBgColor = gocui.GetColor(config.AppConfig.General.SelectionUI.Style.Bg)
-	// ev.SelFgColor = gocui.GetColor(config.AppConfig.General.SelectionUI.Style.Fg)
 
-	ev.defaultTextStyle = style.FromStyleConfig(cfg.General.DefaultUI.Style)
-	ev.focusTextStyle = style.FromStyleConfig(cfg.General.FocusUI.Style)
-	ev.focusSelectionTextStyle = style.FromStyleConfig(cfg.General.FocusSelectionUI.Style)
-	ev.selectionTextStyle = style.FromStyleConfig(cfg.General.SelectionUI.Style)
+	ev.defaultFileTextStyle = style.FromStyleConfig(cfg.General.DefaultUI.FileStyle)
+	ev.focusFileTextStyle = style.FromStyleConfig(cfg.General.FocusUI.FileStyle)
+	ev.focusSelectionFileTextStyle = style.FromStyleConfig(cfg.General.FocusSelectionUI.FileStyle)
+	ev.selectionFileTextStyle = style.FromStyleConfig(cfg.General.SelectionUI.FileStyle)
+
+	ev.defaultDirectoryTextStyle = style.FromStyleConfig(cfg.General.DefaultUI.DirectoryStyle)
+	ev.focusDirectoryTextStyle = style.FromStyleConfig(cfg.General.FocusUI.DirectoryStyle)
+	ev.focusSelectionDirectoryTextStyle = style.FromStyleConfig(cfg.General.FocusSelectionUI.DirectoryStyle)
+	ev.selectionDirectoryTextStyle = style.FromStyleConfig(cfg.General.SelectionUI.DirectoryStyle)
 
 	ev.icons = nodeTypes{
 		file: nodeType{
@@ -143,22 +151,38 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 			prefix = cfg.General.FocusSelectionUI.Prefix
 			suffix = cfg.General.FocusSelectionUI.Suffix
 
-			entryTextStyle = ev.focusSelectionTextStyle
+			if entry.IsDirectory() {
+				entryTextStyle = ev.focusSelectionDirectoryTextStyle
+			} else {
+				entryTextStyle = ev.focusSelectionFileTextStyle
+			}
 		case isEntryFocused:
 			prefix = cfg.General.FocusUI.Prefix
 			suffix = cfg.General.FocusUI.Suffix
 
-			entryTextStyle = ev.focusTextStyle
+			if entry.IsDirectory() {
+				entryTextStyle = ev.focusDirectoryTextStyle
+			} else {
+				entryTextStyle = ev.focusFileTextStyle
+			}
 		case isEntrySelected:
 			prefix = cfg.General.SelectionUI.Prefix
 			suffix = cfg.General.SelectionUI.Suffix
 
-			entryTextStyle = ev.selectionTextStyle
+			if entry.IsDirectory() {
+				entryTextStyle = ev.selectionDirectoryTextStyle
+			} else {
+				entryTextStyle = ev.selectionFileTextStyle
+			}
 		default:
 			prefix = cfg.General.DefaultUI.Prefix
 			suffix = cfg.General.DefaultUI.Suffix
 
-			entryTextStyle = ev.defaultTextStyle
+			if entry.IsDirectory() {
+				entryTextStyle = ev.defaultDirectoryTextStyle
+			} else {
+				entryTextStyle = ev.defaultFileTextStyle
+			}
 		}
 
 		if idx == entriesSize-1 {
@@ -229,7 +253,7 @@ func (ev *ExplorerView) getEntryIcon(entry fs.IEntry, isEntrySelected bool) node
 	}
 
 	if isEntrySelected {
-		icon.style = ev.selectionTextStyle
+		icon.style = ev.selectionFileTextStyle
 	}
 
 	return icon

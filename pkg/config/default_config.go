@@ -7,11 +7,24 @@ func getDefaultConfig() *Config {
 			DefaultUI: &UIConfig{
 				Prefix: "  ",
 				Suffix: "",
+				FileStyle: &StyleConfig{
+					Fg: "white",
+				},
+				DirectoryStyle: &StyleConfig{
+					Fg: "cyan",
+				},
 			},
 			FocusUI: &UIConfig{
 				Prefix: "▸[",
 				Suffix: "]",
-				Style: &StyleConfig{
+				FileStyle: &StyleConfig{
+					Fg: "white",
+					Decorations: []string{
+						"bold",
+					},
+				},
+				DirectoryStyle: &StyleConfig{
+					Fg: "cyan",
 					Decorations: []string{
 						"bold",
 					},
@@ -20,14 +33,23 @@ func getDefaultConfig() *Config {
 			SelectionUI: &UIConfig{
 				Prefix: " {",
 				Suffix: "}",
-				Style: &StyleConfig{
+				FileStyle: &StyleConfig{
+					Fg: "green",
+				},
+				DirectoryStyle: &StyleConfig{
 					Fg: "green",
 				},
 			},
 			FocusSelectionUI: &UIConfig{
 				Prefix: "▸[",
 				Suffix: "]",
-				Style: &StyleConfig{
+				FileStyle: &StyleConfig{
+					Fg: "green",
+					Decorations: []string{
+						"bold",
+					},
+				},
+				DirectoryStyle: &StyleConfig{
 					Fg: "green",
 					Decorations: []string{
 						"bold",

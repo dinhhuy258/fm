@@ -82,9 +82,10 @@ type NodeTypesConfig struct {
 
 // UIConfig represents the config for UI
 type UIConfig struct {
-	Prefix string       `yaml:"prefix"`
-	Suffix string       `yaml:"suffix"`
-	Style  *StyleConfig `yaml:"style"`
+	Prefix         string       `yaml:"prefix"`
+	Suffix         string       `yaml:"suffix"`
+	FileStyle      *StyleConfig `yaml:"fileStyle"`
+	DirectoryStyle *StyleConfig `yaml:"directoryStyle"`
 }
 
 // merge user config with default config.
@@ -101,7 +102,8 @@ func (ui UIConfig) merge(other *UIConfig) *UIConfig {
 		ui.Suffix = other.Suffix
 	}
 
-	ui.Style = ui.Style.merge(other.Style)
+	ui.FileStyle = ui.FileStyle.merge(other.FileStyle)
+	ui.DirectoryStyle = ui.DirectoryStyle.merge(other.DirectoryStyle)
 
 	return &ui
 }
