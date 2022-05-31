@@ -40,8 +40,8 @@ func (b TextStyle) SetBold() TextStyle {
 	return b
 }
 
-func (b TextStyle) SetUnderline() TextStyle {
-	b.decoration.SetUnderline()
+func (b TextStyle) SetUnderscore() TextStyle {
+	b.decoration.SetUnderscore()
 	b.style = b.deriveStyle()
 
 	return b
@@ -133,6 +133,10 @@ func FromBasicBg(bg color.Color) TextStyle {
 func FromStyleConfig(styleConfig *config.StyleConfig) TextStyle {
 	s := New()
 
+	if styleConfig == nil {
+		return s
+	}
+
 	if styleConfig.Fg != "" {
 		s = s.SetFg(getColor(styleConfig.Fg, false))
 	}
@@ -147,8 +151,8 @@ func FromStyleConfig(styleConfig *config.StyleConfig) TextStyle {
 			s = s.SetBold()
 		case "reverse":
 			s = s.SetReverse()
-		case "underline":
-			s = s.SetUnderline()
+		case "unserscore":
+			s = s.SetUnderscore()
 		case "italic":
 			s = s.SetItalic()
 		}

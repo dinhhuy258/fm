@@ -62,11 +62,12 @@ type nodeTypes struct {
 type ExplorerView struct {
 	*View
 
-	explorerRow        *style.Row
-	icons              nodeTypes
-	fileTextStyle      style.TextStyle
-	directoryTextStyle style.TextStyle
-	selectionTextStyle style.TextStyle
+	explorerRow             *style.Row
+	icons                   nodeTypes
+	defaultTextStyle        style.TextStyle
+	selectionTextStyle      style.TextStyle
+	focusTextStyle          style.TextStyle
+	focusSelectionTextStyle style.TextStyle
 }
 
 func newExplorerView(v *gocui.View) *ExplorerView {
@@ -78,23 +79,23 @@ func newExplorerView(v *gocui.View) *ExplorerView {
 	}
 
 	ev.Frame = false
-	ev.Highlight = true
+	// ev.Highlight = true
+	// ev.SelBgColor = gocui.GetColor(config.AppConfig.General.SelectionUI.Style.Bg)
+	// ev.SelFgColor = gocui.GetColor(config.AppConfig.General.SelectionUI.Style.Fg)
 
-	ev.SelBgColor = gocui.GetColor(config.AppConfig.FocusBg)
-	ev.SelFgColor = gocui.GetColor(config.AppConfig.FocusFg)
-
-	ev.directoryTextStyle = style.FromStyleConfig(cfg.NodeTypesConfig.Directory.Style)
-	ev.fileTextStyle = style.FromStyleConfig(cfg.NodeTypesConfig.File.Style)
-	ev.selectionTextStyle = style.FromBasicFg(style.ColorMap[cfg.SelectionColor].Foreground)
+	ev.defaultTextStyle = style.FromStyleConfig(cfg.General.DefaultUI.Style)
+	ev.focusTextStyle = style.FromStyleConfig(cfg.General.FocusUI.Style)
+	ev.focusSelectionTextStyle = style.FromStyleConfig(cfg.General.FocusSelectionUI.Style)
+	ev.selectionTextStyle = style.FromStyleConfig(cfg.General.SelectionUI.Style)
 
 	ev.icons = nodeTypes{
 		file: nodeType{
 			icon:  cfg.NodeTypesConfig.File.Icon,
-			style: ev.fileTextStyle,
+			style: style.FromStyleConfig(cfg.NodeTypesConfig.File.Style),
 		},
 		directory: nodeType{
 			icon:  cfg.NodeTypesConfig.Directory.Icon,
-			style: ev.directoryTextStyle,
+			style: style.FromStyleConfig(cfg.NodeTypesConfig.Directory.Style),
 		},
 		extensions: map[string]nodeType{},
 	}
@@ -126,26 +127,37 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 	cfg := config.AppConfig
 
 	for idx, entry := range entries {
+		isEntryFocused := idx == focus
 		isEntrySelected := selections.Contains(entry.GetPath())
 
-		entryTextStyle := ev.getEntryTextStyle(entry, isEntrySelected)
 		entryIcon := ev.getEntryIcon(entry, isEntrySelected)
 
 		name := entry.GetName()
 
 		var prefix, suffix, entryTreePrefix string
+		var entryTextStyle style.TextStyle
 
 		switch {
-		case idx == focus:
-			prefix = cfg.FocusPrefix
-			suffix = cfg.FocusSuffix
+		case isEntryFocused && isEntrySelected:
+			prefix = cfg.General.FocusSelectionUI.Prefix
+			suffix = cfg.General.FocusSelectionUI.Suffix
+
+			entryTextStyle = ev.focusSelectionTextStyle
+		case isEntryFocused:
+			prefix = cfg.General.FocusUI.Prefix
+			suffix = cfg.General.FocusUI.Suffix
+
+			entryTextStyle = ev.focusTextStyle
 		case isEntrySelected:
-			prefix = cfg.SelectionPrefix
-			suffix = cfg.SelectionSuffix
+			prefix = cfg.General.SelectionUI.Prefix
+			suffix = cfg.General.SelectionUI.Suffix
+
+			entryTextStyle = ev.selectionTextStyle
 		default:
-			// TODO: Configure these values
-			prefix = "  "
-			suffix = ""
+			prefix = cfg.General.DefaultUI.Prefix
+			suffix = cfg.General.DefaultUI.Suffix
+
+			entryTextStyle = ev.defaultTextStyle
 		}
 
 		if idx == entriesSize-1 {
@@ -201,24 +213,13 @@ func (ev *ExplorerView) layout() error {
 	return nil
 }
 
-func (ev *ExplorerView) getEntryTextStyle(entry fs.IEntry, isEntrySelected bool) style.TextStyle {
-	switch {
-	case isEntrySelected:
-		return ev.selectionTextStyle
-	case entry.IsDirectory():
-		return ev.directoryTextStyle
-	default:
-		return ev.fileTextStyle
-	}
-}
-
 func (ev *ExplorerView) getEntryIcon(entry fs.IEntry, isEntrySelected bool) nodeType {
 	var icon nodeType
 
-	extensionIcon, hasIcon := ev.icons.extensions[entry.GetExt()]
+	extensionIcon, hasExtIcon := ev.icons.extensions[entry.GetExt()]
 
 	switch {
-	case hasIcon:
+	case hasExtIcon:
 		icon = extensionIcon
 	case entry.IsDirectory():
 		icon = ev.icons.directory

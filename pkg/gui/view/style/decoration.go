@@ -4,7 +4,7 @@ import "github.com/gookit/color"
 
 type Decoration struct {
 	bold      bool
-	underline bool
+	underscore bool
 	reverse   bool
 	italic    bool
 }
@@ -13,8 +13,8 @@ func (d *Decoration) SetBold() {
 	d.bold = true
 }
 
-func (d *Decoration) SetUnderline() {
-	d.underline = true
+func (d *Decoration) SetUnderscore() {
+	d.underscore = true
 }
 
 func (d *Decoration) SetReverse() {
@@ -32,7 +32,7 @@ func (d Decoration) ToOpts() color.Opts {
 		opts = append(opts, color.OpBold)
 	}
 
-	if d.underline {
+	if d.underscore {
 		opts = append(opts, color.OpUnderscore)
 	}
 

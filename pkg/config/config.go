@@ -32,7 +32,7 @@ type StyleConfig struct {
 }
 
 // merge two StyleConfig objects
-func (sc StyleConfig) merge(other* StyleConfig) *StyleConfig {
+func (sc StyleConfig) merge(other *StyleConfig) *StyleConfig {
 	if other == nil {
 		return &sc
 	}
@@ -59,7 +59,7 @@ type NodeTypeConfig struct {
 }
 
 // merge two NodeTypeConfig objects
-func (ntc NodeTypeConfig) merge(other* NodeTypeConfig) *NodeTypeConfig {
+func (ntc NodeTypeConfig) merge(other *NodeTypeConfig) *NodeTypeConfig {
 	if other == nil {
 		return &ntc
 	}
@@ -80,14 +80,62 @@ type NodeTypesConfig struct {
 	Extensions map[string]*NodeTypeConfig `yaml:"extensions"`
 }
 
+// UIConfig represents the config for UI
+type UIConfig struct {
+	Prefix string
+	Suffix string
+	Style  *StyleConfig
+}
+
+// merge two UIConfig objects
+func (ui UIConfig) merge(other *UIConfig) *UIConfig {
+	if other == nil {
+		return &ui
+	}
+
+	if other.Prefix != "" {
+		ui.Prefix = other.Prefix
+	}
+
+	if other.Suffix != "" {
+		ui.Suffix = other.Suffix
+	}
+
+	ui.Style = ui.Style.merge(other.Style)
+
+	return &ui
+}
+
+// GeneralConfig represents the general config for the application.
+type GeneralConfig struct {
+	SelectionUI      *UIConfig `yaml:"selectionUI"`
+	FocusUI          *UIConfig `yaml:"focusUI"`
+	DefaultUI        *UIConfig `yaml:"defaultUI"`
+	FocusSelectionUI *UIConfig `yaml:"focusSelectionUI"`
+}
+
+// merge two GeneralConfig objects
+func (gc GeneralConfig) merge(other *GeneralConfig) *GeneralConfig {
+	if other == nil {
+		return &gc
+	}
+
+	gc.DefaultUI.merge(other.DefaultUI)
+	gc.FocusUI.merge(other.FocusUI)
+	gc.SelectionUI.merge(other.SelectionUI)
+	gc.FocusSelectionUI.merge(other.FocusSelectionUI)
+
+	return &gc
+}
+
 // Config represents the config for the application.
 type Config struct {
-	SelectionColor     string                 `yaml:"selectionColor"`
+	General            *GeneralConfig         `yaml:"general"`
+	PathPrefix         string                 `yaml:"pathPrefix"`
+	PathSuffix         string                 `yaml:"pathSuffix"`
 	LogErrorColor      string                 `yaml:"logErrorColor"`
 	LogWarningColor    string                 `yaml:"logWarningColor"`
 	LogInfoColor       string                 `yaml:"logInfoColor"`
-	FocusBg            string                 `yaml:"focusBg"`
-	FocusFg            string                 `yaml:"focusFg"`
 	ShowHidden         bool                   `yaml:"showHidden"`
 	IndexHeader        string                 `yaml:"indexHeader"`
 	IndexPercentage    int                    `yaml:"indexPercentage"`
@@ -97,12 +145,6 @@ type Config struct {
 	FileModePercentage int                    `yaml:"fileModePercentage"`
 	SizeHeader         string                 `yaml:"sizeHeader"`
 	SizePercentage     int                    `yaml:"sizePercentage"`
-	PathPrefix         string                 `yaml:"pathPrefix"`
-	PathSuffix         string                 `yaml:"pathSuffix"`
-	FocusPrefix        string                 `yaml:"focusPrefix"`
-	FocusSuffix        string                 `yaml:"focusSuffix"`
-	SelectionPrefix    string                 `yaml:"selectionPrefix"`
-	SelectionSuffix    string                 `yaml:"selectionSuffix"`
 	LogErrorFormat     string                 `yaml:"logErrorFormat"`
 	LogWarningFormat   string                 `yaml:"logWarningFormat"`
 	LogInfoFormat      string                 `yaml:"logInfoFormat"`
@@ -175,9 +217,7 @@ func mergeUserModeConfig(customModeConfigs map[string]*ModeConfig, builtinModeCo
 
 // mergeUserConfig merges the user config.
 func mergeUserConfig(userConfig *Config) {
-	if userConfig.SelectionColor != "" {
-		AppConfig.SelectionColor = userConfig.SelectionColor
-	}
+	AppConfig.General = AppConfig.General.merge(userConfig.General)
 
 	if userConfig.LogErrorColor != "" {
 		AppConfig.LogErrorColor = userConfig.LogErrorColor
@@ -189,14 +229,6 @@ func mergeUserConfig(userConfig *Config) {
 
 	if userConfig.LogInfoColor != "" {
 		AppConfig.LogInfoColor = userConfig.LogInfoColor
-	}
-
-	if userConfig.FocusBg != "" {
-		AppConfig.FocusBg = userConfig.FocusBg
-	}
-
-	if userConfig.FocusFg != "" {
-		AppConfig.FocusFg = userConfig.FocusFg
 	}
 
 	if userConfig.IndexHeader != "" {
@@ -237,22 +269,6 @@ func mergeUserConfig(userConfig *Config) {
 
 	if userConfig.PathSuffix != "" {
 		AppConfig.PathSuffix = userConfig.PathSuffix
-	}
-
-	if userConfig.FocusPrefix != "" {
-		AppConfig.FocusPrefix = userConfig.FocusPrefix
-	}
-
-	if userConfig.FocusSuffix != "" {
-		AppConfig.FocusSuffix = userConfig.FocusSuffix
-	}
-
-	if userConfig.SelectionPrefix != "" {
-		AppConfig.SelectionPrefix = userConfig.SelectionPrefix
-	}
-
-	if userConfig.SelectionSuffix != "" {
-		AppConfig.SelectionSuffix = userConfig.SelectionSuffix
 	}
 
 	if userConfig.LogErrorFormat != "" {

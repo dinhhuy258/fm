@@ -3,6 +3,38 @@ package config
 // getDefaultConfig returns the default configuration for the application.
 func getDefaultConfig() *Config {
 	return &Config{
+		General: &GeneralConfig{
+			DefaultUI: &UIConfig{
+				Prefix: "  ",
+				Suffix: "",
+			},
+			FocusUI: &UIConfig{
+				Prefix: "▸[",
+				Suffix: "]",
+				Style: &StyleConfig{
+					Decorations: []string{
+						"bold",
+					},
+				},
+			},
+			SelectionUI: &UIConfig{
+				Prefix: " {",
+				Suffix: "}",
+				Style: &StyleConfig{
+					Fg: "green",
+				},
+			},
+			FocusSelectionUI: &UIConfig{
+				Prefix: "▸[",
+				Suffix: "]",
+				Style: &StyleConfig{
+					Fg: "green",
+					Decorations: []string{
+						"bold",
+					},
+				},
+			},
+		},
 		ShowHidden:         false,
 		IndexHeader:        "index",
 		IndexPercentage:    10,
@@ -14,13 +46,6 @@ func getDefaultConfig() *Config {
 		SizePercentage:     10,
 		PathPrefix:         "├─",
 		PathSuffix:         "└─",
-		FocusPrefix:        "▸[",
-		FocusSuffix:        "]",
-		FocusBg:            "black",
-		FocusFg:            "blue",
-		SelectionPrefix:    " {",
-		SelectionSuffix:    "}",
-		SelectionColor:     "green",
 		LogErrorFormat:     "[ERROR] ",
 		LogErrorColor:      "red",
 		LogWarningFormat:   "[WARNING] ",
@@ -32,13 +57,13 @@ func getDefaultConfig() *Config {
 				Style: &StyleConfig{
 					Fg: "white",
 				},
-				Icon:  "",
+				Icon: "",
 			},
 			Directory: &NodeTypeConfig{
 				Style: &StyleConfig{
 					Fg: "cyan",
 				},
-				Icon:  "",
+				Icon: "",
 			},
 			Extensions: map[string]*NodeTypeConfig{},
 		},
