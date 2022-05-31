@@ -1,6 +1,9 @@
 package style
 
-import "github.com/gookit/color"
+import (
+	"github.com/dinhhuy258/fm/pkg/config"
+	"github.com/gookit/color"
+)
 
 type Sprinter interface {
 	Sprint(a ...interface{}) string
@@ -46,6 +49,13 @@ func (b TextStyle) SetUnderline() TextStyle {
 
 func (b TextStyle) SetReverse() TextStyle {
 	b.decoration.SetReverse()
+	b.style = b.deriveStyle()
+
+	return b
+}
+
+func (b TextStyle) SetItalic() TextStyle {
+	b.decoration.SetItalic()
 	b.style = b.deriveStyle()
 
 	return b
@@ -110,4 +120,39 @@ func (b TextStyle) deriveRGBStyle() *color.RGBStyle {
 	style.SetOpts(b.decoration.ToOpts())
 
 	return style
+}
+
+func FromBasicFg(fg color.Color) TextStyle {
+	return New().SetFg(NewBasicColor(fg))
+}
+
+func FromBasicBg(bg color.Color) TextStyle {
+	return New().SetBg(NewBasicColor(bg))
+}
+
+func FromStyleConfig(styleConfig *config.StyleConfig) TextStyle {
+	s := New()
+
+	if styleConfig.Fg != "" {
+		s = s.SetFg(getColor(styleConfig.Fg, false))
+	}
+
+	if styleConfig.Bg != "" {
+		s = s.SetBg(getColor(styleConfig.Bg, true))
+	}
+
+	for _, decoration := range styleConfig.Decorations {
+		switch decoration {
+		case "bold":
+			s = s.SetBold()
+		case "reverse":
+			s = s.SetReverse()
+		case "underline":
+			s = s.SetUnderline()
+		case "italic":
+			s = s.SetItalic()
+		}
+	}
+
+	return s
 }

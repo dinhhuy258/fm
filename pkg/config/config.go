@@ -24,12 +24,56 @@ type ModeConfig struct {
 	KeyBindings KeyBindingsConfig `yaml:"keyBindings"`
 }
 
-// NodeTypeConfig represents the config for the node type (file/directory).
-type NodeTypeConfig struct {
-	Color string `yaml:"color"`
-	Icon  string `yaml:"icon"`
+// StyleConfig represents the config for style
+type StyleConfig struct {
+	Fg          string   `yaml:"fg"`
+	Bg          string   `yaml:"bg"`
+	Decorations []string `yaml:"decorations"`
 }
 
+// merge two StyleConfig objects
+func (sc StyleConfig) merge(other* StyleConfig) *StyleConfig {
+	if other == nil {
+		return &sc
+	}
+
+	if other.Fg != "" {
+		sc.Fg = other.Fg
+	}
+
+	if other.Bg != "" {
+		sc.Bg = other.Bg
+	}
+
+	if other.Decorations != nil {
+		sc.Decorations = other.Decorations
+	}
+
+	return &sc
+}
+
+// NodeTypeConfig represents the config for the node type (file/directory).
+type NodeTypeConfig struct {
+	Icon  string       `yaml:"icon"`
+	Style *StyleConfig `yaml:"style"`
+}
+
+// merge two NodeTypeConfig objects
+func (ntc NodeTypeConfig) merge(other* NodeTypeConfig) *NodeTypeConfig {
+	if other == nil {
+		return &ntc
+	}
+
+	if other.Icon != "" {
+		ntc.Icon = other.Icon
+	}
+
+	ntc.Style = ntc.Style.merge(other.Style)
+
+	return &ntc
+}
+
+// NodeTypesConfig represents the config for node types
 type NodeTypesConfig struct {
 	File       *NodeTypeConfig            `yaml:"file"`
 	Directory  *NodeTypeConfig            `yaml:"directory"`
@@ -92,41 +136,14 @@ func mergeUserNodeTypesConfig(userNodeTypesConfig *NodeTypesConfig) {
 		return
 	}
 
-	if userNodeTypesConfig.File != nil {
-		if AppConfig.NodeTypesConfig.File.Color == "" {
-			AppConfig.NodeTypesConfig.File.Color = userNodeTypesConfig.File.Color
-		}
+	AppConfig.NodeTypesConfig.File = AppConfig.NodeTypesConfig.File.merge(userNodeTypesConfig.File)
+	AppConfig.NodeTypesConfig.Directory = AppConfig.NodeTypesConfig.Directory.merge(userNodeTypesConfig.Directory)
 
-		if AppConfig.NodeTypesConfig.File.Icon == "" {
-			AppConfig.NodeTypesConfig.File.Icon = userNodeTypesConfig.File.Icon
-		}
-	}
-
-	if userNodeTypesConfig.Directory != nil {
-		if AppConfig.NodeTypesConfig.Directory.Color == "" {
-			AppConfig.NodeTypesConfig.Directory.Color = userNodeTypesConfig.Directory.Color
-		}
-
-		if AppConfig.NodeTypesConfig.Directory.Icon == "" {
-			AppConfig.NodeTypesConfig.Directory.Icon = userNodeTypesConfig.Directory.Icon
-		}
-	}
-
-	// Currently, the default extension node type is not configurable.
-	// We can assign it to the user config if it is set.
 	if userNodeTypesConfig.Extensions != nil {
 		AppConfig.NodeTypesConfig.Extensions = map[string]*NodeTypeConfig{}
 
 		for ext, ntc := range userNodeTypesConfig.Extensions {
-			if ntc.Color == "" {
-				ntc.Color = AppConfig.NodeTypesConfig.File.Color
-			}
-
-			if ntc.Icon == "" {
-				ntc.Icon = AppConfig.NodeTypesConfig.File.Icon
-			}
-
-			AppConfig.NodeTypesConfig.Extensions[ext] = ntc
+			AppConfig.NodeTypesConfig.Extensions[ext] = AppConfig.NodeTypesConfig.File.merge(ntc)
 		}
 	}
 }

@@ -83,9 +83,9 @@ func newExplorerView(v *gocui.View) *ExplorerView {
 	ev.SelBgColor = gocui.GetColor(config.AppConfig.FocusBg)
 	ev.SelFgColor = gocui.GetColor(config.AppConfig.FocusFg)
 
-	ev.directoryTextStyle = style.ColorMap[cfg.NodeTypesConfig.Directory.Color].Foreground
-	ev.fileTextStyle = style.ColorMap[cfg.NodeTypesConfig.File.Color].Foreground
-	ev.selectionTextStyle = style.ColorMap[cfg.SelectionColor].Foreground
+	ev.directoryTextStyle = style.FromStyleConfig(cfg.NodeTypesConfig.Directory.Style)
+	ev.fileTextStyle = style.FromStyleConfig(cfg.NodeTypesConfig.File.Style)
+	ev.selectionTextStyle = style.FromBasicFg(style.ColorMap[cfg.SelectionColor].Foreground)
 
 	ev.icons = nodeTypes{
 		file: nodeType{
@@ -100,16 +100,9 @@ func newExplorerView(v *gocui.View) *ExplorerView {
 	}
 
 	for ext, ntc := range cfg.NodeTypesConfig.Extensions {
-		if ntc.Color != "" {
-			ev.icons.extensions[ext] = nodeType{
-				icon:  ntc.Icon,
-				style: style.ColorMap[ntc.Color].Foreground,
-			}
-		} else {
-			ev.icons.extensions[ext] = nodeType{
-				icon:  ntc.Icon,
-				style: ev.fileTextStyle,
-			}
+		ev.icons.extensions[ext] = nodeType{
+			icon:  ntc.Icon,
+			style: style.FromStyleConfig(ntc.Style),
 		}
 	}
 
@@ -150,7 +143,7 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 			prefix = cfg.SelectionPrefix
 			suffix = cfg.SelectionSuffix
 		default:
-			// TODO: Confiure these values
+			// TODO: Configure these values
 			prefix = "  "
 			suffix = ""
 		}

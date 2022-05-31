@@ -6,6 +6,7 @@ type Decoration struct {
 	bold      bool
 	underline bool
 	reverse   bool
+	italic    bool
 }
 
 func (d *Decoration) SetBold() {
@@ -18,6 +19,10 @@ func (d *Decoration) SetUnderline() {
 
 func (d *Decoration) SetReverse() {
 	d.reverse = true
+}
+
+func (d *Decoration) SetItalic() {
+	d.italic = true
 }
 
 func (d Decoration) ToOpts() color.Opts {
@@ -33,6 +38,10 @@ func (d Decoration) ToOpts() color.Opts {
 
 	if d.reverse {
 		opts = append(opts, color.OpReverse)
+	}
+
+	if d.italic {
+		opts = append(opts, color.OpItalic)
 	}
 
 	return opts

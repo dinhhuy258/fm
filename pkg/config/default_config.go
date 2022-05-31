@@ -29,11 +29,15 @@ func getDefaultConfig() *Config {
 		LogInfoColor:       "green",
 		NodeTypesConfig: &NodeTypesConfig{
 			File: &NodeTypeConfig{
-				Color: "white",
+				Style: &StyleConfig{
+					Fg: "white",
+				},
 				Icon:  "",
 			},
 			Directory: &NodeTypeConfig{
-				Color: "cyan",
+				Style: &StyleConfig{
+					Fg: "cyan",
+				},
 				Icon:  "",
 			},
 			Extensions: map[string]*NodeTypeConfig{},
