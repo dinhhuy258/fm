@@ -136,6 +136,8 @@ func LoadEntries(path string, showHidden bool) ([]IEntry, error) {
 		}
 	}
 
+	getEntrySort(DirFirst).sort(entries)
+
 	return entries, nil
 }
 
