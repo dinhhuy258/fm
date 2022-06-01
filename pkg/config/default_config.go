@@ -83,6 +83,10 @@ func getDefaultConfig() *Config {
 				EntryPrefix:      "├─",
 				LastEntryPrefix:  "└─",
 			},
+			Sorting: &SortingConfig{
+				Reverse:  false,
+				SortType: "dirFirst",
+			},
 			ShowHidden: false,
 		},
 		NodeTypesConfig: &NodeTypesConfig{

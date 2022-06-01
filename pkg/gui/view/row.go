@@ -154,5 +154,5 @@ func paddingRight(str string, length int, pad string) string {
 func removeRunes(s string, w int) string {
 	r := []rune(s)
 
-  return string(r[:w])
+	return string(r[:w])
 }

@@ -4,11 +4,12 @@ import (
 	"sort"
 )
 
-// entryTypeSort represents struct for sorting algorithm by dir
+// entryTypeSort is an implementation of entrySort using sorting algorithm to sort entries by dir
+// first
 type dirFirstEntrySort struct{}
 
-// sort the entries according to dir first algorithm
-func (_ dirFirstEntrySort) sort(entries []IEntry) {
+// sort by dir first
+func (dirFirstEntrySort) sort(entries []IEntry, reverse bool) {
 	sort.Slice(entries, func(i, j int) bool {
 		firstEntry := entries[i]
 		secondEntry := entries[j]

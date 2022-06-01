@@ -3,6 +3,9 @@ package fs
 import (
 	"os"
 	"path/filepath"
+	"time"
+
+	"github.com/djherbis/times"
 )
 
 // IEntry represents a file or directory.
@@ -13,6 +16,7 @@ type IEntry interface {
 	GetExt() string
 	GetPermissions() string
 	IsDirectory() bool
+	GetChangeTime() time.Time
 }
 
 // Entry contains information about a file or directory.
@@ -24,6 +28,7 @@ type Entry struct {
 	size        int64
 	ext         string
 	permissions string
+	changeTime  time.Time
 }
 
 // GetName returns the name of the entry.
@@ -51,6 +56,11 @@ func (e *Entry) GetPermissions() string {
 	return e.permissions
 }
 
+// GetChangeTime returns the change time of the entry.
+func (e *Entry) GetChangeTime() time.Time {
+	return e.changeTime
+}
+
 // File represents a file.
 type File struct {
 	*Entry
@@ -72,7 +82,7 @@ func (*Directory) IsDirectory() bool {
 }
 
 // LoadEntries loads the entries of the given directory.
-func LoadEntries(path string, showHidden bool) ([]IEntry, error) {
+func LoadEntries(path string, showHidden bool, sortAlgorithm string, sortReverse bool) ([]IEntry, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -105,13 +115,23 @@ func LoadEntries(path string, showHidden bool) ([]IEntry, error) {
 			continue
 		}
 
+		var ct time.Time
+
+		ts := times.Get(lstat)
+		if ts.HasChangeTime() {
+			ct = ts.ChangeTime()
+		} else {
+			ct = lstat.ModTime()
+		}
+
 		isDir := lstat.IsDir()
 		size := lstat.Size()
+		permissions := lstat.Mode().String()[1:]
+
 		ext := filepath.Ext(absolutePath)
 		if ext != "" {
 			ext = ext[1:]
 		}
-		permissions := lstat.Mode().String()[1:]
 
 		if isDir {
 			entries = append(entries, &Directory{
@@ -121,6 +141,7 @@ func LoadEntries(path string, showHidden bool) ([]IEntry, error) {
 					size:        size,
 					permissions: permissions,
 					ext:         ext,
+					changeTime:  ct,
 				},
 			})
 		} else {
@@ -131,12 +152,13 @@ func LoadEntries(path string, showHidden bool) ([]IEntry, error) {
 					size:        size,
 					permissions: permissions,
 					ext:         ext,
+					changeTime:  ct,
 				},
 			})
 		}
 	}
 
-	getEntrySort(DirFirst).sort(entries)
+	getEntrySort(sortType(sortAlgorithm)).sort(entries, sortReverse)
 
 	return entries, nil
 }

@@ -228,6 +228,27 @@ func (etc ExplorerTableConfig) merge(other *ExplorerTableConfig) *ExplorerTableC
 	return &etc
 }
 
+// SortingConfig represents the config for sorting
+type SortingConfig struct {
+	Reverse  bool   `yaml:"reverse"`
+	SortType string `yaml:"sortType"`
+}
+
+// merge user config with default config.
+func (sc SortingConfig) merge(other *SortingConfig) *SortingConfig {
+	if other == nil {
+		return &sc
+	}
+
+	sc.Reverse = other.Reverse
+
+	if other.SortType != "" {
+		sc.SortType = other.SortType
+	}
+
+	return &sc
+}
+
 // GeneralConfig represents the general config for the application.
 type GeneralConfig struct {
 	LogInfoUI    *UIConfig `yaml:"logInfoUi"`
@@ -236,7 +257,8 @@ type GeneralConfig struct {
 
 	ExplorerTable *ExplorerTableConfig `yaml:"explorerTable"`
 
-	ShowHidden bool `yaml:"showHidden"`
+	Sorting    *SortingConfig `yaml:"sorting"`
+	ShowHidden bool           `yaml:"showHidden"`
 }
 
 // merge user config with default config.
@@ -250,6 +272,8 @@ func (gc GeneralConfig) merge(other *GeneralConfig) *GeneralConfig {
 	gc.LogInfoUI = gc.LogInfoUI.merge(other.LogInfoUI)
 	gc.LogWarningUI = gc.LogWarningUI.merge(other.LogWarningUI)
 	gc.LogErrorUI = gc.LogErrorUI.merge(other.LogErrorUI)
+
+	gc.Sorting = gc.Sorting.merge(other.Sorting)
 
 	gc.ShowHidden = other.ShowHidden
 
