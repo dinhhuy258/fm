@@ -11,7 +11,7 @@ type IEntry interface {
 	GetPath() string
 	GetSize() int64
 	GetExt() string
-	GetFileMode() string
+	GetPermissions() string
 	IsDirectory() bool
 }
 
@@ -19,11 +19,11 @@ type IEntry interface {
 type Entry struct {
 	IEntry
 
-	name     string
-	path     string
-	size     int64
-	ext      string
-	fileMode string
+	name        string
+	path        string
+	size        int64
+	ext         string
+	permissions string
 }
 
 // GetName returns the name of the entry.
@@ -46,9 +46,9 @@ func (e *Entry) GetExt() string {
 	return e.ext
 }
 
-// GetFileMode returns the file mode of the entry.
-func (e *Entry) GetFileMode() string {
-	return e.fileMode
+// GetPermissions returns the permissions of the entry.
+func (e *Entry) GetPermissions() string {
+	return e.permissions
 }
 
 // File represents a file.
@@ -108,26 +108,26 @@ func LoadEntries(path string, showHidden bool) ([]IEntry, error) {
 		isDir := lstat.IsDir()
 		size := lstat.Size()
 		ext := filepath.Ext(absolutePath)
-		fileMode := lstat.Mode().String()
+		permissions := lstat.Mode().String()[1:]
 
 		if isDir {
 			entries = append(entries, &Directory{
 				&Entry{
-					name:     name,
-					path:     absolutePath,
-					size:     size,
-					fileMode: fileMode,
-					ext:      ext,
+					name:        name,
+					path:        absolutePath,
+					size:        size,
+					permissions: permissions,
+					ext:         ext,
 				},
 			})
 		} else {
 			entries = append(entries, &File{
 				&Entry{
-					name:     name,
-					path:     absolutePath,
-					size:     size,
-					fileMode: fileMode,
-					ext:      ext,
+					name:        name,
+					path:        absolutePath,
+					size:        size,
+					permissions: permissions,
+					ext:         ext,
 				},
 			})
 		}

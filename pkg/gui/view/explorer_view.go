@@ -208,7 +208,7 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 		}
 
 		index := strconv.Itoa(idx + 1)
-		fileMode := entry.GetFileMode()
+		permissions := entry.GetPermissions()
 		size := fs.Humanize(entry.GetSize())
 
 		line, err := ev.explorerRow.Sprint([]ColumnValue{
@@ -239,7 +239,7 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 					Style: &entryTextStyle,
 				},
 			},
-			fileMode,
+			permissions,
 			size,
 		})
 		if err != nil {

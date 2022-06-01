@@ -70,35 +70,35 @@ func (c *column) sprintColumnComponents(columnValueComponents []ColumnValueCompo
 	}
 
 	if utf8.RuneCountInString(originalLine) > w {
-		originalLine = originalLine[:w-1]
+		originalLine = removeRunes(originalLine, w)
 	}
 
-	originalLineSize := len(originalLine)
+	originalLineSize := utf8.RuneCountInString(originalLine)
 	spaceCount := 0
 
 	if c.leftAlign {
 		originalLine = paddingRight(originalLine, w, " ")
-		spaceCount = len(originalLine) - originalLineSize
+		spaceCount = utf8.RuneCountInString(originalLine) - originalLineSize
 	} else {
 		originalLine = fmt.Sprintf("%"+fmt.Sprintf("%v", w)+"s", originalLine)
-		spaceCount = len(originalLine) - originalLineSize
+		spaceCount = utf8.RuneCountInString(originalLine) - originalLineSize
 	}
 
-	originalLineSize = len(originalLine)
+	originalLineSize = utf8.RuneCountInString(originalLine)
 
 	line := ""
 	lineSize := 0
 
 	for _, columnValueComponent := range columnValueComponents {
 		columnValue := columnValueComponent.Value
-		lineSize += len(columnValue)
+		lineSize += utf8.RuneCountInString(columnValue)
 
 		if lineSize <= originalLineSize {
 			line += styleString(columnValue, columnValueComponent.Style)
 		} else {
 			// lineSize > originalLineSize
 			discardSize := lineSize - originalLineSize
-			columnValue = columnValue[:len(columnValue)-discardSize]
+			columnValue = columnValue[:utf8.RuneCountInString(columnValue)-discardSize]
 			line += styleString(columnValue, columnValueComponent.Style)
 
 			break
@@ -118,7 +118,7 @@ func (c *column) sprintString(val string, w int) string {
 	line := val
 
 	if utf8.RuneCountInString(line) > w {
-		line = line[:w-1]
+		line = removeRunes(line, w)
 	}
 
 	if c.leftAlign {
@@ -148,4 +148,11 @@ func (c *column) sprint(cv ColumnValue, w int) string {
 // paddingRight right-pads the string with pad up to len runes
 func paddingRight(str string, length int, pad string) string {
 	return str + strings.Repeat(pad, length-utf8.RuneCountInString(str))
+}
+
+// removeRunes truncate string length to w
+func removeRunes(s string, w int) string {
+	r := []rune(s)
+
+  return string(r[:w])
 }
