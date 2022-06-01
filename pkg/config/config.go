@@ -101,10 +101,9 @@ func (ntc NodeTypesConfig) merge(other *NodeTypesConfig) *NodeTypesConfig {
 
 // UIConfig represents the config for UI
 type UIConfig struct {
-	Prefix         string       `yaml:"prefix"`
-	Suffix         string       `yaml:"suffix"`
-	FileStyle      *StyleConfig `yaml:"fileStyle"`
-	DirectoryStyle *StyleConfig `yaml:"directoryStyle"`
+	Prefix string       `yaml:"prefix"`
+	Suffix string       `yaml:"suffix"`
+	Style  *StyleConfig `yaml:"style"`
 }
 
 // merge user config with default config.
@@ -121,36 +120,37 @@ func (ui UIConfig) merge(other *UIConfig) *UIConfig {
 		ui.Suffix = other.Suffix
 	}
 
-	ui.FileStyle = ui.FileStyle.merge(other.FileStyle)
-	ui.DirectoryStyle = ui.DirectoryStyle.merge(other.DirectoryStyle)
+	ui.Style = ui.Style.merge(other.Style)
 
 	return &ui
 }
 
-// LogUIConfig represents the config for logging UI.
-type LogUIConfig struct {
-	Prefix string       `yaml:"prefix"`
-	Suffix string       `yaml:"suffix"`
-	Style  *StyleConfig `yaml:"style"`
+// DefaultUIConfig represents the config for UI
+type DefaultUIConfig struct {
+	Prefix         string       `yaml:"prefix"`
+	Suffix         string       `yaml:"suffix"`
+	FileStyle      *StyleConfig `yaml:"fileStyle"`
+	DirectoryStyle *StyleConfig `yaml:"directoryStyle"`
 }
 
 // merge user config with default config.
-func (luc LogUIConfig) merge(other *LogUIConfig) *LogUIConfig {
+func (ui DefaultUIConfig) merge(other *DefaultUIConfig) *DefaultUIConfig {
 	if other == nil {
-		return &luc
+		return &ui
 	}
 
 	if other.Prefix != "" {
-		luc.Prefix = other.Prefix
+		ui.Prefix = other.Prefix
 	}
 
 	if other.Suffix != "" {
-		luc.Suffix = other.Suffix
+		ui.Suffix = other.Suffix
 	}
 
-	luc.Style = luc.Style.merge(other.Style)
+	ui.FileStyle = ui.FileStyle.merge(other.FileStyle)
+	ui.DirectoryStyle = ui.DirectoryStyle.merge(other.DirectoryStyle)
 
-	return &luc
+	return &ui
 }
 
 // ExplorerTableHeaderConfig represents the config for the explorer table header.
@@ -187,6 +187,11 @@ type ExplorerTableConfig struct {
 	PermissionsHeader *ExplorerTableHeaderConfig `yaml:"permissionsHeader"`
 	SizeHeader        *ExplorerTableHeaderConfig `yaml:"sizeHeader"`
 
+	DefaultUI        *DefaultUIConfig `yaml:"defaultUi"`
+	FocusUI          *UIConfig        `yaml:"focusUi"`
+	SelectionUI      *UIConfig        `yaml:"selectionUi"`
+	FocusSelectionUI *UIConfig        `yaml:"focusSelectionUi"`
+
 	FirstEntryPrefix string `yaml:"firstEntryPrefix"`
 	EntryPrefix      string `yaml:"entryPrefix"`
 	LastEntryPrefix  string `yaml:"lastEntryPrefix"`
@@ -202,6 +207,11 @@ func (etc ExplorerTableConfig) merge(other *ExplorerTableConfig) *ExplorerTableC
 	etc.NameHeader = etc.NameHeader.merge(other.NameHeader)
 	etc.PermissionsHeader = etc.PermissionsHeader.merge(other.PermissionsHeader)
 	etc.SizeHeader = etc.SizeHeader.merge(other.SizeHeader)
+
+	etc.DefaultUI = etc.DefaultUI.merge(other.DefaultUI)
+	etc.FocusUI = etc.FocusUI.merge(other.FocusUI)
+	etc.SelectionUI = etc.SelectionUI.merge(other.SelectionUI)
+	etc.FocusSelectionUI = etc.FocusSelectionUI.merge(other.FocusSelectionUI)
 
 	if other.FirstEntryPrefix != "" {
 		etc.FirstEntryPrefix = other.FirstEntryPrefix
@@ -220,14 +230,9 @@ func (etc ExplorerTableConfig) merge(other *ExplorerTableConfig) *ExplorerTableC
 
 // GeneralConfig represents the general config for the application.
 type GeneralConfig struct {
-	DefaultUI        *UIConfig `yaml:"defaultUi"`
-	FocusUI          *UIConfig `yaml:"focusUi"`
-	SelectionUI      *UIConfig `yaml:"selectionUi"`
-	FocusSelectionUI *UIConfig `yaml:"focusSelectionUi"`
-
-	LogInfoUI    *LogUIConfig `yaml:"logInfoUi"`
-	LogWarningUI *LogUIConfig `yaml:"logWarningUi"`
-	LogErrorUI   *LogUIConfig `yaml:"logErrorUi"`
+	LogInfoUI    *UIConfig `yaml:"logInfoUi"`
+	LogWarningUI *UIConfig `yaml:"logWarningUi"`
+	LogErrorUI   *UIConfig `yaml:"logErrorUi"`
 
 	ExplorerTable *ExplorerTableConfig `yaml:"explorerTable"`
 
@@ -240,16 +245,11 @@ func (gc GeneralConfig) merge(other *GeneralConfig) *GeneralConfig {
 		return &gc
 	}
 
-	gc.DefaultUI = gc.DefaultUI.merge(other.DefaultUI)
-	gc.FocusUI = gc.FocusUI.merge(other.FocusUI)
-	gc.SelectionUI = gc.SelectionUI.merge(other.SelectionUI)
-	gc.FocusSelectionUI = gc.FocusSelectionUI.merge(other.FocusSelectionUI)
+	gc.ExplorerTable = gc.ExplorerTable.merge(other.ExplorerTable)
 
 	gc.LogInfoUI = gc.LogInfoUI.merge(other.LogInfoUI)
 	gc.LogWarningUI = gc.LogWarningUI.merge(other.LogWarningUI)
 	gc.LogErrorUI = gc.LogErrorUI.merge(other.LogErrorUI)
-
-	gc.ExplorerTable = gc.ExplorerTable.merge(other.ExplorerTable)
 
 	gc.ShowHidden = other.ShowHidden
 

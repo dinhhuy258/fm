@@ -1,40 +1,4 @@
 general:
-  defaultUi:
-    prefix: '  '
-    suffix: ''
-    fileStyle:
-      fg: white
-    directoryStyle:
-      fg: cyan
-  focusUi:
-    prefix: '▸['
-    suffix: ']'
-    fileStyle:
-      fg: blue
-      decorations:
-        - bold
-    directoryStyle:
-      fg: cyan
-      decorations:
-        - bold
-  selectionUi:
-    prefix: ' {'
-    suffix: '}'
-    fileStyle:
-      fg: green
-    directoryStyle:
-      fg: green
-  focusSelectionUi:
-    prefix: '▸['
-    suffix: ']'
-    fileStyle:
-      fg: blue
-      decorations:
-        - bold
-    directoryStyle:
-      fg: green
-      decorations:
-        - bold
   logInfoUi:
     prefix: '[Info] '
     suffix: ''
@@ -51,6 +15,32 @@ general:
     style:
       fg: red
   explorerTable:
+    defaultUi:
+      prefix: '  '
+      suffix: ''
+      fileStyle:
+        fg: white
+      directoryStyle:
+        fg: cyan
+    focusUi:
+      prefix: '▸['
+      suffix: ']'
+      style:
+        fg: blue
+        decorations:
+          - bold
+    selectionUi:
+      prefix: ' {'
+      suffix: '}'
+      style:
+        fg: green
+    focusSelectionUi:
+      prefix: '▸['
+      suffix: ']'
+      style:
+        fg: blue
+        decorations:
+          - bold
     indexHeader:
       name: index
       percentage: 10

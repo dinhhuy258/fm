@@ -4,73 +4,21 @@ package config
 func getDefaultConfig() *Config {
 	return &Config{
 		General: &GeneralConfig{
-			DefaultUI: &UIConfig{
-				Prefix: "  ",
-				Suffix: "",
-				FileStyle: &StyleConfig{
-					Fg: "white",
-				},
-				DirectoryStyle: &StyleConfig{
-					Fg: "cyan",
-				},
-			},
-			FocusUI: &UIConfig{
-				Prefix: "▸[",
-				Suffix: "]",
-				FileStyle: &StyleConfig{
-					Fg: "white",
-					Decorations: []string{
-						"bold",
-					},
-				},
-				DirectoryStyle: &StyleConfig{
-					Fg: "cyan",
-					Decorations: []string{
-						"bold",
-					},
-				},
-			},
-			SelectionUI: &UIConfig{
-				Prefix: " {",
-				Suffix: "}",
-				FileStyle: &StyleConfig{
-					Fg: "green",
-				},
-				DirectoryStyle: &StyleConfig{
-					Fg: "green",
-				},
-			},
-			FocusSelectionUI: &UIConfig{
-				Prefix: "▸[",
-				Suffix: "]",
-				FileStyle: &StyleConfig{
-					Fg: "green",
-					Decorations: []string{
-						"bold",
-					},
-				},
-				DirectoryStyle: &StyleConfig{
-					Fg: "green",
-					Decorations: []string{
-						"bold",
-					},
-				},
-			},
-			LogInfoUI: &LogUIConfig{
+			LogInfoUI: &UIConfig{
 				Prefix: "[Info] ",
 				Suffix: "",
 				Style: &StyleConfig{
 					Fg: "green",
 				},
 			},
-			LogWarningUI: &LogUIConfig{
+			LogWarningUI: &UIConfig{
 				Prefix: "[Warning] ",
 				Suffix: "",
 				Style: &StyleConfig{
 					Fg: "yellow",
 				},
 			},
-			LogErrorUI: &LogUIConfig{
+			LogErrorUI: &UIConfig{
 				Prefix: "[Error] ",
 				Suffix: "",
 				Style: &StyleConfig{
@@ -78,6 +26,43 @@ func getDefaultConfig() *Config {
 				},
 			},
 			ExplorerTable: &ExplorerTableConfig{
+				DefaultUI: &DefaultUIConfig{
+					Prefix: "  ",
+					Suffix: "",
+					FileStyle: &StyleConfig{
+						Fg: "white",
+					},
+					DirectoryStyle: &StyleConfig{
+						Fg: "cyan",
+					},
+				},
+				FocusUI: &UIConfig{
+					Prefix: "▸[",
+					Suffix: "]",
+					Style: &StyleConfig{
+						Fg: "white",
+						Decorations: []string{
+							"bold",
+						},
+					},
+				},
+				SelectionUI: &UIConfig{
+					Prefix: " {",
+					Suffix: "}",
+					Style: &StyleConfig{
+						Fg: "green",
+					},
+				},
+				FocusSelectionUI: &UIConfig{
+					Prefix: "▸[",
+					Suffix: "]",
+					Style: &StyleConfig{
+						Fg: "green",
+						Decorations: []string{
+							"bold",
+						},
+					},
+				},
 				IndexHeader: &ExplorerTableHeaderConfig{
 					Name:       "index",
 					Percentage: 10,
