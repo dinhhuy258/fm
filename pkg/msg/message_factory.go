@@ -51,6 +51,13 @@ var messageFactories = map[string]*MessageFactory{
 
 	"MarkSave": newMessageFactory(MarkSave),
 	"MarkLoad": newMessageFactory(MarkLoad),
+
+	"SortByDirFirst":     newMessageFactory(SortByDirFirst),
+	"SortByDateModified": newMessageFactory(SortByDateModified),
+	"SortByName":         newMessageFactory(SortByName),
+	"SortBySize":         newMessageFactory(SortBySize),
+	"SortByExtension":    newMessageFactory(SortByExtension),
+	"ReverseSort":        newMessageFactory(ReverseSort),
 }
 
 func NewMessage(name string, args ...string) (*Message, error) {

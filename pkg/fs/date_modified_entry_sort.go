@@ -11,6 +11,11 @@ type dateModifiedEntrySort struct{}
 // sort by last modified time
 func (dateModifiedEntrySort) sort(entries []IEntry, reverse bool) {
 	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].GetChangeTime().Before(entries[j].GetChangeTime())
+		s := entries[i].GetChangeTime().Before(entries[j].GetChangeTime())
+		if reverse {
+			s = !s
+		}
+
+		return s
 	})
 }

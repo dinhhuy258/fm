@@ -10,6 +10,11 @@ type nameEntrySort struct{}
 // sort by file name
 func (nameEntrySort) sort(entries []IEntry, reverse bool) {
 	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].GetName() < entries[j].GetName()
+		s := entries[i].GetName() < entries[j].GetName()
+		if reverse {
+			s = !s
+		}
+
+		return s
 	})
 }

@@ -75,6 +75,15 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
+			"s": {
+				Help: "sort",
+				Messages: []*MessageConfig{
+					{
+						Name: "SwitchMode",
+						Args: []string{"sort"},
+					},
+				},
+			},
 			"r": {
 				Help: "rename",
 				Messages: []*MessageConfig{
@@ -519,6 +528,98 @@ var deleteSelectionsModeConfig = ModeConfig{
 	},
 }
 
+var sortModeConfig = ModeConfig{
+	Name: "sort",
+	KeyBindings: KeyBindingsConfig{
+		OnKeys: map[string]*ActionConfig{
+			"ctrl+c": {
+				Help: "quit",
+				Messages: []*MessageConfig{
+					{
+						Name: "Quit",
+					},
+					{
+						Name: "PopMode",
+					},
+				},
+			},
+			"d": {
+				Help: "dir first",
+				Messages: []*MessageConfig{
+					{
+						Name: "SortByDirFirst",
+					},
+					{
+						Name: "PopMode",
+					},
+				},
+			},
+			"c": {
+				Help: "date modified",
+				Messages: []*MessageConfig{
+					{
+						Name: "SortByDateModified",
+					},
+					{
+						Name: "PopMode",
+					},
+				},
+			},
+			"n": {
+				Help: "name",
+				Messages: []*MessageConfig{
+					{
+						Name: "SortByName",
+					},
+					{
+						Name: "PopMode",
+					},
+				},
+			},
+			"s": {
+				Help: "size",
+				Messages: []*MessageConfig{
+					{
+						Name: "SortBySize",
+					},
+					{
+						Name: "PopMode",
+					},
+				},
+			},
+			"e": {
+				Help: "extension",
+				Messages: []*MessageConfig{
+					{
+						Name: "SortByExtension",
+					},
+					{
+						Name: "PopMode",
+					},
+				},
+			},
+			"r": {
+				Help: "reverse",
+				Messages: []*MessageConfig{
+					{
+						Name: "ReverseSort",
+					},
+					{
+						Name: "PopMode",
+					},
+				},
+			},
+		},
+		Default: &ActionConfig{
+			Messages: []*MessageConfig{
+				{
+					Name: "PopMode",
+				},
+			},
+		},
+	},
+}
+
 var builtinModeConfigs = map[string]*ModeConfig{
 	"default":           &defaultModeConfig,
 	"mark-save":         &markSaveModeConfig,
@@ -528,4 +629,5 @@ var builtinModeConfigs = map[string]*ModeConfig{
 	"delete":            &deleteModeConfig,
 	"delete-current":    &deleteCurrentModeConfig,
 	"delete-selections": &deleteSelectionsModeConfig,
+	"sort":              &sortModeConfig,
 }

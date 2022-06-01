@@ -9,11 +9,11 @@ type entrySort interface {
 type sortType string
 
 const (
-	DirFirst     = "dirFirst"
-	DateModified = "dateModified"
-	Name         = "name"
-	Size         = "size"
-	Extension    = "extension"
+	DirFirst     sortType = "dirFirst"
+	DateModified sortType = "dateModified"
+	Name         sortType = "name"
+	Size         sortType = "size"
+	Extension    sortType = "extension"
 )
 
 // entrySortFactories contains list of supported entry sort algorithm
