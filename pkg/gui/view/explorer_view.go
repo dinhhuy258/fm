@@ -167,7 +167,7 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 		isEntryFocused := idx == focus
 		isEntrySelected := selections.Contains(entry.GetPath())
 
-		entryIcon := ev.getEntryIcon(entry, isEntrySelected)
+		entryIcon := ev.getEntryIcon(entry, isEntryFocused, isEntrySelected)
 
 		name := entry.GetName()
 
@@ -275,7 +275,7 @@ func (ev *ExplorerView) layout() error {
 	return nil
 }
 
-func (ev *ExplorerView) getEntryIcon(entry fs.IEntry, isEntrySelected bool) nodeType {
+func (ev *ExplorerView) getEntryIcon(entry fs.IEntry, isEntryFocused, isEntrySelected bool) nodeType {
 	var icon nodeType
 
 	extensionIcon, hasExtIcon := ev.icons.extensions[entry.GetExt()]
@@ -289,8 +289,13 @@ func (ev *ExplorerView) getEntryIcon(entry fs.IEntry, isEntrySelected bool) node
 		icon = ev.icons.file
 	}
 
-	if isEntrySelected {
+	switch {
+	case isEntrySelected && isEntryFocused:
+		icon.style = ev.focusDirectoryTextStyle
+	case isEntrySelected:
 		icon.style = ev.selectionFileTextStyle
+	case isEntryFocused:
+		icon.style = ev.focusDirectoryTextStyle
 	}
 
 	return icon

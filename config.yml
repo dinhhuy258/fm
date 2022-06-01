@@ -10,7 +10,7 @@ general:
     prefix: '▸['
     suffix: ']'
     fileStyle:
-      fg: white
+      fg: blue
       decorations:
         - bold
     directoryStyle:
@@ -28,7 +28,7 @@ general:
     prefix: '▸['
     suffix: ']'
     fileStyle:
-      fg: green
+      fg: blue
       decorations:
         - bold
     directoryStyle:
