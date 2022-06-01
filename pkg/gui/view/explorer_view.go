@@ -263,10 +263,13 @@ func (ev *ExplorerView) getEntryIcon(entry fs.IEntry, isEntryFocused, isEntrySel
 	var icon nodeType
 
 	extensionIcon, hasExtIcon := ev.icons.extensions[entry.GetExt()]
+	fileIcon, hasFileIcon := ev.icons.extensions[entry.GetName()]
 
 	switch {
 	case hasExtIcon:
 		icon = extensionIcon
+	case hasFileIcon:
+		icon = fileIcon
 	case entry.IsDirectory():
 		icon = ev.icons.directory
 	default:

@@ -108,6 +108,9 @@ func LoadEntries(path string, showHidden bool) ([]IEntry, error) {
 		isDir := lstat.IsDir()
 		size := lstat.Size()
 		ext := filepath.Ext(absolutePath)
+		if ext != "" {
+			ext = ext[1:]
+		}
 		permissions := lstat.Mode().String()[1:]
 
 		if isDir {
