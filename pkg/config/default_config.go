@@ -104,7 +104,13 @@ func getDefaultConfig() *Config {
 				},
 				Icon: "",
 			},
-			Symlink: &NodeTypeConfig{
+			FileSymlink: &NodeTypeConfig{
+				Style: &StyleConfig{
+					Fg: "white",
+				},
+				Icon: "",
+			},
+			DirectorySymlink: &NodeTypeConfig{
 				Style: &StyleConfig{
 					Fg: "cyan",
 				},

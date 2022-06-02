@@ -75,10 +75,11 @@ func (ntc NodeTypeConfig) merge(other *NodeTypeConfig) *NodeTypeConfig {
 
 // NodeTypesConfig represents the config for node types
 type NodeTypesConfig struct {
-	File       *NodeTypeConfig            `yaml:"file"`
-	Directory  *NodeTypeConfig            `yaml:"directory"`
-	Symlink    *NodeTypeConfig            `yaml:"symlink"`
-	Extensions map[string]*NodeTypeConfig `yaml:"extensions"`
+	File             *NodeTypeConfig            `yaml:"file"`
+	Directory        *NodeTypeConfig            `yaml:"directory"`
+	FileSymlink      *NodeTypeConfig            `yaml:"fileSymlink"`
+	DirectorySymlink *NodeTypeConfig            `yaml:"directorySymlink"`
+	Extensions       map[string]*NodeTypeConfig `yaml:"extensions"`
 }
 
 func (ntc NodeTypesConfig) merge(other *NodeTypesConfig) *NodeTypesConfig {
@@ -88,7 +89,8 @@ func (ntc NodeTypesConfig) merge(other *NodeTypesConfig) *NodeTypesConfig {
 
 	ntc.File = ntc.File.merge(other.File)
 	ntc.Directory = ntc.Directory.merge(other.Directory)
-	ntc.Symlink = ntc.Symlink.merge(other.Symlink)
+	ntc.FileSymlink = ntc.FileSymlink.merge(other.FileSymlink)
+	ntc.DirectorySymlink = ntc.DirectorySymlink.merge(other.DirectorySymlink)
 
 	if other.Extensions != nil {
 		ntc.Extensions = map[string]*NodeTypeConfig{}

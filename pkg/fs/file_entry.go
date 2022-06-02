@@ -141,6 +141,23 @@ func LoadEntries(path string,
 		size := lstat.Size()
 		permissions := lstat.Mode().String()[1:]
 		isSymlink := (lstat.Mode() & os.ModeSymlink) != 0
+		if isSymlink {
+			linkTarget, err := os.Readlink(absolutePath)
+			if err != nil {
+				return nil, err
+			}
+
+			linkTargetLstat, err := os.Lstat(linkTarget)
+			if err != nil {
+				if os.IsNotExist(err) {
+					continue
+				}
+
+				return nil, err
+			}
+
+			isDir = linkTargetLstat.IsDir()
+		}
 
 		ext := filepath.Ext(absolutePath)
 		if ext != "" {

@@ -81,10 +81,11 @@ type nodeType struct {
 }
 
 type nodeTypes struct {
-	file       nodeType
-	directory  nodeType
-	symlink    nodeType
-	extensions map[string]nodeType
+	file             nodeType
+	directory        nodeType
+	fileSymlink      nodeType
+	directorySymlink nodeType
+	extensions       map[string]nodeType
 }
 
 type ExplorerView struct {
@@ -128,9 +129,13 @@ func newExplorerView(v *gocui.View) *ExplorerView {
 			icon:  nodeTypesConfig.Directory.Icon,
 			style: style.FromStyleConfig(nodeTypesConfig.Directory.Style),
 		},
-		symlink: nodeType{
-			icon:  nodeTypesConfig.Symlink.Icon,
-			style: style.FromStyleConfig(nodeTypesConfig.Symlink.Style),
+		fileSymlink: nodeType{
+			icon:  nodeTypesConfig.FileSymlink.Icon,
+			style: style.FromStyleConfig(nodeTypesConfig.FileSymlink.Style),
+		},
+		directorySymlink: nodeType{
+			icon:  nodeTypesConfig.DirectorySymlink.Icon,
+			style: style.FromStyleConfig(nodeTypesConfig.DirectorySymlink.Style),
 		},
 		extensions: map[string]nodeType{},
 	}
@@ -271,8 +276,10 @@ func (ev *ExplorerView) getEntryIcon(entry fs.IEntry, isEntryFocused, isEntrySel
 	fileIcon, hasFileIcon := ev.icons.extensions[entry.GetName()]
 
 	switch {
+	case entry.IsSymlink() && entry.IsDirectory():
+		icon = ev.icons.directorySymlink
 	case entry.IsSymlink():
-		icon = ev.icons.symlink
+		icon = ev.icons.fileSymlink
 	case entry.IsDirectory():
 		icon = ev.icons.directory
 	case hasExtIcon:
