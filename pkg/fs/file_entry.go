@@ -16,6 +16,7 @@ type IEntry interface {
 	GetExt() string
 	GetPermissions() string
 	IsDirectory() bool
+	IsSymlink() bool
 	GetChangeTime() time.Time
 }
 
@@ -25,6 +26,7 @@ type Entry struct {
 
 	name        string
 	path        string
+	isSymlink   bool
 	size        int64
 	ext         string
 	permissions string
@@ -59,6 +61,11 @@ func (e *Entry) GetPermissions() string {
 // GetChangeTime returns the change time of the entry.
 func (e *Entry) GetChangeTime() time.Time {
 	return e.changeTime
+}
+
+// IsSymlink returns true if the current file is symlink
+func (e *Entry) IsSymlink() bool {
+	return e.isSymlink
 }
 
 // File represents a file.
@@ -133,6 +140,7 @@ func LoadEntries(path string,
 		isDir := lstat.IsDir()
 		size := lstat.Size()
 		permissions := lstat.Mode().String()[1:]
+		isSymlink := (lstat.Mode() & os.ModeSymlink) != 0
 
 		ext := filepath.Ext(absolutePath)
 		if ext != "" {
@@ -148,6 +156,7 @@ func LoadEntries(path string,
 					permissions: permissions,
 					ext:         ext,
 					changeTime:  ct,
+					isSymlink:   isSymlink,
 				},
 			})
 		} else {
@@ -159,6 +168,7 @@ func LoadEntries(path string,
 					permissions: permissions,
 					ext:         ext,
 					changeTime:  ct,
+					isSymlink:   isSymlink,
 				},
 			})
 		}

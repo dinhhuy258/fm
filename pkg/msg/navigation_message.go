@@ -59,7 +59,7 @@ func Enter(app IApp, _ ...string) {
 		return
 	}
 
-	if entry.IsDirectory() {
+	if entry.IsDirectory() || entry.IsSymlink() {
 		explorerController.LoadDirectory(entry.GetPath(), optional.NewEmpty[string]())
 		explorerController.UpdateView()
 	}

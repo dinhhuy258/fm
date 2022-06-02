@@ -104,6 +104,12 @@ func getDefaultConfig() *Config {
 				},
 				Icon: "",
 			},
+			Symlink: &NodeTypeConfig{
+				Style: &StyleConfig{
+					Fg: "cyan",
+				},
+				Icon: "",
+			},
 			Extensions: extensionsNodeTypeConfig,
 		},
 		Modes: &ModesConfig{
