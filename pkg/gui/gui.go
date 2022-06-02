@@ -46,6 +46,9 @@ func NewGui(pipe *pipe.Pipe) (*Gui, error) {
 func (gui *Gui) Run() error {
 	defer gui.g.Close()
 
+	// Request render the GUI before calling MainLoop
+	gui.Render()
+
 	err := gui.g.MainLoop()
 	if err != nil && !errors.Is(err, gocui.ErrQuit) {
 		return err
