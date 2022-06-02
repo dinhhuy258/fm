@@ -230,8 +230,10 @@ func (etc ExplorerTableConfig) merge(other *ExplorerTableConfig) *ExplorerTableC
 
 // SortingConfig represents the config for sorting
 type SortingConfig struct {
-	Reverse  bool   `yaml:"reverse"`
-	SortType string `yaml:"sortType"`
+	SortType         string `yaml:"sortType"`
+	Reverse          *bool  `yaml:"reverse"`
+	IgnoreCase       *bool  `yaml:"ignoreCase"`
+	IgnoreDiacritics *bool  `yaml:"ignoreDiacritics"`
 }
 
 // merge user config with default config.
@@ -240,10 +242,20 @@ func (sc SortingConfig) merge(other *SortingConfig) *SortingConfig {
 		return &sc
 	}
 
-	sc.Reverse = other.Reverse
-
 	if other.SortType != "" {
 		sc.SortType = other.SortType
+	}
+
+	if other.Reverse != nil {
+		sc.Reverse = other.Reverse
+	}
+
+	if other.IgnoreCase != nil {
+		sc.IgnoreCase = other.IgnoreCase
+	}
+
+	if other.IgnoreDiacritics != nil {
+		sc.IgnoreDiacritics = other.IgnoreDiacritics
 	}
 
 	return &sc

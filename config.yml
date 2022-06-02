@@ -60,6 +60,11 @@ general:
     firstEntryPrefix: ├─
     entryPrefix: ├─
     lastEntryPrefix: └─
+  sorting:
+    sortType: dirFirst
+    reverse: false
+    ignoreCase: true
+    ignoreDiacritics: true
   showHidden: false
 modes:
   customs:

@@ -9,9 +9,9 @@ import (
 type dateModifiedEntrySort struct{}
 
 // sort by last modified time
-func (dateModifiedEntrySort) sort(entries []IEntry, reverse bool) {
+func (dateModifiedEntrySort) sort(entries []IEntry, reverse bool, ignoreCase bool, ignoreDiacritics bool) {
 	sort.Slice(entries, func(i, j int) bool {
-		s := entries[i].GetChangeTime().Before(entries[j].GetChangeTime())
+		s := entries[i].GetChangeTime().After(entries[j].GetChangeTime())
 		if reverse {
 			s = !s
 		}

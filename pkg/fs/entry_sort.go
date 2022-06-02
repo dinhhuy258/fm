@@ -1,8 +1,16 @@
 package fs
 
+import (
+	"strings"
+	"unicode"
+
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
+)
+
 // entrySort an interface for entry sorting algorithm
 type entrySort interface {
-	sort([]IEntry, bool)
+	sort([]IEntry, bool, bool, bool)
 }
 
 // sortType is the type of sorting algorithm
@@ -34,4 +42,32 @@ func getEntrySort(t sortType) entrySort {
 	}
 
 	return entrySort
+}
+
+// normalize the given string
+func normalize(s string, ignoreCase, ignoreDiacritics bool) string {
+	if ignoreCase {
+		s = strings.ToLower(s)
+	}
+
+	if ignoreDiacritics {
+		s = removeDiacritics(s)
+	}
+
+	return s
+}
+
+// removeDiacritics from the given string
+func removeDiacritics(str string) string {
+	isMn := func(r rune) bool {
+		return unicode.Is(unicode.Mn, r) // Mn: nonspacing marks
+	}
+
+	t := transform.Chain(norm.NFD, transform.RemoveFunc(isMn), norm.NFC)
+	s, _, err := transform.String(t, str)
+	if err != nil {
+		return str
+	}
+
+	return s
 }

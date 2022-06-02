@@ -82,7 +82,13 @@ func (*Directory) IsDirectory() bool {
 }
 
 // LoadEntries loads the entries of the given directory.
-func LoadEntries(path string, showHidden bool, sortAlgorithm string, sortReverse bool) ([]IEntry, error) {
+func LoadEntries(path string,
+	showHidden bool,
+	sortAlgorithm string,
+	sortReverse bool,
+	sortIgnoreCase bool,
+	sortIgnoreDiacritics bool,
+) ([]IEntry, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -158,7 +164,7 @@ func LoadEntries(path string, showHidden bool, sortAlgorithm string, sortReverse
 		}
 	}
 
-	getEntrySort(sortType(sortAlgorithm)).sort(entries, sortReverse)
+	getEntrySort(sortType(sortAlgorithm)).sort(entries, sortReverse, sortIgnoreCase, sortIgnoreDiacritics)
 
 	return entries, nil
 }

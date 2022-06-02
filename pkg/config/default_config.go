@@ -84,8 +84,10 @@ func getDefaultConfig() *Config {
 				LastEntryPrefix:  "└─",
 			},
 			Sorting: &SortingConfig{
-				Reverse:  false,
+				Reverse:  newBool(false),
 				SortType: "dirFirst",
+				IgnoreCase: newBool(true),
+				IgnoreDiacritics: newBool(true),
 			},
 			ShowHidden: false,
 		},
@@ -109,4 +111,9 @@ func getDefaultConfig() *Config {
 			Customs:  map[string]*ModeConfig{},
 		},
 	}
+}
+
+// newBool return the pointer of bool val
+func newBool(val bool) *bool {
+	return &val
 }

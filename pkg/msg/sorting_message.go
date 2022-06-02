@@ -42,7 +42,7 @@ func SortByExtension(app IApp, _ ...string) {
 
 // ReverseSort reverses the current sorting
 func ReverseSort(app IApp, _ ...string) {
-	config.AppConfig.General.Sorting.Reverse = !config.AppConfig.General.Sorting.Reverse
+	*config.AppConfig.General.Sorting.Reverse = !*config.AppConfig.General.Sorting.Reverse
 
 	Refresh(app)
 }

@@ -8,13 +8,13 @@ import (
 type extensionEntrySort struct{}
 
 // sort by extension
-func (extensionEntrySort) sort(entries []IEntry, reverse bool) {
+func (extensionEntrySort) sort(entries []IEntry, reverse bool, ignoreCase bool, ignoreDiacritics bool) {
 	sort.Slice(entries, func(i, j int) bool {
 		s := func() bool {
-			ext1 := entries[i].GetExt()
-			ext2 := entries[j].GetExt()
-			name1 := entries[i].GetName()
-			name2 := entries[j].GetName()
+			ext1 := normalize(entries[i].GetExt(), ignoreCase, ignoreDiacritics)
+			ext2 := normalize(entries[j].GetExt(), ignoreCase, ignoreDiacritics)
+			name1 := normalize(entries[i].GetName(), ignoreCase, ignoreDiacritics)
+			name2 := normalize(entries[j].GetName(), ignoreCase, ignoreDiacritics)
 
 			// if the extension could not be determined (directories, files without)
 			// use a zero byte so that these files can be ranked higher

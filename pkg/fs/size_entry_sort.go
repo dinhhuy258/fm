@@ -8,9 +8,9 @@ import (
 type sizeEntrySort struct{}
 
 // sort by file size
-func (sizeEntrySort) sort(entries []IEntry, reverse bool) {
+func (sizeEntrySort) sort(entries []IEntry, reverse bool, ignoreCase bool, ignoreDiacritics bool) {
 	sort.Slice(entries, func(i, j int) bool {
-		s := entries[i].GetSize() < entries[j].GetSize()
+		s := entries[i].GetSize() > entries[j].GetSize()
 		if reverse {
 			s = !s
 		}
