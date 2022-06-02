@@ -4,6 +4,7 @@ import (
 	"strings"
 	"unicode"
 
+	"golang.org/x/text/runes"
 	"golang.org/x/text/transform"
 	"golang.org/x/text/unicode/norm"
 )
@@ -59,11 +60,8 @@ func normalize(s string, ignoreCase, ignoreDiacritics bool) string {
 
 // removeDiacritics from the given string
 func removeDiacritics(str string) string {
-	isMn := func(r rune) bool {
-		return unicode.Is(unicode.Mn, r) // Mn: nonspacing marks
-	}
+	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
 
-	t := transform.Chain(norm.NFD, transform.RemoveFunc(isMn), norm.NFC)
 	s, _, err := transform.String(t, str)
 	if err != nil {
 		return str

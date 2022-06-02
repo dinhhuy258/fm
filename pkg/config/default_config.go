@@ -84,9 +84,9 @@ func getDefaultConfig() *Config {
 				LastEntryPrefix:  "└─",
 			},
 			Sorting: &SortingConfig{
-				Reverse:  newBool(false),
-				SortType: "dirFirst",
-				IgnoreCase: newBool(true),
+				Reverse:          newBool(false),
+				SortType:         "dirFirst",
+				IgnoreCase:       newBool(true),
 				IgnoreDiacritics: newBool(true),
 			},
 			ShowHidden: false,
