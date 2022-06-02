@@ -13,6 +13,14 @@ func LogSuccess(app IApp, params ...string) {
 	logController.UpdateView()
 }
 
+func LogWarning(app IApp, params ...string) {
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
+
+	logMessage := params[0]
+	logController.SetLog(view.Warning, logMessage)
+	logController.UpdateView()
+}
+
 func LogError(app IApp, params ...string) {
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 

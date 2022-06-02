@@ -137,10 +137,10 @@ modes:
               - name: BashExecSilently
                 args:
                   - |
-                    FOCUS="${FM_FOCUS_PATH}"
-                    if [ "$FOCUS" ]; then
-                      echo -n $FOCUS | pbcopy -selection clipboard
-                      echo LogSuccess "'"$FOCUS was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
+                    focus_path="${FM_FOCUS_PATH}"
+                    if [ "${focus_path}" ]; then
+                      echo -n ${focus_path} | pbcopy -selection clipboard
+                      echo LogSuccess "'"${focus_path} was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
                     fi
 
                     echo PopMode >> "${FM_PIPE_MSG_IN:?}"
@@ -150,10 +150,10 @@ modes:
               - name: BashExecSilently
                 args:
                   - |
-                    FOCUS="${FM_FOCUS_PATH}"
-                    if [ "$FOCUS" ]; then
-                      echo -n $(basename $FOCUS) | pbcopy -selection clipboard
-                      echo LogSuccess "'"$(basename "$FOCUS") was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
+                    focus_path="${FM_FOCUS_PATH}"
+                    if [ "${focus_path}" ]; then
+                      echo -n $(basename ${focus_path}) | pbcopy -selection clipboard
+                      echo LogSuccess "'"$(basename "${focus_path}") was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
                     fi
 
                     echo PopMode >> "${FM_PIPE_MSG_IN:?}"
@@ -163,10 +163,10 @@ modes:
               - name: BashExecSilently
                 args:
                   - |
-                    FOCUS="${FM_FOCUS_PATH}"
-                    if [ "$FOCUS" ]; then
-                      echo -n $(dirname $FOCUS) | pbcopy -selection clipboard
-                      echo LogSuccess "'"$(dirname "$FOCUS") was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
+                    focus_path="${FM_FOCUS_PATH}"
+                    if [ "${focus_path}" ]; then
+                      echo -n $(dirname ${focus_path}) | pbcopy -selection clipboard
+                      echo LogSuccess "'"$(dirname "${focus_path}") was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
                     fi
 
                     echo PopMode >> "${FM_PIPE_MSG_IN:?}"
@@ -184,9 +184,9 @@ modes:
               - name: BashExecSilently
                 args:
                   - |
-                    FOCUS="${FM_FOCUS_PATH}"
-                    if [ "$FOCUS" ]; then
-                      open -R "${FOCUS}"
+                    focus_path="${FM_FOCUS_PATH}"
+                    if [ "${focus_path}" ]; then
+                      open -R "${focus_path}"
                     fi
 
                     echo PopMode >> "${FM_PIPE_MSG_IN:?}"
@@ -196,9 +196,9 @@ modes:
               - name: BashExecSilently
                 args:
                   - |
-                    FOCUS="${FM_FOCUS_PATH}"
-                    if [ "$FOCUS" ]; then
-                      open -a "Visual Studio Code" "${FOCUS}"
+                    focus_path="${FM_FOCUS_PATH}"
+                    if [ "${focus_path}" ]; then
+                      open -a "Visual Studio Code" "${focus_path}"
                     fi
 
                     echo PopMode >> "${FM_PIPE_MSG_IN:?}"
@@ -208,12 +208,12 @@ modes:
               - name: BashExec
                 args:
                   - |
-                    FOCUS="${FM_FOCUS_PATH}"
-                    if [ "$FOCUS" ]; then
-                      case $(file --mime-type ${FOCUS} -b) in
-                          text/*) nvim ${FOCUS};;
-                          application/json) nvim ${FOCUS};;
-                          *) open "${FOCUS}"
+                    focus_path="${FM_FOCUS_PATH}"
+                    if [ "${focus_path}" ]; then
+                      case $(file --mime-type ${focus_path} -b) in
+                          text/*) nvim ${focus_path};;
+                          application/json) nvim ${focus_path};;
+                          *) open "${focus_path}"
                       esac
                     fi
 
@@ -255,8 +255,8 @@ modes:
               - name: BashExec
                 args:
                   - |
-                    SELECTED=$(ls | fzf --no-sort)
-                    if [ "$SELECTED" ]; then
-                      echo FocusPath "'"$PWD/$SELECTED"'" >> "${FM_PIPE_MSG_IN:?}"
+                    file_path=$(ls -a | fzf --no-sort)
+                    if [ "${file_path}" ]; then
+                      echo FocusPath "'"$PWD/${file_path}"'" >> "${FM_PIPE_MSG_IN:?}"
                     fi
         default: null

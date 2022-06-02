@@ -115,7 +115,7 @@ var defaultModeConfig = ModeConfig{
 						Name: "BashExec",
 						Args: []string{`
 							(while IFS= read -r line; do
-								if cp -vr -- "${line:?}" ./; then
+								if cp -r -- "${line:?}" ./; then
 									echo "${line:?}" copied to $PWD
 								else
 									echo Failed to copy "${line:?}" to $PWD
@@ -137,7 +137,7 @@ var defaultModeConfig = ModeConfig{
 						Name: "BashExec",
 						Args: []string{`
 							(while IFS= read -r line; do
-								if mv -v -- "${line:?}" ./; then
+								if mv -- "${line:?}" ./; then
 									echo "${line:?}" moved to $PWD
 								else
 									echo Failed to move "${line:?}" to $PWD
@@ -274,26 +274,27 @@ var newFileModeConfig = ModeConfig{
 					{
 						Name: "BashExecSilently",
 						Args: []string{`
-							CURRENT_PATH="${FM_FOCUS_PATH:?}"
-              PTH="${FM_INPUT_BUFFER}"
+							focus_path="${FM_FOCUS_PATH:?}"
+							forcus_dir=$(dirname "$focus_path")
+              name="${FM_INPUT_BUFFER}"
 
-							if [[ "${PTH}" && $PTH == */ ]] ; then
-							  PTH=${PTH%?}
-								if [ -z "${PTH}" ]; then
+							if [[ "${name}" && ${name} == */ ]] ; then
+							  name=${name%?}
+								if [ -z "${name}" ]; then
 									echo PopMode >> "${FM_PIPE_MSG_IN:?}"
 								else
-									mkdir -p -- "${PTH:?}" \
+									mkdir -p -- "${name:?}" \
 									&& echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
-									&& echo LogSuccess "'"$PTH created"'" >> "${FM_PIPE_MSG_IN:?}" \
-									&& echo FocusPath "'"$(dirname "$CURRENT_PATH")/$PTH"'" >> "${FM_PIPE_MSG_IN:?}" \
+									&& echo LogSuccess "'"${name} created"'" >> "${FM_PIPE_MSG_IN:?}" \
+									&& echo FocusPath "'"${forcus_dir}/${name}"'" >> "${FM_PIPE_MSG_IN:?}" \
 									&& echo PopMode >> "${FM_PIPE_MSG_IN:?}"
 								fi
-							elif [[ "${PTH}" ]] ; then
-								mkdir -p -- "$(dirname $PTH)" \
-								&& touch -- "$PTH" \
+							elif [[ "${name}" ]] ; then
+								mkdir -p -- "$(dirname ${name})" \
+								&& touch -- "${name}" \
 								&& echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
-								&& echo LogSuccess "'"$PTH created"'" >> "${FM_PIPE_MSG_IN:?}" \
-								&& echo FocusPath "'"$(dirname "$CURRENT_PATH")/$PTH"'" >> "${FM_PIPE_MSG_IN:?}" \
+								&& echo LogSuccess "'"${name} created"'" >> "${FM_PIPE_MSG_IN:?}" \
+								&& echo FocusPath "'"${forcus_dir}/${name}"'" >> "${FM_PIPE_MSG_IN:?}" \
 								&& echo PopMode >> "${FM_PIPE_MSG_IN:?}"
 							else
 								echo PopMode >> "${FM_PIPE_MSG_IN:?}"
@@ -339,19 +340,19 @@ var renameModeConfig = ModeConfig{
 					{
 						Name: "BashExecSilently",
 						Args: []string{`
-							SRC="${FM_FOCUS_PATH:?}"
-              TARGET="${FM_INPUT_BUFFER}"
+							focus_path="${FM_FOCUS_PATH:?}"
+              new_name="${FM_INPUT_BUFFER}"
 
-							if [ -z "${TARGET}" ]; then
+							if [ -z "${new_name}" ]; then
 								echo PopMode >> "${FM_PIPE_MSG_IN:?}"
-							elif [ -e "${TARGET:?}" ]; then
-                echo LogError "'"$TARGET already exists"'" >> "${FM_PIPE_MSG_IN:?}"
+							elif [ -e "${new_name:?}" ]; then
+                echo LogError "'"${new_name} already exists"'" >> "${FM_PIPE_MSG_IN:?}"
 								echo PopMode >> "${FM_PIPE_MSG_IN:?}"
               else
-                mv -- "${SRC:?}" "${TARGET:?}" \
+                mv -- "${focus_path:?}" "${new_name:?}" \
                   && echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
-                  && echo FocusPath "'"$(dirname "$SRC")/$TARGET"'" >> "${FM_PIPE_MSG_IN:?}" \
-                  && echo LogSuccess "'"$(basename "$SRC") renamed to $TARGET"'" >> "${FM_PIPE_MSG_IN:?}" \
+                  && echo FocusPath "'"$(dirname "${focus_path}")/${new_name}"'" >> "${FM_PIPE_MSG_IN:?}" \
+                  && echo LogSuccess "'"$(basename "${focus_path}") renamed to ${new_name}"'" >> "${FM_PIPE_MSG_IN:?}" \
 									&& echo PopMode >> "${FM_PIPE_MSG_IN:?}"
               fi
 						`},
@@ -445,12 +446,12 @@ var deleteCurrentModeConfig = ModeConfig{
 					{
 						Name: "BashExec",
 						Args: []string{`
-							CURRENT="${FM_FOCUS_PATH:?}"
+							focus_path="${FM_FOCUS_PATH:?}"
 
-							if rm -rfv -- "${CURRENT}"; then
-								echo "$CURRENT" deleted
+							if rm -rf -- "${focus_path}"; then
+								echo "${focus_path}" deleted
 							else
-								echo Failed to delete "$CURRENT"
+								echo Failed to delete "${focus_path}"
 							fi
 
 							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
@@ -496,7 +497,7 @@ var deleteSelectionsModeConfig = ModeConfig{
 						Name: "BashExec",
 						Args: []string{`
 							(while IFS= read -r line; do
-								if rm -rfv -- "${line:?}"; then
+								if rm -rf -- "${line:?}"; then
 									echo "${line:?}" deleted
 								else
 									echo Failed to delete "${line:?}"
