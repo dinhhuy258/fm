@@ -30,7 +30,7 @@ func BashExec(app IApp, params ...string) {
 		}
 
 		command := params[0]
-		cmd = exec.Command("bash", "-c", command)
+		cmd = exec.Command("zsh", "-c", command)
 		cmd.Env = getEnv(app)
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
@@ -56,7 +56,7 @@ func BashExecSilently(app IApp, params ...string) {
 	cmd.Env = getEnv(app)
 
 	if err := cmd.Run(); err != nil {
-		logController.SetLog(view.Error, "Failed to execute script")
+		logController.SetLog(view.Error, "Failed to execute script %v", err)
 		logController.UpdateView()
 	}
 }
@@ -82,6 +82,7 @@ func getEnv(app IApp) []string {
 	env = append(env, fmt.Sprintf("FM_INPUT_BUFFER=%s", inputController.GetInputBuffer()))
 	env = append(env, fmt.Sprintf("FM_PIPE_MSG_IN=%s", pipe.GetMessageInPath()))
 	env = append(env, fmt.Sprintf("FM_PIPE_SELECTION=%s", pipe.GetSelectionPath()))
+	env = append(env, fmt.Sprintf("FM_SESSION_PATH=%s", pipe.GetSessionPath()))
 
 	return env
 }

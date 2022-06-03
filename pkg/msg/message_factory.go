@@ -50,9 +50,6 @@ var messageFactories = map[string]*MessageFactory{
 	"ToggleSelection": newMessageFactory(ToggleSelection),
 	"ClearSelection":  newMessageFactory(ClearSelection),
 
-	"MarkSave": newMessageFactory(MarkSave),
-	"MarkLoad": newMessageFactory(MarkLoad),
-
 	"SortByDirFirst":     newMessageFactory(SortByDirFirst),
 	"SortByDateModified": newMessageFactory(SortByDateModified),
 	"SortByName":         newMessageFactory(SortByName),

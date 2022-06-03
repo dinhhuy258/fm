@@ -175,6 +175,83 @@ modes:
           messages:
             - name: PopMode
               args: []
+    mark-load:
+      keyBindings:
+        onKeys:
+          ctrl+c:
+            help: quit
+            messages:
+              - name: Quit
+          esc:
+            help: cancel
+            messages:
+              - name: PopMode
+        default:
+          help: cancel
+          messages:
+            - name: SetInputBuffer
+              args:
+                - ''
+            - name: UpdateInputBufferFromKey
+            - name: BashExecSilently
+              args:
+                - |
+                  session_path="${FM_SESSION_PATH:?}"
+                  mark_file="${session_path}/mark"
+
+                  # create a mark file if not exists
+                  touch ${mark_file}
+
+                  pressed_key="${FM_INPUT_BUFFER}"
+
+                  # go through the mark file and read the value to variable marks
+                  (while IFS= read -r line; do
+                  key=$(echo ${line:?} | cut -d ";" -f 1)
+                  path=$(echo ${line:?} | cut -d ";" -f 2)
+
+                  if [ "${key}" = "${pressed_key}" ]; then
+                    echo FocusPath "'""${path}""'" >> "${FM_PIPE_MSG_IN:?}"
+                    break
+                  fi
+                  done < "${mark_file:?}")
+
+                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+    mark-save:
+      keyBindings:
+        onKeys:
+          ctrl+c:
+            help: quit
+            messages:
+              - name: Quit
+          esc:
+            help: cancel
+            messages:
+              - name: PopMode
+        default:
+          help: cancel
+          messages:
+            - name: SetInputBuffer
+              args:
+                - ''
+            - name: UpdateInputBufferFromKey
+            - name: BashExecSilently
+              args:
+                - |
+                  session_path="${FM_SESSION_PATH:?}"
+                  mark_file="${session_path}/mark"
+
+                  focus_path="${FM_FOCUS_PATH:?}"
+                  key="${FM_INPUT_BUFFER:?}"
+
+                  # create a mark file if not exists
+                  touch ${mark_file}
+                  # remove conflict mark key in the mark file
+                  marks=$(sed "/^"${key}";/d" < "${mark_file:?}")
+                  printf "%s\n" "${marks[@]}" > ${mark_file}
+                  # add new mark key to the mark file
+                  echo "${key};${focus_path}" >> ${mark_file}
+
+                  echo PopMode >> "${FM_PIPE_MSG_IN:?}"
     open:
       keyBindings:
         onKeys:
@@ -259,4 +336,15 @@ modes:
                     if [ "${file_path}" ]; then
                       echo FocusPath "'"$PWD/${file_path}"'" >> "${FM_PIPE_MSG_IN:?}"
                     fi
-        default: null
+          m:
+            help: mark save test
+            messages:
+              - name: SwitchMode
+                args:
+                  - mark-save
+          '`':
+            help: mark load test
+            messages:
+              - name: SwitchMode
+                args:
+                  - mark-load

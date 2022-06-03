@@ -60,6 +60,11 @@ func NewPipe() (*Pipe, error) {
 	}, nil
 }
 
+// GetSessionPath returns session the path of the application
+func (p *Pipe) GetSessionPath() string {
+	return p.sessionPath
+}
+
 // GetMessageInPath returns the path to the message in file
 func (p *Pipe) GetMessageInPath() string {
 	return p.messageInPath

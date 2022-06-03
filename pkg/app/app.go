@@ -41,7 +41,7 @@ func NewApp() (*App, error) {
 		return nil, err
 	}
 
-	gui, err := gui.NewGui(pipe)
+	gui, err := gui.NewGui()
 	if err != nil {
 		return nil, err
 	}

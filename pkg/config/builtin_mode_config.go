@@ -44,24 +44,6 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
-			"m": {
-				Help: "mark save",
-				Messages: []*MessageConfig{
-					{
-						Name: "SwitchMode",
-						Args: []string{"mark-save"},
-					},
-				},
-			},
-			"`": {
-				Help: "mark load",
-				Messages: []*MessageConfig{
-					{
-						Name: "SwitchMode",
-						Args: []string{"mark-load"},
-					},
-				},
-			},
 			"n": {
 				Help: "new file",
 				Messages: []*MessageConfig{
@@ -182,74 +164,6 @@ var defaultModeConfig = ModeConfig{
 					{
 						Name: "ToggleHidden",
 					},
-				},
-			},
-		},
-	},
-}
-
-var markSaveModeConfig = ModeConfig{
-	Name: "mark-save",
-	KeyBindings: KeyBindingsConfig{
-		OnKeys: map[string]*ActionConfig{
-			"ctrl+c": {
-				Help: "quit",
-				Messages: []*MessageConfig{
-					{
-						Name: "Quit",
-					},
-				},
-			},
-			"esc": {
-				Help: "cancel",
-				Messages: []*MessageConfig{
-					{
-						Name: "PopMode",
-					},
-				},
-			},
-		},
-		Default: &ActionConfig{
-			Messages: []*MessageConfig{
-				{
-					Name: "MarkSave",
-				},
-				{
-					Name: "PopMode",
-				},
-			},
-		},
-	},
-}
-
-var markLoadModeConfig = ModeConfig{
-	Name: "mark-load",
-	KeyBindings: KeyBindingsConfig{
-		OnKeys: map[string]*ActionConfig{
-			"ctrl+c": {
-				Help: "quit",
-				Messages: []*MessageConfig{
-					{
-						Name: "Quit",
-					},
-				},
-			},
-			"esc": {
-				Help: "cancel",
-				Messages: []*MessageConfig{
-					{
-						Name: "PopMode",
-					},
-				},
-			},
-		},
-		Default: &ActionConfig{
-			Messages: []*MessageConfig{
-				{
-					Name: "MarkLoad",
-				},
-				{
-					Name: "PopMode",
 				},
 			},
 		},
@@ -539,9 +453,6 @@ var sortModeConfig = ModeConfig{
 					{
 						Name: "Quit",
 					},
-					{
-						Name: "PopMode",
-					},
 				},
 			},
 			"d": {
@@ -623,8 +534,6 @@ var sortModeConfig = ModeConfig{
 
 var builtinModeConfigs = map[string]*ModeConfig{
 	"default":           &defaultModeConfig,
-	"mark-save":         &markSaveModeConfig,
-	"mark-load":         &markLoadModeConfig,
 	"new-file":          &newFileModeConfig,
 	"rename":            &renameModeConfig,
 	"delete":            &deleteModeConfig,
