@@ -365,13 +365,13 @@ modes:
                       echo FocusPath "'"$PWD/${file_path}"'" >> "${FM_PIPE_MSG_IN:?}"
                     fi
           m:
-            help: mark save test
+            help: mark save
             messages:
               - name: SwitchMode
                 args:
                   - mark-save
           '`':
-            help: mark load test
+            help: mark load
             messages:
               - name: SwitchMode
                 args:
