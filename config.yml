@@ -279,6 +279,34 @@ modes:
                     fi
 
                     echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+          v:
+            help: open in NeoVim
+            messages:
+              - name: BashExec
+                args:
+                  - |
+                    focus_path="${FM_FOCUS_PATH}"
+                    if [ "${focus_path}" ]; then
+                      nvim "${focus_path}"
+                    fi
+
+                    echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+          t:
+            help: open new window in tmux
+            messages:
+              - name: BashExec
+                args:
+                  - |
+                    focus_path="${FM_FOCUS_PATH}"
+                    if [ "${focus_path}" ]; then
+                      if [ -f "${focus_path}" ]; then
+                        tmux new-window -c "$(dirname ${focus_path})"
+                      else
+                        tmux new-window -c "${focus_path}"
+                      fi
+                    fi
+
+                    echo PopMode >> "${FM_PIPE_MSG_IN:?}"
           o:
             help: open
             messages:
