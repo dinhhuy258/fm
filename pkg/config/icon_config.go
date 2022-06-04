@@ -1,5 +1,6 @@
 package config
 
+// extensionsNodeTypeConfig is the default configuration for the extensions node type.
 var extensionsNodeTypeConfig = map[string]*NodeTypeConfig{
 	"slim": {
 		Style: &StyleConfig{Fg: "#e34c26"}, Icon: "",

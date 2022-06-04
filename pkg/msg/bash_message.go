@@ -11,6 +11,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
+// BashExec executes a bash script
 func BashExec(app IApp, params ...string) {
 	// This function should be called in a UI thread, otherwise it will not work
 	app.OnUIThread(func() error {
@@ -48,6 +49,7 @@ func BashExec(app IApp, params ...string) {
 	})
 }
 
+// BashExecSilently executes a bash script silently
 func BashExecSilently(app IApp, params ...string) {
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 
@@ -61,6 +63,7 @@ func BashExecSilently(app IApp, params ...string) {
 	}
 }
 
+// getEnv returns the environment variables for the bash script
 func getEnv(app IApp) []string {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)

@@ -1,5 +1,6 @@
 package config
 
+// defaultModeConfig is the configuration for the default builtin mode.
 var defaultModeConfig = ModeConfig{
 	Name: "default",
 	KeyBindings: KeyBindingsConfig{
@@ -170,6 +171,7 @@ var defaultModeConfig = ModeConfig{
 	},
 }
 
+// newFileModeConfig is the configuration for the new file builtin mode.
 var newFileModeConfig = ModeConfig{
 	Name: "new-file",
 	KeyBindings: KeyBindingsConfig{
@@ -236,6 +238,7 @@ var newFileModeConfig = ModeConfig{
 	},
 }
 
+// renameModeConfig is the configuration for the rename builtin mode.
 var renameModeConfig = ModeConfig{
 	Name: "rename",
 	KeyBindings: KeyBindingsConfig{
@@ -292,6 +295,7 @@ var renameModeConfig = ModeConfig{
 	},
 }
 
+// deleteModeConfig is the configuration for the delete builtin mode.
 var deleteModeConfig = ModeConfig{
 	Name: "delete",
 	KeyBindings: KeyBindingsConfig{
@@ -342,6 +346,7 @@ var deleteModeConfig = ModeConfig{
 	},
 }
 
+// deleteCurrentModeConfig is the configuration for the delete current builtin mode.
 var deleteCurrentModeConfig = ModeConfig{
 	Name: "delete-current",
 	KeyBindings: KeyBindingsConfig{
@@ -392,6 +397,7 @@ var deleteCurrentModeConfig = ModeConfig{
 	},
 }
 
+// deleteSelectionsModeConfig is the configuration for the delete selections builtin mode.
 var deleteSelectionsModeConfig = ModeConfig{
 	Name: "delete-selections",
 	KeyBindings: KeyBindingsConfig{
@@ -443,6 +449,7 @@ var deleteSelectionsModeConfig = ModeConfig{
 	},
 }
 
+// sortModeConfig is the configuration for the sort builtin mode.
 var sortModeConfig = ModeConfig{
 	Name: "sort",
 	KeyBindings: KeyBindingsConfig{
@@ -532,6 +539,7 @@ var sortModeConfig = ModeConfig{
 	},
 }
 
+// builtinModeConfigs is a map of mode names to their configs.
 var builtinModeConfigs = map[string]*ModeConfig{
 	"default":           &defaultModeConfig,
 	"new-file":          &newFileModeConfig,

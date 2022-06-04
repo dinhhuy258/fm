@@ -6,6 +6,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/pipe"
 )
 
+// IApp is the interface for the application.
 type IApp interface {
 	GetPipe() *pipe.Pipe
 	// Controller
@@ -23,6 +24,7 @@ type IApp interface {
 	Suspend() error
 }
 
+// Message is the message type.
 type Message struct {
 	Func func(app IApp, params ...string)
 	Args []string

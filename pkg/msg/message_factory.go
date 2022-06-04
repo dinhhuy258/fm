@@ -4,16 +4,19 @@ import "errors"
 
 var errMessageNotFound = errors.New("Message name is not found")
 
+// MessageFactory is a factory for creating messages.
 type MessageFactory struct {
 	messageFunc func(app IApp, params ...string)
 }
 
+// newMessageFactory creates a new message factory.
 func newMessageFactory(messageFunc func(app IApp, params ...string)) *MessageFactory {
 	return &MessageFactory{
 		messageFunc: messageFunc,
 	}
 }
 
+// New creates a new message.
 func (mf *MessageFactory) New(args ...string) *Message {
 	return &Message{
 		Func: mf.messageFunc,
@@ -21,6 +24,7 @@ func (mf *MessageFactory) New(args ...string) *Message {
 	}
 }
 
+// messageFactories is a map of message factories.
 var messageFactories = map[string]*MessageFactory{
 	"BashExecSilently": newMessageFactory(BashExecSilently),
 	"BashExec":         newMessageFactory(BashExec),
@@ -58,6 +62,7 @@ var messageFactories = map[string]*MessageFactory{
 	"ReverseSort":        newMessageFactory(ReverseSort),
 }
 
+// NewMessage creates a new message.
 func NewMessage(name string, args ...string) (*Message, error) {
 	messageFactory, hasMessageFactory := messageFactories[name]
 	if !hasMessageFactory {

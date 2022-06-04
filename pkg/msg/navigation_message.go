@@ -7,6 +7,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
+// FocusFirst focus first entry
 func FocusFirst(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
@@ -14,6 +15,7 @@ func FocusFirst(app IApp, _ ...string) {
 	explorerController.UpdateView()
 }
 
+// FocusLast focus last entry
 func FocusLast(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
@@ -21,6 +23,7 @@ func FocusLast(app IApp, _ ...string) {
 	explorerController.UpdateView()
 }
 
+// FocusNext focus next entry
 func FocusNext(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
@@ -28,6 +31,7 @@ func FocusNext(app IApp, _ ...string) {
 	explorerController.UpdateView()
 }
 
+// FocusPrevious focus previous entry
 func FocusPrevious(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
@@ -35,6 +39,7 @@ func FocusPrevious(app IApp, _ ...string) {
 	explorerController.UpdateView()
 }
 
+// FocusPath focus entry with path
 func FocusPath(app IApp, params ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
@@ -51,6 +56,7 @@ func FocusPath(app IApp, params ...string) {
 	explorerController.UpdateView()
 }
 
+// Enter directory
 func Enter(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
@@ -65,6 +71,7 @@ func Enter(app IApp, _ ...string) {
 	}
 }
 
+// Back to parent directory
 func Back(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
@@ -77,14 +84,16 @@ func Back(app IApp, _ ...string) {
 	loadDirectory(app, dir, optional.New(explorerController.GetPath()))
 }
 
+// ChangeDirectory change directory
 func ChangeDirectory(app IApp, params ...string) {
 	directory := params[0]
 
 	loadDirectory(app, directory, optional.NewEmpty[string]())
 }
 
-// TODO: Considering remove this method and use ChangeDirectory instead
+// loadDirectory load directory
 func loadDirectory(app IApp, path string, focusPath optional.Optional[string]) {
+	// TODO: Considering remove this method and use ChangeDirectory instead
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.LoadDirectory(path, focusPath)
