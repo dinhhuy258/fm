@@ -13,7 +13,6 @@ type Pipe struct {
 	sessionPath      string
 	messageInPath    string
 	selectionPath    string
-	markPath         string
 	messageInWatcher *tail.Tail
 	watcherStop      chan bool
 }
@@ -40,11 +39,6 @@ func NewPipe() (*Pipe, error) {
 		return nil, err
 	}
 
-	markPath := filepath.Join(sessionPath, "mark")
-	if err := fs.CreateFile(markPath, false); err != nil {
-		return nil, err
-	}
-
 	messageInWatcher, err := tail.TailFile(messageInPath, tail.Config{Follow: true})
 	if err != nil {
 		return nil, err
@@ -54,7 +48,6 @@ func NewPipe() (*Pipe, error) {
 		sessionPath:      sessionPath,
 		messageInPath:    messageInPath,
 		selectionPath:    selectionPath,
-		markPath:         markPath,
 		messageInWatcher: messageInWatcher,
 		watcherStop:      make(chan bool),
 	}, nil
@@ -73,11 +66,6 @@ func (p *Pipe) GetMessageInPath() string {
 // GetSelectionPath returns the path to the selection file
 func (p *Pipe) GetSelectionPath() string {
 	return p.selectionPath
-}
-
-// GetMarkPath returns the path to the mark file
-func (p *Pipe) GetMarkPath() string {
-	return p.markPath
 }
 
 // StartWatcher starts the watcher for message in file
