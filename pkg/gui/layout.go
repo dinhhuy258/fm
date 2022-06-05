@@ -3,6 +3,7 @@ package gui
 import (
 	"errors"
 
+	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/gocui"
 )
 
@@ -101,6 +102,11 @@ func (gui *Gui) layout(_ *gocui.Gui) error {
 	if err := gui.views.Layout(); err != nil {
 		return err
 	}
+
+	// Re-focus explorer on resize
+	// FIXME: Is there any better way to do this?
+	explorerController, _ := gui.controllers.GetController(controller.Explorer).(*controller.ExplorerController)
+	explorerController.Focus()
 
 	return nil
 }
