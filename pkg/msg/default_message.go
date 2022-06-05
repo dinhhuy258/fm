@@ -9,7 +9,7 @@ import (
 // ToggleSelection is a message that toggles the selection of the current entry
 func ToggleSelection(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
-	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
+	selectionController, _ := app.GetController(controller.Selection).(*controller.SelectionController)
 
 	entry := explorerController.GetCurrentEntry()
 	if entry == nil {
@@ -27,7 +27,7 @@ func ToggleSelection(app IApp, _ ...string) {
 // ClearSelection is a message that clears the selection
 func ClearSelection(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
-	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
+	selectionController, _ := app.GetController(controller.Selection).(*controller.SelectionController)
 
 	selectionController.ClearSelections()
 

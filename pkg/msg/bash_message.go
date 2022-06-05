@@ -31,7 +31,7 @@ func BashExec(app IApp, params ...string) {
 		}
 
 		command := params[0]
-		cmd = exec.Command("zsh", "-c", command)
+		cmd = exec.Command("bash", "-c", command)
 		cmd.Env = getEnv(app)
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
@@ -67,7 +67,7 @@ func BashExecSilently(app IApp, params ...string) {
 func getEnv(app IApp) []string {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
-	selectionController, _ := app.GetController(controller.Sellection).(*controller.SelectionController)
+	selectionController, _ := app.GetController(controller.Selection).(*controller.SelectionController)
 
 	pipe := app.GetPipe()
 	focusPath := ""

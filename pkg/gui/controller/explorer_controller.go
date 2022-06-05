@@ -99,7 +99,7 @@ func (ec *ExplorerController) LoadDirectory(path string, focusPath optional.Opti
 	})
 }
 
-// Focus focuses cusor to the current entry
+// Focus focuses cursor to the current entry
 func (ec *ExplorerController) Focus() {
 	ec.view.FocusPoint(0, ec.focus)
 }

@@ -12,10 +12,9 @@ type Type int8
 const (
 	Explorer Type = iota
 	Help
-	Sellection
+	Selection
 	Log
 	Input
-	Mark
 )
 
 type Event int8
@@ -63,7 +62,7 @@ func CreateControllers(g *gocui.Gui, views *view.Views) *Controllers {
 	c.controllers = make(map[Type]IController)
 	c.controllers[Explorer] = newExplorerController(baseController, views.Explorer,
 		views.ExplorerHeader, selections)
-	c.controllers[Sellection] = newSelectionController(baseController, views.Selection, selections)
+	c.controllers[Selection] = newSelectionController(baseController, views.Selection, selections)
 	c.controllers[Help] = newHelpController(baseController, views.Help)
 	c.controllers[Log] = newLogController(baseController, views.Log)
 	c.controllers[Input] = newInputController(baseController, views.Input)
@@ -84,6 +83,7 @@ func (c *Controllers) notify(event Event, data optional.Optional[string]) {
 	case ShowErrorLog:
 		data.IfPresent(func(logMsg *string) {
 			logController.SetLog(view.Error, *logMsg)
+			logController.UpdateView()
 		})
 	case LogHidden:
 		logController.SetVisible(false)
