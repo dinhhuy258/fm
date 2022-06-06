@@ -1,7 +1,6 @@
 package lua
 
 import (
-	"github.com/dinhhuy258/fm/pkg/config"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -24,15 +23,28 @@ func (l *Lua) Close() {
 
 // LoadConfig load config from the given file
 func (l *Lua) LoadConfig(fileConfig string) error {
-	defaultConfig := config.GetDefaultConfig()
-	fmConfig := l.state.NewUserData()
-	fmConfig.Value = defaultConfig
+	// defaultConfig := config.GetDefaultConfig()
+	fmConfig := l.state.NewTable()
+	generalConfig := l.state.NewTable()
+
+	generalConfig.RawSetString("log_info_ui", l.state.NewTable())
+	generalConfig.RawSetString("log_warning_ui", l.state.NewTable())
+	generalConfig.RawSetString("log_error_ui", l.state.NewTable())
+	generalConfig.RawSetString("explorer", l.state.NewTable())
+
+	fmConfig.RawSetString("general", generalConfig)
+
 
 	l.state.SetGlobal("fm", fmConfig)
-	err := l.state.DoFile(fileConfig)
+
+	err := l.state.DoFile("/Users/dinhhuy258/Workspace/fm/init.lua")
 	if err != nil {
 		return err
 	}
+
+	luaConfig := l.state.GetGlobal("fm")
+	print(luaConfig)
+	// l.state.GetTable()
 
 	return nil
 }

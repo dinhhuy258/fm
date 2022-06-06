@@ -347,7 +347,7 @@ var AppConfig *Config
 // LoadConfig loads the config from config file and default config then merges them.
 func LoadConfig() error {
 	configFilePath := getConfigFilePath()
-	AppConfig = getDefaultConfig()
+	AppConfig = GetDefaultConfig()
 
 	if configFilePath.IsPresent() {
 		userConfig, err := loadConfigFromFile(*configFilePath.Get())

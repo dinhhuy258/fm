@@ -1,35 +1,36 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"log"
-	"os"
 
-	"github.com/dinhhuy258/fm/pkg/app"
-	"github.com/dinhhuy258/fm/pkg/config"
+	"github.com/dinhhuy258/fm/pkg/lua"
 )
 
 var version = "unversioned"
 
 func main() {
-	showVersion := flag.Bool("version", false, "Print the current version")
-	flag.Parse()
-
-	if *showVersion {
-		fmt.Println(version)
-		os.Exit(0)
-	}
-
-	if err := config.LoadConfig(); err != nil {
-		log.Fatalf("failed to load application configuration %v", err)
-	}
-
-	app, err := app.NewApp()
+	l := lua.NewLua()
+	err := l.LoadConfig("hello.lua")
 	if err != nil {
-		log.Fatalf("failed to new app %v", err)
+		fmt.Printf("Error: %v", err)
 	}
-
-	_ = app.Run()
-	app.OnQuit()
+	// showVersion := flag.Bool("version", false, "Print the current version")
+	// flag.Parse()
+	//
+	// if *showVersion {
+	// 	fmt.Println(version)
+	// 	os.Exit(0)
+	// }
+	//
+	// if err := config.LoadConfig(); err != nil {
+	// 	log.Fatalf("failed to load application configuration %v", err)
+	// }
+	//
+	// app, err := app.NewApp()
+	// if err != nil {
+	// 	log.Fatalf("failed to new app %v", err)
+	// }
+	//
+	// _ = app.Run()
+	// app.OnQuit()
 }
