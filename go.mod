@@ -9,6 +9,8 @@ require (
 	github.com/djherbis/times v1.5.0
 	github.com/gookit/color v1.4.2
 	github.com/hpcloud/tail v1.0.0
+	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64
+	golang.org/x/text v0.3.0
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
 
@@ -23,7 +25,6 @@ require (
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
 	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
-	golang.org/x/text v0.3.0 // indirect
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 )
