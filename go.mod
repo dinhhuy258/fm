@@ -12,6 +12,7 @@ require (
 	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64
 	golang.org/x/text v0.3.0
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+	layeh.com/gopher-luar v1.0.10
 )
 
 require (
