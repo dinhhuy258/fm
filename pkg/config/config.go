@@ -20,6 +20,7 @@ func (mc *MessageConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTa
 	for _, arg := range mc.Args {
 		argsTbl.Append(gopher_lua.LString(arg))
 	}
+
 	tbl.RawSetString("args", argsTbl)
 
 	return tbl
@@ -40,6 +41,7 @@ func (ac *ActionConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTab
 	for _, msg := range ac.Messages {
 		msgTbl.Append(msg.toLuaTable(luaState))
 	}
+
 	tbl.RawSetString("messages", msgTbl)
 
 	return tbl
@@ -59,6 +61,7 @@ func (kbc *KeyBindingsConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lu
 	for key, actionConfig := range kbc.OnKeys {
 		onKeyTbl.RawSetString(key, actionConfig.toLuaTable(luaState))
 	}
+
 	tbl.RawSetString("onKeys", onKeyTbl)
 
 	if kbc.Default != nil {
@@ -208,6 +211,7 @@ func (ntc *NodeTypesConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.
 	for ext, extConfig := range ntc.Extensions {
 		extensionTbl.RawSetString(ext, extConfig.toLuaTable(luaState))
 	}
+
 	tbl.RawSetString("extensions", extensionTbl)
 
 	return tbl
@@ -613,19 +617,21 @@ type ModesConfig struct {
 }
 
 // toLuaTable convert to LuaTable object
-func (mc *ModesConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
+func (m *ModesConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
 	tbl := luaState.NewTable()
 
 	customTbl := luaState.NewTable()
-	for name, modeConfig := range mc.Customs {
+	for name, modeConfig := range m.Customs {
 		customTbl.RawSetString(name, modeConfig.toLuaTable(luaState))
 	}
+
 	tbl.RawSetString("customs", customTbl)
 
 	builtinTbl := luaState.NewTable()
-	for name, modeConfig := range mc.Builtins {
+	for name, modeConfig := range m.Builtins {
 		builtinTbl.RawSetString(name, modeConfig.toLuaTable(luaState))
 	}
+
 	tbl.RawSetString("builtins", builtinTbl)
 
 	return tbl

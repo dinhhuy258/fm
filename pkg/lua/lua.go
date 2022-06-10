@@ -25,4 +25,3 @@ func (l *Lua) GetState() *lua.LState {
 func (l *Lua) Close() {
 	l.state.Close()
 }
-

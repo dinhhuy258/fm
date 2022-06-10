@@ -48,13 +48,16 @@ func loadConfigFromFile(path string, luaState *gopher_lua.LState) (*Config, erro
 	}
 
 	var config Config
+
 	mapper := gluamapper.NewMapper(gluamapper.Option{
 		NameFunc: func(s string) string {
 			return s
 		},
 		TagName: "mapper",
 	})
-	if err := mapper.Map(luaState.GetGlobal("fm").(*gopher_lua.LTable), &config); err != nil {
+
+	fmConfig, _ := luaState.GetGlobal("fm").(*gopher_lua.LTable)
+	if err := mapper.Map(fmConfig, &config); err != nil {
 		return nil, err
 	}
 
