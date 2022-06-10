@@ -7,8 +7,8 @@ import (
 
 // MessageConfig represents the config for the message.
 type MessageConfig struct {
-	Name string   `yaml:"name"`
-	Args []string `yaml:"args"`
+	Name string   `mapper:"name"`
+	Args []string `mapper:"args"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -27,8 +27,8 @@ func (mc *MessageConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTa
 
 // ActionConfig represents the config for the action.
 type ActionConfig struct {
-	Help     string           `yaml:"help"`
-	Messages []*MessageConfig `yaml:"messages"`
+	Help     string           `mapper:"help"`
+	Messages []*MessageConfig `mapper:"messages"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -47,8 +47,8 @@ func (ac *ActionConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTab
 
 // KeyBindingsConfig represents the config for the key bindings.
 type KeyBindingsConfig struct {
-	OnKeys  map[string]*ActionConfig `yaml:"onKeys"`
-	Default *ActionConfig            `yaml:"default"`
+	OnKeys  map[string]*ActionConfig `mapper:"onKeys"`
+	Default *ActionConfig            `mapper:"default"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -72,8 +72,8 @@ func (kbc *KeyBindingsConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lu
 
 // ModeConfig represents the config for the mode.
 type ModeConfig struct {
-	Name        string            `yaml:"name"`
-	KeyBindings KeyBindingsConfig `yaml:"keyBindings"`
+	Name        string            `mapper:"name"`
+	KeyBindings KeyBindingsConfig `mapper:"keyBindings"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -88,9 +88,9 @@ func (mc *ModeConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable
 
 // StyleConfig represents the config for style
 type StyleConfig struct {
-	Fg          string   `yaml:"fg"`
-	Bg          string   `yaml:"bg"`
-	Decorations []string `yaml:"decorations"`
+	Fg          string   `mapper:"fg"`
+	Bg          string   `mapper:"bg"`
+	Decorations []string `mapper:"decorations"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -133,8 +133,8 @@ func (sc StyleConfig) merge(other *StyleConfig) *StyleConfig {
 
 // NodeTypeConfig represents the config for the node type (file/directory).
 type NodeTypeConfig struct {
-	Icon  string       `yaml:"icon"`
-	Style *StyleConfig `yaml:"style"`
+	Icon  string       `mapper:"icon"`
+	Style *StyleConfig `mapper:"style"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -169,11 +169,11 @@ func (ntc NodeTypeConfig) merge(other *NodeTypeConfig) *NodeTypeConfig {
 
 // NodeTypesConfig represents the config for node types
 type NodeTypesConfig struct {
-	File             *NodeTypeConfig            `yaml:"file"`
-	Directory        *NodeTypeConfig            `yaml:"directory"`
-	FileSymlink      *NodeTypeConfig            `yaml:"fileSymlink"`
-	DirectorySymlink *NodeTypeConfig            `yaml:"directorySymlink"`
-	Extensions       map[string]*NodeTypeConfig `yaml:"extensions"`
+	File             *NodeTypeConfig            `mapper:"file"`
+	Directory        *NodeTypeConfig            `mapper:"directory"`
+	FileSymlink      *NodeTypeConfig            `mapper:"fileSymlink"`
+	DirectorySymlink *NodeTypeConfig            `mapper:"directorySymlink"`
+	Extensions       map[string]*NodeTypeConfig `mapper:"extensions"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -236,9 +236,9 @@ func (ntc NodeTypesConfig) merge(other *NodeTypesConfig) *NodeTypesConfig {
 
 // UIConfig represents the config for UI
 type UIConfig struct {
-	Prefix string       `yaml:"prefix"`
-	Suffix string       `yaml:"suffix"`
-	Style  *StyleConfig `yaml:"style"`
+	Prefix string       `mapper:"prefix"`
+	Suffix string       `mapper:"suffix"`
+	Style  *StyleConfig `mapper:"style"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -278,10 +278,10 @@ func (ui UIConfig) merge(other *UIConfig) *UIConfig {
 
 // DefaultUIConfig represents the config for UI
 type DefaultUIConfig struct {
-	Prefix         string       `yaml:"prefix"`
-	Suffix         string       `yaml:"suffix"`
-	FileStyle      *StyleConfig `yaml:"fileStyle"`
-	DirectoryStyle *StyleConfig `yaml:"directoryStyle"`
+	Prefix         string       `mapper:"prefix"`
+	Suffix         string       `mapper:"suffix"`
+	FileStyle      *StyleConfig `mapper:"fileStyle"`
+	DirectoryStyle *StyleConfig `mapper:"directoryStyle"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -328,9 +328,9 @@ func (ui DefaultUIConfig) merge(other *DefaultUIConfig) *DefaultUIConfig {
 
 // ExplorerTableHeaderConfig represents the config for the explorer table header.
 type ExplorerTableHeaderConfig struct {
-	Name       string       `yaml:"name"`
-	Percentage int          `yaml:"percentage"`
-	Style      *StyleConfig `yaml:"style"`
+	Name       string       `mapper:"name"`
+	Percentage int          `mapper:"percentage"`
+	Style      *StyleConfig `mapper:"style"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -371,19 +371,19 @@ func (ethc ExplorerTableHeaderConfig) merge(other *ExplorerTableHeaderConfig) *E
 
 // ExplorerTableConfig represents the config for the explorer table.
 type ExplorerTableConfig struct {
-	IndexHeader       *ExplorerTableHeaderConfig `yaml:"indexHeader"`
-	NameHeader        *ExplorerTableHeaderConfig `yaml:"nameHeader"`
-	PermissionsHeader *ExplorerTableHeaderConfig `yaml:"permissionsHeader"`
-	SizeHeader        *ExplorerTableHeaderConfig `yaml:"sizeHeader"`
+	IndexHeader       *ExplorerTableHeaderConfig `mapper:"indexHeader"`
+	NameHeader        *ExplorerTableHeaderConfig `mapper:"nameHeader"`
+	PermissionsHeader *ExplorerTableHeaderConfig `mapper:"permissionsHeader"`
+	SizeHeader        *ExplorerTableHeaderConfig `mapper:"sizeHeader"`
 
-	DefaultUI        *DefaultUIConfig `yaml:"defaultUi"`
-	FocusUI          *UIConfig        `yaml:"focusUi"`
-	SelectionUI      *UIConfig        `yaml:"selectionUi"`
-	FocusSelectionUI *UIConfig        `yaml:"focusSelectionUi"`
+	DefaultUI        *DefaultUIConfig `mapper:"defaultUi"`
+	FocusUI          *UIConfig        `mapper:"focusUi"`
+	SelectionUI      *UIConfig        `mapper:"selectionUi"`
+	FocusSelectionUI *UIConfig        `mapper:"focusSelectionUi"`
 
-	FirstEntryPrefix string `yaml:"firstEntryPrefix"`
-	EntryPrefix      string `yaml:"entryPrefix"`
-	LastEntryPrefix  string `yaml:"lastEntryPrefix"`
+	FirstEntryPrefix string `mapper:"firstEntryPrefix"`
+	EntryPrefix      string `mapper:"entryPrefix"`
+	LastEntryPrefix  string `mapper:"lastEntryPrefix"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -478,10 +478,10 @@ func (etc ExplorerTableConfig) merge(other *ExplorerTableConfig) *ExplorerTableC
 
 // SortingConfig represents the config for sorting
 type SortingConfig struct {
-	SortType         string `yaml:"sortType"`
-	Reverse          *bool  `yaml:"reverse"`
-	IgnoreCase       *bool  `yaml:"ignoreCase"`
-	IgnoreDiacritics *bool  `yaml:"ignoreDiacritics"`
+	SortType         string `mapper:"sortType"`
+	Reverse          *bool  `mapper:"reverse"`
+	IgnoreCase       *bool  `mapper:"ignoreCase"`
+	IgnoreDiacritics *bool  `mapper:"ignoreDiacritics"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -538,14 +538,14 @@ func (sc SortingConfig) merge(other *SortingConfig) *SortingConfig {
 
 // GeneralConfig represents the general config for the application.
 type GeneralConfig struct {
-	LogInfoUI    *UIConfig `yaml:"logInfoUi"`
-	LogWarningUI *UIConfig `yaml:"logWarningUi"`
-	LogErrorUI   *UIConfig `yaml:"logErrorUi"`
+	LogInfoUI    *UIConfig `mapper:"logInfoUi"`
+	LogWarningUI *UIConfig `mapper:"logWarningUi"`
+	LogErrorUI   *UIConfig `mapper:"logErrorUi"`
 
-	ExplorerTable *ExplorerTableConfig `yaml:"explorerTable"`
+	ExplorerTable *ExplorerTableConfig `mapper:"explorerTable"`
 
-	Sorting    *SortingConfig `yaml:"sorting"`
-	ShowHidden bool           `yaml:"showHidden"`
+	Sorting    *SortingConfig `mapper:"sorting"`
+	ShowHidden bool           `mapper:"showHidden"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -608,8 +608,8 @@ func (gc GeneralConfig) merge(other *GeneralConfig) *GeneralConfig {
 
 // ModesConfig represents the config for the custom and builtin modes.
 type ModesConfig struct {
-	Customs  map[string]*ModeConfig `yaml:"customs"`
-	Builtins map[string]*ModeConfig `yaml:"builtins"`
+	Customs  map[string]*ModeConfig `mapper:"customs"`
+	Builtins map[string]*ModeConfig `mapper:"builtins"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -666,9 +666,9 @@ func (m ModesConfig) merge(other *ModesConfig) *ModesConfig {
 
 // Config represents the config for the application.
 type Config struct {
-	General         *GeneralConfig   `yaml:"general"`
-	Modes           *ModesConfig     `yaml:"modes"`
-	NodeTypesConfig *NodeTypesConfig `yaml:"nodeTypes"`
+	General         *GeneralConfig   `mapper:"general"`
+	Modes           *ModesConfig     `mapper:"modes"`
+	NodeTypesConfig *NodeTypesConfig `mapper:"nodeTypes"`
 }
 
 // ToLuaTable convert to LuaTable object

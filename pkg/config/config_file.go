@@ -52,7 +52,7 @@ func loadConfigFromFile(path string, luaState *gopher_lua.LState) (*Config, erro
 		NameFunc: func(s string) string {
 			return s
 		},
-		TagName: "yaml",
+		TagName: "mapper",
 	})
 	if err := mapper.Map(luaState.GetGlobal("fm").(*gopher_lua.LTable), &config); err != nil {
 		return nil, err
