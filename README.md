@@ -19,11 +19,11 @@ go install github.com/dinhhuy258/fm@latest
 
 A config file will be read from the following locations:
 
-* macOS: ~/.config/fm/config.yml
-* Linux: ~/.config/fm/config.yml
-* Windows: [Haven't tested yet]
+* macOS: ~/.config/fm/config.lua
+* Linux: ~/.config/fm/config.lua
+* Windows: [Haven't tested lua]
 
-Sample configuration [file](https://github.com/dinhhuy258/fm/blob/master/config.yml)
+Sample configuration [file](https://github.com/dinhhuy258/fm/blob/master/config.lua)
 
 TODO: Document how to write a configuration
 

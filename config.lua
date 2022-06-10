@@ -128,6 +128,23 @@ fm.modes.customs["go-to"] = {
 					},
 				},
 			},
+			w = {
+				help = "Workspace",
+				messages = {
+					{
+						name = "ChangeDirectory",
+						args = {
+							"/Users/dinhhuy258/Workspace",
+						},
+					},
+					{
+						name = "SwitchMode",
+						args = {
+							"default",
+						},
+					},
+				},
+			},
 			D = {
 				help = "Documents",
 				messages = {
