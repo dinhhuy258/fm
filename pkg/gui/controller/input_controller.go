@@ -26,7 +26,7 @@ func newInputController(baseController *BaseController, view *view.InputView) *I
 // SetInputBuffer sets `input` to the input buffer, this action will show the input view
 func (ic *InputController) SetInputBuffer(input string) {
 	ic.view.SetInputBuffer(input)
-	ic.mediator.notify(LogHidden, optional.NewEmpty[string]())
+	ic.mediator.notify(InputVisible, optional.NewEmpty[string]())
 }
 
 // GetInputBuffer gets content from the input buffer

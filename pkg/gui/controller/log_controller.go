@@ -25,21 +25,21 @@ func newLogController(baseController *BaseController, view *view.LogView) *LogCo
 	}
 }
 
+// ShowLog shows the log view
+func (lc *LogController) ShowLog() {
+	lc.mediator.notify(LogVisible, optional.NewEmpty[string]())
+}
+
 // SetLog sets the log level and message
 func (lc *LogController) SetLog(level view.LogLevel, msgFormat string, args ...interface{}) {
 	lc.level = level
 	lc.msg = fmt.Sprintf(msgFormat, args...)
+	lc.mediator.notify(LogVisible, optional.NewEmpty[string]())
 }
 
 // SetVisible sets the visibility of the log view
 func (lc *LogController) SetVisible(visible bool) {
 	lc.view.Visible = visible
-
-	if visible {
-		lc.mediator.notify(CursorDisabled, optional.NewEmpty[string]())
-	} else {
-		lc.mediator.notify(CursorEnabled, optional.NewEmpty[string]())
-	}
 }
 
 // UpdateView updates the log view

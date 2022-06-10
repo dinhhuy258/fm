@@ -23,21 +23,22 @@ func NewGui() (*Gui, error) {
 	}
 
 	gui.g = g
+	gui.g.Highlight = true
+	// TODO: Configure these values
+	gui.g.SelFrameColor = gocui.ColorGreen
+	gui.g.FrameColor = gocui.ColorWhite
 	gui.g.Cursor = false
 	gui.g.InputEsc = true
 	gui.g.SetManager(gocui.ManagerFunc(gui.layout))
 
 	gui.views = view.CreateViews(gui.g)
-
-	if _, err := gui.g.SetCurrentView(gui.views.Input.Name()); err != nil {
-		return nil, err
-	}
-
 	gui.controllers = controller.CreateControllers(gui.g, gui.views)
 
 	if err := gui.layout(gui.g); err != nil {
 		return nil, err
 	}
+
+	_, _ = gui.g.SetCurrentView(gui.views.ExplorerHeader.Name())
 
 	return gui, nil
 }

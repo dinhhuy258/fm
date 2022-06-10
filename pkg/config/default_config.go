@@ -91,7 +91,7 @@ func GetDefaultConfig() *Config {
 			},
 			ShowHidden: false,
 		},
-		NodeTypesConfig: &NodeTypesConfig{
+		NodeTypes: &NodeTypesConfig{
 			File: &NodeTypeConfig{
 				Style: &StyleConfig{
 					Fg: "white",

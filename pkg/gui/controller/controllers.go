@@ -21,9 +21,8 @@ type Event int8
 
 const (
 	ShowErrorLog Event = iota
-	LogHidden
-	CursorEnabled
-	CursorDisabled
+	InputVisible
+	LogVisible
 )
 
 // Mediator is the mediator between controllers
@@ -85,11 +84,19 @@ func (c *Controllers) notify(event Event, data optional.Optional[string]) {
 			logController.SetLog(view.Error, *logMsg)
 			logController.UpdateView()
 		})
-	case LogHidden:
+	case InputVisible:
 		logController.SetVisible(false)
-	case CursorEnabled:
+
 		c.g.Cursor = true
-	case CursorDisabled:
+
+		inputController, _ := c.controllers[Input].(*InputController)
+		_, _ = c.g.SetCurrentView(inputController.view.Name())
+	case LogVisible:
+		logController.SetVisible(true)
+
 		c.g.Cursor = false
+
+		explorerController, _ := c.controllers[Explorer].(*ExplorerController)
+		_, _ = c.g.SetCurrentView(explorerController.headerView.Name())
 	}
 }

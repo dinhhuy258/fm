@@ -672,9 +672,9 @@ func (m ModesConfig) merge(other *ModesConfig) *ModesConfig {
 
 // Config represents the config for the application.
 type Config struct {
-	General         *GeneralConfig   `mapper:"general"`
-	Modes           *ModesConfig     `mapper:"modes"`
-	NodeTypesConfig *NodeTypesConfig `mapper:"node_types"`
+	General   *GeneralConfig   `mapper:"general"`
+	Modes     *ModesConfig     `mapper:"modes"`
+	NodeTypes *NodeTypesConfig `mapper:"node_types"`
 }
 
 // ToLuaTable convert to LuaTable object
@@ -693,8 +693,8 @@ func (c *Config) ToLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
 		tbl.RawSetString("modes", gopher_lua.LNil)
 	}
 
-	if c.NodeTypesConfig != nil {
-		tbl.RawSetString("node_types", c.NodeTypesConfig.toLuaTable(luaState))
+	if c.NodeTypes != nil {
+		tbl.RawSetString("node_types", c.NodeTypes.toLuaTable(luaState))
 	} else {
 		tbl.RawSetString("node_types", gopher_lua.LNil)
 	}
@@ -717,7 +717,7 @@ func LoadConfig(lua *lua.Lua) error {
 
 		// Merge user config with default config.
 		AppConfig.General = AppConfig.General.merge(userConfig.General)
-		AppConfig.NodeTypesConfig = AppConfig.NodeTypesConfig.merge(userConfig.NodeTypesConfig)
+		AppConfig.NodeTypes = AppConfig.NodeTypes.merge(userConfig.NodeTypes)
 		AppConfig.Modes = AppConfig.Modes.merge(userConfig.Modes)
 	}
 

@@ -128,8 +128,7 @@ func (app *App) SwitchMode(mode string) {
 		logController.UpdateView()
 	}
 
-	// Make sure to set log view to the top
-	logController.SetVisible(true)
+	logController.ShowLog()
 }
 
 // GetPressedKey returns the previous pressed key

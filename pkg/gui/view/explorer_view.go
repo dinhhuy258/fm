@@ -103,7 +103,7 @@ type ExplorerView struct {
 }
 
 func newExplorerView(v *gocui.View) *ExplorerView {
-	nodeTypesConfig := config.AppConfig.NodeTypesConfig
+	nodeTypesConfig := config.AppConfig.NodeTypes
 	explorerTableConfig := config.AppConfig.General.ExplorerTable
 
 	ev := &ExplorerView{
