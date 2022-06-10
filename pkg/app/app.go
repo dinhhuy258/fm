@@ -163,6 +163,7 @@ func (app *App) Resume() error {
 
 // OnQuit is called when the application is about to quit
 func (app *App) OnQuit() {
+	app.lua.Close()
 	app.pipe.StopWatcher()
 }
 
