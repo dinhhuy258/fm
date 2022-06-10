@@ -119,26 +119,17 @@ func (app *App) GetController(controllerType controller.Type) controller.IContro
 	return app.gui.GetController(controllerType)
 }
 
-// PopMode pops the current mode
-func (app *App) PopMode() {
+// SwitchMode switches to the given mode
+func (app *App) SwitchMode(mode string) {
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 
-	if err := app.modes.Pop(); err != nil {
-		logController.SetLog(view.Error, "You can't pop the root mode")
-		logController.UpdateView()
-	}
-
-	logController.SetVisible(true)
-}
-
-// PushMode pushes the given mode
-func (app *App) PushMode(mode string) {
-	logController, _ := app.GetController(controller.Log).(*controller.LogController)
-
-	if err := app.modes.Push(mode); err != nil {
+	if err := app.modes.SwitchMode(mode); err != nil {
 		logController.SetLog(view.Error, "Mode not found: "+mode)
 		logController.UpdateView()
 	}
+
+	// Make sure to set log view to the top
+	logController.SetVisible(true)
 }
 
 // GetPressedKey returns the previous pressed key
@@ -169,7 +160,7 @@ func (app *App) OnQuit() {
 
 // onKey is called from gocui when a key is pressed
 func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
-	keybindings := app.modes.Peek().GetKeyBindings()
+	keybindings := app.modes.GetCurrentMode().GetKeyBindings()
 
 	if ch == 0 {
 		app.pressedKey = k

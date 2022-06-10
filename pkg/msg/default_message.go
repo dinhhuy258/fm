@@ -49,12 +49,7 @@ func ToggleHidden(app IApp, _ ...string) {
 func SwitchMode(app IApp, params ...string) {
 	mode := params[0]
 
-	app.PushMode(mode)
-}
-
-// PopMode is a message that pops the current mode
-func PopMode(app IApp, _ ...string) {
-	app.PopMode()
+	app.SwitchMode(mode)
 }
 
 // Refresh is a message that refreshes the current directory

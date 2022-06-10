@@ -16,8 +16,7 @@ type IApp interface {
 	// Quit
 	Quit()
 	// Mode
-	PopMode()
-	PushMode(mode string)
+	SwitchMode(mode string)
 	// GUI
 	OnUIThread(f func() error)
 	Resume() error

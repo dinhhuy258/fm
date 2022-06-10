@@ -103,7 +103,10 @@ fm.modes.customs["go-to"] = {
 			help = "cancel",
 			messages = {
 				{
-					name = "PopMode",
+					name = "SwitchMode",
+					args = {
+						"default",
+					},
 				},
 			},
 		},
@@ -118,7 +121,10 @@ fm.modes.customs["go-to"] = {
 						},
 					},
 					{
-						name = "PopMode",
+						name = "SwitchMode",
+						args = {
+							"default",
+						},
 					},
 				},
 			},
@@ -132,7 +138,10 @@ fm.modes.customs["go-to"] = {
 						},
 					},
 					{
-						name = "PopMode",
+						name = "SwitchMode",
+						args = {
+							"default",
+						},
 					},
 				},
 			},
@@ -146,7 +155,10 @@ fm.modes.customs["go-to"] = {
 						},
 					},
 					{
-						name = "PopMode",
+						name = "SwitchMode",
+						args = {
+							"default",
+						},
 					},
 				},
 			},
@@ -157,7 +169,10 @@ fm.modes.customs["go-to"] = {
 						name = "FocusFirst",
 					},
 					{
-						name = "PopMode",
+						name = "SwitchMode",
+						args = {
+							"default",
+						},
 					},
 				},
 			},
@@ -171,7 +186,10 @@ fm.modes.customs["go-to"] = {
 						},
 					},
 					{
-						name = "PopMode",
+						name = "SwitchMode",
+						args = {
+							"default",
+						},
 					},
 				},
 			},
@@ -194,7 +212,10 @@ fm.modes.customs.yarn = {
 			help = "cancel",
 			messages = {
 				{
-					name = "PopMode",
+					name = "SwitchMode",
+					args = {
+						"default",
+					},
 				},
 			},
 		},
@@ -212,7 +233,7 @@ fm.modes.customs.yarn = {
                 echo LogSuccess "'"${focus_path} was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
               fi
 
-              echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+              echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
               ]===],
 						},
 					},
@@ -231,7 +252,7 @@ fm.modes.customs.yarn = {
                 echo LogSuccess "'"$(basename "${focus_path}") was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
               fi
 
-              echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+              echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
               ]===],
 						},
 					},
@@ -250,7 +271,7 @@ fm.modes.customs.yarn = {
                 echo LogSuccess "'"$(dirname "${focus_path}") was coppied to clipboard"'" >> "${FM_PIPE_MSG_IN:?}"
               fi
 
-              echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+              echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
               ]===],
 						},
 					},
@@ -301,7 +322,7 @@ fm.modes.customs["mark-save"] = {
             # add new mark key to the mark file
             echo "${key};${focus_path}" >> ${mark_file}
 
-            echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+            echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
             ]===],
 					},
 				},
@@ -312,7 +333,10 @@ fm.modes.customs["mark-save"] = {
 				help = "cancel",
 				messages = {
 					{
-						name = "PopMode",
+						name = "SwitchMode",
+						args = {
+							"default",
+						},
 					},
 				},
 			},
@@ -366,7 +390,7 @@ fm.modes.customs["mark-load"] = {
             fi
             done < "${mark_file:?}")
 
-            echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+            echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
             ]===],
 					},
 				},
@@ -377,7 +401,10 @@ fm.modes.customs["mark-load"] = {
 				help = "cancel",
 				messages = {
 					{
-						name = "PopMode",
+						name = "SwitchMode",
+						args = {
+							"default",
+						},
 					},
 				},
 			},
@@ -400,7 +427,10 @@ fm.modes.customs.open = {
 			help = "cancel",
 			messages = {
 				{
-					name = "PopMode",
+					name = "SwitchMode",
+					args = {
+						"default",
+					},
 				},
 			},
 		},
@@ -417,7 +447,7 @@ fm.modes.customs.open = {
                 open -R "${focus_path}"
               fi
 
-              echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+              echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
               ]===],
 						},
 					},
@@ -435,7 +465,7 @@ fm.modes.customs.open = {
                 open -a "Visual Studio Code" "${focus_path}"
               fi
 
-              echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+              echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
               ]===],
 						},
 					},
@@ -453,7 +483,7 @@ fm.modes.customs.open = {
                 nvim "${focus_path}"
               fi
 
-              echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+              echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
               ]===],
 						},
 					},
@@ -475,7 +505,7 @@ fm.modes.customs.open = {
                 fi
               fi
 
-              echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+              echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
               ]===],
 						},
 					},
@@ -497,7 +527,7 @@ fm.modes.customs.open = {
                 esac
               fi
 
-              echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+              echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
               ]===],
 						},
 					},

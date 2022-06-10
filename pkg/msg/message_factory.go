@@ -37,7 +37,6 @@ var messageFactories = map[string]*MessageFactory{
 	"LogError":   newMessageFactory(LogError),
 
 	"SwitchMode": newMessageFactory(SwitchMode),
-	"PopMode":    newMessageFactory(PopMode),
 
 	"FocusNext":       newMessageFactory(FocusNext),
 	"FocusPrevious":   newMessageFactory(FocusPrevious),

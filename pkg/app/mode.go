@@ -56,7 +56,7 @@ func (m *Mode) GetHelp() []*Help {
 // Modes contains a list of modes.
 type Modes struct {
 	// The current mode.
-	modes []*Mode
+	currentMode *Mode
 	// The list of builtin modes.
 	builtinModes map[string]*Mode
 	// The list of user config modes.
@@ -78,29 +78,28 @@ func CreateModes(onModeChange func(*Mode)) *Modes {
 	}
 
 	modes := &Modes{
-		modes:        make([]*Mode, 0, 5),
 		builtinModes: builtinModes,
 		customModes:  customModes,
 		onModeChange: onModeChange,
 	}
 
 	// The application starts with the default mode
-	_ = modes.Push("default")
+	_ = modes.SwitchMode("default")
 
 	return modes
 }
 
-// Push pushes a mode to the mode stack.
-func (m *Modes) Push(mode string) error {
+// SwitchMode pushes a mode to the mode stack.
+func (m *Modes) SwitchMode(mode string) error {
 	if builtinMode, hasBuiltinMode := m.builtinModes[mode]; hasBuiltinMode {
-		m.modes = append(m.modes, builtinMode)
+		m.currentMode = builtinMode
 		m.onModeChange(builtinMode)
 
 		return nil
 	}
 
 	if customMode, hasCustomMode := m.customModes[mode]; hasCustomMode {
-		m.modes = append(m.modes, customMode)
+		m.currentMode = customMode
 		m.onModeChange(customMode)
 
 		return nil
@@ -109,21 +108,9 @@ func (m *Modes) Push(mode string) error {
 	return ErrModeNotFound
 }
 
-// Pop pops a mode from the mode stack.
-func (m *Modes) Pop() error {
-	if len(m.modes) <= 1 {
-		return ErrEmptyModes
-	}
-
-	m.modes = m.modes[:len(m.modes)-1]
-	m.onModeChange(m.modes[len(m.modes)-1])
-
-	return nil
-}
-
-// Peek returns the current mode.
-func (m *Modes) Peek() *Mode {
-	return m.modes[len(m.modes)-1]
+// GetCurrentMode returns the current mode.
+func (m *Modes) GetCurrentMode() *Mode {
+	return m.currentMode
 }
 
 // createMode creates a mode from config.

@@ -49,12 +49,12 @@ var defaultModeConfig = ModeConfig{
 				Help: "new file",
 				Messages: []*MessageConfig{
 					{
-						Name: "SetInputBuffer",
-						Args: []string{""},
-					},
-					{
 						Name: "SwitchMode",
 						Args: []string{"new-file"},
+					},
+					{
+						Name: "SetInputBuffer",
+						Args: []string{""},
 					},
 				},
 			},
@@ -197,13 +197,13 @@ var newFileModeConfig = ModeConfig{
 							if [[ "${name}" && ${name} == */ ]] ; then
 							  name=${name%?}
 								if [ -z "${name}" ]; then
-									echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+									echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
 								else
 									mkdir -p -- "${name:?}" \
 									&& echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
 									&& echo LogSuccess "'"${name} created"'" >> "${FM_PIPE_MSG_IN:?}" \
 									&& echo FocusPath "'"${forcus_dir}/${name}"'" >> "${FM_PIPE_MSG_IN:?}" \
-									&& echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+									&& echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
 								fi
 							elif [[ "${name}" ]] ; then
 								mkdir -p -- "$(dirname ${name})" \
@@ -211,9 +211,9 @@ var newFileModeConfig = ModeConfig{
 								&& echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
 								&& echo LogSuccess "'"${name} created"'" >> "${FM_PIPE_MSG_IN:?}" \
 								&& echo FocusPath "'"${forcus_dir}/${name}"'" >> "${FM_PIPE_MSG_IN:?}" \
-								&& echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+								&& echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
 							else
-								echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+								echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
               fi
 						`},
 					},
@@ -223,7 +223,8 @@ var newFileModeConfig = ModeConfig{
 				Help: "cancel",
 				Messages: []*MessageConfig{
 					{
-						Name: "PopMode",
+						Name: "SwitchMode",
+						Args: []string{"default"},
 					},
 				},
 			},
@@ -261,16 +262,16 @@ var renameModeConfig = ModeConfig{
               new_name="${FM_INPUT_BUFFER}"
 
 							if [ -z "${new_name}" ]; then
-								echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+								echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
 							elif [ -e "${new_name:?}" ]; then
                 echo LogError "'"${new_name} already exists"'" >> "${FM_PIPE_MSG_IN:?}"
-								echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+								echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
               else
                 mv -- "${focus_path:?}" "${new_name:?}" \
                   && echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
                   && echo FocusPath "'"$(dirname "${focus_path}")/${new_name}"'" >> "${FM_PIPE_MSG_IN:?}" \
                   && echo LogSuccess "'"$(basename "${focus_path}") renamed to ${new_name}"'" >> "${FM_PIPE_MSG_IN:?}" \
-									&& echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+									&& echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
               fi
 						`},
 					},
@@ -280,7 +281,8 @@ var renameModeConfig = ModeConfig{
 				Help: "cancel",
 				Messages: []*MessageConfig{
 					{
-						Name: "PopMode",
+						Name: "SwitchMode",
+						Args: []string{"default"},
 					},
 				},
 			},
@@ -312,12 +314,12 @@ var deleteModeConfig = ModeConfig{
 				Help: "delete current",
 				Messages: []*MessageConfig{
 					{
-						Name: "SetInputBuffer",
-						Args: []string{"Do you want to delete this file? (y/n) "},
-					},
-					{
 						Name: "SwitchMode",
 						Args: []string{"delete-current"},
+					},
+					{
+						Name: "SetInputBuffer",
+						Args: []string{"Do you want to delete this file? (y/n) "},
 					},
 				},
 			},
@@ -325,12 +327,12 @@ var deleteModeConfig = ModeConfig{
 				Help: "delete selections",
 				Messages: []*MessageConfig{
 					{
-						Name: "SetInputBuffer",
-						Args: []string{"Do you want to delete selected files? (y/n) "},
-					},
-					{
 						Name: "SwitchMode",
 						Args: []string{"delete-selections"},
+					},
+					{
+						Name: "SetInputBuffer",
+						Args: []string{"Do you want to delete selected files? (y/n) "},
 					},
 				},
 			},
@@ -338,7 +340,8 @@ var deleteModeConfig = ModeConfig{
 				Help: "cancel",
 				Messages: []*MessageConfig{
 					{
-						Name: "PopMode",
+						Name: "SwitchMode",
+						Args: []string{"default"},
 					},
 				},
 			},
@@ -374,8 +377,7 @@ var deleteCurrentModeConfig = ModeConfig{
 							fi
 
 							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
-							echo PopMode >> "${FM_PIPE_MSG_IN:?}"
-							echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+							echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
 
 							read -p "[Press enter to continue]"
 						`},
@@ -387,10 +389,8 @@ var deleteCurrentModeConfig = ModeConfig{
 			Help: "cancel",
 			Messages: []*MessageConfig{
 				{
-					Name: "PopMode",
-				},
-				{
-					Name: "PopMode",
+					Name: "SwitchMode",
+					Args: []string{"default"},
 				},
 			},
 		},
@@ -428,8 +428,7 @@ var deleteSelectionsModeConfig = ModeConfig{
 
 							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
 							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
-							echo PopMode >> "${FM_PIPE_MSG_IN:?}"
-							echo PopMode >> "${FM_PIPE_MSG_IN:?}"
+							echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
 						`},
 					},
 				},
@@ -439,10 +438,8 @@ var deleteSelectionsModeConfig = ModeConfig{
 			Help: "cancel",
 			Messages: []*MessageConfig{
 				{
-					Name: "PopMode",
-				},
-				{
-					Name: "PopMode",
+					Name: "SwitchMode",
+					Args: []string{"default"},
 				},
 			},
 		},
@@ -469,7 +466,8 @@ var sortModeConfig = ModeConfig{
 						Name: "SortByDirFirst",
 					},
 					{
-						Name: "PopMode",
+						Name: "SwitchMode",
+						Args: []string{"default"},
 					},
 				},
 			},
@@ -480,7 +478,8 @@ var sortModeConfig = ModeConfig{
 						Name: "SortByDateModified",
 					},
 					{
-						Name: "PopMode",
+						Name: "SwitchMode",
+						Args: []string{"default"},
 					},
 				},
 			},
@@ -491,7 +490,8 @@ var sortModeConfig = ModeConfig{
 						Name: "SortByName",
 					},
 					{
-						Name: "PopMode",
+						Name: "SwitchMode",
+						Args: []string{"default"},
 					},
 				},
 			},
@@ -502,7 +502,8 @@ var sortModeConfig = ModeConfig{
 						Name: "SortBySize",
 					},
 					{
-						Name: "PopMode",
+						Name: "SwitchMode",
+						Args: []string{"default"},
 					},
 				},
 			},
@@ -513,7 +514,8 @@ var sortModeConfig = ModeConfig{
 						Name: "SortByExtension",
 					},
 					{
-						Name: "PopMode",
+						Name: "SwitchMode",
+						Args: []string{"default"},
 					},
 				},
 			},
@@ -524,7 +526,8 @@ var sortModeConfig = ModeConfig{
 						Name: "ReverseSort",
 					},
 					{
-						Name: "PopMode",
+						Name: "SwitchMode",
+						Args: []string{"default"},
 					},
 				},
 			},
@@ -532,7 +535,8 @@ var sortModeConfig = ModeConfig{
 		Default: &ActionConfig{
 			Messages: []*MessageConfig{
 				{
-					Name: "PopMode",
+					Name: "SwitchMode",
+					Args: []string{"default"},
 				},
 			},
 		},
