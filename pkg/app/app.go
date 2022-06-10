@@ -6,10 +6,12 @@ import (
 	"strings"
 
 	"github.com/alitto/pond"
+	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
+	"github.com/dinhhuy258/fm/pkg/lua"
 	"github.com/dinhhuy258/fm/pkg/msg"
 	"github.com/dinhhuy258/fm/pkg/pipe"
 	"github.com/dinhhuy258/gocui"
@@ -27,6 +29,7 @@ const (
 // App is the main application
 type App struct {
 	gui        *gui.Gui
+	lua        *lua.Lua
 	modes      *Modes
 	pressedKey key.Key
 	pipe       *pipe.Pipe
@@ -36,6 +39,13 @@ type App struct {
 
 // NewApp bootstrap a new application
 func NewApp() (*App, error) {
+	lua := lua.NewLua()
+
+	// Load the config
+	if err := config.LoadConfig(lua); err != nil {
+		return nil, err
+	}
+
 	pipe, err := pipe.NewPipe()
 	if err != nil {
 		return nil, err
@@ -48,6 +58,7 @@ func NewApp() (*App, error) {
 
 	app := &App{
 		gui:               gui,
+		lua:               lua,
 		pipe:              pipe,
 		messageWorkerPool: pond.New(maxMessageWorkers, maxMessageCapacity),
 	}

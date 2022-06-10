@@ -1,6 +1,6 @@
 local fm = fm
 
-fm.general.log_info_ui = {
+fm.general.logInfoUi = {
 	prefix = "[Info] ",
 	suffix = "",
 	style = {
@@ -8,7 +8,7 @@ fm.general.log_info_ui = {
 	},
 }
 
-fm.general.log_warning_ui = {
+fm.general.logWarningUi = {
 	prefix = "[Warning] ",
 	suffix = "",
 	style = {
@@ -16,7 +16,7 @@ fm.general.log_warning_ui = {
 	},
 }
 
-fm.general.log_error_ui = {
+fm.general.logErrorUi = {
 	prefix = "[Error] ",
 	suffix = "",
 	style = {
@@ -24,7 +24,7 @@ fm.general.log_error_ui = {
 	},
 }
 
-fm.general.explorer.default_ui = {
+fm.general.explorerTable.defaultUi = {
 	prefix = "  ",
 	suffix = "",
 	file_style = {
@@ -35,7 +35,7 @@ fm.general.explorer.default_ui = {
 	},
 }
 
-fm.general.explorer.focus_ui = {
+fm.general.explorerTable.focusUi = {
 	prefix = "▸[",
 	suffix = "]",
 	style = {
@@ -46,7 +46,7 @@ fm.general.explorer.focus_ui = {
 	},
 }
 
-fm.general.explorer.selection_ui = {
+fm.general.explorerTable.selectionUi = {
 	prefix = " {",
 	suffix = "}",
 	style = {
@@ -54,7 +54,7 @@ fm.general.explorer.selection_ui = {
 	},
 }
 
-fm.general.explorer.focus_selection_ui = {
+fm.general.explorerTable.focusSelectionUi = {
 	prefix = "▸[",
 	suffix = "]",
 	style = {
@@ -65,22 +65,22 @@ fm.general.explorer.focus_selection_ui = {
 	},
 }
 
-fm.general.explorer.index_header = {
+fm.general.explorerTable.indexHeader = {
 	name = "index",
 	percentage = 10,
 }
 
-fm.general.explorer.name_header = {
+fm.general.explorerTable.nameHeader = {
 	name = "┌──── name",
 	percentage = 65,
 }
 
-fm.general.explorer.permissions_header = {
+fm.general.explorerTable.permissionsHeader = {
 	name = "permissions",
 	percentage = 15,
 }
 
-fm.general.explorer.size_header = {
+fm.general.explorerTable.sizeHeader = {
 	name = "size",
 	percentage = 10,
 }
