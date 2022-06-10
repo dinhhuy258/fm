@@ -1,6 +1,6 @@
 local fm = fm
 
-fm.general.logInfoUi = {
+fm.general.log_info_ui = {
 	prefix = "[Info] ",
 	suffix = "",
 	style = {
@@ -8,7 +8,7 @@ fm.general.logInfoUi = {
 	},
 }
 
-fm.general.logWarningUi = {
+fm.general.log_warning_ui = {
 	prefix = "[Warning] ",
 	suffix = "",
 	style = {
@@ -16,7 +16,7 @@ fm.general.logWarningUi = {
 	},
 }
 
-fm.general.logErrorUi = {
+fm.general.log_error_ui = {
 	prefix = "[Error] ",
 	suffix = "",
 	style = {
@@ -24,7 +24,7 @@ fm.general.logErrorUi = {
 	},
 }
 
-fm.general.explorerTable.defaultUi = {
+fm.general.explorer_table.default_ui = {
 	prefix = "  ",
 	suffix = "",
 	file_style = {
@@ -35,7 +35,7 @@ fm.general.explorerTable.defaultUi = {
 	},
 }
 
-fm.general.explorerTable.focusUi = {
+fm.general.explorer_table.focus_ui = {
 	prefix = "▸[",
 	suffix = "]",
 	style = {
@@ -46,7 +46,7 @@ fm.general.explorerTable.focusUi = {
 	},
 }
 
-fm.general.explorerTable.selectionUi = {
+fm.general.explorer_table.selection_ui = {
 	prefix = " {",
 	suffix = "}",
 	style = {
@@ -54,7 +54,7 @@ fm.general.explorerTable.selectionUi = {
 	},
 }
 
-fm.general.explorerTable.focusSelectionUi = {
+fm.general.explorer_table.focus_selection_ui = {
 	prefix = "▸[",
 	suffix = "]",
 	style = {
@@ -65,40 +65,40 @@ fm.general.explorerTable.focusSelectionUi = {
 	},
 }
 
-fm.general.explorerTable.indexHeader = {
+fm.general.explorer_table.index_header = {
 	name = "index",
 	percentage = 10,
 }
 
-fm.general.explorerTable.nameHeader = {
+fm.general.explorer_table.name_header = {
 	name = "┌──── name",
 	percentage = 65,
 }
 
-fm.general.explorerTable.permissionsHeader = {
+fm.general.explorer_table.permissions_header = {
 	name = "permissions",
 	percentage = 15,
 }
 
-fm.general.explorerTable.sizeHeader = {
+fm.general.explorer_table.size_header = {
 	name = "size",
 	percentage = 10,
 }
 
-fm.general.explorerTable.firstEntryPrefix = "├─"
-fm.general.explorerTable.entryPrefix = "├─"
-fm.general.explorerTable.lastEntryPrefix = "└─"
+fm.general.explorer_table.first_entry_prefix = "├─"
+fm.general.explorer_table.entry_prefix = "├─"
+fm.general.explorer_table.last_entry_prefix = "└─"
 
 fm.general.sorting = {
-	sortType = "dirFirst",
+	sort_type = "dirFirst",
 	reverse = false,
-	ignoreCase = true,
-	ignoreDiacritics = true,
+	ignore_case = true,
+	ignore_diacritics = true,
 }
 
 fm.modes.customs["go-to"] = {
 	name = "go-to",
-	keyBindings = {
+	key_bindings = {
 		default = {
 			help = "cancel",
 			messages = {
@@ -110,7 +110,7 @@ fm.modes.customs["go-to"] = {
 				},
 			},
 		},
-		onKeys = {
+		on_keys = {
 			["~"] = {
 				help = "Home",
 				messages = {
@@ -224,7 +224,7 @@ fm.modes.customs["go-to"] = {
 
 fm.modes.customs.yarn = {
 	name = "yarn",
-	keyBindings = {
+	key_bindings = {
 		default = {
 			help = "cancel",
 			messages = {
@@ -236,7 +236,7 @@ fm.modes.customs.yarn = {
 				},
 			},
 		},
-		onKeys = {
+		on_keys = {
 			p = {
 				help = "yarn path",
 				messages = {
@@ -308,7 +308,7 @@ fm.modes.customs.yarn = {
 
 fm.modes.customs["mark-save"] = {
 	name = "mark-save",
-	keyBindings = {
+	key_bindings = {
 		default = {
 			help = "save",
 			messages = {
@@ -345,7 +345,7 @@ fm.modes.customs["mark-save"] = {
 				},
 			},
 		},
-		onKeys = {
+		on_keys = {
 			esc = {
 				help = "cancel",
 				messages = {
@@ -371,7 +371,7 @@ fm.modes.customs["mark-save"] = {
 
 fm.modes.customs["mark-load"] = {
 	name = "mark-load",
-	keyBindings = {
+	key_bindings = {
 		default = {
 			help = "load",
 			messages = {
@@ -413,7 +413,7 @@ fm.modes.customs["mark-load"] = {
 				},
 			},
 		},
-		onKeys = {
+		on_keys = {
 			esc = {
 				help = "cancel",
 				messages = {
@@ -439,7 +439,7 @@ fm.modes.customs["mark-load"] = {
 
 fm.modes.customs.open = {
 	name = "yarn",
-	keyBindings = {
+	key_bindings = {
 		default = {
 			help = "cancel",
 			messages = {
@@ -451,7 +451,7 @@ fm.modes.customs.open = {
 				},
 			},
 		},
-		onKeys = {
+		on_keys = {
 			f = {
 				help = "open in Finder",
 				messages = {
@@ -562,7 +562,7 @@ fm.modes.customs.open = {
 	},
 }
 
-fm.modes.builtins.default.keyBindings.onKeys["G"] = {
+fm.modes.builtins.default.key_bindings.on_keys["G"] = {
 	help = "focus last",
 	messages = {
 		{
@@ -571,7 +571,7 @@ fm.modes.builtins.default.keyBindings.onKeys["G"] = {
 	},
 }
 
-fm.modes.builtins.default.keyBindings.onKeys["g"] = {
+fm.modes.builtins.default.key_bindings.on_keys["g"] = {
 	help = "go to",
 	messages = {
 		{
@@ -583,7 +583,7 @@ fm.modes.builtins.default.keyBindings.onKeys["g"] = {
 	},
 }
 
-fm.modes.builtins.default.keyBindings.onKeys["o"] = {
+fm.modes.builtins.default.key_bindings.on_keys["o"] = {
 	help = "open",
 	messages = {
 		{
@@ -595,7 +595,7 @@ fm.modes.builtins.default.keyBindings.onKeys["o"] = {
 	},
 }
 
-fm.modes.builtins.default.keyBindings.onKeys["y"] = {
+fm.modes.builtins.default.key_bindings.on_keys["y"] = {
 	help = "yarn",
 	messages = {
 		{
@@ -607,7 +607,7 @@ fm.modes.builtins.default.keyBindings.onKeys["y"] = {
 	},
 }
 
-fm.modes.builtins.default.keyBindings.onKeys["/"] = {
+fm.modes.builtins.default.key_bindings.on_keys["/"] = {
 	help = "search",
 	messages = {
 		{
@@ -624,7 +624,7 @@ fm.modes.builtins.default.keyBindings.onKeys["/"] = {
 	},
 }
 
-fm.modes.builtins.default.keyBindings.onKeys["m"] = {
+fm.modes.builtins.default.key_bindings.on_keys["m"] = {
 	help = "mark save",
 	messages = {
 		{
@@ -636,7 +636,7 @@ fm.modes.builtins.default.keyBindings.onKeys["m"] = {
 	},
 }
 
-fm.modes.builtins.default.keyBindings.onKeys["`"] = {
+fm.modes.builtins.default.key_bindings.on_keys["`"] = {
 	help = "mark load",
 	messages = {
 		{

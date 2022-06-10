@@ -49,7 +49,7 @@ func (ac *ActionConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTab
 
 // KeyBindingsConfig represents the config for the key bindings.
 type KeyBindingsConfig struct {
-	OnKeys  map[string]*ActionConfig `mapper:"onKeys"`
+	OnKeys  map[string]*ActionConfig `mapper:"on_keys"`
 	Default *ActionConfig            `mapper:"default"`
 }
 
@@ -62,7 +62,7 @@ func (kbc *KeyBindingsConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lu
 		onKeyTbl.RawSetString(key, actionConfig.toLuaTable(luaState))
 	}
 
-	tbl.RawSetString("onKeys", onKeyTbl)
+	tbl.RawSetString("on_keys", onKeyTbl)
 
 	if kbc.Default != nil {
 		tbl.RawSetString("default", kbc.Default.toLuaTable(luaState))
@@ -76,7 +76,7 @@ func (kbc *KeyBindingsConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lu
 // ModeConfig represents the config for the mode.
 type ModeConfig struct {
 	Name        string            `mapper:"name"`
-	KeyBindings KeyBindingsConfig `mapper:"keyBindings"`
+	KeyBindings KeyBindingsConfig `mapper:"key_bindings"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -84,7 +84,7 @@ func (mc *ModeConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable
 	tbl := luaState.NewTable()
 
 	tbl.RawSetString("name", gopher_lua.LString(mc.Name))
-	tbl.RawSetString("keyBindings", mc.KeyBindings.toLuaTable(luaState))
+	tbl.RawSetString("key_bindings", mc.KeyBindings.toLuaTable(luaState))
 
 	return tbl
 }
@@ -174,8 +174,8 @@ func (ntc NodeTypeConfig) merge(other *NodeTypeConfig) *NodeTypeConfig {
 type NodeTypesConfig struct {
 	File             *NodeTypeConfig            `mapper:"file"`
 	Directory        *NodeTypeConfig            `mapper:"directory"`
-	FileSymlink      *NodeTypeConfig            `mapper:"fileSymlink"`
-	DirectorySymlink *NodeTypeConfig            `mapper:"directorySymlink"`
+	FileSymlink      *NodeTypeConfig            `mapper:"file_symlink"`
+	DirectorySymlink *NodeTypeConfig            `mapper:"directory_symlink"`
 	Extensions       map[string]*NodeTypeConfig `mapper:"extensions"`
 }
 
@@ -196,15 +196,15 @@ func (ntc *NodeTypesConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.
 	}
 
 	if ntc.FileSymlink != nil {
-		tbl.RawSetString("fileSymlink", ntc.FileSymlink.toLuaTable(luaState))
+		tbl.RawSetString("file_symlink", ntc.FileSymlink.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("fileSymlink", gopher_lua.LNil)
+		tbl.RawSetString("file_symlink", gopher_lua.LNil)
 	}
 
 	if ntc.DirectorySymlink != nil {
-		tbl.RawSetString("directorySymlink", ntc.DirectorySymlink.toLuaTable(luaState))
+		tbl.RawSetString("directory_symlink", ntc.DirectorySymlink.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("directorySymlink", gopher_lua.LNil)
+		tbl.RawSetString("directory_symlink", gopher_lua.LNil)
 	}
 
 	extensionTbl := luaState.NewTable()
@@ -284,8 +284,8 @@ func (ui UIConfig) merge(other *UIConfig) *UIConfig {
 type DefaultUIConfig struct {
 	Prefix         string       `mapper:"prefix"`
 	Suffix         string       `mapper:"suffix"`
-	FileStyle      *StyleConfig `mapper:"fileStyle"`
-	DirectoryStyle *StyleConfig `mapper:"directoryStyle"`
+	FileStyle      *StyleConfig `mapper:"file_style"`
+	DirectoryStyle *StyleConfig `mapper:"directory_style"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -296,15 +296,15 @@ func (ui *DefaultUIConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.L
 	tbl.RawSetString("suffix", gopher_lua.LString(ui.Suffix))
 
 	if ui.FileStyle != nil {
-		tbl.RawSetString("fileStyle", ui.FileStyle.toLuaTable(luaState))
+		tbl.RawSetString("file_style", ui.FileStyle.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("fileStyle", gopher_lua.LNil)
+		tbl.RawSetString("file_style", gopher_lua.LNil)
 	}
 
 	if ui.DirectoryStyle != nil {
-		tbl.RawSetString("directoryStyle", ui.DirectoryStyle.toLuaTable(luaState))
+		tbl.RawSetString("directory_style", ui.DirectoryStyle.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("directoryStyle", gopher_lua.LNil)
+		tbl.RawSetString("directory_style", gopher_lua.LNil)
 	}
 
 	return tbl
@@ -375,19 +375,19 @@ func (ethc ExplorerTableHeaderConfig) merge(other *ExplorerTableHeaderConfig) *E
 
 // ExplorerTableConfig represents the config for the explorer table.
 type ExplorerTableConfig struct {
-	IndexHeader       *ExplorerTableHeaderConfig `mapper:"indexHeader"`
-	NameHeader        *ExplorerTableHeaderConfig `mapper:"nameHeader"`
-	PermissionsHeader *ExplorerTableHeaderConfig `mapper:"permissionsHeader"`
-	SizeHeader        *ExplorerTableHeaderConfig `mapper:"sizeHeader"`
+	IndexHeader       *ExplorerTableHeaderConfig `mapper:"index_header"`
+	NameHeader        *ExplorerTableHeaderConfig `mapper:"name_header"`
+	PermissionsHeader *ExplorerTableHeaderConfig `mapper:"permissions_header"`
+	SizeHeader        *ExplorerTableHeaderConfig `mapper:"size_header"`
 
-	DefaultUI        *DefaultUIConfig `mapper:"defaultUi"`
-	FocusUI          *UIConfig        `mapper:"focusUi"`
-	SelectionUI      *UIConfig        `mapper:"selectionUi"`
-	FocusSelectionUI *UIConfig        `mapper:"focusSelectionUi"`
+	DefaultUI        *DefaultUIConfig `mapper:"default_ui"`
+	FocusUI          *UIConfig        `mapper:"focus_ui"`
+	SelectionUI      *UIConfig        `mapper:"selection_ui"`
+	FocusSelectionUI *UIConfig        `mapper:"focus_selection_ui"`
 
-	FirstEntryPrefix string `mapper:"firstEntryPrefix"`
-	EntryPrefix      string `mapper:"entryPrefix"`
-	LastEntryPrefix  string `mapper:"lastEntryPrefix"`
+	FirstEntryPrefix string `mapper:"first_entry_prefix"`
+	EntryPrefix      string `mapper:"entry_prefix"`
+	LastEntryPrefix  string `mapper:"last_entry_prefix"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -395,56 +395,56 @@ func (etc *ExplorerTableConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_
 	tbl := luaState.NewTable()
 
 	if etc.IndexHeader != nil {
-		tbl.RawSetString("indexHeader", etc.IndexHeader.toLuaTable(luaState))
+		tbl.RawSetString("index_header", etc.IndexHeader.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("indexHeader", gopher_lua.LNil)
+		tbl.RawSetString("index_header", gopher_lua.LNil)
 	}
 
 	if etc.NameHeader != nil {
-		tbl.RawSetString("nameHeader", etc.NameHeader.toLuaTable(luaState))
+		tbl.RawSetString("name_header", etc.NameHeader.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("nameHeader", gopher_lua.LNil)
+		tbl.RawSetString("name_header", gopher_lua.LNil)
 	}
 
 	if etc.PermissionsHeader != nil {
-		tbl.RawSetString("permissionsHeader", etc.PermissionsHeader.toLuaTable(luaState))
+		tbl.RawSetString("permissions_header", etc.PermissionsHeader.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("permissionsHeader", gopher_lua.LNil)
+		tbl.RawSetString("permissions_header", gopher_lua.LNil)
 	}
 
 	if etc.SizeHeader != nil {
-		tbl.RawSetString("sizeHeader", etc.SizeHeader.toLuaTable(luaState))
+		tbl.RawSetString("size_header", etc.SizeHeader.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("sizeHeader", gopher_lua.LNil)
+		tbl.RawSetString("size_header", gopher_lua.LNil)
 	}
 
 	if etc.DefaultUI != nil {
-		tbl.RawSetString("defaultUi", etc.DefaultUI.toLuaTable(luaState))
+		tbl.RawSetString("default_ui", etc.DefaultUI.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("defaultUi", gopher_lua.LNil)
+		tbl.RawSetString("default_ui", gopher_lua.LNil)
 	}
 
 	if etc.FocusUI != nil {
-		tbl.RawSetString("focusUi", etc.FocusUI.toLuaTable(luaState))
+		tbl.RawSetString("focus_ui", etc.FocusUI.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("focusUi", gopher_lua.LNil)
+		tbl.RawSetString("focus_ui", gopher_lua.LNil)
 	}
 
 	if etc.SelectionUI != nil {
-		tbl.RawSetString("selectionUi", etc.SelectionUI.toLuaTable(luaState))
+		tbl.RawSetString("selection_ui", etc.SelectionUI.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("selectionUi", gopher_lua.LNil)
+		tbl.RawSetString("selection_ui", gopher_lua.LNil)
 	}
 
 	if etc.FocusSelectionUI != nil {
-		tbl.RawSetString("focusSelectionUi", etc.FocusSelectionUI.toLuaTable(luaState))
+		tbl.RawSetString("focus_selection_ui", etc.FocusSelectionUI.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("focusSelectionUi", gopher_lua.LNil)
+		tbl.RawSetString("focus_selection_ui", gopher_lua.LNil)
 	}
 
-	tbl.RawSetString("firstEntryPrefix", gopher_lua.LString(etc.FirstEntryPrefix))
-	tbl.RawSetString("entryPrefix", gopher_lua.LString(etc.EntryPrefix))
-	tbl.RawSetString("lastEntryPrefix", gopher_lua.LString(etc.LastEntryPrefix))
+	tbl.RawSetString("first_entry_prefix", gopher_lua.LString(etc.FirstEntryPrefix))
+	tbl.RawSetString("entry_prefix", gopher_lua.LString(etc.EntryPrefix))
+	tbl.RawSetString("last_entry_prefix", gopher_lua.LString(etc.LastEntryPrefix))
 
 	return tbl
 }
@@ -482,17 +482,17 @@ func (etc ExplorerTableConfig) merge(other *ExplorerTableConfig) *ExplorerTableC
 
 // SortingConfig represents the config for sorting
 type SortingConfig struct {
-	SortType         string `mapper:"sortType"`
+	SortType         string `mapper:"sort_type"`
 	Reverse          *bool  `mapper:"reverse"`
-	IgnoreCase       *bool  `mapper:"ignoreCase"`
-	IgnoreDiacritics *bool  `mapper:"ignoreDiacritics"`
+	IgnoreCase       *bool  `mapper:"ignore_case"`
+	IgnoreDiacritics *bool  `mapper:"ignore_diacritics"`
 }
 
 // toLuaTable convert to LuaTable object
 func (sc *SortingConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
 	tbl := luaState.NewTable()
 
-	tbl.RawSetString("sortType", gopher_lua.LString(sc.SortType))
+	tbl.RawSetString("sort_type", gopher_lua.LString(sc.SortType))
 
 	if sc.Reverse != nil {
 		tbl.RawSetString("reverse", gopher_lua.LBool(*sc.Reverse))
@@ -501,15 +501,15 @@ func (sc *SortingConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTa
 	}
 
 	if sc.IgnoreCase != nil {
-		tbl.RawSetString("ignoreCase", gopher_lua.LBool(*sc.IgnoreCase))
+		tbl.RawSetString("ignore_case", gopher_lua.LBool(*sc.IgnoreCase))
 	} else {
-		tbl.RawSetString("ignoreCase", gopher_lua.LNil)
+		tbl.RawSetString("ignore_case", gopher_lua.LNil)
 	}
 
 	if sc.IgnoreDiacritics != nil {
-		tbl.RawSetString("ignoreDiacritics", gopher_lua.LBool(*sc.IgnoreDiacritics))
+		tbl.RawSetString("ignore_diacritics", gopher_lua.LBool(*sc.IgnoreDiacritics))
 	} else {
-		tbl.RawSetString("ignoreDiacritics", gopher_lua.LNil)
+		tbl.RawSetString("ignore_diacritics", gopher_lua.LNil)
 	}
 
 	return tbl
@@ -542,14 +542,14 @@ func (sc SortingConfig) merge(other *SortingConfig) *SortingConfig {
 
 // GeneralConfig represents the general config for the application.
 type GeneralConfig struct {
-	LogInfoUI    *UIConfig `mapper:"logInfoUi"`
-	LogWarningUI *UIConfig `mapper:"logWarningUi"`
-	LogErrorUI   *UIConfig `mapper:"logErrorUi"`
+	LogInfoUI    *UIConfig `mapper:"log_info_ui"`
+	LogWarningUI *UIConfig `mapper:"log_warning_ui"`
+	LogErrorUI   *UIConfig `mapper:"log_error_ui"`
 
-	ExplorerTable *ExplorerTableConfig `mapper:"explorerTable"`
+	ExplorerTable *ExplorerTableConfig `mapper:"explorer_table"`
 
 	Sorting    *SortingConfig `mapper:"sorting"`
-	ShowHidden bool           `mapper:"showHidden"`
+	ShowHidden bool           `mapper:"show_hidden"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -557,27 +557,27 @@ func (gc *GeneralConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTa
 	tbl := luaState.NewTable()
 
 	if gc.LogInfoUI != nil {
-		tbl.RawSetString("logInfoUi", gc.LogInfoUI.toLuaTable(luaState))
+		tbl.RawSetString("log_info_ui", gc.LogInfoUI.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("logInfoUi", gopher_lua.LNil)
+		tbl.RawSetString("log_info_ui", gopher_lua.LNil)
 	}
 
 	if gc.LogWarningUI != nil {
-		tbl.RawSetString("logWarningUi", gc.LogWarningUI.toLuaTable(luaState))
+		tbl.RawSetString("log_warning_ui", gc.LogWarningUI.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("logWarningUi", gopher_lua.LNil)
+		tbl.RawSetString("log_warning_ui", gopher_lua.LNil)
 	}
 
 	if gc.LogErrorUI != nil {
-		tbl.RawSetString("logErrorUi", gc.LogErrorUI.toLuaTable(luaState))
+		tbl.RawSetString("log_error_ui", gc.LogErrorUI.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("logErrorUi", gopher_lua.LNil)
+		tbl.RawSetString("log_error_ui", gopher_lua.LNil)
 	}
 
 	if gc.ExplorerTable != nil {
-		tbl.RawSetString("explorerTable", gc.ExplorerTable.toLuaTable(luaState))
+		tbl.RawSetString("explorer_table", gc.ExplorerTable.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("explorerTable", gopher_lua.LNil)
+		tbl.RawSetString("explorer_table", gopher_lua.LNil)
 	}
 
 	if gc.Sorting != nil {
@@ -586,7 +586,7 @@ func (gc *GeneralConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTa
 		tbl.RawSetString("sorting", gopher_lua.LNil)
 	}
 
-	tbl.RawSetString("showHidden", gopher_lua.LBool(gc.ShowHidden))
+	tbl.RawSetString("show_hidden", gopher_lua.LBool(gc.ShowHidden))
 
 	return tbl
 }
@@ -674,7 +674,7 @@ func (m ModesConfig) merge(other *ModesConfig) *ModesConfig {
 type Config struct {
 	General         *GeneralConfig   `mapper:"general"`
 	Modes           *ModesConfig     `mapper:"modes"`
-	NodeTypesConfig *NodeTypesConfig `mapper:"nodeTypes"`
+	NodeTypesConfig *NodeTypesConfig `mapper:"node_types"`
 }
 
 // ToLuaTable convert to LuaTable object
@@ -694,9 +694,9 @@ func (c *Config) ToLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
 	}
 
 	if c.NodeTypesConfig != nil {
-		tbl.RawSetString("nodeTypes", c.NodeTypesConfig.toLuaTable(luaState))
+		tbl.RawSetString("node_types", c.NodeTypesConfig.toLuaTable(luaState))
 	} else {
-		tbl.RawSetString("nodeTypes", gopher_lua.LNil)
+		tbl.RawSetString("node_types", gopher_lua.LNil)
 	}
 
 	return tbl
