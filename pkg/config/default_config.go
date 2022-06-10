@@ -1,7 +1,7 @@
 package config
 
-// getDefaultConfig returns the default configuration for the application.
-func getDefaultConfig() *Config {
+// GetDefaultConfig returns the default configuration for the application.
+func GetDefaultConfig() *Config {
 	return &Config{
 		General: &GeneralConfig{
 			LogInfoUI: &UIConfig{

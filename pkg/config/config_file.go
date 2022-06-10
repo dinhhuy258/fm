@@ -6,14 +6,15 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/optional"
-	"gopkg.in/yaml.v3"
+	"github.com/yuin/gluamapper"
+	gopher_lua "github.com/yuin/gopher-lua"
 )
 
 // AppDir is the name of the directory where the config file is stored.
 const AppDir = "fm"
 
 // ConfigFileName is the name of the config file that gets created.
-const ConfigFileName = "config.yml"
+const ConfigFileName = "config.lua"
 
 // getConfigFilePath returns the user config file
 func getConfigFilePath() optional.Optional[string] {
@@ -38,15 +39,24 @@ func getConfigFilePath() optional.Optional[string] {
 }
 
 // loadConfigFromFile loads the config file from the given path.
-func loadConfigFromFile(path string) (*Config, error) {
-	config := &Config{}
+func loadConfigFromFile(path string, luaState *gopher_lua.LState) (*Config, error) {
+	defaultConfigTbl := AppConfig.ToLuaTable(luaState)
+	luaState.SetGlobal("fm", defaultConfigTbl)
 
-	data, err := os.ReadFile(path)
-	if err != nil {
+	if err := luaState.DoFile(path); err != nil {
 		return nil, err
 	}
 
-	err = yaml.Unmarshal((data), &config)
+	var config Config
+	mapper := gluamapper.NewMapper(gluamapper.Option{
+		NameFunc: func(s string) string {
+			return s
+		},
+		TagName: "mapper",
+	})
+	if err := mapper.Map(luaState.GetGlobal("fm").(*gopher_lua.LTable), &config); err != nil {
+		return nil, err
+	}
 
-	return config, err
+	return &config, nil
 }
