@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/dinhhuy258/fm/pkg/lua"
-	"github.com/yuin/gluamapper"
 	gopher_lua "github.com/yuin/gopher-lua"
 )
 
@@ -60,7 +59,7 @@ func (kbc *KeyBindingsConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lu
 	for key, actionConfig := range kbc.OnKeys {
 		onKeyTbl.RawSetString(key, actionConfig.toLuaTable(luaState))
 	}
-	tbl.RawSetString("onkeys", onKeyTbl)
+	tbl.RawSetString("onKeys", onKeyTbl)
 
 	if kbc.Default != nil {
 		tbl.RawSetString("default", kbc.Default.toLuaTable(luaState))
@@ -73,7 +72,7 @@ func (kbc *KeyBindingsConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lu
 
 // ModeConfig represents the config for the mode.
 type ModeConfig struct {
-	Name        string            `yaml:"-"`
+	Name        string            `yaml:"name"`
 	KeyBindings KeyBindingsConfig `yaml:"keyBindings"`
 }
 
@@ -81,6 +80,7 @@ type ModeConfig struct {
 func (mc *ModeConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
 	tbl := luaState.NewTable()
 
+	tbl.RawSetString("name", gopher_lua.LString(mc.Name))
 	tbl.RawSetString("keyBindings", mc.KeyBindings.toLuaTable(luaState))
 
 	return tbl
@@ -206,7 +206,7 @@ func (ntc *NodeTypesConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.
 
 	extensionTbl := luaState.NewTable()
 	for ext, extConfig := range ntc.Extensions {
-		tbl.RawSetString(ext, extConfig.toLuaTable(luaState))
+		extensionTbl.RawSetString(ext, extConfig.toLuaTable(luaState))
 	}
 	tbl.RawSetString("extensions", extensionTbl)
 
@@ -704,7 +704,7 @@ func LoadConfig(lua *lua.Lua) error {
 	AppConfig = GetDefaultConfig()
 
 	if configFilePath.IsPresent() {
-		userConfig, err := loadConfigFromFile(*configFilePath.Get())
+		userConfig, err := loadConfigFromFile(*configFilePath.Get(), lua.GetState())
 		if err != nil {
 			return err
 		}
@@ -714,28 +714,6 @@ func LoadConfig(lua *lua.Lua) error {
 		AppConfig.NodeTypesConfig = AppConfig.NodeTypesConfig.merge(userConfig.NodeTypesConfig)
 		AppConfig.Modes = AppConfig.Modes.merge(userConfig.Modes)
 	}
-
-	luaState := lua.GetState()
-	defaultConfigTbl := AppConfig.ToLuaTable(luaState)
-	luaState.SetGlobal("fm", defaultConfigTbl)
-
-	if err := luaState.DoFile("/Users/dinhhuy258/Workspace/fm/init.lua"); err != nil {
-		return err
-	}
-
-	var conf Config
-	mapper := gluamapper.NewMapper(gluamapper.Option{
-		NameFunc: func(s string) string {
-			return s
-		},
-		TagName: "yaml",
-	})
-	if err := mapper.Map(luaState.GetGlobal("fm").(*gopher_lua.LTable), &conf); err != nil {
-		return err
-	}
-
-	AppConfig = &conf
-	print(AppConfig)
 
 	return nil
 }
