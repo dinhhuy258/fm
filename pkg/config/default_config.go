@@ -4,6 +4,10 @@ package config
 func GetDefaultConfig() *Config {
 	return &Config{
 		General: &GeneralConfig{
+			FrameUI: &FrameUI{
+				SelFrameColor: "green",
+				FrameColor:    "white",
+			},
 			LogInfoUI: &UIConfig{
 				Prefix: "[Info] ",
 				Suffix: "",

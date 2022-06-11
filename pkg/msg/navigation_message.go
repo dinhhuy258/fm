@@ -93,7 +93,6 @@ func ChangeDirectory(app IApp, params ...string) {
 
 // loadDirectory load directory
 func loadDirectory(app IApp, path string, focusPath optional.Optional[string]) {
-	// TODO: Considering remove this method and use ChangeDirectory instead
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.LoadDirectory(path, focusPath)

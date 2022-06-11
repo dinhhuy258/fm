@@ -540,8 +540,43 @@ func (sc SortingConfig) merge(other *SortingConfig) *SortingConfig {
 	return &sc
 }
 
+// FrameUI represents config for frame ui
+type FrameUI struct {
+	SelFrameColor string `mapper:"sel_frame_color"`
+	FrameColor    string `mapper:"frame_color"`
+}
+
+// toLuaTable convert to LuaTable object
+func (fu *FrameUI) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
+	tbl := luaState.NewTable()
+
+	tbl.RawSetString("sel_frame_color", gopher_lua.LString(fu.SelFrameColor))
+	tbl.RawSetString("frame_color", gopher_lua.LString(fu.FrameColor))
+
+	return tbl
+}
+
+// merge user config with default config.
+func (fu FrameUI) merge(other *FrameUI) *FrameUI {
+	if other == nil {
+		return &fu
+	}
+
+	if other.SelFrameColor != "" {
+		fu.SelFrameColor = other.SelFrameColor
+	}
+
+	if other.FrameColor != "" {
+		fu.FrameColor = other.FrameColor
+	}
+
+	return &fu
+}
+
 // GeneralConfig represents the general config for the application.
 type GeneralConfig struct {
+	FrameUI *FrameUI `mapper:"frame_ui"`
+
 	LogInfoUI    *UIConfig `mapper:"log_info_ui"`
 	LogWarningUI *UIConfig `mapper:"log_warning_ui"`
 	LogErrorUI   *UIConfig `mapper:"log_error_ui"`
@@ -555,6 +590,12 @@ type GeneralConfig struct {
 // toLuaTable convert to LuaTable object
 func (gc *GeneralConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
 	tbl := luaState.NewTable()
+
+	if gc.FrameUI != nil {
+		tbl.RawSetString("frame_ui", gc.FrameUI.toLuaTable(luaState))
+	} else {
+		tbl.RawSetString("frame_ui", gopher_lua.LNil)
+	}
 
 	if gc.LogInfoUI != nil {
 		tbl.RawSetString("log_info_ui", gc.LogInfoUI.toLuaTable(luaState))
@@ -596,6 +637,8 @@ func (gc GeneralConfig) merge(other *GeneralConfig) *GeneralConfig {
 	if other == nil {
 		return &gc
 	}
+
+	gc.FrameUI = gc.FrameUI.merge(other.FrameUI)
 
 	gc.ExplorerTable = gc.ExplorerTable.merge(other.ExplorerTable)
 

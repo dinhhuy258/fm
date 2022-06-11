@@ -1,5 +1,10 @@
 local fm = fm
 
+fm.general.frame_ui = {
+	sel_frame_color = "green",
+	frame_color = "white",
+}
+
 fm.general.log_info_ui = {
 	prefix = "[Info] ",
 	suffix = "",

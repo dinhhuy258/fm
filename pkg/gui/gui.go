@@ -3,6 +3,7 @@ package gui
 import (
 	"errors"
 
+	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/gocui"
@@ -22,11 +23,12 @@ func NewGui() (*Gui, error) {
 		return nil, err
 	}
 
+	frameUIConfig := config.AppConfig.General.FrameUI
+
 	gui.g = g
 	gui.g.Highlight = true
-	// TODO: Configure these values
-	gui.g.SelFrameColor = gocui.ColorGreen
-	gui.g.FrameColor = gocui.ColorWhite
+	gui.g.SelFrameColor = gocui.GetColor(frameUIConfig.SelFrameColor)
+	gui.g.FrameColor = gocui.GetColor(frameUIConfig.FrameColor)
 	gui.g.Cursor = false
 	gui.g.InputEsc = true
 	gui.g.SetManager(gocui.ManagerFunc(gui.layout))
