@@ -40,7 +40,7 @@ func getConfigFilePath() optional.Optional[string] {
 
 // loadConfigFromFile loads the config file from the given path.
 func loadConfigFromFile(path string, luaState *gopher_lua.LState) (*Config, error) {
-	defaultConfigTbl := AppConfig.ToLuaTable(luaState)
+	defaultConfigTbl := getDefaultConfig().toLuaTable(luaState)
 	luaState.SetGlobal("fm", defaultConfigTbl)
 
 	if err := luaState.DoFile(path); err != nil {

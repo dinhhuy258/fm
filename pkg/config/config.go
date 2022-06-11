@@ -113,27 +113,6 @@ func (sc *StyleConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTabl
 	return tbl
 }
 
-// merge user config with default config.
-func (sc StyleConfig) merge(other *StyleConfig) *StyleConfig {
-	if other == nil {
-		return &sc
-	}
-
-	if other.Fg != "" {
-		sc.Fg = other.Fg
-	}
-
-	if other.Bg != "" {
-		sc.Bg = other.Bg
-	}
-
-	if other.Decorations != nil {
-		sc.Decorations = other.Decorations
-	}
-
-	return &sc
-}
-
 // NodeTypeConfig represents the config for the node type (file/directory).
 type NodeTypeConfig struct {
 	Icon  string       `mapper:"icon"`
@@ -153,21 +132,6 @@ func (ntc *NodeTypeConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.L
 	}
 
 	return tbl
-}
-
-// merge user config with default config.
-func (ntc NodeTypeConfig) merge(other *NodeTypeConfig) *NodeTypeConfig {
-	if other == nil {
-		return &ntc
-	}
-
-	if other.Icon != "" {
-		ntc.Icon = other.Icon
-	}
-
-	ntc.Style = ntc.Style.merge(other.Style)
-
-	return &ntc
 }
 
 // NodeTypesConfig represents the config for node types
@@ -217,28 +181,6 @@ func (ntc *NodeTypesConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.
 	return tbl
 }
 
-func (ntc NodeTypesConfig) merge(other *NodeTypesConfig) *NodeTypesConfig {
-	if other == nil {
-		return &ntc
-	}
-
-	ntc.File = ntc.File.merge(other.File)
-	ntc.Directory = ntc.Directory.merge(other.Directory)
-	ntc.FileSymlink = ntc.FileSymlink.merge(other.FileSymlink)
-	ntc.DirectorySymlink = ntc.DirectorySymlink.merge(other.DirectorySymlink)
-
-	if other.Extensions != nil {
-		ntc.Extensions = map[string]*NodeTypeConfig{}
-
-		for ext, extConfig := range other.Extensions {
-			ntc.Extensions[ext] = ntc.File.merge(extConfig)
-		}
-	}
-
-	return &ntc
-}
-
-// UIConfig represents the config for UI
 type UIConfig struct {
 	Prefix string       `mapper:"prefix"`
 	Suffix string       `mapper:"suffix"`
@@ -259,25 +201,6 @@ func (ui *UIConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
 	}
 
 	return tbl
-}
-
-// merge user config with default config.
-func (ui UIConfig) merge(other *UIConfig) *UIConfig {
-	if other == nil {
-		return &ui
-	}
-
-	if other.Prefix != "" {
-		ui.Prefix = other.Prefix
-	}
-
-	if other.Suffix != "" {
-		ui.Suffix = other.Suffix
-	}
-
-	ui.Style = ui.Style.merge(other.Style)
-
-	return &ui
 }
 
 // DefaultUIConfig represents the config for UI
@@ -310,26 +233,6 @@ func (ui *DefaultUIConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.L
 	return tbl
 }
 
-// merge user config with default config.
-func (ui DefaultUIConfig) merge(other *DefaultUIConfig) *DefaultUIConfig {
-	if other == nil {
-		return &ui
-	}
-
-	if other.Prefix != "" {
-		ui.Prefix = other.Prefix
-	}
-
-	if other.Suffix != "" {
-		ui.Suffix = other.Suffix
-	}
-
-	ui.FileStyle = ui.FileStyle.merge(other.FileStyle)
-	ui.DirectoryStyle = ui.DirectoryStyle.merge(other.DirectoryStyle)
-
-	return &ui
-}
-
 // ExplorerTableHeaderConfig represents the config for the explorer table header.
 type ExplorerTableHeaderConfig struct {
 	Name       string       `mapper:"name"`
@@ -351,26 +254,6 @@ func (ethc *ExplorerTableHeaderConfig) toLuaTable(luaState *gopher_lua.LState) *
 	}
 
 	return tbl
-}
-
-// merge user config with default config.
-func (ethc ExplorerTableHeaderConfig) merge(other *ExplorerTableHeaderConfig) *ExplorerTableHeaderConfig {
-	if other == nil {
-		return &ethc
-	}
-
-	if other.Name != "" {
-		ethc.Name = other.Name
-	}
-
-	if other.Percentage != 0 {
-		ethc.Percentage = other.Percentage
-	}
-
-	// By dèault the style is null
-	ethc.Style = other.Style
-
-	return &ethc
 }
 
 // ExplorerTableConfig represents the config for the explorer table.
@@ -449,37 +332,6 @@ func (etc *ExplorerTableConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_
 	return tbl
 }
 
-// merge user config with default config.
-func (etc ExplorerTableConfig) merge(other *ExplorerTableConfig) *ExplorerTableConfig {
-	if other == nil {
-		return &etc
-	}
-
-	etc.IndexHeader = etc.IndexHeader.merge(other.IndexHeader)
-	etc.NameHeader = etc.NameHeader.merge(other.NameHeader)
-	etc.PermissionsHeader = etc.PermissionsHeader.merge(other.PermissionsHeader)
-	etc.SizeHeader = etc.SizeHeader.merge(other.SizeHeader)
-
-	etc.DefaultUI = etc.DefaultUI.merge(other.DefaultUI)
-	etc.FocusUI = etc.FocusUI.merge(other.FocusUI)
-	etc.SelectionUI = etc.SelectionUI.merge(other.SelectionUI)
-	etc.FocusSelectionUI = etc.FocusSelectionUI.merge(other.FocusSelectionUI)
-
-	if other.FirstEntryPrefix != "" {
-		etc.FirstEntryPrefix = other.FirstEntryPrefix
-	}
-
-	if other.EntryPrefix != "" {
-		etc.EntryPrefix = other.EntryPrefix
-	}
-
-	if other.LastEntryPrefix != "" {
-		etc.LastEntryPrefix = other.LastEntryPrefix
-	}
-
-	return &etc
-}
-
 // SortingConfig represents the config for sorting
 type SortingConfig struct {
 	SortType         string `mapper:"sort_type"`
@@ -515,31 +367,6 @@ func (sc *SortingConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTa
 	return tbl
 }
 
-// merge user config with default config.
-func (sc SortingConfig) merge(other *SortingConfig) *SortingConfig {
-	if other == nil {
-		return &sc
-	}
-
-	if other.SortType != "" {
-		sc.SortType = other.SortType
-	}
-
-	if other.Reverse != nil {
-		sc.Reverse = other.Reverse
-	}
-
-	if other.IgnoreCase != nil {
-		sc.IgnoreCase = other.IgnoreCase
-	}
-
-	if other.IgnoreDiacritics != nil {
-		sc.IgnoreDiacritics = other.IgnoreDiacritics
-	}
-
-	return &sc
-}
-
 // FrameUI represents config for frame ui
 type FrameUI struct {
 	SelFrameColor string `mapper:"sel_frame_color"`
@@ -554,23 +381,6 @@ func (fu *FrameUI) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
 	tbl.RawSetString("frame_color", gopher_lua.LString(fu.FrameColor))
 
 	return tbl
-}
-
-// merge user config with default config.
-func (fu FrameUI) merge(other *FrameUI) *FrameUI {
-	if other == nil {
-		return &fu
-	}
-
-	if other.SelFrameColor != "" {
-		fu.SelFrameColor = other.SelFrameColor
-	}
-
-	if other.FrameColor != "" {
-		fu.FrameColor = other.FrameColor
-	}
-
-	return &fu
 }
 
 // GeneralConfig represents the general config for the application.
@@ -632,27 +442,6 @@ func (gc *GeneralConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTa
 	return tbl
 }
 
-// merge user config with default config.
-func (gc GeneralConfig) merge(other *GeneralConfig) *GeneralConfig {
-	if other == nil {
-		return &gc
-	}
-
-	gc.FrameUI = gc.FrameUI.merge(other.FrameUI)
-
-	gc.ExplorerTable = gc.ExplorerTable.merge(other.ExplorerTable)
-
-	gc.LogInfoUI = gc.LogInfoUI.merge(other.LogInfoUI)
-	gc.LogWarningUI = gc.LogWarningUI.merge(other.LogWarningUI)
-	gc.LogErrorUI = gc.LogErrorUI.merge(other.LogErrorUI)
-
-	gc.Sorting = gc.Sorting.merge(other.Sorting)
-
-	gc.ShowHidden = other.ShowHidden
-
-	return &gc
-}
-
 // ModesConfig represents the config for the custom and builtin modes.
 type ModesConfig struct {
 	Customs  map[string]*ModeConfig `mapper:"customs"`
@@ -680,39 +469,6 @@ func (m *ModesConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable
 	return tbl
 }
 
-func (m ModesConfig) merge(other *ModesConfig) *ModesConfig {
-	if other == nil {
-		return &m
-	}
-
-	if other.Customs != nil {
-		for name, mode := range other.Customs {
-			mode.Name = name
-		}
-
-		m.Customs = other.Customs
-	}
-
-	if other.Builtins != nil {
-		for builtinModeName, builtinUserConfig := range other.Builtins {
-			builtinMode, hasBuiltinConfig := m.Builtins[builtinModeName]
-			if !hasBuiltinConfig {
-				continue
-			}
-
-			for key, action := range builtinUserConfig.KeyBindings.OnKeys {
-				builtinMode.KeyBindings.OnKeys[key] = action
-			}
-
-			if builtinUserConfig.KeyBindings.Default != nil {
-				builtinMode.KeyBindings.Default = builtinUserConfig.KeyBindings.Default
-			}
-		}
-	}
-
-	return &m
-}
-
 // Config represents the config for the application.
 type Config struct {
 	General   *GeneralConfig   `mapper:"general"`
@@ -720,8 +476,8 @@ type Config struct {
 	NodeTypes *NodeTypesConfig `mapper:"node_types"`
 }
 
-// ToLuaTable convert to LuaTable object
-func (c *Config) ToLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
+// toLuaTable convert to LuaTable object
+func (c *Config) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
 	tbl := luaState.NewTable()
 
 	if c.General != nil {
@@ -750,7 +506,6 @@ var AppConfig *Config
 // LoadConfig loads the config from config file and default config then merges them.
 func LoadConfig(lua *lua.Lua) error {
 	configFilePath := getConfigFilePath()
-	AppConfig = GetDefaultConfig()
 
 	if configFilePath.IsPresent() {
 		userConfig, err := loadConfigFromFile(*configFilePath.Get(), lua.GetState())
@@ -758,10 +513,9 @@ func LoadConfig(lua *lua.Lua) error {
 			return err
 		}
 
-		// Merge user config with default config.
-		AppConfig.General = AppConfig.General.merge(userConfig.General)
-		AppConfig.NodeTypes = AppConfig.NodeTypes.merge(userConfig.NodeTypes)
-		AppConfig.Modes = AppConfig.Modes.merge(userConfig.Modes)
+		AppConfig = userConfig
+	} else {
+		AppConfig = getDefaultConfig()
 	}
 
 	return nil
