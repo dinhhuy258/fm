@@ -86,6 +86,7 @@ type nodeTypes struct {
 	fileSymlink      nodeType
 	directorySymlink nodeType
 	extensions       map[string]nodeType
+	specials         map[string]nodeType
 }
 
 type ExplorerView struct {
@@ -138,10 +139,18 @@ func newExplorerView(v *gocui.View) *ExplorerView {
 			style: style.FromStyleConfig(nodeTypesConfig.DirectorySymlink.Style),
 		},
 		extensions: map[string]nodeType{},
+		specials:   map[string]nodeType{},
 	}
 
 	for ext, ntc := range nodeTypesConfig.Extensions {
-		ev.icons.extensions[ext] = nodeType{
+		ev.icons.extensions[strings.ToLower(ext)] = nodeType{
+			icon:  ntc.Icon,
+			style: style.FromStyleConfig(ntc.Style),
+		}
+	}
+
+	for fileName, ntc := range nodeTypesConfig.Specials {
+		ev.icons.specials[strings.ToLower(fileName)] = nodeType{
 			icon:  ntc.Icon,
 			style: style.FromStyleConfig(ntc.Style),
 		}
@@ -272,8 +281,8 @@ func (ev *ExplorerView) layout() error {
 func (ev *ExplorerView) getEntryIcon(entry fs.IEntry, isEntryFocused, isEntrySelected bool) nodeType {
 	var icon nodeType
 
-	extensionIcon, hasExtIcon := ev.icons.extensions[entry.GetExt()]
-	fileIcon, hasFileIcon := ev.icons.extensions[entry.GetName()]
+	extensionIcon, hasExtIcon := ev.icons.extensions[strings.ToLower(entry.GetExt())]
+	fileIcon, hasFileIcon := ev.icons.specials[strings.ToLower(entry.GetName())]
 
 	switch {
 	case entry.IsSymlink() && entry.IsDirectory():

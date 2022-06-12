@@ -1,5 +1,77 @@
 package config
 
+var specialsNodeTypeConfig = map[string]*NodeTypeConfig{
+	".bashrc": {
+		Style: &StyleConfig{Fg: "#89e051"}, Icon: "",
+	},
+	".ds_store": {
+		Style: &StyleConfig{Fg: "#41535b"}, Icon: "",
+	},
+	".gitattributes": {
+		Style: &StyleConfig{Fg: "#41535b"}, Icon: "",
+	},
+	".gitconfig": {
+		Style: &StyleConfig{Fg: "#41535b"}, Icon: "",
+	},
+	".gitignore": {
+		Style: &StyleConfig{Fg: "#41535b"}, Icon: "",
+	},
+	".gitlab-ci.yml": {
+		Style: &StyleConfig{Fg: "#e24329"}, Icon: "",
+	},
+	".gvimrc": {
+		Style: &StyleConfig{Fg: "#019833"}, Icon: "",
+	},
+	".vimrc": {
+		Style: &StyleConfig{Fg: "#019833"}, Icon: "",
+	},
+	".zprofile": {
+		Style: &StyleConfig{Fg: "#89e051"}, Icon: "",
+	},
+	".zshenv": {
+		Style: &StyleConfig{Fg: "#89e051"}, Icon: "",
+	},
+	".zshrc": {
+		Style: &StyleConfig{Fg: "#89e051"}, Icon: "",
+	},
+	"_gvimrc": {
+		Style: &StyleConfig{Fg: "#019833"}, Icon: "",
+	},
+	"_vimrc": {
+		Style: &StyleConfig{Fg: "#019833"}, Icon: "",
+	},
+	"config.ru": {
+		Style: &StyleConfig{Fg: "#701516"}, Icon: "",
+	},
+	"dockerfile": {
+		Style: &StyleConfig{Fg: "#384d54"}, Icon: "",
+	},
+	"dropbox": {
+		Style: &StyleConfig{Fg: "#0061FE"}, Icon: "",
+	},
+	"favicon.ico": {
+		Style: &StyleConfig{Fg: "#cbcb41"}, Icon: "",
+	},
+	"license": {
+		Style: &StyleConfig{Fg: "#cbcb41"}, Icon: "",
+	},
+	"makefile": {
+		Style: &StyleConfig{Fg: "#6d8086"}, Icon: "",
+	},
+	"mix.lock": {
+		Style: &StyleConfig{Fg: "#a074c4"}, Icon: "",
+	},
+	"node_modules": {
+		Style: &StyleConfig{Fg: "#E8274B"}, Icon: "",
+	},
+	"procfile": {
+		Style: &StyleConfig{Fg: "#a074c4"}, Icon: "",
+	},
+	"rakefile": {
+		Style: &StyleConfig{Fg: "#701516"}, Icon: "",
+	},
+}
+
 // extensionsNodeTypeConfig is the default configuration for the extensions node type.
 var extensionsNodeTypeConfig = map[string]*NodeTypeConfig{
 	"ai": {

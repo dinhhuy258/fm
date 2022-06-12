@@ -141,6 +141,7 @@ type NodeTypesConfig struct {
 	FileSymlink      *NodeTypeConfig            `mapper:"file_symlink"`
 	DirectorySymlink *NodeTypeConfig            `mapper:"directory_symlink"`
 	Extensions       map[string]*NodeTypeConfig `mapper:"extensions"`
+	Specials         map[string]*NodeTypeConfig `mapper:"specials"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -177,6 +178,13 @@ func (ntc *NodeTypesConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.
 	}
 
 	tbl.RawSetString("extensions", extensionTbl)
+
+	specialsTbl := luaState.NewTable()
+	for fileName, specialConfig := range ntc.Specials {
+		specialsTbl.RawSetString(fileName, specialConfig.toLuaTable(luaState))
+	}
+
+	tbl.RawSetString("specials", specialsTbl)
 
 	return tbl
 }

@@ -121,6 +121,7 @@ func getDefaultConfig() *Config {
 				Icon: "",
 			},
 			Extensions: extensionsNodeTypeConfig,
+			Specials:   specialsNodeTypeConfig,
 		},
 		Modes: &ModesConfig{
 			Builtins: builtinModeConfigs,
