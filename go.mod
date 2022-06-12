@@ -6,15 +6,17 @@ require (
 	github.com/alitto/pond v1.8.0
 	github.com/deckarep/golang-set/v2 v2.1.0
 	github.com/dinhhuy258/gocui v0.3.1-0.20220527095035-35b2b5d4108a
+	github.com/dinhhuy258/logo-ls v1.3.8-0.20220612070857-42e31eeb2555
 	github.com/djherbis/times v1.5.0
 	github.com/gookit/color v1.4.2
 	github.com/hpcloud/tail v1.0.0
 	github.com/yuin/gluamapper v0.0.0-20150323120927-d836955830e7
 	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64
-	golang.org/x/text v0.3.0
+	golang.org/x/text v0.3.3
 )
 
 require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/gdamore/tcell/v2 v2.4.0 // indirect
