@@ -443,7 +443,7 @@ fm.modes.customs["mark-load"] = {
 }
 
 fm.modes.customs.open = {
-	name = "yarn",
+	name = "open",
 	key_bindings = {
 		default = {
 			help = "cancel",
