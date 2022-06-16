@@ -652,3 +652,33 @@ fm.modes.builtins.default.key_bindings.on_keys["`"] = {
 		},
 	},
 }
+
+fm.modes.builtins.default.key_bindings.on_keys["ctrl+u"] = {
+	help = "mark load",
+	messages = {
+		{
+			name = "BashExecSilently",
+			args = {
+				[===[
+        focus_index="${FM_FOCUS_IDX}"
+        echo FocusByIndex "'"$((focus_index-10))"'" >> "${FM_PIPE_MSG_IN:?}"
+        ]===],
+			},
+		},
+	},
+}
+
+fm.modes.builtins.default.key_bindings.on_keys["ctrl+d"] = {
+	help = "mark load",
+	messages = {
+		{
+			name = "BashExecSilently",
+			args = {
+				[===[
+        focus_index="${FM_FOCUS_IDX}"
+        echo FocusByIndex "'"$((focus_index+10))"'" >> "${FM_PIPE_MSG_IN:?}"
+        ]===],
+			},
+		},
+	},
+}
