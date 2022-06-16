@@ -38,6 +38,7 @@ var messageFactories = map[string]*MessageFactory{
 
 	"SwitchMode": newMessageFactory(SwitchMode),
 
+	"FocusByIndex":    newMessageFactory(FocusByIndex),
 	"FocusNext":       newMessageFactory(FocusNext),
 	"FocusPrevious":   newMessageFactory(FocusPrevious),
 	"FocusPath":       newMessageFactory(FocusPath),

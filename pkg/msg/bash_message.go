@@ -82,6 +82,7 @@ func getEnv(app IApp) []string {
 
 	env := os.Environ()
 	env = append(env, fmt.Sprintf("FM_FOCUS_PATH=%s", focusPath))
+	env = append(env, fmt.Sprintf("FM_FOCUS_IDX=%s", fmt.Sprint(explorerController.GetFocus())))
 	env = append(env, fmt.Sprintf("FM_INPUT_BUFFER=%s", inputController.GetInputBuffer()))
 	env = append(env, fmt.Sprintf("FM_PIPE_MSG_IN=%s", pipe.GetMessageInPath()))
 	env = append(env, fmt.Sprintf("FM_PIPE_SELECTION=%s", pipe.GetSelectionPath()))

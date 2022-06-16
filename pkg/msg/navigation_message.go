@@ -1,11 +1,28 @@
 package msg
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
+
+// FocusByIndex focus entry by index
+func FocusByIndex(app IApp, params ...string) {
+	index, err := strconv.Atoi(params[0])
+	if err != nil {
+		logController, _ := app.GetController(controller.Log).(*controller.LogController)
+		logController.SetLog(view.Error, fmt.Sprintf("Invalid index: %v", err))
+		logController.UpdateView()
+	}
+
+	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
+	explorerController.FocusByIndex(index)
+	explorerController.UpdateView()
+}
 
 // FocusFirst focus first entry
 func FocusFirst(app IApp, _ ...string) {
