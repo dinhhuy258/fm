@@ -109,6 +109,7 @@ func (ec *ExplorerController) FocusByIndex(idx int) {
 	if idx < 0 {
 		idx = 0
 	}
+
 	if idx >= len(ec.entries) {
 		idx = len(ec.entries) - 1
 	}

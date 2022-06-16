@@ -99,7 +99,8 @@ var defaultModeConfig = ModeConfig{
 						Args: []string{`
 							if [ -s "${FM_PIPE_SELECTION:?}" ]; then
 								echo SwitchMode "'"copy"'" >> "${FM_PIPE_MSG_IN:?}"
-                echo SetInputBuffer "'"Do you want to copy the selections file here? \(y/n\) "'" >> "${FM_PIPE_MSG_IN:?}"
+                echo SetInputBuffer "'"Do you want to copy the selections file here? \(y/n\) "'"
+								>> "${FM_PIPE_MSG_IN:?}"
 							else
 								echo LogWarning "'"Select nothing"'" >> "${FM_PIPE_MSG_IN:?}"
 							fi
@@ -115,7 +116,8 @@ var defaultModeConfig = ModeConfig{
 						Args: []string{`
 							if [ -s "${FM_PIPE_SELECTION:?}" ]; then
 								echo SwitchMode "'"move"'" >> "${FM_PIPE_MSG_IN:?}"
-                echo SetInputBuffer "'"Do you want to move the selections file here? \(y/n\) "'" >> "${FM_PIPE_MSG_IN:?}"
+                echo SetInputBuffer "'"Do you want to move the selections file here? \(y/n\) "'"
+								>> "${FM_PIPE_MSG_IN:?}"
 							else
 								echo LogWarning "'"Select nothing"'" >> "${FM_PIPE_MSG_IN:?}"
 							fi
