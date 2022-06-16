@@ -95,21 +95,12 @@ var defaultModeConfig = ModeConfig{
 				Help: "copy",
 				Messages: []*MessageConfig{
 					{
-						Name: "BashExec",
-						Args: []string{`
-							(while IFS= read -r line; do
-								if cp -r -- "${line:?}" ./; then
-									echo "${line:?}" copied to $PWD
-								else
-									echo Failed to copy "${line:?}" to $PWD
-								fi
-              done < "${FM_PIPE_SELECTION:?}")
-
-							read -p "[Press enter to continue]"
-
-							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
-							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
-						`},
+						Name: "SwitchMode",
+						Args: []string{"copy"},
+					},
+					{
+						Name: "SetInputBuffer",
+						Args: []string{"Do you want to copy the selections file here? (y/n) "},
 					},
 				},
 			},
@@ -117,21 +108,12 @@ var defaultModeConfig = ModeConfig{
 				Help: "move",
 				Messages: []*MessageConfig{
 					{
-						Name: "BashExec",
-						Args: []string{`
-							(while IFS= read -r line; do
-								if mv -- "${line:?}" ./; then
-									echo "${line:?}" moved to $PWD
-								else
-									echo Failed to move "${line:?}" to $PWD
-								fi
-              done < "${FM_PIPE_SELECTION:?}")
-
-							read -p "[Press enter to continue]"
-
-							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
-							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
-						`},
+						Name: "SwitchMode",
+						Args: []string{"move"},
+					},
+					{
+						Name: "SetInputBuffer",
+						Args: []string{"Do you want to move the selections file here? (y/n) "},
 					},
 				},
 			},
@@ -291,6 +273,102 @@ var renameModeConfig = ModeConfig{
 			Messages: []*MessageConfig{
 				{
 					Name: "UpdateInputBufferFromKey",
+				},
+			},
+		},
+	},
+}
+
+// copyModeConfig is the configuration for copying the selection files to the current destination
+var copyModeConfig = ModeConfig{
+	Name: "copy",
+	KeyBindings: KeyBindingsConfig{
+		OnKeys: map[string]*ActionConfig{
+			"ctrl+c": {
+				Help: "quit",
+				Messages: []*MessageConfig{
+					{
+						Name: "Quit",
+					},
+				},
+			},
+			"y": {
+				Help: "copy",
+				Messages: []*MessageConfig{
+					{
+						Name: "BashExec",
+						Args: []string{`
+							(while IFS= read -r line; do
+								if cp -r -- "${line:?}" ./; then
+									echo "${line:?}" copied to $PWD
+								else
+									echo Failed to copy "${line:?}" to $PWD
+								fi
+              done < "${FM_PIPE_SELECTION:?}")
+
+							read -p "[Press enter to continue]"
+
+							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
+							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
+						`},
+					},
+				},
+			},
+		},
+		Default: &ActionConfig{
+			Help: "cancel",
+			Messages: []*MessageConfig{
+				{
+					Name: "SwitchMode",
+					Args: []string{"default"},
+				},
+			},
+		},
+	},
+}
+
+// moveModeConfig is the configuration for moving the selection files to the current destination
+var moveModeConfig = ModeConfig{
+	Name: "copy",
+	KeyBindings: KeyBindingsConfig{
+		OnKeys: map[string]*ActionConfig{
+			"ctrl+c": {
+				Help: "quit",
+				Messages: []*MessageConfig{
+					{
+						Name: "Quit",
+					},
+				},
+			},
+			"y": {
+				Help: "move",
+				Messages: []*MessageConfig{
+					{
+						Name: "BashExec",
+						Args: []string{`
+							(while IFS= read -r line; do
+								if mv -- "${line:?}" ./; then
+									echo "${line:?}" moved to $PWD
+								else
+									echo Failed to move "${line:?}" to $PWD
+								fi
+              done < "${FM_PIPE_SELECTION:?}")
+
+							read -p "[Press enter to continue]"
+
+							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
+							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
+						`},
+					},
+				},
+			},
+		},
+		Default: &ActionConfig{
+			Help: "cancel",
+			Messages: []*MessageConfig{
+				{
+					Name: "SwitchMode",
+					Args: []string{"default"},
 				},
 			},
 		},
@@ -548,6 +626,8 @@ var builtinModeConfigs = map[string]*ModeConfig{
 	"default":           &defaultModeConfig,
 	"new-file":          &newFileModeConfig,
 	"rename":            &renameModeConfig,
+	"copy":              &copyModeConfig,
+	"move":              &moveModeConfig,
 	"delete":            &deleteModeConfig,
 	"delete-current":    &deleteCurrentModeConfig,
 	"delete-selections": &deleteSelectionsModeConfig,
