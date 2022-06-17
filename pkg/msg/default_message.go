@@ -6,35 +6,6 @@ import (
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
-// ToggleSelection is a message that toggles the selection of the current entry
-func ToggleSelection(app IApp, _ ...string) {
-	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
-	selectionController, _ := app.GetController(controller.Selection).(*controller.SelectionController)
-
-	entry := explorerController.GetCurrentEntry()
-	if entry == nil {
-		return
-	}
-
-	path := entry.GetPath()
-
-	selectionController.ToggleSelection(path)
-
-	selectionController.UpdateView()
-	explorerController.UpdateView()
-}
-
-// ClearSelection is a message that clears the selection
-func ClearSelection(app IApp, _ ...string) {
-	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
-	selectionController, _ := app.GetController(controller.Selection).(*controller.SelectionController)
-
-	selectionController.ClearSelections()
-
-	selectionController.UpdateView()
-	explorerController.UpdateView()
-}
-
 // ToggleHidden is a message that toggles the hidden configuration
 func ToggleHidden(app IApp, _ ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)

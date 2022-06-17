@@ -62,7 +62,7 @@ func FocusPath(app IApp, params ...string) {
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 
 	path := params[0]
-	if !fs.IsFileExists(path) {
+	if !fs.IsPathExists(path) {
 		logController.SetLog(view.Error, "Path does not exist: "+path)
 		logController.UpdateView()
 

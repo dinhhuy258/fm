@@ -99,8 +99,7 @@ var defaultModeConfig = ModeConfig{
 						Args: []string{`
 							if [ -s "${FM_PIPE_SELECTION:?}" ]; then
 								echo SwitchMode "'"copy"'" >> "${FM_PIPE_MSG_IN:?}"
-                echo SetInputBuffer "'"Do you want to copy the selections file here? \(y/n\) "'"
-								>> "${FM_PIPE_MSG_IN:?}"
+                echo SetInputBuffer "'"Do you want to copy the selections file here? \(y/n\) "'" >> "${FM_PIPE_MSG_IN:?}"
 							else
 								echo LogWarning "'"Select nothing"'" >> "${FM_PIPE_MSG_IN:?}"
 							fi
@@ -116,8 +115,7 @@ var defaultModeConfig = ModeConfig{
 						Args: []string{`
 							if [ -s "${FM_PIPE_SELECTION:?}" ]; then
 								echo SwitchMode "'"move"'" >> "${FM_PIPE_MSG_IN:?}"
-                echo SetInputBuffer "'"Do you want to move the selections file here? \(y/n\) "'"
-								>> "${FM_PIPE_MSG_IN:?}"
+                echo SetInputBuffer "'"Do you want to move the selections file here? \(y/n\) "'" >> "${FM_PIPE_MSG_IN:?}"
 							else
 								echo LogWarning "'"Select nothing"'" >> "${FM_PIPE_MSG_IN:?}"
 							fi
@@ -146,6 +144,14 @@ var defaultModeConfig = ModeConfig{
 				Messages: []*MessageConfig{
 					{
 						Name: "ClearSelection",
+					},
+				},
+			},
+			"ctrl+a": {
+				Help: "select all",
+				Messages: []*MessageConfig{
+					{
+						Name: "SelectAll",
 					},
 				},
 			},
@@ -462,10 +468,18 @@ var deleteCurrentModeConfig = ModeConfig{
 								echo Failed to delete "${focus_path}"
 							fi
 
-							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
-							echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
-
 							read -p "[Press enter to continue]"
+
+							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
+
+							focus_index="${FM_FOCUS_IDX:?}"
+							echo FocusByIndex "'"$focus_index"'" >> "${FM_PIPE_MSG_IN:?}"
+
+							if grep -q "${focus_path:?}" "${FM_PIPE_SELECTION:?}"; then
+								echo ToggleSelectionByPath "'"$focus_path"'" >> "${FM_PIPE_MSG_IN:?}"
+							fi
+
+							echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
 						`},
 					},
 				},
@@ -512,8 +526,18 @@ var deleteSelectionsModeConfig = ModeConfig{
 
 							read -p "[Press enter to continue]"
 
-							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
 							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
+
+							focus_path="${FM_FOCUS_PATH:?}"
+							# Check if focus path is in FM_PIPE_SELECTION file
+							if grep -q "${focus_path:?}" "${FM_PIPE_SELECTION:?}"; then
+								focus_index="${FM_FOCUS_IDX:?}"
+								echo FocusByIndex "'"$focus_index"'" >> "${FM_PIPE_MSG_IN:?}"
+							else
+								echo FocusPath "'"$focus_path"'" >> "${FM_PIPE_MSG_IN:?}"
+							fi
+
+							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
 							echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
 						`},
 					},

@@ -40,6 +40,11 @@ func (sc *SelectionController) ToggleSelection(path string) {
 	}
 }
 
+// SelectPath add the given path to selection list.
+func (sc *SelectionController) SelectPath(path string) {
+	sc.selections.Add(path)
+}
+
 // GetSelections returns the current selections.
 func (sc *SelectionController) GetSelections() []string {
 	return sc.selections.ToSlice()

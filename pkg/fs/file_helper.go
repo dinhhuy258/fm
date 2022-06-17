@@ -113,8 +113,8 @@ func ReadFromFile(filePath string) []string {
 	return lines
 }
 
-func IsFileExists(filePath string) bool {
-	_, err := os.Stat(filePath)
+func IsPathExists(path string) bool {
+	_, err := os.Stat(path)
 
 	return err == nil
 }

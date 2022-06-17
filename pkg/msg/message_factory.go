@@ -51,8 +51,10 @@ var messageFactories = map[string]*MessageFactory{
 	"UpdateInputBufferFromKey": newMessageFactory(UpdateInputBufferFromKey),
 	"SetInputBuffer":           newMessageFactory(SetInputBuffer),
 
-	"ToggleSelection": newMessageFactory(ToggleSelection),
-	"ClearSelection":  newMessageFactory(ClearSelection),
+	"ToggleSelection":       newMessageFactory(ToggleSelection),
+	"ClearSelection":        newMessageFactory(ClearSelection),
+	"ToggleSelectionByPath": newMessageFactory(ToggleSelectionByPath),
+	"SelectAll":             newMessageFactory(SelectAll),
 
 	"SortByDirFirst":     newMessageFactory(SortByDirFirst),
 	"SortByDateModified": newMessageFactory(SortByDateModified),

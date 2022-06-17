@@ -31,7 +31,7 @@ func getConfigFilePath() optional.Optional[string] {
 	}
 
 	configFilePath := filepath.Join(configDir, AppDir, ConfigFileName)
-	if fs.IsFileExists(configFilePath) {
+	if fs.IsPathExists(configFilePath) {
 		return optional.New(configFilePath)
 	}
 
