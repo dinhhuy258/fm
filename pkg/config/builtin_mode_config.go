@@ -324,6 +324,7 @@ var copyModeConfig = ModeConfig{
 
 							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
 							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
+							echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
 						`},
 					},
 				},
@@ -372,6 +373,7 @@ var moveModeConfig = ModeConfig{
 
 							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
 							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
+							echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
 						`},
 					},
 				},
