@@ -344,7 +344,7 @@ var copyModeConfig = ModeConfig{
 
 // moveModeConfig is the configuration for moving the selection files to the current destination
 var moveModeConfig = ModeConfig{
-	Name: "copy",
+	Name: "move",
 	KeyBindings: KeyBindingsConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
