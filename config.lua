@@ -654,7 +654,7 @@ fm.modes.builtins.default.key_bindings.on_keys["`"] = {
 }
 
 fm.modes.builtins.default.key_bindings.on_keys["ctrl+u"] = {
-	help = "mark load",
+	help = "scroll up",
 	messages = {
 		{
 			name = "BashExecSilently",
@@ -669,7 +669,7 @@ fm.modes.builtins.default.key_bindings.on_keys["ctrl+u"] = {
 }
 
 fm.modes.builtins.default.key_bindings.on_keys["ctrl+d"] = {
-	help = "mark load",
+	help = "scroll down",
 	messages = {
 		{
 			name = "BashExecSilently",
