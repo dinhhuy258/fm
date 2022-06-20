@@ -163,6 +163,19 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
+			":": {
+				Help: "command",
+				Messages: []*MessageConfig{
+					{
+						Name: "SwitchMode",
+						Args: []string{"command"},
+					},
+					{
+						Name: "SetInputBuffer",
+						Args: []string{""},
+					},
+				},
+			},
 		},
 	},
 }
@@ -655,6 +668,56 @@ var sortModeConfig = ModeConfig{
 	},
 }
 
+// commandModeConfig is the configuration for the rename builtin mode.
+var commandModeConfig = ModeConfig{
+	Name: "command",
+	KeyBindings: KeyBindingsConfig{
+		OnKeys: map[string]*ActionConfig{
+			"ctrl+c": {
+				Help: "quit",
+				Messages: []*MessageConfig{
+					{
+						Name: "Quit",
+					},
+				},
+			},
+			"enter": {
+				Help: "execute",
+				Messages: []*MessageConfig{
+					{
+						Name: "BashExec",
+						Args: []string{`
+              command="${FM_INPUT_BUFFER}"
+							eval "$command"
+
+							read -p "[Press enter to continue]"
+
+							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
+							echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
+						`},
+					},
+				},
+			},
+			"esc": {
+				Help: "cancel",
+				Messages: []*MessageConfig{
+					{
+						Name: "SwitchMode",
+						Args: []string{"default"},
+					},
+				},
+			},
+		},
+		Default: &ActionConfig{
+			Messages: []*MessageConfig{
+				{
+					Name: "UpdateInputBufferFromKey",
+				},
+			},
+		},
+	},
+}
+
 // builtinModeConfigs is a map of mode names to their configs.
 var builtinModeConfigs = map[string]*ModeConfig{
 	"default":           &defaultModeConfig,
@@ -666,4 +729,5 @@ var builtinModeConfigs = map[string]*ModeConfig{
 	"delete-current":    &deleteCurrentModeConfig,
 	"delete-selections": &deleteSelectionsModeConfig,
 	"sort":              &sortModeConfig,
+	"command":           &commandModeConfig,
 }
