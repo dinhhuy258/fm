@@ -45,6 +45,22 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
+			"J": {
+				Help: "go to bottom",
+				Messages: []*MessageConfig{
+					{
+						Name: "FocusLast",
+					},
+				},
+			},
+			"K": {
+				Help: "go to top",
+				Messages: []*MessageConfig{
+					{
+						Name: "FocusFirst",
+					},
+				},
+			},
 			"n": {
 				Help: "new file",
 				Messages: []*MessageConfig{

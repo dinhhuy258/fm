@@ -184,20 +184,6 @@ fm.modes.customs["go-to"] = {
 					},
 				},
 			},
-			g = {
-				help = "focus first",
-				messages = {
-					{
-						name = "FocusFirst",
-					},
-					{
-						name = "SwitchMode",
-						args = {
-							"default",
-						},
-					},
-				},
-			},
 			h = {
 				help = "Desktop",
 				messages = {
@@ -563,15 +549,6 @@ fm.modes.customs.open = {
 					},
 				},
 			},
-		},
-	},
-}
-
-fm.modes.builtins.default.key_bindings.on_keys["G"] = {
-	help = "focus last",
-	messages = {
-		{
-			name = "FocusLast",
 		},
 	},
 }
