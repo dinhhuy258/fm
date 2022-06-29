@@ -174,6 +174,10 @@ func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
 		app.submitMessages(action.messages)
 	case keybindings.defaultAction != nil:
 		app.submitMessages(keybindings.defaultAction.messages)
+	default:
+		logController, _ := app.GetController(controller.Log).(*controller.LogController)
+		logController.SetLog(view.Warning, "Key map not found")
+		logController.UpdateView()
 	}
 
 	return nil
