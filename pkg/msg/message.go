@@ -12,8 +12,6 @@ type IApp interface {
 	GetPipe() *pipe.Pipe
 	// Controller
 	GetController(controller.Type) controller.IController
-	// Key
-	GetPressedKey() key.Key
 	// Quit
 	Quit()
 	// Mode
@@ -27,6 +25,6 @@ type IApp interface {
 
 // Message is the message type.
 type Message struct {
-	Func func(app IApp, params ...string)
+	Func func(app IApp, key key.Key, params ...string)
 	Args []string
 }

@@ -31,7 +31,6 @@ type App struct {
 	gui        *gui.Gui
 	lua        *lua.Lua
 	modes      *Modes
-	pressedKey key.Key
 	pipe       *pipe.Pipe
 
 	messageWorkerPool *pond.WorkerPool
@@ -82,7 +81,7 @@ func (app *App) Run() error {
 		return nil
 	}
 
-	msg.ChangeDirectory(app, wd)
+	msg.ChangeDirectory(app, key.EmptyKey, wd)
 
 	return app.gui.Run()
 }
@@ -136,11 +135,6 @@ func (app *App) SwitchMode(mode string) {
 	logController.ShowLog()
 }
 
-// GetPressedKey returns the previous pressed key
-func (app *App) GetPressedKey() key.Key {
-	return app.pressedKey
-}
-
 // Quit the application
 func (app *App) Quit() {
 	app.gui.Quit()
@@ -166,19 +160,19 @@ func (app *App) OnQuit() {
 func (app *App) onKey(k gocui.Key, ch rune, mod gocui.Modifier) error {
 	keybindings := app.modes.GetCurrentMode().GetKeyBindings()
 
-	app.pressedKey = key.Key{
+	pressedKey := key.Key{
 		Key: k,
 		Ch:  ch,
 		Mod: mod,
 	}
 
-	action, hasKey := keybindings.onKeys[app.pressedKey]
+	action, hasKey := keybindings.onKeys[pressedKey]
 
 	switch {
 	case hasKey:
-		app.submitMessages(action.messages)
+		app.submitMessages(action.messages, pressedKey)
 	case keybindings.defaultAction != nil:
-		app.submitMessages(keybindings.defaultAction.messages)
+		app.submitMessages(keybindings.defaultAction.messages, pressedKey)
 	default:
 		app.SetLog(view.LogWarning, "Key map not found")
 	}
@@ -187,12 +181,12 @@ func (app *App) onKey(k gocui.Key, ch rune, mod gocui.Modifier) error {
 }
 
 // submitMessages submit messages to the message worker pool
-func (app *App) submitMessages(messages []*msg.Message) {
+func (app *App) submitMessages(messages []*msg.Message, pressedKey key.Key) {
 	for _, message := range messages {
 		message := message // This will make scopelint happy
 
 		app.messageWorkerPool.Submit(func() {
-			message.Func(app, message.Args...)
+			message.Func(app, pressedKey, message.Args...)
 		})
 	}
 
@@ -224,5 +218,5 @@ func (app *App) onMessageIn(messageIn string) {
 		return
 	}
 
-	app.submitMessages([]*msg.Message{message})
+	app.submitMessages([]*msg.Message{message}, key.EmptyKey)
 }

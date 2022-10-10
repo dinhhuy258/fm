@@ -1,16 +1,20 @@
 package msg
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/dinhhuy258/fm/pkg/gui/key"
+)
 
 var errMessageNotFound = errors.New("Message name is not found")
 
 // MessageFactory is a factory for creating messages.
 type MessageFactory struct {
-	messageFunc func(app IApp, params ...string)
+	messageFunc func(app IApp, key key.Key, params ...string)
 }
 
 // newMessageFactory creates a new message factory.
-func newMessageFactory(messageFunc func(app IApp, params ...string)) *MessageFactory {
+func newMessageFactory(messageFunc func(app IApp, key key.Key, params ...string)) *MessageFactory {
 	return &MessageFactory{
 		messageFunc: messageFunc,
 	}

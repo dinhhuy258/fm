@@ -17,6 +17,12 @@ type Key struct {
 	Mod gocui.Modifier
 }
 
+var EmptyKey = Key{
+	Key: 0,
+	Ch:  0,
+	Mod: gocui.ModNone,
+}
+
 // GetKeyDisplay returns the display name of the key
 func GetKeyDisplay(key Key) string {
 	keyInt := 0
