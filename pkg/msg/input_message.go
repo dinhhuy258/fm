@@ -7,7 +7,7 @@ import (
 
 // SetInputBuffer is a message to set the input buffer
 func SetInputBuffer(app IApp, _ key.Key, ctx MessageContext) {
-	input := ctx["arg1"].(string)
+	input, _ := ctx["arg1"].(string)
 
 	inputController, _ := app.GetController(controller.Input).(*controller.InputController)
 	inputController.SetInputBuffer(input)

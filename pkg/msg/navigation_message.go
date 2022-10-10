@@ -2,11 +2,11 @@ package msg
 
 import (
 	"fmt"
-	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"strconv"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
+	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
@@ -59,7 +59,7 @@ func FocusPrevious(app IApp, _ key.Key, _ MessageContext) {
 func FocusPath(app IApp, _ key.Key, ctx MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
-	path := ctx["arg1"].(string)
+	path, _ := ctx["arg1"].(string)
 	if !fs.IsPathExists(path) {
 		app.SetLog(view.LogError, "Path does not exist: "+path)
 
@@ -100,7 +100,7 @@ func Back(app IApp, _ key.Key, _ MessageContext) {
 
 // ChangeDirectory change directory
 func ChangeDirectory(app IApp, _ key.Key, ctx MessageContext) {
-	directory := ctx["arg1"].(string)
+	directory, _ := ctx["arg1"].(string)
 
 	loadDirectory(app, directory, optional.NewEmpty[string]())
 }

@@ -2,13 +2,13 @@ package msg
 
 import (
 	"fmt"
-	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"io/ioutil"
 	"os"
 	"os/exec"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
+	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
@@ -31,7 +31,7 @@ func BashExec(app IApp, _ key.Key, ctx MessageContext) {
 			return err
 		}
 
-		command := ctx["arg1"].(string)
+		command, _ := ctx["arg1"].(string)
 		cmd = exec.Command("bash", "-c", command)
 		cmd.Env = getEnv(app)
 		cmd.Stdin = os.Stdin
@@ -52,7 +52,7 @@ func BashExec(app IApp, _ key.Key, ctx MessageContext) {
 
 // BashExecSilently executes a bash script silently
 func BashExecSilently(app IApp, _ key.Key, ctx MessageContext) {
-	command := ctx["arg1"].(string)
+	command, _ := ctx["arg1"].(string)
 	cmd := exec.Command("bash", "-c", command)
 	cmd.Env = getEnv(app)
 

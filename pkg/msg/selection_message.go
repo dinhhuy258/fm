@@ -51,7 +51,7 @@ func SelectAll(app IApp, _ key.Key, _ MessageContext) {
 
 // ToggleSelectionByPath is a message that toggle selection by file path.
 func ToggleSelectionByPath(app IApp, _ key.Key, ctx MessageContext) {
-	path := ctx["arg1"].(string)
+	path, _ := ctx["arg1"].(string)
 
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	selectionController, _ := app.GetController(controller.Selection).(*controller.SelectionController)

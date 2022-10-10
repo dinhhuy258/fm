@@ -12,8 +12,8 @@ import (
 
 // Key represent gocui key
 type Key struct {
-	Key gocui.Key
 	Ch  rune
+	Key gocui.Key
 	Mod gocui.Modifier
 }
 

@@ -122,7 +122,7 @@ func (app *App) GetController(controllerType controller.Type) controller.IContro
 
 func (app *App) SetLog(level view.LogLevel, msgFormat string, args ...interface{}) {
 	logController, _ := app.GetController(controller.Log).(*controller.LogController)
-	logController.SetLog(level, msgFormat, args)
+	logController.SetLog(level, msgFormat, args...)
 	logController.UpdateView()
 }
 

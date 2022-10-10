@@ -19,7 +19,7 @@ func ToggleHidden(app IApp, _ key.Key, _ MessageContext) {
 
 // SwitchMode is a message that switches the mode of the application
 func SwitchMode(app IApp, _ key.Key, ctx MessageContext) {
-	mode := ctx["arg1"].(string)
+	mode, _ := ctx["arg1"].(string)
 
 	app.SwitchMode(mode)
 }
