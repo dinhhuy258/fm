@@ -2,18 +2,18 @@ package msg
 
 import (
 	"fmt"
+	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"strconv"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
-	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 // FocusByIndex focus entry by index
-func FocusByIndex(app IApp, _ key.Key, params ...string) {
-	index, err := strconv.Atoi(params[0])
+func FocusByIndex(app IApp, _ key.Key, ctx MessageContext) {
+	index, err := strconv.Atoi(ctx["arg1"].(string))
 	if err != nil {
 		app.SetLog(view.LogError, fmt.Sprintf("Invalid index: %v", err))
 	}
@@ -24,7 +24,7 @@ func FocusByIndex(app IApp, _ key.Key, params ...string) {
 }
 
 // FocusFirst focus first entry
-func FocusFirst(app IApp, _ key.Key, _ ...string) {
+func FocusFirst(app IApp, _ key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusFirst()
@@ -32,7 +32,7 @@ func FocusFirst(app IApp, _ key.Key, _ ...string) {
 }
 
 // FocusLast focus last entry
-func FocusLast(app IApp, _ key.Key, _ ...string) {
+func FocusLast(app IApp, _ key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusLast()
@@ -40,7 +40,7 @@ func FocusLast(app IApp, _ key.Key, _ ...string) {
 }
 
 // FocusNext focus next entry
-func FocusNext(app IApp, _ key.Key, _ ...string) {
+func FocusNext(app IApp, _ key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusNext()
@@ -48,7 +48,7 @@ func FocusNext(app IApp, _ key.Key, _ ...string) {
 }
 
 // FocusPrevious focus previous entry
-func FocusPrevious(app IApp, _ key.Key, _ ...string) {
+func FocusPrevious(app IApp, _ key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusPrevious()
@@ -56,10 +56,10 @@ func FocusPrevious(app IApp, _ key.Key, _ ...string) {
 }
 
 // FocusPath focus entry with path
-func FocusPath(app IApp, _ key.Key, params ...string) {
+func FocusPath(app IApp, _ key.Key, ctx MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
-	path := params[0]
+	path := ctx["arg1"].(string)
 	if !fs.IsPathExists(path) {
 		app.SetLog(view.LogError, "Path does not exist: "+path)
 
@@ -71,7 +71,7 @@ func FocusPath(app IApp, _ key.Key, params ...string) {
 }
 
 // Enter directory
-func Enter(app IApp, _ key.Key, _ ...string) {
+func Enter(app IApp, _ key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	entry := explorerController.GetCurrentEntry()
@@ -86,7 +86,7 @@ func Enter(app IApp, _ key.Key, _ ...string) {
 }
 
 // Back to parent directory
-func Back(app IApp, _ key.Key, _ ...string) {
+func Back(app IApp, _ key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	dir := fs.Dir(explorerController.GetPath())
@@ -99,8 +99,8 @@ func Back(app IApp, _ key.Key, _ ...string) {
 }
 
 // ChangeDirectory change directory
-func ChangeDirectory(app IApp, _ key.Key, params ...string) {
-	directory := params[0]
+func ChangeDirectory(app IApp, _ key.Key, ctx MessageContext) {
+	directory := ctx["arg1"].(string)
 
 	loadDirectory(app, directory, optional.NewEmpty[string]())
 }

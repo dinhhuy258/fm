@@ -28,10 +28,10 @@ const (
 
 // App is the main application
 type App struct {
-	gui        *gui.Gui
-	lua        *lua.Lua
-	modes      *Modes
-	pipe       *pipe.Pipe
+	gui   *gui.Gui
+	lua   *lua.Lua
+	modes *Modes
+	pipe  *pipe.Pipe
 
 	messageWorkerPool *pond.WorkerPool
 }
@@ -81,7 +81,9 @@ func (app *App) Run() error {
 		return nil
 	}
 
-	msg.ChangeDirectory(app, key.EmptyKey, wd)
+	ctx := make(msg.MessageContext)
+	ctx["arg1"] = wd
+	msg.ChangeDirectory(app, key.EmptyKey, ctx)
 
 	return app.gui.Run()
 }
@@ -186,7 +188,7 @@ func (app *App) submitMessages(messages []*msg.Message, pressedKey key.Key) {
 		message := message // This will make scopelint happy
 
 		app.messageWorkerPool.Submit(func() {
-			message.Func(app, pressedKey, message.Args...)
+			message.Func(app, pressedKey, message.Ctx)
 		})
 	}
 
