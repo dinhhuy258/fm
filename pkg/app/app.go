@@ -158,13 +158,13 @@ func (app *App) OnQuit() {
 }
 
 // onKey is called from gocui when a key is pressed
-func (app *App) onKey(k gocui.Key, ch rune, _ gocui.Modifier) error {
+func (app *App) onKey(k gocui.Key, ch rune, mod gocui.Modifier) error {
 	keybindings := app.modes.GetCurrentMode().GetKeyBindings()
 
-	if ch == 0 {
-		app.pressedKey = k
-	} else {
-		app.pressedKey = ch
+	app.pressedKey = key.Key{
+		Key: k,
+		Ch: ch,
+		Mod: mod,
 	}
 
 	action, hasKey := keybindings.onKeys[app.pressedKey]
