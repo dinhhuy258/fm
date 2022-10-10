@@ -81,7 +81,7 @@ func (c *Controllers) notify(event Event, data optional.Optional[string]) {
 	switch event {
 	case ShowErrorLog:
 		data.IfPresent(func(logMsg *string) {
-			logController.SetLog(view.Error, *logMsg)
+			logController.SetLog(view.LogError, *logMsg)
 			logController.UpdateView()
 		})
 	case InputVisible:

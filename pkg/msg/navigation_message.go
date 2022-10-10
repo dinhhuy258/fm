@@ -14,9 +14,7 @@ import (
 func FocusByIndex(app IApp, params ...string) {
 	index, err := strconv.Atoi(params[0])
 	if err != nil {
-		logController, _ := app.GetController(controller.Log).(*controller.LogController)
-		logController.SetLog(view.Error, fmt.Sprintf("Invalid index: %v", err))
-		logController.UpdateView()
+		app.SetLog(view.LogError, fmt.Sprintf("Invalid index: %v", err))
 	}
 
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
@@ -59,12 +57,10 @@ func FocusPrevious(app IApp, _ ...string) {
 // FocusPath focus entry with path
 func FocusPath(app IApp, params ...string) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
-	logController, _ := app.GetController(controller.Log).(*controller.LogController)
 
 	path := params[0]
 	if !fs.IsPathExists(path) {
-		logController.SetLog(view.Error, "Path does not exist: "+path)
-		logController.UpdateView()
+		app.SetLog(view.LogError, "Path does not exist: "+path)
 
 		return
 	}

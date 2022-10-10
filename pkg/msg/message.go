@@ -3,6 +3,7 @@ package msg
 import (
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/key"
+	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/fm/pkg/pipe"
 )
 
@@ -21,6 +22,7 @@ type IApp interface {
 	OnUIThread(f func() error)
 	Resume() error
 	Suspend() error
+	SetLog(level view.LogLevel, msgFormat string, args ...interface{})
 }
 
 // Message is the message type.

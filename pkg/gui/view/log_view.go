@@ -9,9 +9,9 @@ import (
 type LogLevel int8
 
 const (
-	Info = iota
-	Warning
-	Error
+	LogInfo = iota
+	LogWarning
+	LogError
 )
 
 type LogView struct {
@@ -43,10 +43,10 @@ func (lv *LogView) UpdateView(level LogLevel, log string) {
 	var logStyle style.TextStyle
 
 	switch {
-	case level == Info:
+	case level == LogInfo:
 		log = cfg.General.LogInfoUI.Prefix + log + cfg.General.LogInfoUI.Suffix
 		logStyle = lv.logInfoTextStyle
-	case level == Warning:
+	case level == LogWarning:
 		log = cfg.General.LogWarningUI.Prefix + log + cfg.General.LogWarningUI.Suffix
 		logStyle = lv.logWarningTextStyle
 	default:

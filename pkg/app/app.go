@@ -119,15 +119,20 @@ func (app *App) GetController(controllerType controller.Type) controller.IContro
 	return app.gui.GetController(controllerType)
 }
 
+func (app *App) SetLog(level view.LogLevel, msgFormat string, args ...interface{}) {
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
+	logController.SetLog(level, msgFormat, args)
+	logController.UpdateView()
+}
+
 // SwitchMode switches to the given mode
 func (app *App) SwitchMode(mode string) {
-	logController, _ := app.GetController(controller.Log).(*controller.LogController)
-
 	if err := app.modes.SwitchMode(mode); err != nil {
-		logController.SetLog(view.Error, "Mode not found: "+mode)
-		logController.UpdateView()
+		app.SetLog(view.LogError, "Mode not found: "+mode)
 	}
 
+	logController, _ := app.GetController(controller.Log).(*controller.LogController)
+	// make sure that the log view is always show after switching mode
 	logController.ShowLog()
 }
 
@@ -163,7 +168,7 @@ func (app *App) onKey(k gocui.Key, ch rune, mod gocui.Modifier) error {
 
 	app.pressedKey = key.Key{
 		Key: k,
-		Ch: ch,
+		Ch:  ch,
 		Mod: mod,
 	}
 
@@ -175,9 +180,7 @@ func (app *App) onKey(k gocui.Key, ch rune, mod gocui.Modifier) error {
 	case keybindings.defaultAction != nil:
 		app.submitMessages(keybindings.defaultAction.messages)
 	default:
-		logController, _ := app.GetController(controller.Log).(*controller.LogController)
-		logController.SetLog(view.Warning, "Key map not found")
-		logController.UpdateView()
+		app.SetLog(view.LogWarning, "Key map not found")
 	}
 
 	return nil
