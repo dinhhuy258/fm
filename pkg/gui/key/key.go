@@ -5,9 +5,9 @@ import (
 	"log"
 	"strings"
 	"unicode"
-	"unicode/utf8"
 
 	"github.com/dinhhuy258/gocui"
+	"github.com/rivo/uniseg"
 )
 
 // Key represent gocui key
@@ -43,7 +43,7 @@ func GetKeyDisplay(key Key) string {
 
 // GetKey returns the key from the display name
 func GetKey(key string) Key {
-	runeCount := utf8.RuneCountInString(key)
+	runeCount := uniseg.GraphemeClusterCount(key)
 	if runeCount > 1 {
 		binding, hasKey := keymap[strings.ToLower(key)]
 		if !hasKey {

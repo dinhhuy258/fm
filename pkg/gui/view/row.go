@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/dinhhuy258/fm/pkg/gui/view/style"
+	"github.com/rivo/uniseg"
 )
 
 var ErrInvalidRowData = errors.New("invalid row data")
@@ -69,36 +69,36 @@ func (c *column) sprintColumnComponents(columnValueComponents []ColumnValueCompo
 		originalLine += columnValueComponent.Value
 	}
 
-	if utf8.RuneCountInString(originalLine) > w {
+	if uniseg.StringWidth(originalLine) > w {
 		originalLine = removeRunes(originalLine, w)
 	}
 
-	originalLineSize := utf8.RuneCountInString(originalLine)
+	originalLineSize := uniseg.StringWidth(originalLine)
 	spaceCount := 0
 
 	if c.leftAlign {
 		originalLine = paddingRight(originalLine, w, " ")
-		spaceCount = utf8.RuneCountInString(originalLine) - originalLineSize
+		spaceCount = uniseg.StringWidth(originalLine) - originalLineSize
 	} else {
 		originalLine = fmt.Sprintf("%"+fmt.Sprintf("%v", w)+"s", originalLine)
-		spaceCount = utf8.RuneCountInString(originalLine) - originalLineSize
+		spaceCount = uniseg.StringWidth(originalLine) - originalLineSize
 	}
 
-	originalLineSize = utf8.RuneCountInString(originalLine)
+	originalLineSize = uniseg.StringWidth(originalLine)
 
 	line := ""
 	lineSize := 0
 
 	for _, columnValueComponent := range columnValueComponents {
 		columnValue := columnValueComponent.Value
-		lineSize += utf8.RuneCountInString(columnValue)
+		lineSize += uniseg.StringWidth(columnValue)
 
 		if lineSize <= originalLineSize {
 			line += styleString(columnValue, columnValueComponent.Style)
 		} else {
 			// lineSize > originalLineSize
 			discardSize := lineSize - originalLineSize
-			columnValue = columnValue[:utf8.RuneCountInString(columnValue)-discardSize]
+			columnValue = columnValue[:uniseg.StringWidth(columnValue)-discardSize]
 			line += styleString(columnValue, columnValueComponent.Style)
 
 			break
@@ -117,7 +117,7 @@ func (c *column) sprintColumnComponents(columnValueComponents []ColumnValueCompo
 func (c *column) sprintString(val string, w int) string {
 	line := val
 
-	if utf8.RuneCountInString(line) > w {
+	if uniseg.StringWidth(line) > w {
 		line = removeRunes(line, w)
 	}
 
@@ -147,7 +147,7 @@ func (c *column) sprint(cv ColumnValue, w int) string {
 
 // paddingRight right-pads the string with pad up to len runes
 func paddingRight(str string, length int, pad string) string {
-	return str + strings.Repeat(pad, length-utf8.RuneCountInString(str))
+	return str + strings.Repeat(pad, length-uniseg.StringWidth(str))
 }
 
 // removeRunes truncate string length to w

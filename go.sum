@@ -5,10 +5,6 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/deckarep/golang-set/v2 v2.1.0 h1:g47V4Or+DUdzbs8FxCCmgb6VYd+ptPAngjM6dtGktsI=
 github.com/deckarep/golang-set/v2 v2.1.0/go.mod h1:VAky9rY/yGXJOLEDv3OMci+7wtDpOF4IN+y82NBOac4=
-github.com/dinhhuy258/gocui v0.3.1-0.20220527095035-35b2b5d4108a h1:0vZD/18Fx3ybwa7ArhtovBJvcG0UIwgPHk6vzFKduvc=
-github.com/dinhhuy258/gocui v0.3.1-0.20220527095035-35b2b5d4108a/go.mod h1:PC5qP+BoBhS3p5Q2WdQPL2FpawnnU7uN4F6+xdv34po=
-github.com/dinhhuy258/gocui v0.3.1-0.20221009162314-168edcd387d9 h1:GmNjXOyTlCYyY6098eSkr+HCZfegGoarQ/2n+YFkfIw=
-github.com/dinhhuy258/gocui v0.3.1-0.20221009162314-168edcd387d9/go.mod h1:PC5qP+BoBhS3p5Q2WdQPL2FpawnnU7uN4F6+xdv34po=
 github.com/dinhhuy258/gocui v0.3.1-0.20221010082943-3f0267896897 h1:mqGQBZaO31FIYvj1Ry67ykHf4UwdOD9EShoCK7946c0=
 github.com/dinhhuy258/gocui v0.3.1-0.20221010082943-3f0267896897/go.mod h1:PC5qP+BoBhS3p5Q2WdQPL2FpawnnU7uN4F6+xdv34po=
 github.com/dinhhuy258/logo-ls v1.3.8-0.20220612070857-42e31eeb2555 h1:+EkaPZ0OvvO2BrB7m1DL7BI1VaYCjoPZDDVc9mqc7LI=
@@ -35,8 +31,9 @@ github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyua
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/rivo/uniseg v0.1.0 h1:+2KBaVoUmb9XzDsrx/Ct0W/EYOSFf/nWTauy++DprtY=
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
+github.com/rivo/uniseg v0.4.3-0.20220930054838-08ce52f667cc h1:zaWVrQYwOd3aCvuLM5aZPgR6ZgO52g2zssXsBZNseZM=
+github.com/rivo/uniseg v0.4.3-0.20220930054838-08ce52f667cc/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
