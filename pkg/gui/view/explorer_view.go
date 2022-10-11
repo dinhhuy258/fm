@@ -250,7 +250,7 @@ func (ev *ExplorerView) UpdateView(entries []fs.IEntry, selections set.Set[strin
 					Style: nil,
 				},
 				{
-					Value: name,
+					Value: strings.TrimSpace(name),
 					Style: &entryTextStyle,
 				},
 				{
