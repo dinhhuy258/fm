@@ -137,12 +137,8 @@ func LoadEntries(path string,
 func loadEntry(path, name string, showHidden bool) (IEntry, error) {
 	fpath := filepath.Join(path, name)
 
-	lstat, err := os.Lstat(fpath)
+	lstat, err := getFileInfo(fpath)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, errFileNotFound
-		}
-
 		return nil, err
 	}
 
@@ -165,17 +161,13 @@ func loadEntry(path, name string, showHidden bool) (IEntry, error) {
 
 	isSymlink := (lstat.Mode() & os.ModeSymlink) != 0
 	if isSymlink {
-		linkTarget, err := os.Readlink(fpath)
+		linkTarget, err := evalSymlinks(fpath)
 		if err != nil {
 			return nil, err
 		}
 
-		linkTargetLstat, err := os.Lstat(linkTarget)
+		linkTargetLstat, err := getFileInfo(linkTarget)
 		if err != nil {
-			if os.IsNotExist(err) {
-				return nil, errFileNotFound
-			}
-
 			return nil, err
 		}
 
@@ -212,6 +204,35 @@ func loadEntry(path, name string, showHidden bool) (IEntry, error) {
 			isSymlink:   isSymlink,
 		},
 	}, nil
+}
+
+// getFileInfo get file information from the given file path
+func getFileInfo(fpath string) (os.FileInfo, error) {
+	lstat, err := os.Lstat(fpath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, errFileNotFound
+		}
+
+		return nil, err
+	}
+
+	return lstat, nil
+}
+
+// evalSymlinks get link target of the given symlinks
+func evalSymlinks(fpath string) (string, error) {
+	linkTarget, err := filepath.EvalSymlinks(fpath)
+	if err != nil {
+		var pathError *os.PathError
+		if errors.As(err, &pathError) {
+			return "", errFileNotFound
+		}
+
+		return "", err
+	}
+
+	return linkTarget, nil
 }
 
 // isHidden returns true if the given name is a hidden file.

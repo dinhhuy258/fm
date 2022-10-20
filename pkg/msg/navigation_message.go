@@ -90,7 +90,7 @@ func Back(app IApp, _ key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	dir := fs.Dir(explorerController.GetPath())
-	if dir == "." {
+	if dir == "." || dir == explorerController.GetPath() {
 		// If folder has no parent directory then do nothing
 		return
 	}
