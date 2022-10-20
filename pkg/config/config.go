@@ -49,8 +49,9 @@ func (ac *ActionConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTab
 
 // KeyBindingsConfig represents the config for the key bindings.
 type KeyBindingsConfig struct {
-	OnKeys  map[string]*ActionConfig `mapper:"on_keys"`
-	Default *ActionConfig            `mapper:"default"`
+	OnKeys   map[string]*ActionConfig `mapper:"on_keys"`
+	OnNumber *ActionConfig            `mapper:"on_number"`
+	Default  *ActionConfig            `mapper:"default"`
 }
 
 // toLuaTable convert to LuaTable object
@@ -63,6 +64,12 @@ func (kbc *KeyBindingsConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lu
 	}
 
 	tbl.RawSetString("on_keys", onKeyTbl)
+
+	if kbc.OnNumber != nil {
+		tbl.RawSetString("on_number", kbc.OnNumber.toLuaTable(luaState))
+	} else {
+		tbl.RawSetString("on_number", gopher_lua.LNil)
+	}
 
 	if kbc.Default != nil {
 		tbl.RawSetString("default", kbc.Default.toLuaTable(luaState))

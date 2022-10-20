@@ -173,6 +173,8 @@ func (app *App) onKey(k gocui.Key, ch rune, mod gocui.Modifier) error {
 	switch {
 	case hasKey:
 		app.submitMessages(action.messages, pressedKey)
+	case pressedKey.IsDigit() && keybindings.onNumber != nil:
+		app.submitMessages(keybindings.onNumber.messages, pressedKey)
 	case keybindings.defaultAction != nil:
 		app.submitMessages(keybindings.defaultAction.messages, pressedKey)
 	default:

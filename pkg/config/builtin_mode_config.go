@@ -193,6 +193,21 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 		},
+		OnNumber: &ActionConfig{
+			Messages: []*MessageConfig{
+				{
+					Name: "SwitchMode",
+					Args: []string{"go-to-index"},
+				},
+				{
+					Name: "SetInputBuffer",
+					Args: []string{""},
+				},
+				{
+					Name: "UpdateInputBufferFromKey",
+				},
+			},
+		},
 	},
 }
 
@@ -684,7 +699,7 @@ var sortModeConfig = ModeConfig{
 	},
 }
 
-// commandModeConfig is the configuration for the rename builtin mode.
+// commandModeConfig is the configuration for the command builtin mode.
 var commandModeConfig = ModeConfig{
 	Name: "command",
 	KeyBindings: KeyBindingsConfig{
@@ -734,6 +749,69 @@ var commandModeConfig = ModeConfig{
 	},
 }
 
+// goToIndexModeConfig is the configuration for the go to index builtin mode.
+var goToIndexModeConfig = ModeConfig{
+	Name: "go-to-index",
+	KeyBindings: KeyBindingsConfig{
+		OnKeys: map[string]*ActionConfig{
+			"ctrl+c": {
+				Help: "quit",
+				Messages: []*MessageConfig{
+					{
+						Name: "Quit",
+					},
+				},
+			},
+			"enter": {
+				Help: "go to index",
+				Messages: []*MessageConfig{
+					{
+						Name: "BashExecSilently",
+						Args: []string{`
+							focus_index="${FM_INPUT_BUFFER}"
+							echo FocusByIndex "'"$((focus_index-1))"'" >> "${FM_PIPE_MSG_IN:?}"
+						`},
+					},
+					{
+						Name: "SwitchMode",
+						Args: []string{"default"},
+					},
+				},
+			},
+			"esc": {
+				Help: "cancel",
+				Messages: []*MessageConfig{
+					{
+						Name: "SwitchMode",
+						Args: []string{"default"},
+					},
+				},
+			},
+			"backspace": {
+				Messages: []*MessageConfig{
+					{
+						Name: "UpdateInputBufferFromKey",
+					},
+				},
+			},
+		},
+		OnNumber: &ActionConfig{
+			Messages: []*MessageConfig{
+				{
+					Name: "UpdateInputBufferFromKey",
+				},
+			},
+		},
+		Default: &ActionConfig{
+			Messages: []*MessageConfig{
+				{
+					Name: "Null",
+				},
+			},
+		},
+	},
+}
+
 // builtinModeConfigs is a map of mode names to their configs.
 var builtinModeConfigs = map[string]*ModeConfig{
 	"default":           &defaultModeConfig,
@@ -746,4 +824,5 @@ var builtinModeConfigs = map[string]*ModeConfig{
 	"delete-selections": &deleteSelectionsModeConfig,
 	"sort":              &sortModeConfig,
 	"command":           &commandModeConfig,
+	"go-to-index":       &goToIndexModeConfig,
 }

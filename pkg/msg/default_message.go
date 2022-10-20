@@ -42,3 +42,7 @@ func Refresh(app IApp, _ key.Key, _ MessageContext) {
 func Quit(app IApp, _ key.Key, _ MessageContext) {
 	app.Quit()
 }
+
+// Null is a message that do nothing
+func Null(_ IApp, _ key.Key, _ MessageContext) {
+}

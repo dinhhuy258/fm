@@ -43,6 +43,7 @@ var messageFactories = map[string]*MessageFactory{
 	"ToggleHidden":     newMessageFactory(ToggleHidden),
 	"Refresh":          newMessageFactory(Refresh),
 	"Quit":             newMessageFactory(Quit),
+	"Null":             newMessageFactory(Null),
 
 	"LogSuccess": newMessageFactory(LogSuccess),
 	"LogWarning": newMessageFactory(LogWarning),

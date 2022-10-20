@@ -9,10 +9,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/msg"
 )
 
-var (
-	ErrModeNotFound = errors.New("mode not found")
-	ErrEmptyModes   = errors.New("empty modes")
-)
+var ErrModeNotFound = errors.New("mode not found")
 
 // Action represents an action.
 type Action struct {
@@ -28,6 +25,7 @@ type Help struct {
 // KeyBindings represents a key bindings config for the mode.
 type KeyBindings struct {
 	onKeys        map[key.Key]*Action
+	onNumber      *Action
 	defaultAction *Action
 }
 
@@ -119,6 +117,7 @@ func createMode(name string, keyBindings config.KeyBindingsConfig) *Mode {
 		name: name,
 		keyBindings: &KeyBindings{
 			onKeys:        map[key.Key]*Action{},
+			onNumber:      nil,
 			defaultAction: nil,
 		},
 		helps: []*Help{},
@@ -143,10 +142,30 @@ func createMode(name string, keyBindings config.KeyBindingsConfig) *Mode {
 			)
 		}
 
-		mode.helps = append(mode.helps, &Help{
-			key: key,
-			msg: actionConfig.Help,
-		})
+		if actionConfig.Help != "" {
+			mode.helps = append(mode.helps, &Help{
+				key: key,
+				msg: actionConfig.Help,
+			})
+		}
+	}
+
+	if keyBindings.OnNumber != nil {
+		mode.keyBindings.onNumber = &Action{
+			messages: []*msg.Message{},
+		}
+
+		for _, messageConfig := range keyBindings.OnNumber.Messages {
+			message, err := msg.NewMessage(messageConfig.Name, messageConfig.Args...)
+			if err != nil {
+				log.Fatalf("message not found: %s", messageConfig.Name)
+			}
+
+			mode.keyBindings.onNumber.messages = append(
+				mode.keyBindings.onNumber.messages,
+				message,
+			)
+		}
 	}
 
 	if keyBindings.Default != nil {

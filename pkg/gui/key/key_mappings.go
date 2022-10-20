@@ -104,7 +104,7 @@ var keymap = map[string]Key{
 	"ctrl+]":     toKey(gocui.KeyCtrlRsqBracket),
 	"ctrl+/":     toKey(gocui.KeyCtrlSlash),
 	"ctrl+_":     toKey(gocui.KeyCtrlUnderscore),
-	"backspace":  toKey(gocui.KeyBackspace),
+	"backspace":  toKey(gocui.KeyBackspace2),
 	"tab":        toKey(gocui.KeyTab),
 	"enter":      toKey(gocui.KeyEnter),
 	"esc":        toKey(gocui.KeyEsc),
