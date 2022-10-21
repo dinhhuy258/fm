@@ -83,7 +83,7 @@ func (app *App) Run() error {
 
 	ctx := make(msg.MessageContext)
 	ctx["arg1"] = wd
-	msg.ChangeDirectory(app, key.EmptyKey, ctx)
+	msg.ChangeDirectory(app, nil, ctx)
 
 	return app.gui.Run()
 }
@@ -172,11 +172,11 @@ func (app *App) onKey(k gocui.Key, ch rune, mod gocui.Modifier) error {
 
 	switch {
 	case hasKey:
-		app.submitMessages(action.messages, pressedKey)
+		app.submitMessages(action.messages, &pressedKey)
 	case pressedKey.IsDigit() && keybindings.onNumber != nil:
-		app.submitMessages(keybindings.onNumber.messages, pressedKey)
+		app.submitMessages(keybindings.onNumber.messages, &pressedKey)
 	case keybindings.defaultAction != nil:
-		app.submitMessages(keybindings.defaultAction.messages, pressedKey)
+		app.submitMessages(keybindings.defaultAction.messages, &pressedKey)
 	default:
 		app.SetLog(view.LogWarning, "Key map not found")
 	}
@@ -185,7 +185,7 @@ func (app *App) onKey(k gocui.Key, ch rune, mod gocui.Modifier) error {
 }
 
 // submitMessages submit messages to the message worker pool
-func (app *App) submitMessages(messages []*msg.Message, pressedKey key.Key) {
+func (app *App) submitMessages(messages []*msg.Message, pressedKey *key.Key) {
 	for _, message := range messages {
 		message := message // This will make scopelint happy
 
@@ -222,5 +222,5 @@ func (app *App) onMessageIn(messageIn string) {
 		return
 	}
 
-	app.submitMessages([]*msg.Message{message}, key.EmptyKey)
+	app.submitMessages([]*msg.Message{message}, nil)
 }

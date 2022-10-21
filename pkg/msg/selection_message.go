@@ -6,7 +6,7 @@ import (
 )
 
 // ToggleSelection is a message that toggles the selection of the current entry
-func ToggleSelection(app IApp, _ key.Key, _ MessageContext) {
+func ToggleSelection(app IApp, _ *key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	selectionController, _ := app.GetController(controller.Selection).(*controller.SelectionController)
 
@@ -24,7 +24,7 @@ func ToggleSelection(app IApp, _ key.Key, _ MessageContext) {
 }
 
 // ClearSelection is a message that clears the selection
-func ClearSelection(app IApp, _ key.Key, _ MessageContext) {
+func ClearSelection(app IApp, _ *key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	selectionController, _ := app.GetController(controller.Selection).(*controller.SelectionController)
 
@@ -35,7 +35,7 @@ func ClearSelection(app IApp, _ key.Key, _ MessageContext) {
 }
 
 // SelectAll is a message that select all visible entries
-func SelectAll(app IApp, _ key.Key, _ MessageContext) {
+func SelectAll(app IApp, _ *key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 	selectionController, _ := app.GetController(controller.Selection).(*controller.SelectionController)
 
@@ -50,7 +50,7 @@ func SelectAll(app IApp, _ key.Key, _ MessageContext) {
 }
 
 // ToggleSelectionByPath is a message that toggle selection by file path.
-func ToggleSelectionByPath(app IApp, _ key.Key, ctx MessageContext) {
+func ToggleSelectionByPath(app IApp, _ *key.Key, ctx MessageContext) {
 	path, _ := ctx["arg1"].(string)
 
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)

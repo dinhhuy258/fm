@@ -12,7 +12,7 @@ import (
 )
 
 // FocusByIndex focus entry by index
-func FocusByIndex(app IApp, _ key.Key, ctx MessageContext) {
+func FocusByIndex(app IApp, _ *key.Key, ctx MessageContext) {
 	index, err := strconv.Atoi(ctx["arg1"].(string))
 	if err != nil {
 		app.SetLog(view.LogError, fmt.Sprintf("Invalid index: %v", err))
@@ -24,7 +24,7 @@ func FocusByIndex(app IApp, _ key.Key, ctx MessageContext) {
 }
 
 // FocusFirst focus first entry
-func FocusFirst(app IApp, _ key.Key, _ MessageContext) {
+func FocusFirst(app IApp, _ *key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusFirst()
@@ -32,7 +32,7 @@ func FocusFirst(app IApp, _ key.Key, _ MessageContext) {
 }
 
 // FocusLast focus last entry
-func FocusLast(app IApp, _ key.Key, _ MessageContext) {
+func FocusLast(app IApp, _ *key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusLast()
@@ -40,7 +40,7 @@ func FocusLast(app IApp, _ key.Key, _ MessageContext) {
 }
 
 // FocusNext focus next entry
-func FocusNext(app IApp, _ key.Key, _ MessageContext) {
+func FocusNext(app IApp, _ *key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusNext()
@@ -48,7 +48,7 @@ func FocusNext(app IApp, _ key.Key, _ MessageContext) {
 }
 
 // FocusPrevious focus previous entry
-func FocusPrevious(app IApp, _ key.Key, _ MessageContext) {
+func FocusPrevious(app IApp, _ *key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	explorerController.FocusPrevious()
@@ -56,7 +56,7 @@ func FocusPrevious(app IApp, _ key.Key, _ MessageContext) {
 }
 
 // FocusPath focus entry with path
-func FocusPath(app IApp, _ key.Key, ctx MessageContext) {
+func FocusPath(app IApp, _ *key.Key, ctx MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	path, _ := ctx["arg1"].(string)
@@ -71,7 +71,7 @@ func FocusPath(app IApp, _ key.Key, ctx MessageContext) {
 }
 
 // Enter directory
-func Enter(app IApp, _ key.Key, _ MessageContext) {
+func Enter(app IApp, _ *key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	entry := explorerController.GetCurrentEntry()
@@ -86,7 +86,7 @@ func Enter(app IApp, _ key.Key, _ MessageContext) {
 }
 
 // Back to parent directory
-func Back(app IApp, _ key.Key, _ MessageContext) {
+func Back(app IApp, _ *key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	dir := fs.Dir(explorerController.GetPath())
@@ -99,7 +99,7 @@ func Back(app IApp, _ key.Key, _ MessageContext) {
 }
 
 // ChangeDirectory change directory
-func ChangeDirectory(app IApp, _ key.Key, ctx MessageContext) {
+func ChangeDirectory(app IApp, _ *key.Key, ctx MessageContext) {
 	directory, _ := ctx["arg1"].(string)
 
 	loadDirectory(app, directory, optional.NewEmpty[string]())

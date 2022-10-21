@@ -13,7 +13,7 @@ import (
 )
 
 // BashExec executes a bash script
-func BashExec(app IApp, _ key.Key, ctx MessageContext) {
+func BashExec(app IApp, _ *key.Key, ctx MessageContext) {
 	// This function should be called in a UI thread, otherwise it will not work
 	app.OnUIThread(func() error {
 		if err := app.Suspend(); err != nil {
@@ -51,7 +51,7 @@ func BashExec(app IApp, _ key.Key, ctx MessageContext) {
 }
 
 // BashExecSilently executes a bash script silently
-func BashExecSilently(app IApp, _ key.Key, ctx MessageContext) {
+func BashExecSilently(app IApp, _ *key.Key, ctx MessageContext) {
 	command, _ := ctx["arg1"].(string)
 	cmd := exec.Command("bash", "-c", command)
 	cmd.Env = getEnv(app)

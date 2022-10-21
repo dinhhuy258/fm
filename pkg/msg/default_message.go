@@ -8,7 +8,7 @@ import (
 )
 
 // ToggleHidden is a message that toggles the hidden configuration
-func ToggleHidden(app IApp, _ key.Key, _ MessageContext) {
+func ToggleHidden(app IApp, _ *key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	config.AppConfig.General.ShowHidden = !config.AppConfig.General.ShowHidden
@@ -18,14 +18,14 @@ func ToggleHidden(app IApp, _ key.Key, _ MessageContext) {
 }
 
 // SwitchMode is a message that switches the mode of the application
-func SwitchMode(app IApp, _ key.Key, ctx MessageContext) {
+func SwitchMode(app IApp, _ *key.Key, ctx MessageContext) {
 	mode, _ := ctx["arg1"].(string)
 
 	app.SwitchMode(mode)
 }
 
 // Refresh is a message that refreshes the current directory
-func Refresh(app IApp, _ key.Key, _ MessageContext) {
+func Refresh(app IApp, _ *key.Key, _ MessageContext) {
 	explorerController, _ := app.GetController(controller.Explorer).(*controller.ExplorerController)
 
 	entry := explorerController.GetCurrentEntry()
@@ -39,10 +39,10 @@ func Refresh(app IApp, _ key.Key, _ MessageContext) {
 }
 
 // Quit is a message that quits the application
-func Quit(app IApp, _ key.Key, _ MessageContext) {
+func Quit(app IApp, _ *key.Key, _ MessageContext) {
 	app.Quit()
 }
 
 // Null is a message that do nothing
-func Null(_ IApp, _ key.Key, _ MessageContext) {
+func Null(_ IApp, _ *key.Key, _ MessageContext) {
 }

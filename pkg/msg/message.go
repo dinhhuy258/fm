@@ -25,6 +25,6 @@ type IApp interface {
 
 // Message is the message type.
 type Message struct {
-	Func func(app IApp, key key.Key, ctx MessageContext)
+	Func func(app IApp, key *key.Key, ctx MessageContext)
 	Ctx  MessageContext
 }

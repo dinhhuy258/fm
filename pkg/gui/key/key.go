@@ -17,13 +17,6 @@ type Key struct {
 	Mod gocui.Modifier
 }
 
-// EmptyKey represent an empty key
-var EmptyKey = Key{
-	Key: 0,
-	Ch:  0,
-	Mod: gocui.ModNone,
-}
-
 // IsDigit check if the key is digit
 func (k Key) IsDigit() bool {
 	return k.Mod == gocui.ModNone && unicode.IsDigit(k.Ch)
@@ -67,5 +60,10 @@ func GetKey(key string) Key {
 
 	log.Fatal("Key empty for keybinding: " + strings.ToLower(key))
 
-	return EmptyKey
+	// Not reachable
+	return Key{
+		Key: 0,
+		Ch:  0,
+		Mod: gocui.ModNone,
+	}
 }
