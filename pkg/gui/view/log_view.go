@@ -40,6 +40,12 @@ func newLogView(v *gocui.View) *LogView {
 func (lv *LogView) UpdateView(level LogLevel, log string) {
 	cfg := config.AppConfig
 
+	if log == "" {
+		lv.SetContent(log)
+
+		return
+	}
+
 	var logStyle style.TextStyle
 
 	switch {

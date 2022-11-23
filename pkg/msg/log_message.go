@@ -5,6 +5,11 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 )
 
+// ClearLog is a message to log a success message
+func ClearLog(app IApp, _ *key.Key, _ MessageContext) {
+	app.SetLog(view.LogInfo, "")
+}
+
 // LogSuccess is a message to log a success message
 func LogSuccess(app IApp, _ *key.Key, ctx MessageContext) {
 	logMessage, _ := ctx["arg1"].(string)

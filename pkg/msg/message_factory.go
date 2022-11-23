@@ -45,6 +45,7 @@ var messageFactories = map[string]*MessageFactory{
 	"Quit":             newMessageFactory(Quit),
 	"Null":             newMessageFactory(Null),
 
+	"ClearLog":   newMessageFactory(ClearLog),
 	"LogSuccess": newMessageFactory(LogSuccess),
 	"LogWarning": newMessageFactory(LogWarning),
 	"LogError":   newMessageFactory(LogError),
