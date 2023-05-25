@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/dinhhuy258/fm/pkg/type/optional"
 	"os"
 	"strconv"
 
@@ -8,7 +9,6 @@ import (
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
-	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 // ExplorerController is the controller for the explorer view

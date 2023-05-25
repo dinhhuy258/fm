@@ -2,13 +2,13 @@ package msg
 
 import (
 	"fmt"
+	"github.com/dinhhuy258/fm/pkg/type/optional"
 	"strconv"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
-	"github.com/dinhhuy258/fm/pkg/optional"
 )
 
 // FocusByIndex focus entry by index

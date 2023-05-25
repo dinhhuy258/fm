@@ -1,11 +1,11 @@
 package config
 
 import (
+	"github.com/dinhhuy258/fm/pkg/type/optional"
 	"os"
 	"path/filepath"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
-	"github.com/dinhhuy258/fm/pkg/optional"
 	"github.com/yuin/gluamapper"
 	gopher_lua "github.com/yuin/gopher-lua"
 )

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/dinhhuy258/fm/pkg/config/lua"
 	"os"
 	"regexp"
 	"strings"
@@ -11,7 +12,6 @@ import (
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
-	"github.com/dinhhuy258/fm/pkg/lua"
 	"github.com/dinhhuy258/fm/pkg/msg"
 	"github.com/dinhhuy258/fm/pkg/pipe"
 	"github.com/dinhhuy258/gocui"

@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/dinhhuy258/fm/pkg/lua"
+	"github.com/dinhhuy258/fm/pkg/config/lua"
 	gopher_lua "github.com/yuin/gopher-lua"
 )
 

@@ -4,7 +4,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/key"
-	"github.com/dinhhuy258/fm/pkg/optional"
+	"github.com/dinhhuy258/fm/pkg/type/optional"
 )
 
 // ToggleHidden is a message that toggles the hidden configuration

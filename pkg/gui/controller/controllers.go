@@ -3,7 +3,7 @@ package controller
 import (
 	set "github.com/deckarep/golang-set/v2"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
-	"github.com/dinhhuy258/fm/pkg/optional"
+	"github.com/dinhhuy258/fm/pkg/type/optional"
 	"github.com/dinhhuy258/gocui"
 )
 
