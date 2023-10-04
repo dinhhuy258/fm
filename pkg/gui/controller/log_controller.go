@@ -2,9 +2,9 @@ package controller
 
 import (
 	"fmt"
-	"github.com/dinhhuy258/fm/pkg/type/optional"
 
 	"github.com/dinhhuy258/fm/pkg/gui/view"
+	"github.com/dinhhuy258/fm/pkg/type/optional"
 )
 
 // LogController is a controller for log view

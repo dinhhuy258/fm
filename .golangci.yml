@@ -1,21 +1,21 @@
 run:
   timeout: 120s
 linters:
-  enable-all: true
-  disable:
-    - exhaustivestruct
-    - testpackage
-    - funlen
-    - godot
-    - paralleltest
-    - gochecknoglobals
-    - forbidigo
-    - wrapcheck
-    - gomnd
-    - godox
+  disable-all: true
+  enable:
+    - errcheck
+    - goimports
+    - revive # replacement for golint
+    - govet
+    - staticcheck
+    - nlreturn
+    - whitespace
+    - wsl
+    - unparam
+    - bodyclose
+    - contextcheck
+    - decorder
+    - dogsled
+    - durationcheck
+    - errname
     - nilerr
-    - cyclop
-    - varnamelen
-    - exhaustruct
-    - ireturn
-    - lll

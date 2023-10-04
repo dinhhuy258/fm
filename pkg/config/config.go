@@ -28,14 +28,12 @@ func (mc *MessageConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTa
 
 // ActionConfig represents the config for the action.
 type ActionConfig struct {
-	Help     string           `mapper:"help"`
 	Messages []*MessageConfig `mapper:"messages"`
 }
 
 // toLuaTable convert to LuaTable object
 func (ac *ActionConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_lua.LTable {
 	tbl := luaState.NewTable()
-	tbl.RawSetString("help", gopher_lua.LString(ac.Help))
 
 	msgTbl := luaState.NewTable()
 	for _, msg := range ac.Messages {

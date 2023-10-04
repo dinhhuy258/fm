@@ -31,7 +31,7 @@ func (gui *Gui) setViewDimensions() error {
 			dimension: viewDimension{
 				x0: 0,
 				y0: 0,
-				x1: int(float32(width)*0.7) - horizontalMargin,
+				x1: width - horizontalMargin,
 				y1: height - logSize - verticalMargin,
 			},
 		},
@@ -40,7 +40,7 @@ func (gui *Gui) setViewDimensions() error {
 			dimension: viewDimension{
 				x0: 0,
 				y0: verticalMargin,
-				x1: int(float32(width)*0.7) - horizontalMargin,
+				x1: width - horizontalMargin,
 				y1: height - logSize - verticalMargin,
 			},
 		},
@@ -49,7 +49,7 @@ func (gui *Gui) setViewDimensions() error {
 			dimension: viewDimension{
 				x0: 0,
 				y0: height - logSize,
-				x1: int(float32(width)*0.7) - horizontalMargin,
+				x1: width - horizontalMargin,
 				y1: height,
 			},
 		},
@@ -58,25 +58,7 @@ func (gui *Gui) setViewDimensions() error {
 			dimension: viewDimension{
 				x0: 0,
 				y0: height - logSize,
-				x1: int(float32(width)*0.7) - horizontalMargin,
-				y1: height,
-			},
-		},
-		{
-			name: "selection",
-			dimension: viewDimension{
-				x0: int(float32(width) * 0.7),
-				y0: 0,
-				x1: width,
-				y1: height/2 - verticalMargin,
-			},
-		},
-		{
-			name: "help",
-			dimension: viewDimension{
-				x0: int(float32(width) * 0.7),
-				y0: height / 2,
-				x1: width,
+				x1: width - horizontalMargin,
 				y1: height,
 			},
 		},

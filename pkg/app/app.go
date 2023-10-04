@@ -1,20 +1,21 @@
 package app
 
 import (
-	"github.com/dinhhuy258/fm/pkg/config/lua"
 	"os"
 	"regexp"
 	"strings"
 
 	"github.com/alitto/pond"
+	"github.com/dinhhuy258/gocui"
+
 	"github.com/dinhhuy258/fm/pkg/config"
+	"github.com/dinhhuy258/fm/pkg/config/lua"
 	"github.com/dinhhuy258/fm/pkg/gui"
 	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/fm/pkg/gui/key"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/fm/pkg/msg"
 	"github.com/dinhhuy258/fm/pkg/pipe"
-	"github.com/dinhhuy258/gocui"
 )
 
 var messageInRegexp = regexp.MustCompile(`[^\s']+|'([^']*)'`)
@@ -78,7 +79,7 @@ func (app *App) Run() error {
 	// Get the current directory and load files/folder in it
 	wd, err := os.Getwd()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	ctx := make(msg.MessageContext)
@@ -99,20 +100,7 @@ func (app *App) OnUIThread(f func() error) {
 }
 
 // onModeChange is called when the mode is changed
-func (app *App) onModeChange(currentMode *Mode) {
-	helps := currentMode.GetHelp()
-
-	helpKeys := make([]string, 0, len(helps))
-	helpMsgs := make([]string, 0, len(helps))
-
-	for _, h := range helps {
-		helpKeys = append(helpKeys, key.GetKeyDisplay(h.key))
-		helpMsgs = append(helpMsgs, h.msg)
-	}
-
-	helpController, _ := app.GetController(controller.Help).(*controller.HelpController)
-	helpController.SetHelp(currentMode.GetName(), helpKeys, helpMsgs)
-	helpController.UpdateView()
+func (app *App) onModeChange(*Mode) {
 }
 
 // GetController returns the controller with the given name

@@ -19,7 +19,6 @@ func ToggleSelection(app IApp, _ *key.Key, _ MessageContext) {
 
 	selectionController.ToggleSelection(path)
 
-	selectionController.UpdateView()
 	explorerController.UpdateView()
 }
 
@@ -30,7 +29,6 @@ func ClearSelection(app IApp, _ *key.Key, _ MessageContext) {
 
 	selectionController.ClearSelections()
 
-	selectionController.UpdateView()
 	explorerController.UpdateView()
 }
 
@@ -45,7 +43,6 @@ func SelectAll(app IApp, _ *key.Key, _ MessageContext) {
 		selectionController.SelectPath(path)
 	}
 
-	selectionController.UpdateView()
 	explorerController.UpdateView()
 }
 
@@ -58,6 +55,5 @@ func ToggleSelectionByPath(app IApp, _ *key.Key, ctx MessageContext) {
 
 	selectionController.ToggleSelection(path)
 
-	selectionController.UpdateView()
 	explorerController.UpdateView()
 }

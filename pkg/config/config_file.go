@@ -1,13 +1,14 @@
 package config
 
 import (
-	"github.com/dinhhuy258/fm/pkg/type/optional"
 	"os"
 	"path/filepath"
 
-	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/yuin/gluamapper"
 	gopher_lua "github.com/yuin/gopher-lua"
+
+	"github.com/dinhhuy258/fm/pkg/fs"
+	"github.com/dinhhuy258/fm/pkg/type/optional"
 )
 
 // AppDir is the name of the directory where the config file is stored.

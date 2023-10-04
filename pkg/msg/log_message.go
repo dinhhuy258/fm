@@ -23,7 +23,7 @@ func LogWarning(app IApp, _ *key.Key, ctx MessageContext) {
 }
 
 // LogError is a message to log an error message
-func LogError(app IApp, key *key.Key, ctx MessageContext) {
+func LogError(app IApp, _ *key.Key, ctx MessageContext) {
 	logMessage, _ := ctx["arg1"].(string)
 	app.SetLog(view.LogError, logMessage)
 }
