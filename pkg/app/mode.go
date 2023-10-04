@@ -16,12 +16,6 @@ type Action struct {
 	messages []*msg.Message
 }
 
-// Help represents a help for the mode.
-type Help struct {
-	key key.Key
-	msg string
-}
-
 // KeyBindings represents a key bindings config for the mode.
 type KeyBindings struct {
 	onKeys        map[key.Key]*Action
@@ -33,7 +27,6 @@ type KeyBindings struct {
 type Mode struct {
 	name        string
 	keyBindings *KeyBindings
-	helps       []*Help
 }
 
 // GetName returns the name of the mode.
@@ -44,11 +37,6 @@ func (m *Mode) GetName() string {
 // GetKeyBindings returns the key bindings of the mode.
 func (m *Mode) GetKeyBindings() *KeyBindings {
 	return m.keyBindings
-}
-
-// GetHelp returns the help for the mode.
-func (m *Mode) GetHelp() []*Help {
-	return m.helps
 }
 
 // Modes contains a list of modes.
@@ -120,7 +108,6 @@ func createMode(name string, keyBindings config.KeyBindingsConfig) *Mode {
 			onNumber:      nil,
 			defaultAction: nil,
 		},
-		helps: []*Help{},
 	}
 
 	for k, actionConfig := range keyBindings.OnKeys {
@@ -140,13 +127,6 @@ func createMode(name string, keyBindings config.KeyBindingsConfig) *Mode {
 				mode.keyBindings.onKeys[key].messages,
 				message,
 			)
-		}
-
-		if actionConfig.Help != "" {
-			mode.helps = append(mode.helps, &Help{
-				key: key,
-				msg: actionConfig.Help,
-			})
 		}
 	}
 

@@ -1,14 +1,15 @@
 package controller
 
 import (
-	"github.com/dinhhuy258/fm/pkg/type/optional"
 	"os"
 	"strconv"
 
 	set "github.com/deckarep/golang-set/v2"
+
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/gui/view"
+	"github.com/dinhhuy258/fm/pkg/type/optional"
 )
 
 // ExplorerController is the controller for the explorer view

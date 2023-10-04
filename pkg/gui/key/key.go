@@ -47,9 +47,9 @@ func GetKey(key string) Key {
 		binding, hasKey := keymap[strings.ToLower(key)]
 		if !hasKey {
 			log.Fatalf("Unrecognized key %s for keybinding", strings.ToLower(key))
-		} else {
-			return binding
 		}
+
+		return binding
 	} else if runeCount == 1 {
 		return Key{
 			Key: 0,

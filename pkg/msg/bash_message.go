@@ -2,7 +2,7 @@ package msg
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"os/exec"
 
@@ -42,8 +42,8 @@ func BashExec(app IApp, _ *key.Key, ctx MessageContext) {
 			return err
 		}
 
-		cmd.Stdout = ioutil.Discard
-		cmd.Stderr = ioutil.Discard
+		cmd.Stdout = io.Discard
+		cmd.Stderr = io.Discard
 		cmd.Stdin = nil
 
 		return nil
