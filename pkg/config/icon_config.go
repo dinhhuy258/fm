@@ -1,24 +1,22 @@
 package config
 
-import icons "github.com/dinhhuy258/logo-ls/assets"
-
 // getSpecialsNodeTypeConfig get default configuration for the special node type.
 func getSpecialsNodeTypeConfig() map[string]*NodeTypeConfig {
 	specialsNodeTypeConfig := make(map[string]*NodeTypeConfig)
-	for fileName, icon := range icons.Icon_FileName {
+	for fileName, icon := range IconsByFilename {
 		specialsNodeTypeConfig[fileName] = &NodeTypeConfig{
-			Icon: icon.GetGlyph(),
+			Icon: icon.Glyph,
 			Style: &StyleConfig{
-				Fg: icon.GetHexColor(),
+				Fg: icon.Color,
 			},
 		}
 	}
 
-	for dirName, icon := range icons.Icon_Dir {
+	for dirName, icon := range IconsByDir {
 		specialsNodeTypeConfig[dirName] = &NodeTypeConfig{
-			Icon: icon.GetGlyph(),
+			Icon: icon.Glyph,
 			Style: &StyleConfig{
-				Fg: icon.GetHexColor(),
+				Fg: icon.Color,
 			},
 		}
 	}
@@ -29,11 +27,11 @@ func getSpecialsNodeTypeConfig() map[string]*NodeTypeConfig {
 // getExtensionsNodeTypeConfig get default configuration for the extensions node type.
 func getExtensionsNodeTypeConfig() map[string]*NodeTypeConfig {
 	extensionsNodeTypeConfig := make(map[string]*NodeTypeConfig)
-	for ext, icon := range icons.Icon_Ext {
+	for ext, icon := range IconsByExtension {
 		extensionsNodeTypeConfig[ext] = &NodeTypeConfig{
-			Icon: icon.GetGlyph(),
+			Icon: icon.Glyph,
 			Style: &StyleConfig{
-				Fg: icon.GetHexColor(),
+				Fg: icon.Color,
 			},
 		}
 	}

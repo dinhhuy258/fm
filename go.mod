@@ -6,7 +6,6 @@ require (
 	github.com/alitto/pond v1.8.0
 	github.com/deckarep/golang-set/v2 v2.1.0
 	github.com/dinhhuy258/gocui v0.3.1-0.20221010082943-3f0267896897
-	github.com/dinhhuy258/logo-ls v1.3.8-0.20220612070857-42e31eeb2555
 	github.com/djherbis/times v1.5.0
 	github.com/gookit/color v1.4.2
 	github.com/hpcloud/tail v1.0.0
