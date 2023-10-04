@@ -100,7 +100,20 @@ func (app *App) OnUIThread(f func() error) {
 }
 
 // onModeChange is called when the mode is changed
-func (app *App) onModeChange(*Mode) {
+func (app *App) onModeChange(currentMode *Mode) {
+	helps := currentMode.GetHelp()
+
+	helpKeys := make([]string, 0, len(helps))
+	helpMsgs := make([]string, 0, len(helps))
+
+	for _, h := range helps {
+		helpKeys = append(helpKeys, key.GetKeyDisplay(h.key))
+		helpMsgs = append(helpMsgs, h.msg)
+	}
+
+	helpController, _ := app.GetController(controller.Help).(*controller.HelpController)
+	helpController.SetHelp(currentMode.GetName(), helpKeys, helpMsgs)
+	helpController.UpdateView()
 }
 
 // GetController returns the controller with the given name

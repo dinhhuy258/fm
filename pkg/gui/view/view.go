@@ -7,6 +7,7 @@ import (
 type Views struct {
 	Explorer       *ExplorerView
 	ExplorerHeader *ExplorerHeaderView
+	Help           *HelpView
 	Input          *InputView
 	Log            *LogView
 }
@@ -15,6 +16,7 @@ func CreateViews(g *gocui.Gui) *Views {
 	var (
 		explorerHeader *gocui.View
 		explorer       *gocui.View
+		help           *gocui.View
 		input          *gocui.View
 		log            *gocui.View
 	)
@@ -25,6 +27,7 @@ func CreateViews(g *gocui.Gui) *Views {
 	}{
 		{viewPtr: &explorerHeader, name: "explorer-header"},
 		{viewPtr: &explorer, name: "explorer"},
+		{viewPtr: &help, name: "help"},
 		{viewPtr: &input, name: "input"},
 		{viewPtr: &log, name: "log"},
 	}
@@ -37,6 +40,7 @@ func CreateViews(g *gocui.Gui) *Views {
 	return &Views{
 		Explorer:       newExplorerView(explorer),
 		ExplorerHeader: newExplorerHeaderView(explorerHeader),
+		Help:           newHelpView(help),
 		Input:          newInputView(input),
 		Log:            newLogView(log),
 	}
@@ -48,6 +52,10 @@ func (v *Views) Layout() error {
 	}
 
 	if err := v.ExplorerHeader.layout(); err != nil {
+		return err
+	}
+
+	if err := v.Help.layout(); err != nil {
 		return err
 	}
 

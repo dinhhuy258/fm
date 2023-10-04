@@ -3,8 +3,9 @@ package gui
 import (
 	"errors"
 
-	"github.com/dinhhuy258/fm/pkg/gui/controller"
 	"github.com/dinhhuy258/gocui"
+
+	"github.com/dinhhuy258/fm/pkg/gui/controller"
 )
 
 const (
@@ -31,7 +32,7 @@ func (gui *Gui) setViewDimensions() error {
 			dimension: viewDimension{
 				x0: 0,
 				y0: 0,
-				x1: width - horizontalMargin,
+				x1: int(float32(width)*0.7) - horizontalMargin,
 				y1: height - logSize - verticalMargin,
 			},
 		},
@@ -40,7 +41,7 @@ func (gui *Gui) setViewDimensions() error {
 			dimension: viewDimension{
 				x0: 0,
 				y0: verticalMargin,
-				x1: width - horizontalMargin,
+				x1: int(float32(width)*0.7) - horizontalMargin,
 				y1: height - logSize - verticalMargin,
 			},
 		},
@@ -49,7 +50,16 @@ func (gui *Gui) setViewDimensions() error {
 			dimension: viewDimension{
 				x0: 0,
 				y0: height - logSize,
-				x1: width - horizontalMargin,
+				x1: int(float32(width)*0.7) - horizontalMargin,
+				y1: height,
+			},
+		},
+		{
+			name: "help",
+			dimension: viewDimension{
+				x0: int(float32(width) * 0.7),
+				y0: 0,
+				x1: width,
 				y1: height,
 			},
 		},
@@ -58,7 +68,7 @@ func (gui *Gui) setViewDimensions() error {
 			dimension: viewDimension{
 				x0: 0,
 				y0: height - logSize,
-				x1: width - horizontalMargin,
+				x1: int(float32(width)*0.7) - horizontalMargin,
 				y1: height,
 			},
 		},

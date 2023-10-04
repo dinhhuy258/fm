@@ -2,15 +2,17 @@ package controller
 
 import (
 	set "github.com/deckarep/golang-set/v2"
+	"github.com/dinhhuy258/gocui"
+
 	"github.com/dinhhuy258/fm/pkg/gui/view"
 	"github.com/dinhhuy258/fm/pkg/type/optional"
-	"github.com/dinhhuy258/gocui"
 )
 
 type Type int8
 
 const (
 	Explorer Type = iota
+	Help
 	Selection
 	Log
 	Input
@@ -60,6 +62,7 @@ func CreateControllers(g *gocui.Gui, views *view.Views) *Controllers {
 	c.controllers = make(map[Type]IController)
 	c.controllers[Explorer] = newExplorerController(baseController, views.Explorer,
 		views.ExplorerHeader, selections)
+	c.controllers[Help] = newHelpController(baseController, views.Help)
 	c.controllers[Selection] = newSelectionController(baseController, selections)
 	c.controllers[Log] = newLogController(baseController, views.Log)
 	c.controllers[Input] = newInputController(baseController, views.Input)

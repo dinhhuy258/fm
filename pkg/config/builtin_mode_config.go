@@ -6,6 +6,7 @@ var defaultModeConfig = ModeConfig{
 	KeyBindings: KeyBindingsConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
+				Help: "quit",
 				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
@@ -13,6 +14,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"C": {
+				Help: "clear log",
 				Messages: []*MessageConfig{
 					{
 						Name: "ClearLog",
@@ -20,6 +22,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"j": {
+				Help: "down",
 				Messages: []*MessageConfig{
 					{
 						Name: "FocusNext",
@@ -27,6 +30,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"k": {
+				Help: "up",
 				Messages: []*MessageConfig{
 					{
 						Name: "FocusPrevious",
@@ -34,6 +38,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"l": {
+				Help: "enter",
 				Messages: []*MessageConfig{
 					{
 						Name: "Enter",
@@ -41,6 +46,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"h": {
+				Help: "back",
 				Messages: []*MessageConfig{
 					{
 						Name: "Back",
@@ -48,6 +54,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"J": {
+				Help: "go to bottom",
 				Messages: []*MessageConfig{
 					{
 						Name: "FocusLast",
@@ -55,6 +62,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"K": {
+				Help: "go to top",
 				Messages: []*MessageConfig{
 					{
 						Name: "FocusFirst",
@@ -62,6 +70,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"n": {
+				Help: "new file",
 				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
@@ -74,6 +83,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"s": {
+				Help: "sort",
 				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
@@ -82,6 +92,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"r": {
+				Help: "rename",
 				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
@@ -96,6 +107,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"d": {
+				Help: "delete",
 				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
@@ -104,6 +116,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"p": {
+				Help: "copy",
 				Messages: []*MessageConfig{
 					{
 						Name: "BashExecSilently",
@@ -119,6 +132,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"x": {
+				Help: "move",
 				Messages: []*MessageConfig{
 					{
 						Name: "BashExecSilently",
@@ -134,6 +148,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"ctrl+r": {
+				Help: "refresh",
 				Messages: []*MessageConfig{
 					{
 						Name: "Refresh",
@@ -141,6 +156,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"space": {
+				Help: "toggle selection",
 				Messages: []*MessageConfig{
 					{
 						Name: "ToggleSelection",
@@ -148,6 +164,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"ctrl+space": {
+				Help: "clear selection",
 				Messages: []*MessageConfig{
 					{
 						Name: "ClearSelection",
@@ -155,6 +172,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			"ctrl+a": {
+				Help: "select all",
 				Messages: []*MessageConfig{
 					{
 						Name: "SelectAll",
@@ -162,6 +180,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			".": {
+				Help: "toggle hidden",
 				Messages: []*MessageConfig{
 					{
 						Name: "ToggleHidden",
@@ -169,6 +188,7 @@ var defaultModeConfig = ModeConfig{
 				},
 			},
 			":": {
+				Help: "command",
 				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
@@ -205,6 +225,7 @@ var newFileModeConfig = ModeConfig{
 	KeyBindings: KeyBindingsConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
+				Help: "quit",
 				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
@@ -212,6 +233,7 @@ var newFileModeConfig = ModeConfig{
 				},
 			},
 			"enter": {
+				Help: "new file",
 				Messages: []*MessageConfig{
 					{
 						Name: "BashExecSilently",
@@ -246,6 +268,7 @@ var newFileModeConfig = ModeConfig{
 				},
 			},
 			"esc": {
+				Help: "cancel",
 				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
@@ -270,6 +293,7 @@ var renameModeConfig = ModeConfig{
 	KeyBindings: KeyBindingsConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
+				Help: "quit",
 				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
@@ -277,6 +301,7 @@ var renameModeConfig = ModeConfig{
 				},
 			},
 			"enter": {
+				Help: "rename",
 				Messages: []*MessageConfig{
 					{
 						Name: "BashExecSilently",
@@ -301,6 +326,7 @@ var renameModeConfig = ModeConfig{
 				},
 			},
 			"esc": {
+				Help: "cancel",
 				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
@@ -325,6 +351,7 @@ var copyModeConfig = ModeConfig{
 	KeyBindings: KeyBindingsConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
+				Help: "quit",
 				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
@@ -332,6 +359,7 @@ var copyModeConfig = ModeConfig{
 				},
 			},
 			"y": {
+				Help: "copy",
 				Messages: []*MessageConfig{
 					{
 						Name: "BashExec",
@@ -355,6 +383,7 @@ var copyModeConfig = ModeConfig{
 			},
 		},
 		Default: &ActionConfig{
+			Help: "cancel",
 			Messages: []*MessageConfig{
 				{
 					Name: "SwitchMode",
@@ -371,6 +400,7 @@ var moveModeConfig = ModeConfig{
 	KeyBindings: KeyBindingsConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
+				Help: "quit",
 				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
@@ -378,6 +408,7 @@ var moveModeConfig = ModeConfig{
 				},
 			},
 			"y": {
+				Help: "move",
 				Messages: []*MessageConfig{
 					{
 						Name: "BashExec",
@@ -401,6 +432,7 @@ var moveModeConfig = ModeConfig{
 			},
 		},
 		Default: &ActionConfig{
+			Help: "cancel",
 			Messages: []*MessageConfig{
 				{
 					Name: "SwitchMode",
@@ -417,6 +449,7 @@ var deleteModeConfig = ModeConfig{
 	KeyBindings: KeyBindingsConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
+				Help: "quit",
 				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
@@ -424,6 +457,7 @@ var deleteModeConfig = ModeConfig{
 				},
 			},
 			"d": {
+				Help: "delete current",
 				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
@@ -436,6 +470,7 @@ var deleteModeConfig = ModeConfig{
 				},
 			},
 			"s": {
+				Help: "delete selections",
 				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
@@ -448,6 +483,7 @@ var deleteModeConfig = ModeConfig{
 				},
 			},
 			"esc": {
+				Help: "cancel",
 				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
@@ -465,6 +501,7 @@ var deleteCurrentModeConfig = ModeConfig{
 	KeyBindings: KeyBindingsConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
+				Help: "quit",
 				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
@@ -472,6 +509,7 @@ var deleteCurrentModeConfig = ModeConfig{
 				},
 			},
 			"y": {
+				Help: "delete",
 				Messages: []*MessageConfig{
 					{
 						Name: "BashExec",
@@ -502,6 +540,7 @@ var deleteCurrentModeConfig = ModeConfig{
 			},
 		},
 		Default: &ActionConfig{
+			Help: "cancel",
 			Messages: []*MessageConfig{
 				{
 					Name: "SwitchMode",
@@ -518,6 +557,7 @@ var deleteSelectionsModeConfig = ModeConfig{
 	KeyBindings: KeyBindingsConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
+				Help: "quit",
 				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
@@ -525,6 +565,7 @@ var deleteSelectionsModeConfig = ModeConfig{
 				},
 			},
 			"y": {
+				Help: "delete selections",
 				Messages: []*MessageConfig{
 					{
 						Name: "BashExec",
@@ -558,6 +599,7 @@ var deleteSelectionsModeConfig = ModeConfig{
 			},
 		},
 		Default: &ActionConfig{
+			Help: "cancel",
 			Messages: []*MessageConfig{
 				{
 					Name: "SwitchMode",
@@ -574,6 +616,7 @@ var sortModeConfig = ModeConfig{
 	KeyBindings: KeyBindingsConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
+				Help: "quit",
 				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
@@ -581,6 +624,7 @@ var sortModeConfig = ModeConfig{
 				},
 			},
 			"d": {
+				Help: "dir first",
 				Messages: []*MessageConfig{
 					{
 						Name: "SortByDirFirst",
@@ -592,6 +636,7 @@ var sortModeConfig = ModeConfig{
 				},
 			},
 			"c": {
+				Help: "date modified",
 				Messages: []*MessageConfig{
 					{
 						Name: "SortByDateModified",
@@ -603,6 +648,7 @@ var sortModeConfig = ModeConfig{
 				},
 			},
 			"n": {
+				Help: "name",
 				Messages: []*MessageConfig{
 					{
 						Name: "SortByName",
@@ -614,6 +660,7 @@ var sortModeConfig = ModeConfig{
 				},
 			},
 			"s": {
+				Help: "size",
 				Messages: []*MessageConfig{
 					{
 						Name: "SortBySize",
@@ -625,6 +672,7 @@ var sortModeConfig = ModeConfig{
 				},
 			},
 			"e": {
+				Help: "extension",
 				Messages: []*MessageConfig{
 					{
 						Name: "SortByExtension",
@@ -636,6 +684,7 @@ var sortModeConfig = ModeConfig{
 				},
 			},
 			"r": {
+				Help: "reverse",
 				Messages: []*MessageConfig{
 					{
 						Name: "ReverseSort",
@@ -664,6 +713,7 @@ var commandModeConfig = ModeConfig{
 	KeyBindings: KeyBindingsConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
+				Help: "quit",
 				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
@@ -671,6 +721,7 @@ var commandModeConfig = ModeConfig{
 				},
 			},
 			"enter": {
+				Help: "execute",
 				Messages: []*MessageConfig{
 					{
 						Name: "BashExec",
@@ -687,6 +738,7 @@ var commandModeConfig = ModeConfig{
 				},
 			},
 			"esc": {
+				Help: "cancel",
 				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
@@ -711,6 +763,7 @@ var goToIndexModeConfig = ModeConfig{
 	KeyBindings: KeyBindingsConfig{
 		OnKeys: map[string]*ActionConfig{
 			"ctrl+c": {
+				Help: "quit",
 				Messages: []*MessageConfig{
 					{
 						Name: "Quit",
@@ -718,6 +771,7 @@ var goToIndexModeConfig = ModeConfig{
 				},
 			},
 			"enter": {
+				Help: "go to index",
 				Messages: []*MessageConfig{
 					{
 						Name: "BashExecSilently",
@@ -733,6 +787,7 @@ var goToIndexModeConfig = ModeConfig{
 				},
 			},
 			"esc": {
+				Help: "cancel",
 				Messages: []*MessageConfig{
 					{
 						Name: "SwitchMode",
