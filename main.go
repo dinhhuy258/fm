@@ -6,7 +6,12 @@ import (
 	"log"
 	"os"
 
-	"github.com/dinhhuy258/fm/pkg/app"
+	tea "github.com/charmbracelet/bubbletea"
+
+	"github.com/dinhhuy258/fm/pkg/config"
+	"github.com/dinhhuy258/fm/pkg/config/lua"
+	"github.com/dinhhuy258/fm/pkg/pipe"
+	"github.com/dinhhuy258/fm/pkg/tui"
 )
 
 var version = "unversioned"
@@ -20,11 +25,40 @@ func main() {
 		os.Exit(0)
 	}
 
-	app, err := app.NewApp()
-	if err != nil {
-		log.Fatalf("failed to new app %v", err)
+	// Initialize Lua configuration
+	luaEngine := lua.NewLua()
+	defer luaEngine.Close()
+
+	// Load the config
+	if err := config.LoadConfig(luaEngine); err != nil {
+		log.Fatalf("failed to load config: %v", err)
 	}
 
-	_ = app.Run()
-	app.OnQuit()
+	// Initialize pipe for external commands
+	pipe, err := pipe.NewPipe()
+	if err != nil {
+		log.Fatalf("failed to create pipe: %v", err)
+	}
+	defer pipe.StopWatcher()
+
+	// Create the Bubble Tea model
+	model := tui.NewModel(config.AppConfig, pipe)
+
+	// Create the Bubble Tea program
+	program := tea.NewProgram(
+		model,
+		tea.WithAltScreen(),       // Use alternate screen buffer
+		tea.WithMouseCellMotion(), // Enable mouse support
+	)
+
+	// Start the pipe watcher (for external commands)
+	pipe.StartWatcher(func(message string) {
+		// Send external messages to the TUI
+		program.Send(tui.ExternalMessage{Content: message})
+	})
+
+	// Run the program
+	if _, err := program.Run(); err != nil {
+		log.Fatalf("Error running Bubble Tea program: %v", err)
+	}
 }

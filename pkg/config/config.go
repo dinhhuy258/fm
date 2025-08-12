@@ -274,10 +274,8 @@ func (ethc *ExplorerTableHeaderConfig) toLuaTable(luaState *gopher_lua.LState) *
 
 // ExplorerTableConfig represents the config for the explorer table.
 type ExplorerTableConfig struct {
-	IndexHeader       *ExplorerTableHeaderConfig `mapper:"index_header"`
-	NameHeader        *ExplorerTableHeaderConfig `mapper:"name_header"`
-	PermissionsHeader *ExplorerTableHeaderConfig `mapper:"permissions_header"`
-	SizeHeader        *ExplorerTableHeaderConfig `mapper:"size_header"`
+	IndexHeader *ExplorerTableHeaderConfig `mapper:"index_header"`
+	NameHeader  *ExplorerTableHeaderConfig `mapper:"name_header"`
 
 	DefaultUI        *DefaultUIConfig `mapper:"default_ui"`
 	FocusUI          *UIConfig        `mapper:"focus_ui"`
@@ -303,18 +301,6 @@ func (etc *ExplorerTableConfig) toLuaTable(luaState *gopher_lua.LState) *gopher_
 		tbl.RawSetString("name_header", etc.NameHeader.toLuaTable(luaState))
 	} else {
 		tbl.RawSetString("name_header", gopher_lua.LNil)
-	}
-
-	if etc.PermissionsHeader != nil {
-		tbl.RawSetString("permissions_header", etc.PermissionsHeader.toLuaTable(luaState))
-	} else {
-		tbl.RawSetString("permissions_header", gopher_lua.LNil)
-	}
-
-	if etc.SizeHeader != nil {
-		tbl.RawSetString("size_header", etc.SizeHeader.toLuaTable(luaState))
-	} else {
-		tbl.RawSetString("size_header", gopher_lua.LNil)
 	}
 
 	if etc.DefaultUI != nil {

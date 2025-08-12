@@ -84,7 +84,7 @@ func WriteToFile(filePath string, lines []string, override bool) {
 		return
 	}
 
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	for _, line := range lines {
 		if _, err = file.WriteString(line + "\n"); err != nil {
