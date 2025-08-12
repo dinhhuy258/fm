@@ -565,8 +565,14 @@ func (t *ExplorerTable) formatRow(columns []columnConfig, values []styledValue) 
 	}
 
 	result := ""
+	consumedWidth := 0
 	for i, col := range columns {
 		width := int(float32(col.percentage) / 100.0 * float32(t.width))
+		if i == len(columns)-1 {
+			width = t.width - consumedWidth
+		} else {
+			consumedWidth += width
+		}
 		result += t.formatColumn(values[i], width, col.leftAlign)
 	}
 

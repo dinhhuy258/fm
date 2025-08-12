@@ -10,8 +10,27 @@ import (
 	"github.com/dinhhuy258/fm/pkg/config"
 )
 
+// NotificationType represents different types of status notifications
+type NotificationType int8
+
+const (
+	NotificationSuccess NotificationType = iota
+	NotificationInfo
+	NotificationWarning
+	NotificationError
+)
+
+// StatusNotification represents a single status notification with timestamp
+type StatusNotification struct {
+	Type      NotificationType
+	Message   string
+	CreatedAt time.Time
+}
+
+// AutoClearMessage represents a message to auto-clear the notification
+type AutoClearMessage struct{}
+
 // InputCompletedMessage indicates that input has been completed
-// (This is defined here to avoid circular imports with actions package)
 type InputCompletedMessage struct {
 	Value string // The final input value
 }
@@ -33,8 +52,7 @@ type InteractiveArea struct {
 	currentMode InteractiveAreaMode
 
 	// Input components
-	textInput   textinput.Model
-	inputPrompt string
+	textInput textinput.Model
 
 	// Notification components
 	activeNotification *StatusNotification
@@ -59,7 +77,6 @@ func NewInteractiveArea() *InteractiveArea {
 	ia := &InteractiveArea{
 		currentMode:        InteractiveModeNotification, // Default to showing notifications
 		textInput:          ti,
-		inputPrompt:        "> ",
 		activeNotification: nil,
 		config:             cfg,
 	}
@@ -101,6 +118,59 @@ func (ia *InteractiveArea) initStyles() {
 	if ia.config != nil && ia.config.General.LogErrorUI.Style != nil {
 		ia.errorStyle = convertConfigStyleToLipgloss(ia.config.General.LogErrorUI.Style)
 	}
+}
+
+// convertConfigStyleToLipgloss converts config.StyleConfig to lipgloss.Style
+func convertConfigStyleToLipgloss(styleConfig *config.StyleConfig) lipgloss.Style {
+	style := lipgloss.NewStyle()
+
+	if styleConfig == nil {
+		return style
+	}
+
+	// Map common color names to better alternatives
+	colorMap := map[string]string{
+		"white":   "#FFFFFF",
+		"cyan":    "#00FFFF",
+		"green":   "#00FF00",
+		"yellow":  "#FFFF00",
+		"red":     "#FF0000",
+		"blue":    "#0000FF",
+		"magenta": "#FF00FF",
+		"black":   "#000000",
+	}
+
+	// Set foreground color
+	if styleConfig.Fg != "" {
+		color := styleConfig.Fg
+		if mappedColor, ok := colorMap[color]; ok {
+			color = mappedColor
+		}
+		style = style.Foreground(lipgloss.Color(color))
+	}
+
+	// Set background color
+	if styleConfig.Bg != "" {
+		color := styleConfig.Bg
+		if mappedColor, ok := colorMap[color]; ok {
+			color = mappedColor
+		}
+		style = style.Background(lipgloss.Color(color))
+	}
+
+	// Apply decorations
+	for _, decoration := range styleConfig.Decorations {
+		switch decoration {
+		case "bold":
+			style = style.Bold(true)
+		case "italic":
+			style = style.Italic(true)
+		case "underline", "underscore":
+			style = style.Underline(true)
+		}
+	}
+
+	return style
 }
 
 // SetSize updates the interactive area size
