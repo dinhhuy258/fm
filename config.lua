@@ -77,17 +77,7 @@ fm.general.explorer_table.index_header = {
 
 fm.general.explorer_table.name_header = {
   name = "┌──── name",
-  percentage = 65,
-}
-
-fm.general.explorer_table.permissions_header = {
-  name = "permissions",
-  percentage = 15,
-}
-
-fm.general.explorer_table.size_header = {
-  name = "size",
-  percentage = 10,
+  percentage = 90,
 }
 
 fm.general.explorer_table.first_entry_prefix = "├─"
