@@ -72,12 +72,12 @@ fm.general.explorer_table.focus_selection_ui = {
 
 fm.general.explorer_table.index_header = {
   name = "index",
-  percentage = 15,
+  percentage = 10,
 }
 
 fm.general.explorer_table.name_header = {
   name = "┌──── name",
-  percentage = 85,
+  percentage = 90,
 }
 
 fm.general.explorer_table.first_entry_prefix = "├─"
