@@ -85,8 +85,3 @@ type InteractiveBashMessage struct {
 	Environment []string
 	WorkingDir  string
 }
-
-// InputCompletedMessage indicates that input has been completed
-type InputCompletedMessage struct {
-	Value string // The final input value
-}
