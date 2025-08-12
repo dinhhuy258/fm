@@ -5,7 +5,6 @@ import (
 	"io"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -30,61 +29,6 @@ type Explorer struct {
 	selectedStyle   lipgloss.Style
 	paginationStyle lipgloss.Style
 	helpStyle       lipgloss.Style
-}
-
-// ExplorerKeyMap defines the key bindings for the explorer
-type ExplorerKeyMap struct {
-	Up       key.Binding
-	Down     key.Binding
-	Enter    key.Binding
-	Space    key.Binding
-	PageUp   key.Binding
-	PageDown key.Binding
-	Home     key.Binding
-	End      key.Binding
-	Filter   key.Binding
-}
-
-// DefaultExplorerKeys returns the default key bindings for the explorer
-func DefaultExplorerKeys() ExplorerKeyMap {
-	return ExplorerKeyMap{
-		Up: key.NewBinding(
-			key.WithKeys("k", "up"),
-			key.WithHelp("↑/k", "move up"),
-		),
-		Down: key.NewBinding(
-			key.WithKeys("j", "down"),
-			key.WithHelp("↓/j", "move down"),
-		),
-		Enter: key.NewBinding(
-			key.WithKeys("enter"),
-			key.WithHelp("enter", "open/enter"),
-		),
-		Space: key.NewBinding(
-			key.WithKeys(" "),
-			key.WithHelp("space", "select"),
-		),
-		PageUp: key.NewBinding(
-			key.WithKeys("pgup"),
-			key.WithHelp("pgup", "page up"),
-		),
-		PageDown: key.NewBinding(
-			key.WithKeys("pgdown"),
-			key.WithHelp("pgdown", "page down"),
-		),
-		Home: key.NewBinding(
-			key.WithKeys("home", "g"),
-			key.WithHelp("home/g", "go to top"),
-		),
-		End: key.NewBinding(
-			key.WithKeys("end", "G"),
-			key.WithHelp("end/G", "go to bottom"),
-		),
-		Filter: key.NewBinding(
-			key.WithKeys("/"),
-			key.WithHelp("/", "filter"),
-		),
-	}
 }
 
 // NewExplorer creates a new explorer component

@@ -5,7 +5,6 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/rivo/uniseg"
@@ -65,59 +64,6 @@ type ExplorerTable struct {
 
 	// Icons mapping
 	icons nodeTypes
-
-	// Key bindings
-	keys ExplorerTableKeys
-}
-
-// ExplorerTableKeys defines key bindings for the table
-type ExplorerTableKeys struct {
-	Up       key.Binding
-	Down     key.Binding
-	PageUp   key.Binding
-	PageDown key.Binding
-	Home     key.Binding
-	End      key.Binding
-	Space    key.Binding
-	Enter    key.Binding
-}
-
-// DefaultExplorerTableKeys returns default key bindings
-func DefaultExplorerTableKeys() ExplorerTableKeys {
-	return ExplorerTableKeys{
-		Up: key.NewBinding(
-			key.WithKeys("k", "up"),
-			key.WithHelp("↑/k", "move up"),
-		),
-		Down: key.NewBinding(
-			key.WithKeys("j", "down"),
-			key.WithHelp("↓/j", "move down"),
-		),
-		PageUp: key.NewBinding(
-			key.WithKeys("pgup", "ctrl+u"),
-			key.WithHelp("pgup", "page up"),
-		),
-		PageDown: key.NewBinding(
-			key.WithKeys("pgdown", "ctrl+d"),
-			key.WithHelp("pgdown", "page down"),
-		),
-		Home: key.NewBinding(
-			key.WithKeys("home", "g"),
-			key.WithHelp("home/g", "go to top"),
-		),
-		End: key.NewBinding(
-			key.WithKeys("end", "G"),
-			key.WithHelp("end/G", "go to bottom"),
-		),
-		Space: key.NewBinding(
-			key.WithKeys(" "),
-			key.WithHelp("space", "toggle selection"),
-		),
-		Enter: key.NewBinding(
-			key.WithKeys("enter"),
-			key.WithHelp("enter", "open/enter"),
-		),
-	}
 }
 
 // NewExplorerTable creates a new explorer table
@@ -132,7 +78,6 @@ func NewExplorerTable() *ExplorerTable {
 		nodeTypesConfig: nodeTypesConfig,
 		focus:           0,
 		scrollStart:     0,
-		keys:            DefaultExplorerTableKeys(),
 	}
 
 	// Initialize styles and icons
@@ -317,24 +262,24 @@ func (t *ExplorerTable) SetEntries(entries []fs.IEntry, currentPath string) {
 func (t *ExplorerTable) Update(msg tea.Msg) (*ExplorerTable, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch {
-		case key.Matches(msg, t.keys.Up):
+		switch msg.Type {
+		case tea.KeyUp:
 			t.moveCursor(-1)
-		case key.Matches(msg, t.keys.Down):
+		case tea.KeyDown:
 			t.moveCursor(1)
-		case key.Matches(msg, t.keys.PageUp):
+		case tea.KeyPgUp:
 			t.moveCursor(-t.getVisibleRows())
-		case key.Matches(msg, t.keys.PageDown):
+		case tea.KeyPgDown:
 			t.moveCursor(t.getVisibleRows())
-		case key.Matches(msg, t.keys.Home):
+		case tea.KeyHome:
 			t.focus = 0
 			t.scrollStart = 0
-		case key.Matches(msg, t.keys.End):
+		case tea.KeyEnd:
 			if len(t.entries) > 0 {
 				t.focus = len(t.entries) - 1
 				t.ensureVisible()
 			}
-		case key.Matches(msg, t.keys.Space):
+		case tea.KeySpace:
 			t.toggleSelection()
 		}
 	}
