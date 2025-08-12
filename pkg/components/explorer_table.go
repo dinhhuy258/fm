@@ -5,7 +5,6 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/rivo/uniseg"
 
@@ -53,7 +52,6 @@ type ExplorerTable struct {
 	// Focused index
 	focus       int
 	scrollStart int
-	currentPath string
 
 	// Configuration
 	explorerConfig  *config.ExplorerTableConfig
@@ -153,41 +151,11 @@ func (t *ExplorerTable) SetSize(width, height int) {
 }
 
 // SetEntries updates the entries and resets focus/selection
-func (t *ExplorerTable) SetEntries(entries []fs.IEntry, currentPath string) {
+func (t *ExplorerTable) SetEntries(entries []fs.IEntry) {
 	t.entries = entries
-	t.currentPath = currentPath
 	t.focus = 0
 	t.scrollStart = 0
 	t.selections = set.NewSet[string]()
-}
-
-// Update handles input messages
-func (t *ExplorerTable) Update(msg tea.Msg) (*ExplorerTable, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyUp:
-			t.moveCursor(-1)
-		case tea.KeyDown:
-			t.moveCursor(1)
-		case tea.KeyPgUp:
-			t.moveCursor(-t.getVisibleRows())
-		case tea.KeyPgDown:
-			t.moveCursor(t.getVisibleRows())
-		case tea.KeyHome:
-			t.focus = 0
-			t.scrollStart = 0
-		case tea.KeyEnd:
-			if len(t.entries) > 0 {
-				t.focus = len(t.entries) - 1
-				t.ensureVisible()
-			}
-		case tea.KeySpace:
-			t.toggleSelection()
-		}
-	}
-
-	return t, nil
 }
 
 // moveCursor moves the cursor by delta positions
@@ -220,8 +188,31 @@ func (t *ExplorerTable) getVisibleRows() int {
 	return max(t.height-1, 1)
 }
 
-// toggleSelection toggles selection for the focused item.
-func (t *ExplorerTable) toggleSelection() {
+// Move moves the cursor by delta positions
+func (t *ExplorerTable) Move(delta int) {
+	t.moveCursor(delta)
+}
+
+// MoveFirst moves focus to the first item
+func (t *ExplorerTable) MoveFirst() {
+	if len(t.entries) == 0 {
+		return
+	}
+	t.focus = 0
+	t.scrollStart = 0
+}
+
+// MoveLast moves focus to the last item
+func (t *ExplorerTable) MoveLast() {
+	if len(t.entries) == 0 {
+		return
+	}
+	t.focus = len(t.entries) - 1
+	t.ensureVisible()
+}
+
+// ToggleSelection toggles selection for the focused item
+func (t *ExplorerTable) ToggleSelection() {
 	if t.focus >= len(t.entries) {
 		return
 	}

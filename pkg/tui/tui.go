@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
@@ -79,7 +78,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.entries = msg.entries
 
 		// Update explorer table
-		m.explorerTable.SetEntries(msg.entries, msg.path)
+		m.explorerTable.SetEntries(msg.entries)
 		m.statusBar.path = m.currentPath
 		m.statusBar.total = len(msg.entries)
 
@@ -93,7 +92,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.entries = msg.entries
 
 		// Update explorer table
-		m.explorerTable.SetEntries(msg.entries, msg.path)
+		m.explorerTable.SetEntries(msg.entries)
 		m.statusBar.path = m.currentPath
 		m.statusBar.total = len(msg.entries)
 
@@ -200,10 +199,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmds = append(cmds, m.interactiveArea.ShowSuccess(fmt.Sprintf("Input: %s", msg.Value)))
 		}
 	default:
-		// Update components
-		m.explorerTable, cmd = m.explorerTable.Update(msg)
-		cmds = append(cmds, cmd)
-
 		// Always update help UI (it handles its own visibility)
 		m.helpUI, cmd = m.helpUI.Update(msg)
 		cmds = append(cmds, cmd)
@@ -245,8 +240,9 @@ func (m Model) handleKeyWithDynamicSystem(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return updatedModel, tea.Batch(cmds...)
 	}
 
-	// If no dynamic mapping found, fall back to legacy handling
-	return m.handleFallbackMode(msg)
+	m.interactiveArea.ShowWarning(fmt.Sprintf("No action found for key: %s", m.dynamicKeyMap.keyMsgToString(msg)))
+
+	return m, nil
 }
 
 // shouldUpdateInputBufferFromKey checks if we should update input buffer from key
@@ -259,38 +255,6 @@ func (m Model) shouldUpdateInputBufferFromKey(action *config.ActionConfig, _ str
 	}
 
 	return false
-}
-
-// handleFallbackMode handles keys when no dynamic mapping is found
-func (m Model) handleFallbackMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-
-	// Try to handle common keys that should work across modes
-	switch {
-	case key.Matches(msg, m.keys.Quit):
-		return m, tea.Quit
-	case key.Matches(msg, m.keys.Help):
-		m.helpUI.Toggle()
-
-		return m, nil
-	case key.Matches(msg, m.keys.Escape):
-		// In non-default modes, escape should usually go back to default
-		if !m.modeManager.IsDefaultMode() {
-			updatedModel := m
-			_ = updatedModel.SwitchMode("default")
-
-			return updatedModel, nil
-		}
-
-		return m, nil
-	default:
-		// If no mode-specific handling exists, let components handle it
-		m.explorerTable, cmd = m.explorerTable.Update(msg)
-		_, selected := m.explorerTable.GetStats()
-		m.statusBar.selected = selected
-
-		return m, cmd
-	}
 }
 
 // View renders the UI
@@ -457,35 +421,30 @@ func loadDirectory(path string) ([]fs.IEntry, error) {
 
 // handleNavigationMessage processes navigation actions
 func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-
 	switch msg.Action {
 	case "next":
-		// Move focus down (handled by explorer table)
-		m.explorerTable, cmd = m.explorerTable.Update(tea.KeyMsg{Type: tea.KeyDown})
+		m.explorerTable.Move(1)
 	case "previous":
-		// Move focus up (handled by explorer table)
-		m.explorerTable, cmd = m.explorerTable.Update(tea.KeyMsg{Type: tea.KeyUp})
+		m.explorerTable.Move(-1)
 	case "first":
-		// Move to first item
-		m.explorerTable, cmd = m.explorerTable.Update(tea.KeyMsg{Type: tea.KeyHome})
+		m.explorerTable.MoveFirst()
 	case "last":
-		// Move to last item
-		m.explorerTable, cmd = m.explorerTable.Update(tea.KeyMsg{Type: tea.KeyEnd})
+		m.explorerTable.MoveLast()
 	case "enter":
-		// Enter directory or open file
 		if entry := m.explorerTable.GetFocusedEntry(); entry != nil {
 			if entry.IsDirectory() {
 				return m, loadDirectoryCmd(entry.GetPath())
 			}
-			// File opening logic would go here
 		}
 	case "back":
-		// Go to parent directory
 		if m.currentPath != "" && m.currentPath != "/" {
 			parentPath := filepath.Dir(m.currentPath)
 
-			return m, loadDirectoryCmd(parentPath)
+			return m, loadDirectoryWithFocusCmd(parentPath, m.currentPath)
+		}
+	case "change_directory":
+		if msg.Path != "" {
+			return m, loadDirectoryCmd(msg.Path)
 		}
 	}
 
@@ -493,17 +452,15 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 	_, selected := m.explorerTable.GetStats()
 	m.statusBar.selected = selected
 
-	return m, cmd
+	return m, nil
 }
 
 // handleSelectionMessage processes selection actions
 func (m Model) handleSelectionMessage(msg actions.SelectionMessage) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-
 	switch msg.Action {
 	case "toggle":
-		// Toggle selection of current item
-		m.explorerTable, cmd = m.explorerTable.Update(tea.KeyMsg{Type: tea.KeySpace})
+		// Toggle selection of current item using direct method
+		m.explorerTable.ToggleSelection()
 	case "clear":
 		// Clear all selections (this would need to be implemented in the explorer table)
 		m.selected = make(map[int]struct{})
@@ -520,7 +477,7 @@ func (m Model) handleSelectionMessage(msg actions.SelectionMessage) (tea.Model, 
 	_, selected := m.explorerTable.GetStats()
 	m.statusBar.selected = selected
 
-	return m, cmd
+	return m, nil
 }
 
 // handleUIMessage processes UI control actions
