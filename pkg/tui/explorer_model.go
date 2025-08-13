@@ -98,11 +98,6 @@ func (m *ExplorerModel) SetSize(width, height int) {
 	m.height = height
 }
 
-// GetSize returns the current dimensions
-func (m *ExplorerModel) GetSize() (int, int) {
-	return m.width, m.height
-}
-
 // SetEntries updates the entries and resets focus/selection state
 func (m *ExplorerModel) SetEntries(entries []fs.IEntry) {
 	m.entries = entries
@@ -374,27 +369,26 @@ type entryDisplayState struct {
 
 // View renders the explorer table view using cached view data
 func (m *ExplorerModel) View() string {
-	width, height := m.GetSize()
-	if width <= 0 || height <= 0 {
+	if m.width <= 0 || m.height <= 0 {
 		return ""
 	}
 
-	// Use cached view data
-	viewData := m.GetViewData()
+	// Ensure view data is initialized
+	m.GetViewData()
 
 	var sections []string
 
 	// Render header
-	sections = append(sections, m.renderHeader(viewData, width))
+	sections = append(sections, m.renderHeader())
 
 	// Render visible entries
-	sections = append(sections, m.renderEntries(viewData, width))
+	sections = append(sections, m.renderEntries())
 
 	return strings.Join(sections, "\n")
 }
 
 // renderHeader renders the column headers
-func (m *ExplorerModel) renderHeader(viewData *ExplorerViewData, width int) string {
+func (m *ExplorerModel) renderHeader() string {
 	explorerConfig := config.AppConfig.General.ExplorerTable
 	columns := []columnConfig{
 		{percentage: explorerConfig.IndexHeader.Percentage, leftAlign: true},
@@ -402,15 +396,15 @@ func (m *ExplorerModel) renderHeader(viewData *ExplorerViewData, width int) stri
 	}
 
 	values := []styledValue{
-		{text: explorerConfig.IndexHeader.Name, style: viewData.headerStyles.indexHeader},
-		{text: explorerConfig.NameHeader.Name, style: viewData.headerStyles.nameHeader},
+		{text: explorerConfig.IndexHeader.Name, style: m.viewData.headerStyles.indexHeader},
+		{text: explorerConfig.NameHeader.Name, style: m.viewData.headerStyles.nameHeader},
 	}
 
-	return m.formatRow(columns, values, width)
+	return m.formatRow(columns, values)
 }
 
 // renderEntries renders the visible file entries
-func (m *ExplorerModel) renderEntries(viewData *ExplorerViewData, width int) string {
+func (m *ExplorerModel) renderEntries() string {
 	if len(m.entries) == 0 {
 		return ""
 	}
@@ -421,28 +415,28 @@ func (m *ExplorerModel) renderEntries(viewData *ExplorerViewData, width int) str
 	lines := make([]string, 0, lastVisibleIndex-m.scrollStart)
 
 	for i := m.scrollStart; i < lastVisibleIndex; i++ {
-		lines = append(lines, m.renderEntry(m.entries[i], i, viewData, width))
+		lines = append(lines, m.renderEntry(m.entries[i], i))
 	}
 
 	// Pad with empty lines if needed
 	for len(lines) < visibleRows {
-		lines = append(lines, strings.Repeat(" ", width))
+		lines = append(lines, strings.Repeat(" ", m.width))
 	}
 
 	return strings.Join(lines, "\n")
 }
 
 // renderEntry renders a single file entry with proper styling
-func (m *ExplorerModel) renderEntry(entry fs.IEntry, idx int, viewData *ExplorerViewData, width int) string {
-	state := m.determineEntryDisplayState(entry, idx, viewData)
-	entryIcon := m.getEntryIcon(entry, state.isFocused, state.isSelected, viewData)
+func (m *ExplorerModel) renderEntry(entry fs.IEntry, idx int) string {
+	state := m.determineEntryDisplayState(entry, idx)
+	entryIcon := m.getEntryIcon(entry, state.isFocused, state.isSelected)
 	nameColumn := m.buildEntryDisplayName(entry, entryIcon, state)
 
-	return m.formatEntryRow(idx, nameColumn, state.style, width)
+	return m.formatEntryRow(idx, nameColumn, state.style)
 }
 
 // determineEntryDisplayState calculates the display state for an entry based on focus/selection
-func (m *ExplorerModel) determineEntryDisplayState(entry fs.IEntry, idx int, viewData *ExplorerViewData) entryDisplayState {
+func (m *ExplorerModel) determineEntryDisplayState(entry fs.IEntry, idx int) entryDisplayState {
 	explorerConfig := config.AppConfig.General.ExplorerTable
 	isFocused := idx == m.focus
 	isSelected := m.IsSelected(entry.GetPath())
@@ -454,22 +448,22 @@ func (m *ExplorerModel) determineEntryDisplayState(entry fs.IEntry, idx int, vie
 	case isFocused && isSelected:
 		prefix = explorerConfig.FocusSelectionUI.Prefix
 		suffix = explorerConfig.FocusSelectionUI.Suffix
-		style = viewData.focusSelectionStyle
+		style = m.viewData.focusSelectionStyle
 	case isFocused:
 		prefix = explorerConfig.FocusUI.Prefix
 		suffix = explorerConfig.FocusUI.Suffix
-		style = viewData.focusStyle
+		style = m.viewData.focusStyle
 	case isSelected:
 		prefix = explorerConfig.SelectionUI.Prefix
 		suffix = explorerConfig.SelectionUI.Suffix
-		style = viewData.selectionStyle
+		style = m.viewData.selectionStyle
 	default:
 		prefix = explorerConfig.DefaultUI.Prefix
 		suffix = explorerConfig.DefaultUI.Suffix
 		if entry.IsDirectory() {
-			style = viewData.defaultDirectoryStyle
+			style = m.viewData.defaultDirectoryStyle
 		} else {
-			style = viewData.defaultFileStyle
+			style = m.viewData.defaultFileStyle
 		}
 	}
 
@@ -515,7 +509,7 @@ func (m *ExplorerModel) buildEntryDisplayName(entry fs.IEntry, entryIcon nodeTyp
 }
 
 // formatEntryRow formats the complete row with index and name columns
-func (m *ExplorerModel) formatEntryRow(idx int, nameColumn string, entryStyle lipgloss.Style, width int) string {
+func (m *ExplorerModel) formatEntryRow(idx int, nameColumn string, entryStyle lipgloss.Style) string {
 	explorerConfig := config.AppConfig.General.ExplorerTable
 	columns := []columnConfig{
 		{percentage: explorerConfig.IndexHeader.Percentage, leftAlign: true},
@@ -527,64 +521,61 @@ func (m *ExplorerModel) formatEntryRow(idx int, nameColumn string, entryStyle li
 		{text: nameColumn, style: entryStyle},
 	}
 
-	return m.formatRow(columns, values, width)
+	return m.formatRow(columns, values)
 }
 
 // getEntryIcon returns the appropriate icon for an entry with state-based styling
-func (m *ExplorerModel) getEntryIcon(entry fs.IEntry, isEntryFocused, isEntrySelected bool, viewData *ExplorerViewData) nodeType {
+func (m *ExplorerModel) getEntryIcon(entry fs.IEntry, isEntryFocused, isEntrySelected bool) nodeType {
 	var icon nodeType
 
 	// Find the appropriate icon based on file type
-	extensionIcon, hasExtIcon := viewData.icons.extensions[strings.ToLower(entry.GetExt())]
-	specialIcon, hasSpecialIcon := viewData.icons.specials[strings.ToLower(entry.GetName())]
+	extensionIcon, hasExtIcon := m.viewData.icons.extensions[strings.ToLower(entry.GetExt())]
+	specialIcon, hasSpecialIcon := m.viewData.icons.specials[strings.ToLower(entry.GetName())]
 
 	switch {
 	case entry.IsSymlink() && entry.IsDirectory():
-		icon = viewData.icons.directorySymlink
+		icon = m.viewData.icons.directorySymlink
 	case entry.IsSymlink():
-		icon = viewData.icons.fileSymlink
+		icon = m.viewData.icons.fileSymlink
 	case hasSpecialIcon:
 		icon = specialIcon
 	case hasExtIcon:
 		icon = extensionIcon
 	case entry.IsDirectory():
-		icon = viewData.icons.directory
+		icon = m.viewData.icons.directory
 	default:
-		icon = viewData.icons.file
+		icon = m.viewData.icons.file
 	}
 
 	switch {
 	case isEntrySelected && isEntryFocused:
-		icon.style = viewData.focusSelectionStyle
+		icon.style = m.viewData.focusSelectionStyle
 	case isEntrySelected:
-		icon.style = viewData.selectionStyle
+		icon.style = m.viewData.selectionStyle
 	case isEntryFocused:
-		icon.style = viewData.focusStyle
+		icon.style = m.viewData.focusStyle
 	}
 
 	return icon
 }
 
 // formatRow formats a row with proper column alignment and styling
-func (m *ExplorerModel) formatRow(columns []columnConfig, values []styledValue, width int) string {
+func (m *ExplorerModel) formatRow(columns []columnConfig, values []styledValue) string {
 	if len(columns) != len(values) {
 		return "Invalid row configuration: column count mismatch"
 	}
-	if len(columns) == 0 {
-		return ""
-	}
-	if width <= 0 {
+	if len(columns) == 0 || m.width <= 0 {
 		return ""
 	}
 
 	result := ""
 	accumulatedColumnWidth := 0
 	for i, col := range columns {
-		columnWidth := int(float32(col.percentage) / 100.0 * float32(width))
+		columnWidth := int(float32(col.percentage) / 100.0 * float32(m.width))
 		// Give remaining width to the last column to avoid rounding errors
 		// that could leave empty space or cause overflow
 		if i == len(columns)-1 {
-			columnWidth = width - accumulatedColumnWidth
+			columnWidth = m.width - accumulatedColumnWidth
 		} else {
 			accumulatedColumnWidth += columnWidth
 		}
@@ -592,10 +583,10 @@ func (m *ExplorerModel) formatRow(columns []columnConfig, values []styledValue, 
 	}
 
 	// Ensure the row doesn't exceed terminal width
-	if uniseg.StringWidth(result) > width {
+	if uniseg.StringWidth(result) > m.width {
 		runes := []rune(result)
-		if len(runes) > width {
-			result = string(runes[:width])
+		if len(runes) > m.width {
+			result = string(runes[:m.width])
 		}
 	}
 
@@ -603,8 +594,8 @@ func (m *ExplorerModel) formatRow(columns []columnConfig, values []styledValue, 
 }
 
 // formatColumn formats a single column with proper alignment
-func (m *ExplorerModel) formatColumn(value styledValue, width int, leftAlign bool) string {
-	if width <= 0 {
+func (m *ExplorerModel) formatColumn(value styledValue, columnWidth int, leftAlign bool) string {
+	if columnWidth <= 0 {
 		return ""
 	}
 
@@ -612,7 +603,7 @@ func (m *ExplorerModel) formatColumn(value styledValue, width int, leftAlign boo
 	displayWidth := uniseg.StringWidth(text)
 
 	// Truncate if too long
-	if displayWidth > width {
+	if displayWidth > columnWidth {
 		truncated := ""
 		currentWidth := 0
 		for _, r := range text {
@@ -620,7 +611,7 @@ func (m *ExplorerModel) formatColumn(value styledValue, width int, leftAlign boo
 			if runeWidth < 0 {
 				runeWidth = 1 // fallback for invalid runes
 			}
-			if currentWidth+runeWidth > width {
+			if currentWidth+runeWidth > columnWidth {
 				break
 			}
 			truncated += string(r)
@@ -631,7 +622,7 @@ func (m *ExplorerModel) formatColumn(value styledValue, width int, leftAlign boo
 	}
 
 	// Calculate padding
-	padding := max(width-displayWidth, 0)
+	padding := max(columnWidth-displayWidth, 0)
 
 	// Apply styling to the text content
 	styledText := value.style.Render(text)
@@ -639,7 +630,7 @@ func (m *ExplorerModel) formatColumn(value styledValue, width int, leftAlign boo
 	// Add padding
 	if leftAlign {
 		return styledText + strings.Repeat(" ", padding)
-	} else {
-		return strings.Repeat(" ", padding) + styledText
 	}
+
+	return strings.Repeat(" ", padding) + styledText
 }
