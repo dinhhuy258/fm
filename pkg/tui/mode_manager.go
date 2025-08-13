@@ -45,8 +45,7 @@ func (mm *ModeManager) GetCurrentMode() string {
 
 // SwitchToMode switches to the specified mode
 func (mm *ModeManager) SwitchToMode(modeName string) error {
-	// Check if the mode exists
-	if !mm.ModeExists(modeName) {
+	if !mm.modeExists(modeName) {
 		return fmt.Errorf("mode '%s' does not exist", modeName)
 	}
 
@@ -72,8 +71,8 @@ func (mm *ModeManager) GetPreviousMode() string {
 	return mm.defaultMode
 }
 
-// ModeExists checks if a mode exists in custom or builtin modes
-func (mm *ModeManager) ModeExists(modeName string) bool {
+// modeExists checks if a mode exists in custom or builtin modes
+func (mm *ModeManager) modeExists(modeName string) bool {
 	// Check custom modes first
 	if _, exists := mm.customModes[modeName]; exists {
 		return true
@@ -103,11 +102,6 @@ func (mm *ModeManager) GetModeConfig(modeName string) (*config.ModeConfig, error
 	return nil, fmt.Errorf("mode '%s' not found", modeName)
 }
 
-// GetCurrentModeConfig returns the configuration for the current mode
-func (mm *ModeManager) GetCurrentModeConfig() (*config.ModeConfig, error) {
-	return mm.GetModeConfig(mm.currentMode)
-}
-
 // GetAvailableModes returns a list of all available mode names
 func (mm *ModeManager) GetAvailableModes() []string {
 	var modes []string
@@ -126,69 +120,4 @@ func (mm *ModeManager) GetAvailableModes() []string {
 	}
 
 	return modes
-}
-
-// IsDefaultMode returns true if currently in the default mode
-func (mm *ModeManager) IsDefaultMode() bool {
-	return mm.currentMode == mm.defaultMode
-}
-
-// ResetToDefault switches back to the default mode
-func (mm *ModeManager) ResetToDefault() {
-	mm.currentMode = mm.defaultMode
-	mm.modeHistory = []string{mm.defaultMode}
-}
-
-// GetModeHistory returns the mode history
-func (mm *ModeManager) GetModeHistory() []string {
-	return mm.modeHistory
-}
-
-// HasKeyBinding checks if the current mode has a specific key binding
-func (mm *ModeManager) HasKeyBinding(key string) bool {
-	modeConfig, err := mm.GetCurrentModeConfig()
-	if err != nil {
-		return false
-	}
-
-	// Check if key exists in on_keys
-	if modeConfig.KeyBindings.OnKeys != nil {
-		_, exists := modeConfig.KeyBindings.OnKeys[key]
-
-		return exists
-	}
-
-	return false
-}
-
-// GetKeyBinding returns the action config for a specific key in the current mode
-func (mm *ModeManager) GetKeyBinding(key string) (*config.ActionConfig, error) {
-	modeConfig, err := mm.GetCurrentModeConfig()
-	if err != nil {
-		return nil, err
-	}
-
-	// Check on_keys first
-	if modeConfig.KeyBindings.OnKeys != nil {
-		if action, exists := modeConfig.KeyBindings.OnKeys[key]; exists {
-			return action, nil
-		}
-	}
-
-	// Return default action if no specific key binding found
-	if modeConfig.KeyBindings.Default != nil {
-		return modeConfig.KeyBindings.Default, nil
-	}
-
-	return nil, fmt.Errorf("no key binding found for key '%s' in mode '%s'", key, mm.currentMode)
-}
-
-// GetDefaultKeyBinding returns the default action for the current mode
-func (mm *ModeManager) GetDefaultKeyBinding() *config.ActionConfig {
-	modeConfig, err := mm.GetCurrentModeConfig()
-	if err != nil {
-		return nil
-	}
-
-	return modeConfig.KeyBindings.Default
 }

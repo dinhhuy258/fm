@@ -1,0 +1,210 @@
+package tui
+
+import (
+	"time"
+
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
+
+	"github.com/dinhhuy258/fm/pkg/config"
+)
+
+// NotificationType represents different types of status notifications
+type NotificationType int8
+
+const (
+	NotificationSuccess NotificationType = iota
+	NotificationInfo
+	NotificationWarning
+	NotificationError
+)
+
+// StatusNotification represents a single status notification with timestamp
+type StatusNotification struct {
+	Type      NotificationType
+	Message   string
+	CreatedAt time.Time
+}
+
+// NotificationStyles holds cached styles for notifications
+type NotificationStyles struct {
+	successStyle lipgloss.Style
+	infoStyle    lipgloss.Style
+	warningStyle lipgloss.Style
+	errorStyle   lipgloss.Style
+}
+
+// NotificationModel handles notification display and management
+type NotificationModel struct {
+	width  int
+	height int
+
+	activeNotification *StatusNotification
+	styles             *NotificationStyles
+	isVisible          bool
+}
+
+// NewNotificationModel creates a new notification model
+func NewNotificationModel() *NotificationModel {
+	model := &NotificationModel{
+		activeNotification: nil,
+		isVisible:          true, // Default to visible
+	}
+
+	model.initStyles()
+
+	return model
+}
+
+// SetSize updates the model dimensions
+func (m *NotificationModel) SetSize(width, height int) {
+	m.width = width
+	m.height = height
+}
+
+// GetSize returns the current dimensions
+func (m *NotificationModel) GetSize() (int, int) {
+	return m.width, m.height
+}
+
+// Show makes the notification visible
+func (m *NotificationModel) Show() {
+	m.isVisible = true
+}
+
+// Hide makes the notification invisible
+func (m *NotificationModel) Hide() {
+	m.isVisible = false
+}
+
+// IsVisible returns whether the notification is currently visible
+func (m *NotificationModel) IsVisible() bool {
+	return m.isVisible
+}
+
+// ShowNotification displays a notification
+func (m *NotificationModel) ShowNotification(notificationType NotificationType, message string) tea.Cmd {
+	notification := &StatusNotification{
+		Type:      notificationType,
+		Message:   message,
+		CreatedAt: time.Now(),
+	}
+
+	m.activeNotification = notification
+
+	// Auto-clear success notifications after 5 seconds
+	if notificationType == NotificationSuccess {
+		return tea.Tick(5*time.Second, func(t time.Time) tea.Msg {
+			return AutoClearMessage{}
+		})
+	}
+
+	return nil
+}
+
+// ShowSuccess displays a success notification (auto-clears in 5 seconds)
+func (m *NotificationModel) ShowSuccess(message string) tea.Cmd {
+	return m.ShowNotification(NotificationSuccess, message)
+}
+
+// ShowInfo displays an info notification
+func (m *NotificationModel) ShowInfo(message string) tea.Cmd {
+	return m.ShowNotification(NotificationInfo, message)
+}
+
+// ShowWarning displays a warning notification
+func (m *NotificationModel) ShowWarning(message string) tea.Cmd {
+	return m.ShowNotification(NotificationWarning, message)
+}
+
+// ShowError displays an error notification
+func (m *NotificationModel) ShowError(message string) tea.Cmd {
+	return m.ShowNotification(NotificationError, message)
+}
+
+// GetActiveNotification returns the current active notification
+func (m *NotificationModel) GetActiveNotification() *StatusNotification {
+	return m.activeNotification
+}
+
+// ClearNotification clears the active notification
+func (m *NotificationModel) ClearNotification() {
+	m.activeNotification = nil
+}
+
+// AutoClearMessage represents a message to auto-clear the notification
+type AutoClearMessage struct{}
+
+// Update handles Bubbletea messages
+func (m *NotificationModel) Update(msg tea.Msg) (*NotificationModel, tea.Cmd) {
+	switch msg.(type) {
+	case AutoClearMessage:
+		// Only clear if it's a success notification that should auto-clear
+		if m.activeNotification != nil && m.activeNotification.Type == NotificationSuccess {
+			m.ClearNotification()
+		}
+	}
+
+	return m, nil
+}
+
+// View renders the notification view
+func (m *NotificationModel) View(cfg *config.Config) string {
+	if !m.isVisible || m.activeNotification == nil {
+		return ""
+	}
+
+	width, _ := m.GetSize()
+	if width <= 0 {
+		return ""
+	}
+
+	var notificationStyle lipgloss.Style
+	var prefix, suffix string
+
+	// Get style and prefix/suffix based on notification type
+	switch m.activeNotification.Type {
+	case NotificationSuccess:
+		notificationStyle = m.styles.successStyle
+		prefix = cfg.General.LogInfoUI.Prefix
+		suffix = cfg.General.LogInfoUI.Suffix
+	case NotificationInfo:
+		notificationStyle = m.styles.infoStyle
+		prefix = cfg.General.LogInfoUI.Prefix
+		suffix = cfg.General.LogInfoUI.Suffix
+	case NotificationWarning:
+		notificationStyle = m.styles.warningStyle
+		prefix = cfg.General.LogWarningUI.Prefix
+		suffix = cfg.General.LogWarningUI.Suffix
+	case NotificationError:
+		notificationStyle = m.styles.errorStyle
+		prefix = cfg.General.LogErrorUI.Prefix
+		suffix = cfg.General.LogErrorUI.Suffix
+	}
+
+	// Format message with prefix and suffix
+	message := prefix + m.activeNotification.Message + suffix
+
+	// Truncate if needed
+	if len(message) > width {
+		message = message[:width-3] + "..."
+	}
+
+	return notificationStyle.Render(message)
+}
+
+// initStyles initializes cached notification styles
+func (m *NotificationModel) initStyles() {
+	m.styles = &NotificationStyles{
+		successStyle: fromStyleConfig(config.AppConfig.General.LogInfoUI.Style),
+		infoStyle:    fromStyleConfig(config.AppConfig.General.LogInfoUI.Style),
+		warningStyle: fromStyleConfig(config.AppConfig.General.LogWarningUI.Style),
+		errorStyle:   fromStyleConfig(config.AppConfig.General.LogErrorUI.Style),
+	}
+}
+
+// InvalidateStyles clears cached styles (call when config changes)
+func (m *NotificationModel) InvalidateStyles() {
+	m.styles = nil
+	m.initStyles()
+}

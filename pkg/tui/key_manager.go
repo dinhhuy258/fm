@@ -10,50 +10,39 @@ import (
 	"github.com/dinhhuy258/fm/pkg/config"
 )
 
-// DynamicKeyMap generates and manages keybindings from mode configurations
-type DynamicKeyMap struct {
+// KeyManager generates and manages keybindings from mode configurations
+type KeyManager struct {
 	modeManager *ModeManager
-	keyCache    map[string]map[string]key.Binding // cache keybindings per mode
+	keyBindings map[string]map[string]key.Binding
 }
 
-// NewDynamicKeyMap creates a new dynamic keymap
-func NewDynamicKeyMap(modeManager *ModeManager) *DynamicKeyMap {
-	return &DynamicKeyMap{
+// NewKeyManager creates a new key manager and preloads all keybindings
+func NewKeyManager(modeManager *ModeManager) *KeyManager {
+	km := &KeyManager{
 		modeManager: modeManager,
-		keyCache:    make(map[string]map[string]key.Binding),
-	}
-}
-
-// GetKeyBindings returns all key bindings for the current mode
-func (dk *DynamicKeyMap) GetKeyBindings() map[string]key.Binding {
-	currentMode := dk.modeManager.GetCurrentMode()
-
-	// Return cached bindings if available
-	if bindings, exists := dk.keyCache[currentMode]; exists {
-		return bindings
+		keyBindings: make(map[string]map[string]key.Binding),
 	}
 
-	// Generate and cache new bindings
-	bindings := dk.generateKeyBindings(currentMode)
-	dk.keyCache[currentMode] = bindings
+	// Preload keybindings for all available modes
+	km.loadAllKeyBindings()
 
-	return bindings
+	return km
 }
 
 // MatchesKey checks if a tea.KeyMsg matches any configured key for the current mode
-func (dk *DynamicKeyMap) MatchesKey(msg tea.KeyMsg) (string, *config.ActionConfig, bool) {
+func (km *KeyManager) MatchesKey(msg tea.KeyMsg) (string, *config.ActionConfig, bool) {
 	// Convert the tea.KeyMsg to a key string
-	keyStr := dk.keyMsgToString(msg)
+	keyStr := km.keyMsgToString(msg)
 
-	// Try to get action from mode config
-	if action, err := dk.modeManager.GetKeyBinding(keyStr); err == nil {
+	// Try to get action from current mode's key bindings
+	if action := km.getActionForKey(keyStr); action != nil {
 		return keyStr, action, true
 	}
 
 	// Check for alternative key representations
-	altKeys := dk.getAlternativeKeys(keyStr)
+	altKeys := km.getAlternativeKeys(keyStr)
 	for _, altKey := range altKeys {
-		if action, err := dk.modeManager.GetKeyBinding(altKey); err == nil {
+		if action := km.getActionForKey(altKey); action != nil {
 			return altKey, action, true
 		}
 	}
@@ -62,10 +51,10 @@ func (dk *DynamicKeyMap) MatchesKey(msg tea.KeyMsg) (string, *config.ActionConfi
 }
 
 // generateKeyBindings generates key.Binding objects for a specific mode
-func (dk *DynamicKeyMap) generateKeyBindings(modeName string) map[string]key.Binding {
+func (km *KeyManager) generateKeyBindings(modeName string) map[string]key.Binding {
 	bindings := make(map[string]key.Binding)
 
-	modeConfig, err := dk.modeManager.GetModeConfig(modeName)
+	modeConfig, err := km.modeManager.GetModeConfig(modeName)
 	if err != nil {
 		// Return empty bindings for modes without config (like default)
 		return bindings
@@ -74,7 +63,7 @@ func (dk *DynamicKeyMap) generateKeyBindings(modeName string) map[string]key.Bin
 	// Generate bindings for each key in on_keys
 	if modeConfig.KeyBindings.OnKeys != nil {
 		for keyStr, action := range modeConfig.KeyBindings.OnKeys {
-			binding := dk.createKeyBinding(keyStr, action)
+			binding := km.createKeyBinding(keyStr, action)
 			bindings[keyStr] = binding
 		}
 	}
@@ -83,8 +72,8 @@ func (dk *DynamicKeyMap) generateKeyBindings(modeName string) map[string]key.Bin
 }
 
 // createKeyBinding creates a key.Binding from a key string and action config
-func (dk *DynamicKeyMap) createKeyBinding(keyStr string, action *config.ActionConfig) key.Binding {
-	keys := dk.parseKeyString(keyStr)
+func (km *KeyManager) createKeyBinding(keyStr string, action *config.ActionConfig) key.Binding {
+	keys := km.parseKeyString(keyStr)
 	help := action.Help
 	if help == "" {
 		help = keyStr
@@ -97,7 +86,7 @@ func (dk *DynamicKeyMap) createKeyBinding(keyStr string, action *config.ActionCo
 }
 
 // parseKeyString converts a config key string to bubbletea key strings
-func (dk *DynamicKeyMap) parseKeyString(keyStr string) []string {
+func (km *KeyManager) parseKeyString(keyStr string) []string {
 	// Handle special key mappings
 	keyMappings := map[string]string{
 		"esc":       "esc",
@@ -141,7 +130,7 @@ func (dk *DynamicKeyMap) parseKeyString(keyStr string) []string {
 }
 
 // keyMsgToString converts a tea.KeyMsg to a string representation
-func (dk *DynamicKeyMap) keyMsgToString(msg tea.KeyMsg) string {
+func (km *KeyManager) keyMsgToString(msg tea.KeyMsg) string {
 	// Handle special cases first
 	switch msg.Type {
 	case tea.KeyCtrlC:
@@ -189,7 +178,7 @@ func (dk *DynamicKeyMap) keyMsgToString(msg tea.KeyMsg) string {
 }
 
 // getAlternativeKeys returns alternative representations of a key
-func (dk *DynamicKeyMap) getAlternativeKeys(keyStr string) []string {
+func (km *KeyManager) getAlternativeKeys(keyStr string) []string {
 	alternatives := []string{}
 
 	// Map alternative representations
@@ -220,34 +209,37 @@ func (dk *DynamicKeyMap) getAlternativeKeys(keyStr string) []string {
 	return alternatives
 }
 
-// ClearCache clears the keymap cache (useful when modes change)
-func (dk *DynamicKeyMap) ClearCache() {
-	dk.keyCache = make(map[string]map[string]key.Binding)
-}
-
-// HasBinding checks if a key string has a binding in the current mode
-func (dk *DynamicKeyMap) HasBinding(keyStr string) bool {
-	return dk.modeManager.HasKeyBinding(keyStr)
-}
-
-// GetBinding returns the key.Binding for a specific key string in current mode
-func (dk *DynamicKeyMap) GetBinding(keyStr string) (key.Binding, bool) {
-	bindings := dk.GetKeyBindings()
-	if binding, exists := bindings[keyStr]; exists {
-		return binding, true
+// getActionForKey gets the action config for a key in the current mode
+func (km *KeyManager) getActionForKey(keyStr string) *config.ActionConfig {
+	currentMode := km.modeManager.GetCurrentMode()
+	modeConfig, err := km.modeManager.GetModeConfig(currentMode)
+	if err != nil {
+		return nil
 	}
 
-	return key.Binding{}, false
-}
-
-// GetAllBindingsForHelp returns all bindings formatted for help display
-func (dk *DynamicKeyMap) GetAllBindingsForHelp() []key.Binding {
-	bindings := dk.GetKeyBindings()
-	var result []key.Binding
-
-	for _, binding := range bindings {
-		result = append(result, binding)
+	// Check on_keys first
+	if modeConfig.KeyBindings.OnKeys != nil {
+		if action, exists := modeConfig.KeyBindings.OnKeys[keyStr]; exists {
+			return action
+		}
 	}
 
-	return result
+	// Return default action if no specific key binding found
+	if modeConfig.KeyBindings.Default != nil {
+		return modeConfig.KeyBindings.Default
+	}
+
+	return nil
+}
+
+// loadAllKeyBindings preloads keybindings for all available modes
+func (km *KeyManager) loadAllKeyBindings() {
+	// Get all available modes from the mode manager
+	availableModes := km.modeManager.GetAvailableModes()
+
+	// Generate bindings for each mode
+	for _, modeName := range availableModes {
+		bindings := km.generateKeyBindings(modeName)
+		km.keyBindings[modeName] = bindings
+	}
 }

@@ -73,7 +73,7 @@ type ExplorerModel struct {
 	// Selection state
 	selections set.Set[string]
 
-	// Cached view data for performance
+	// Contains styles and icons for rendering
 	viewData *ExplorerViewData
 }
 
@@ -103,12 +103,6 @@ func (m *ExplorerModel) SetEntries(entries []fs.IEntry) {
 	m.entries = entries
 	m.focus = 0
 	m.scrollStart = 0
-	m.selections = set.NewSet[string]()
-}
-
-// GetEntries returns the current entries
-func (m *ExplorerModel) GetEntries() []fs.IEntry {
-	return m.entries
 }
 
 // Move moves the cursor by delta positions
@@ -146,15 +140,13 @@ func (m *ExplorerModel) GetFocus() int {
 }
 
 // SetFocusByIndex sets the focus to a specific index
-func (m *ExplorerModel) SetFocusByIndex(index int) bool {
+func (m *ExplorerModel) SetFocusByIndex(index int) {
 	if len(m.entries) == 0 || index < 0 || index >= len(m.entries) {
-		return false
+		return
 	}
 
 	m.focus = index
 	m.ensureVisible()
-
-	return true
 }
 
 // GetFocusedEntry returns the currently focused entry
@@ -178,9 +170,9 @@ func (m *ExplorerModel) ToggleSelection() {
 }
 
 // ToggleSelectionByPath toggles selection for an entry with the given path
-func (m *ExplorerModel) ToggleSelectionByPath(path string) bool {
+func (m *ExplorerModel) ToggleSelectionByPath(path string) {
 	if path == "" {
-		return false
+		return
 	}
 
 	if m.selections.Contains(path) {
@@ -188,8 +180,6 @@ func (m *ExplorerModel) ToggleSelectionByPath(path string) bool {
 	} else {
 		m.selections.Add(path)
 	}
-
-	return true
 }
 
 // ClearSelections clears all selections
@@ -244,20 +234,15 @@ func (m *ExplorerModel) FocusPath(path string) bool {
 	return false
 }
 
-// GetScrollStart returns the current scroll position
-func (m *ExplorerModel) GetScrollStart() int {
-	return m.scrollStart
-}
-
-// GetVisibleRows calculates how many rows can fit in the current height
-func (m *ExplorerModel) GetVisibleRows() int {
+// getVisibleRows calculates how many rows can fit in the current height
+func (m *ExplorerModel) getVisibleRows() int {
 	// Reserve one row for the header
 	return max(m.height-1, 1)
 }
 
 // ensureVisible ensures the focused item is visible by adjusting scroll
 func (m *ExplorerModel) ensureVisible() {
-	visibleRows := m.GetVisibleRows()
+	visibleRows := m.getVisibleRows()
 
 	if m.focus < m.scrollStart {
 		m.scrollStart = m.focus
@@ -273,21 +258,6 @@ func (m *ExplorerModel) initViewData() {
 	m.viewData = &ExplorerViewData{}
 	m.viewData.initStyles()
 	m.viewData.initIcons()
-}
-
-// InvalidateViewData clears cached view data (call when config changes)
-func (m *ExplorerModel) InvalidateViewData() {
-	m.viewData = nil
-	m.initViewData()
-}
-
-// GetViewData returns the cached view data, initializing if needed
-func (m *ExplorerModel) GetViewData() *ExplorerViewData {
-	if m.viewData == nil {
-		m.initViewData()
-	}
-
-	return m.viewData
 }
 
 // initStyles initializes lipgloss styles from config
@@ -373,9 +343,6 @@ func (m *ExplorerModel) View() string {
 		return ""
 	}
 
-	// Ensure view data is initialized
-	m.GetViewData()
-
 	var sections []string
 
 	// Render header
@@ -409,7 +376,7 @@ func (m *ExplorerModel) renderEntries() string {
 		return ""
 	}
 
-	visibleRows := m.GetVisibleRows()
+	visibleRows := m.getVisibleRows()
 	lastVisibleIndex := min(m.scrollStart+visibleRows, len(m.entries))
 
 	lines := make([]string, 0, lastVisibleIndex-m.scrollStart)
@@ -491,7 +458,11 @@ func (m *ExplorerModel) getTreePrefix(idx int) string {
 }
 
 // buildEntryDisplayName constructs the complete display name with icon and formatting
-func (m *ExplorerModel) buildEntryDisplayName(entry fs.IEntry, entryIcon nodeType, state entryDisplayState) string {
+func (m *ExplorerModel) buildEntryDisplayName(
+	entry fs.IEntry,
+	entryIcon nodeType,
+	state entryDisplayState,
+) string {
 	iconText := entryIcon.icon
 	fileName := strings.TrimSpace(entry.GetName())
 

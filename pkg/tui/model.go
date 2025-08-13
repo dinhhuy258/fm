@@ -2,13 +2,24 @@ package tui
 
 import (
 	"github.com/charmbracelet/bubbles/key"
+	"github.com/charmbracelet/bubbles/textinput"
+	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/dinhhuy258/fm/pkg/actions"
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/pipe"
 )
 
-// Model represents the root application state
+// InteractiveAreaMode represents the current mode of the interactive area
+type InteractiveAreaMode int
+
+const (
+	InteractiveModeNotification InteractiveAreaMode = iota // Show notifications
+	InteractiveModeInput                                   // Show input field
+	InteractiveModeBuffer                                  // Buffer mode for simple character accumulation
+)
+
+// Model represents the fm application state
 type Model struct {
 	// Core application state
 	currentPath string
@@ -16,35 +27,27 @@ type Model struct {
 	termHeight  int
 	ready       bool
 
-	// Separate models for each component (single source of truth)
-	explorerModel    *ExplorerModel
-	interactiveModel *InteractiveAreaModel
-	helpModel        *HelpModel
-	statusBar        StatusBarModel
+	// Models for fm components
+	explorerModel      *ExplorerModel
+	notificationModel  *NotificationModel
+	inputModel         *InputModel
+	helpModel          *HelpModel
 
 	// App dependencies
 	config *config.Config
 	pipe   *pipe.Pipe
 
 	// UI state
-	err error
+	err                   error
+	interactiveMode       InteractiveAreaMode // Track current interactive area mode
 
 	// Dynamic mode and keybinding system
 	modeManager     *ModeManager
-	dynamicKeyMap   *DynamicKeyMap
+	keyManager      *KeyManager
 	messageExecutor *actions.ActionHandler
-	inputBuffer     string
 
 	// Legacy key bindings (minimal fallback for emergency keys only)
 	keys KeyMap
-}
-
-// StatusBarModel represents the status bar state
-type StatusBarModel struct {
-	mode     string
-	path     string
-	selected int
-	total    int
 }
 
 // KeyMap defines the key bindings for the application
@@ -151,38 +154,31 @@ func (k KeyMap) FullHelp() [][]key.Binding {
 func NewModel(cfg *config.Config, pipe *pipe.Pipe) Model {
 	// Initialize separate models for each component
 	explorerModel := NewExplorerModel()
-	interactiveModel := NewInteractiveAreaModel()
+	notificationModel := NewNotificationModel()
+	inputModel := NewInputModel()
 	helpModel := NewHelpModel()
 
 	// Initialize dynamic mode system
 	modeManager := NewModeManager(cfg)
-	dynamicKeyMap := NewDynamicKeyMap(modeManager)
-
-	// Initialize status bar
-	statusBar := StatusBarModel{
-		mode:     modeManager.GetCurrentMode(),
-		path:     "",
-		selected: 0,
-		total:    0,
-	}
+	keyManager := NewKeyManager(modeManager)
 
 	// Create message executor
 	messageExecutor := actions.NewActionHandler(modeManager, pipe)
 
 	return Model{
-		currentPath:      "",
-		ready:            false,
-		explorerModel:    explorerModel,
-		interactiveModel: interactiveModel,
-		helpModel:        helpModel,
-		statusBar:        statusBar,
-		config:           cfg,
-		pipe:             pipe,
-		modeManager:      modeManager,
-		dynamicKeyMap:    dynamicKeyMap,
-		messageExecutor:  messageExecutor,
-		inputBuffer:      "",
-		keys:             DefaultKeyMap(), // Emergency fallback only (quit, help, esc)
+		currentPath:       "",
+		ready:             false,
+		explorerModel:     explorerModel,
+		notificationModel: notificationModel,
+		inputModel:        inputModel,
+		helpModel:         helpModel,
+		config:            cfg,
+		pipe:              pipe,
+		interactiveMode:   InteractiveModeNotification, // Default to notification mode
+		modeManager:       modeManager,
+		keyManager:        keyManager,
+		messageExecutor:   messageExecutor,
+		keys:              DefaultKeyMap(), // Emergency fallback only (quit, help, esc)
 	}
 }
 
@@ -198,18 +194,13 @@ func (m *Model) SwitchMode(modeName string) error {
 		return err
 	}
 
-	// Update status bar
-	m.statusBar.mode = m.modeManager.GetCurrentMode()
-
-	// Clear dynamic keymap cache when mode changes
-	m.dynamicKeyMap.ClearCache()
-
 	// Handle input state when switching modes
 	if modeName == "default" {
-		// HideInput now returns a command, but we don't need to handle it here
-		// since the mode switch is already happening
-		_ = m.interactiveModel.HideInput()
-		m.inputBuffer = ""
+		// Hide input and show notifications when switching to default mode
+		m.interactiveMode = InteractiveModeNotification
+		m.inputModel.Hide()
+		m.notificationModel.Show()
+		m.inputModel.ClearBuffer()
 	}
 
 	return nil
@@ -217,23 +208,113 @@ func (m *Model) SwitchMode(modeName string) error {
 
 // SetInputBuffer sets the input buffer value
 func (m *Model) SetInputBuffer(value string) {
-	m.inputBuffer = value
+	m.inputModel.SetBuffer(value)
 }
 
 // GetInputBuffer returns the current input buffer value
 func (m Model) GetInputBuffer() string {
-	return m.inputBuffer
+	return m.inputModel.GetBuffer()
 }
 
 // UpdateInputBufferFromKey updates the input buffer with the last key press
 func (m *Model) UpdateInputBufferFromKey(keyStr string) {
-	// Handle backspace
-	if keyStr == "backspace" {
-		if len(m.inputBuffer) > 0 {
-			m.inputBuffer = m.inputBuffer[:len(m.inputBuffer)-1]
-		}
-	} else if len(keyStr) == 1 {
-		// For single character keys, append to buffer
-		m.inputBuffer += keyStr
+	m.inputModel.AppendToBuffer(keyStr)
+}
+
+// ShowInput switches to input mode and displays the text input field
+func (m *Model) ShowInput(initialValue string) {
+	m.interactiveMode = InteractiveModeInput
+	m.notificationModel.Hide()
+	m.inputModel.SetMode(InputModeText)
+	m.inputModel.Show(initialValue)
+}
+
+// HideInput switches back to notification mode
+func (m *Model) HideInput() {
+	m.interactiveMode = InteractiveModeNotification
+	m.inputModel.Hide()
+	m.notificationModel.Show()
+}
+
+// SetBufferMode switches to buffer mode for simple character accumulation
+func (m *Model) SetBufferMode() {
+	m.interactiveMode = InteractiveModeBuffer
+	m.notificationModel.Hide()
+	m.inputModel.SetMode(InputModeBuffer)
+	m.inputModel.Show("")
+}
+
+// IsInputMode returns whether currently in input mode
+func (m *Model) IsInputMode() bool {
+	return m.interactiveMode == InteractiveModeInput
+}
+
+// IsBufferMode returns whether currently in buffer mode
+func (m *Model) IsBufferMode() bool {
+	return m.interactiveMode == InteractiveModeBuffer
+}
+
+// GetInputValue returns the current input value
+func (m *Model) GetInputValue() string {
+	return m.inputModel.GetValue()
+}
+
+// ShowNotification displays a notification
+func (m *Model) ShowNotification(notificationType NotificationType, message string) tea.Cmd {
+	cmd := m.notificationModel.ShowNotification(notificationType, message)
+
+	if m.interactiveMode == InteractiveModeInput || m.interactiveMode == InteractiveModeBuffer {
+		// In input/buffer mode, notification is stored but not displayed yet
+		return cmd
 	}
+
+	// In notification mode, ensure notification is visible
+	m.notificationModel.Show()
+
+	return cmd
+}
+
+// ShowSuccess displays a success notification (auto-clears in 5 seconds)
+func (m *Model) ShowSuccess(message string) tea.Cmd {
+	return m.ShowNotification(NotificationSuccess, message)
+}
+
+// ShowInfo displays an info notification
+func (m *Model) ShowInfo(message string) tea.Cmd {
+	return m.ShowNotification(NotificationInfo, message)
+}
+
+// ShowWarning displays a warning notification
+func (m *Model) ShowWarning(message string) tea.Cmd {
+	return m.ShowNotification(NotificationWarning, message)
+}
+
+// ShowError displays an error notification
+func (m *Model) ShowError(message string) tea.Cmd {
+	return m.ShowNotification(NotificationError, message)
+}
+
+// GetActiveNotification returns the current active notification
+func (m *Model) GetActiveNotification() *StatusNotification {
+	return m.notificationModel.GetActiveNotification()
+}
+
+// ClearNotification clears the active notification
+func (m *Model) ClearNotification() {
+	m.notificationModel.ClearNotification()
+}
+
+// GetTextInput returns the text input model for direct manipulation
+func (m *Model) GetTextInput() *textinput.Model {
+	return m.inputModel.GetTextInput()
+}
+
+// UpdateTextInput updates the text input model
+func (m *Model) UpdateTextInput(textInput textinput.Model) {
+	m.inputModel.UpdateTextInput(textInput)
+}
+
+// InvalidateStyles clears cached styles (call when config changes)
+func (m *Model) InvalidateStyles() {
+	m.notificationModel.InvalidateStyles()
 }

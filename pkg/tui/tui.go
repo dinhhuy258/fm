@@ -49,7 +49,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.helpModel.SetSize(msg.Width, msg.Height)
 
 		// Update interactive area size (only 1 line needed)
-		m.interactiveModel.SetSize(msg.Width, 1)
+		m.notificationModel.SetSize(msg.Width, 1)
+		m.inputModel.SetSize(msg.Width, 1)
 
 		// Set explorer table to use remaining available height
 		m.explorerModel.SetSize(msg.Width, availableHeight)
@@ -103,8 +104,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// Update explorer model
 		m.explorerModel.SetEntries(msg.entries)
-		m.statusBar.path = m.currentPath
-		m.statusBar.total = len(msg.entries)
 
 	case directoryLoadedWithFocusMsg:
 		// Directory content loaded with focus requirement
@@ -112,8 +111,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// Update explorer model
 		m.explorerModel.SetEntries(msg.entries)
-		m.statusBar.path = m.currentPath
-		m.statusBar.total = len(msg.entries)
 
 		// Focus on the specific path
 		m.explorerModel.FocusPath(msg.focusPath)
@@ -121,7 +118,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case errorMsg:
 		m.err = msg.err
 		// Show error notification
-		cmds = append(cmds, m.interactiveModel.ShowError(fmt.Sprintf("Error: %v", msg.err)))
+		cmds = append(cmds, m.ShowError(fmt.Sprintf("Error: %v", msg.err)))
 
 	case ExternalMessage:
 		// Parse and execute the pipe message (remove debug logging)
@@ -132,45 +129,37 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Actually switch the mode in the mode manager
 		err := m.modeManager.SwitchToMode(msg.NewMode)
 		if err != nil {
-			cmds = append(cmds, m.interactiveModel.ShowError(fmt.Sprintf("Failed to switch mode: %v", err)))
+			cmds = append(cmds, m.ShowError(fmt.Sprintf("Failed to switch mode: %v", err)))
 		} else {
-			m.statusBar.mode = msg.NewMode
-
-			// Clear dynamic keymap cache when mode changes
-			m.dynamicKeyMap.ClearCache()
-
 			// Hide input when switching to default mode
 			if msg.NewMode == "default" {
-				hideCmd := m.interactiveModel.HideInput()
-				if hideCmd != nil {
-					cmds = append(cmds, hideCmd)
-				}
-				m.inputBuffer = "" // Clear input buffer when leaving input modes
+				m.HideInput()
+				m.inputModel.ClearBuffer() // Clear input buffer when leaving input modes
 			}
 		}
 
 	case actions.LogMessage:
 		switch msg.Level {
 		case "error":
-			cmds = append(cmds, m.interactiveModel.ShowError(msg.Message))
+			cmds = append(cmds, m.ShowError(msg.Message))
 		case "warning":
-			cmds = append(cmds, m.interactiveModel.ShowWarning(msg.Message))
+			cmds = append(cmds, m.ShowWarning(msg.Message))
 		case "success":
-			cmds = append(cmds, m.interactiveModel.ShowSuccess(msg.Message))
+			cmds = append(cmds, m.ShowSuccess(msg.Message))
 		case "info":
-			cmds = append(cmds, m.interactiveModel.ShowInfo(msg.Message))
+			cmds = append(cmds, m.ShowInfo(msg.Message))
 		default:
-			cmds = append(cmds, m.interactiveModel.ShowInfo(msg.Message))
+			cmds = append(cmds, m.ShowInfo(msg.Message))
 		}
 
 	case actions.ErrorMessage:
 		m.err = msg.Err
-		cmds = append(cmds, m.interactiveModel.ShowError(fmt.Sprintf("Error: %v", msg.Err)))
+		cmds = append(cmds, m.ShowError(fmt.Sprintf("Error: %v", msg.Err)))
 
 	case actions.SetInputBufferMessage:
 		m.SetInputBuffer(msg.Value)
 		if msg.ShowInput {
-			m.interactiveModel.ShowInput(msg.Value)
+			m.ShowInput(msg.Value)
 		}
 
 	case actions.UpdateInputBufferFromKeyMessage:
@@ -184,7 +173,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Remove debug output logging
 		// Only show user-relevant bash output as success notifications
 		if !msg.Silent && strings.TrimSpace(msg.Output) != "" {
-			cmds = append(cmds, m.interactiveModel.ShowInfo(strings.TrimSpace(msg.Output)))
+			cmds = append(cmds, m.ShowInfo(strings.TrimSpace(msg.Output)))
 		}
 	case actions.NavigationMessage:
 		return m.handleNavigationMessage(msg)
@@ -204,58 +193,63 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleInteractiveBashMessage(msg)
 	case AutoClearMessage:
 		// Auto-clear notification in the interactive model
-		if m.interactiveModel.GetCurrentMode() == InteractiveModeNotification {
-			m.interactiveModel.ClearNotification()
+		if m.interactiveMode == InteractiveModeNotification {
+			m.ClearNotification()
 		}
 	case InputCompletedMessage:
 		// Input was completed - update input buffer and show success notification
-		m.inputBuffer = msg.Value
+		m.SetInputBuffer(msg.Value)
 		if msg.Value != "" {
-			cmds = append(cmds, m.interactiveModel.ShowSuccess(fmt.Sprintf("Input: %s", msg.Value)))
+			cmds = append(cmds, m.ShowSuccess(fmt.Sprintf("Input: %s", msg.Value)))
 		}
 	default:
 		// Handle text input updates for the interactive model
-		if m.interactiveModel.IsInputMode() {
+		if m.IsInputMode() {
 			// Check for input completion or cancellation
 			if keyMsg, ok := msg.(tea.KeyMsg); ok {
 				switch keyMsg.String() {
 				case "enter":
 					// Input completed - return to notification mode and send completion message
-					inputValue := m.interactiveModel.GetInputValue()
-					hideCmd := m.interactiveModel.HideInput()
+					inputValue := m.GetInputValue()
+					m.HideInput()
 
 					// Create completion command
 					completionCmd := func() tea.Msg {
 						return InputCompletedMessage{Value: inputValue}
 					}
 
-					if hideCmd != nil {
-						cmds = append(cmds, tea.Batch(hideCmd, completionCmd))
-					} else {
-						cmds = append(cmds, completionCmd)
-					}
+					cmds = append(cmds, completionCmd)
 
 					return m, tea.Batch(cmds...)
 				case "esc":
 					// Cancel input - return to notification mode
-					hideCmd := m.interactiveModel.HideInput()
-					if hideCmd != nil {
-						cmds = append(cmds, hideCmd)
-					}
+					m.HideInput()
 
 					return m, tea.Batch(cmds...)
 				}
 			}
 
-			// Pass other keys to text input
-			textInput := m.interactiveModel.GetTextInput()
-			var textCmd tea.Cmd
-			*textInput, textCmd = textInput.Update(msg)
-			m.interactiveModel.UpdateTextInput(*textInput)
-			cmds = append(cmds, textCmd)
+			// Update input model directly
+			var cmd tea.Cmd
+			m.inputModel, cmd = m.inputModel.Update(msg)
+			if cmd != nil {
+				cmds = append(cmds, cmd)
+			}
+		}
+	}
 
-			// Update input buffer from interactive model
-			m.inputBuffer = m.interactiveModel.GetInputValue()
+	// Update child models
+	var childCmd tea.Cmd
+	m.notificationModel, childCmd = m.notificationModel.Update(msg)
+	if childCmd != nil {
+		cmds = append(cmds, childCmd)
+	}
+
+	// Only update input model if not handled above
+	if !m.IsInputMode() || msg == nil {
+		m.inputModel, childCmd = m.inputModel.Update(msg)
+		if childCmd != nil {
+			cmds = append(cmds, childCmd)
 		}
 	}
 
@@ -268,25 +262,27 @@ func (m Model) handleKeyWithDynamicSystem(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	updatedModel := m
 
 	// First, try dynamic key mapping
-	keyStr, action, matched := m.dynamicKeyMap.MatchesKey(msg)
+	keyStr, action, matched := m.keyManager.MatchesKey(msg)
 	if matched {
 		// Execute the configured messages
-		executedCmds := m.messageExecutor.ExecuteMessages(action.Messages, m.currentPath, m.inputBuffer)
+		executedCmds := m.messageExecutor.ExecuteMessages(action.Messages, m.currentPath, m.GetInputBuffer())
 		cmds = append(cmds, executedCmds...)
 
 		// Handle special input buffer updates
 		if m.shouldUpdateInputBufferFromKey(action, keyStr) {
 			updatedModel.UpdateInputBufferFromKey(keyStr)
-			// Update the interactive model if it's in input mode
-			if updatedModel.interactiveModel.IsInputMode() {
-				updatedModel.interactiveModel.ShowInput(updatedModel.inputBuffer)
+			// Update the input model if it's in input mode
+			if updatedModel.IsInputMode() {
+				updatedModel.ShowInput(updatedModel.GetInputBuffer())
 			}
 		}
 
 		return updatedModel, tea.Batch(cmds...)
 	}
 
-	warnCmd := m.interactiveModel.ShowWarning(fmt.Sprintf("No action found for key: %s", m.dynamicKeyMap.keyMsgToString(msg)))
+	warnCmd := m.ShowWarning(
+		fmt.Sprintf("No action found for key: %s", m.keyManager.keyMsgToString(msg)),
+	)
 	cmds = append(cmds, warnCmd)
 
 	return m, tea.Batch(cmds...)
@@ -324,7 +320,17 @@ func (m Model) View() string {
 	sections = append(sections, m.explorerModel.View())
 
 	// Interactive area (handles both input and notifications) - use the model's View method with cached styles
-	interactiveView := m.interactiveModel.View(m.config)
+	var interactiveView string
+	switch m.interactiveMode {
+	case InteractiveModeInput, InteractiveModeBuffer:
+		if m.inputModel.IsVisible() {
+			interactiveView = m.inputModel.View()
+		}
+	case InteractiveModeNotification:
+		if m.notificationModel.IsVisible() {
+			interactiveView = m.notificationModel.View(m.config)
+		}
+	}
 	if interactiveView != "" {
 		sections = append(sections, interactiveView)
 	} else {
@@ -352,13 +358,13 @@ func (m Model) renderHeader() string {
 
 	// Combine mode and items information
 	var modeInfo string
-	_, selectedCount := m.explorerModel.GetStats()
+	totalCount, selectedCount := m.explorerModel.GetStats()
 	if selectedCount > 0 {
 		modeInfo = fmt.Sprintf("Mode: %s | Items: %d | Selected: %d",
-			m.GetCurrentMode(), m.statusBar.total, selectedCount)
+			m.GetCurrentMode(), totalCount, selectedCount)
 	} else {
 		modeInfo = fmt.Sprintf("Mode: %s | Items: %d",
-			m.GetCurrentMode(), m.statusBar.total)
+			m.GetCurrentMode(), totalCount)
 	}
 
 	mode := lipgloss.NewStyle().
@@ -376,10 +382,10 @@ func (m Model) renderHeader() string {
 // renderFooter renders the footer section
 func (m Model) renderFooter() string {
 	// Show input buffer status if not in input mode but buffer has content
-	if !m.interactiveModel.IsInputMode() && m.inputBuffer != "" {
+	if !m.IsInputMode() && m.GetInputBuffer() != "" {
 		inputBuffer := lipgloss.NewStyle().
 			Foreground(lipgloss.Color("#626262")).
-			Render(fmt.Sprintf("Buffer: %s | Press ? for help, q to quit", m.inputBuffer))
+			Render(fmt.Sprintf("Buffer: %s | Press ? for help, q to quit", m.GetInputBuffer()))
 
 		return inputBuffer
 	}
@@ -487,9 +493,7 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 		}
 	}
 
-	// Update selection count
-	_, selected := m.explorerModel.GetStats()
-	m.statusBar.selected = selected
+	// Selection count is automatically updated via GetStats() in renderHeader()
 
 	return m, nil
 }
@@ -508,9 +512,7 @@ func (m Model) handleSelectionMessage(msg actions.SelectionMessage) (tea.Model, 
 		m.explorerModel.SelectAll()
 	}
 
-	// Update selection count
-	_, selected := m.explorerModel.GetStats()
-	m.statusBar.selected = selected
+	// Selection count is automatically updated via GetStats() in renderHeader()
 
 	return m, nil
 }
@@ -602,7 +604,7 @@ func (m Model) handlePipeMessage(content string) (tea.Model, tea.Cmd) {
 	}
 
 	// Execute the command using the message executor
-	cmd := m.messageExecutor.ExecuteMessage(message, m.currentPath, m.inputBuffer)
+	cmd := m.messageExecutor.ExecuteMessage(message, m.currentPath, m.GetInputBuffer())
 	if cmd != nil {
 		return m, cmd
 	}
@@ -687,9 +689,7 @@ func (m Model) handleToggleSelectionByPathMessage(msg actions.ToggleSelectionByP
 	// Toggle selection in explorer model (silently)
 	m.explorerModel.ToggleSelectionByPath(path)
 
-	// Update selection count
-	_, selected := m.explorerModel.GetStats()
-	m.statusBar.selected = selected
+	// Selection count is automatically updated via GetStats() in renderHeader()
 
 	return m, nil
 }
