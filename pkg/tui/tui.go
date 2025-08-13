@@ -262,7 +262,7 @@ func (m Model) handleKeyWithDynamicSystem(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	updatedModel := m
 
 	// First, try dynamic key mapping
-	keyStr, action, matched := m.keyManager.MatchesKey(msg)
+	keyStr, action, matched := m.keyManager.ResolveKeyAction(msg)
 	if matched {
 		// Execute the configured messages
 		executedCmds := m.messageExecutor.ExecuteMessages(action.Messages, m.currentPath, m.GetInputBuffer())
