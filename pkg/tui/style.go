@@ -1,5 +1,4 @@
-// Package components provides reusable UI components for the file manager terminal interface.
-package components
+package tui
 
 import (
 	"strings"
@@ -23,9 +22,8 @@ type ColorEntry struct {
 	Background string
 }
 
-// ColorMap maps color names to their hex values
-// This provides a standard set of colors that can be used in configuration
-var ColorMap = map[string]ColorEntry{
+// colorMap maps color names to their hex values
+var colorMap = map[string]ColorEntry{
 	"default": {color.FgWhite.RGB().Hex(), color.BgBlack.RGB().Hex()},
 	"black":   {color.FgBlack.RGB().Hex(), color.BgBlack.RGB().Hex()},
 	"red":     {color.FgRed.RGB().Hex(), color.BgRed.RGB().Hex()},
@@ -38,7 +36,6 @@ var ColorMap = map[string]ColorEntry{
 }
 
 // isValidHexValue validates if a string is a valid hex color value.
-// Supports both short (#RGB) and long (#RRGGBB) hex formats.
 func isValidHexValue(hex string) bool {
 	if hex == "" {
 		return false
@@ -70,8 +67,6 @@ func isHexChar(char rune) bool {
 }
 
 // parseColor converts a color string to a valid hex color.
-// It supports both named colors (from ColorMap) and hex colors.
-// Returns the appropriate color value or falls back to default if invalid.
 func parseColor(colorStr string, isBg bool) string {
 	if colorStr == "" {
 		return getDefaultColor(isBg)
@@ -83,7 +78,7 @@ func parseColor(colorStr string, isBg bool) string {
 	}
 
 	// Check if it's a named color
-	if colorEntry, exists := ColorMap[strings.ToLower(colorStr)]; exists {
+	if colorEntry, exists := colorMap[strings.ToLower(colorStr)]; exists {
 		if isBg {
 			return colorEntry.Background
 		}
@@ -98,16 +93,14 @@ func parseColor(colorStr string, isBg bool) string {
 // getDefaultColor returns the default foreground or background color
 func getDefaultColor(isBg bool) string {
 	if isBg {
-		return ColorMap["default"].Background
+		return colorMap["default"].Background
 	}
 
-	return ColorMap["default"].Foreground
+	return colorMap["default"].Foreground
 }
 
-// FromStyleConfig converts a config.StyleConfig to a lipgloss.Style.
-// It handles color parsing, validation, and applies text decorations.
-// Returns a complete lipgloss.Style ready for use in terminal rendering.
-func FromStyleConfig(styleConfig *config.StyleConfig) lipgloss.Style {
+// fromStyleConfig converts a config.StyleConfig to a lipgloss.Style.
+func fromStyleConfig(styleConfig *config.StyleConfig) lipgloss.Style {
 	style := lipgloss.NewStyle()
 
 	if styleConfig == nil {

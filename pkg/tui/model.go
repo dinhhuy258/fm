@@ -4,9 +4,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 
 	"github.com/dinhhuy258/fm/pkg/actions"
-	"github.com/dinhhuy258/fm/pkg/components"
 	"github.com/dinhhuy258/fm/pkg/config"
-	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/pipe"
 )
 
@@ -18,24 +16,18 @@ type Model struct {
 	termHeight  int
 	ready       bool
 
-	// Component models
-	explorerTable   *components.ExplorerTable
-	helpUI          *components.HelpUI
-	interactiveArea *components.InteractiveArea
-	statusBar       StatusBarModel
+	// Separate models for each component (single source of truth)
+	explorerModel    *ExplorerModel
+	interactiveModel *InteractiveAreaModel
+	helpModel        *HelpModel
+	statusBar        StatusBarModel
 
 	// App dependencies
 	config *config.Config
 	pipe   *pipe.Pipe
 
-	// Navigation state
-	cursor   int
-	selected map[int]struct{}
-	entries  []fs.IEntry
-
 	// UI state
-	showHelp bool
-	err      error
+	err error
 
 	// Dynamic mode and keybinding system
 	modeManager     *ModeManager
@@ -157,14 +149,10 @@ func (k KeyMap) FullHelp() [][]key.Binding {
 
 // NewModel creates a new root model
 func NewModel(cfg *config.Config, pipe *pipe.Pipe) Model {
-	// Initialize explorer table with GoCUI feature parity
-	explorerTable := components.NewExplorerTable()
-
-	// Initialize help UI
-	helpUI := components.NewHelpUI()
-
-	// Initialize interactive area (combines input and notifications)
-	interactiveArea := components.NewInteractiveArea()
+	// Initialize separate models for each component
+	explorerModel := NewExplorerModel()
+	interactiveModel := NewInteractiveAreaModel()
+	helpModel := NewHelpModel()
 
 	// Initialize dynamic mode system
 	modeManager := NewModeManager(cfg)
@@ -182,23 +170,19 @@ func NewModel(cfg *config.Config, pipe *pipe.Pipe) Model {
 	messageExecutor := actions.NewActionHandler(modeManager, pipe)
 
 	return Model{
-		currentPath:     "",
-		ready:           false,
-		explorerTable:   explorerTable,
-		helpUI:          helpUI,
-		interactiveArea: interactiveArea,
-		statusBar:       statusBar,
-		config:          cfg,
-		pipe:            pipe,
-		cursor:          0,
-		selected:        make(map[int]struct{}),
-		entries:         make([]fs.IEntry, 0),
-		showHelp:        false,
-		modeManager:     modeManager,
-		dynamicKeyMap:   dynamicKeyMap,
-		messageExecutor: messageExecutor,
-		inputBuffer:     "",
-		keys:            DefaultKeyMap(), // Emergency fallback only (quit, help, esc)
+		currentPath:      "",
+		ready:            false,
+		explorerModel:    explorerModel,
+		interactiveModel: interactiveModel,
+		helpModel:        helpModel,
+		statusBar:        statusBar,
+		config:           cfg,
+		pipe:             pipe,
+		modeManager:      modeManager,
+		dynamicKeyMap:    dynamicKeyMap,
+		messageExecutor:  messageExecutor,
+		inputBuffer:      "",
+		keys:             DefaultKeyMap(), // Emergency fallback only (quit, help, esc)
 	}
 }
 
@@ -224,7 +208,7 @@ func (m *Model) SwitchMode(modeName string) error {
 	if modeName == "default" {
 		// HideInput now returns a command, but we don't need to handle it here
 		// since the mode switch is already happening
-		_ = m.interactiveArea.HideInput()
+		_ = m.interactiveModel.HideInput()
 		m.inputBuffer = ""
 	}
 
