@@ -69,7 +69,7 @@ func NewModel(pipe *pipe.Pipe) Model {
 	modeManager := NewModeManager()
 	keyManager := NewKeyManager(modeManager)
 
-	actionHandler := actions.NewActionHandler(modeManager, pipe)
+	actionHandler := actions.NewActionHandler(pipe)
 
 	return Model{
 		currentPath:       "",
@@ -319,27 +319,27 @@ func (m Model) handlePipeMessage(content string) (tea.Model, tea.Cmd) {
 // handleNavigationMessage processes navigation actions
 func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model, tea.Cmd) {
 	switch msg.Action {
-	case "next":
+	case actions.NavigationActionNext:
 		m.explorerModel.Move(1)
-	case "previous":
+	case actions.NavigationActionPrevious:
 		m.explorerModel.Move(-1)
-	case "first":
+	case actions.NavigationActionFirst:
 		m.explorerModel.MoveFirst()
-	case "last":
+	case actions.NavigationActionLast:
 		m.explorerModel.MoveLast()
-	case "enter":
+	case actions.NavigationActionEnter:
 		if entry := m.explorerModel.GetFocusedEntry(); entry != nil {
 			if entry.IsDirectory() {
 				return m, loadDirectoryCmd(entry.GetPath())
 			}
 		}
-	case "back":
+	case actions.NavigationActionBack:
 		if m.currentPath != "" && m.currentPath != "/" {
 			parentPath := filepath.Dir(m.currentPath)
 
 			return m, loadDirectoryWithFocusCmd(parentPath, m.currentPath)
 		}
-	case "change_directory":
+	case actions.NavigationActionChangeDirectory:
 		if msg.Path != "" {
 			return m, loadDirectoryCmd(msg.Path)
 		}
@@ -353,13 +353,13 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 // handleSelectionMessage processes selection actions
 func (m Model) handleSelectionMessage(msg actions.SelectionMessage) (tea.Model, tea.Cmd) {
 	switch msg.Action {
-	case "toggle":
+	case actions.SelectionActionToggle:
 		// Toggle selection of current item using direct method
 		m.explorerModel.ToggleSelection()
-	case "clear":
+	case actions.SelectionActionClear:
 		// Clear all selections
 		m.explorerModel.ClearSelections()
-	case "all":
+	case actions.SelectionActionAll:
 		// Select all items
 		m.explorerModel.SelectAll()
 	}
@@ -372,15 +372,21 @@ func (m Model) handleSelectionMessage(msg actions.SelectionMessage) (tea.Model, 
 // handleUIMessage processes UI control actions
 func (m Model) handleUIMessage(msg actions.UIMessage) (tea.Model, tea.Cmd) {
 	switch msg.Action {
-	case "toggle_hidden":
+	case actions.UIActionToggleHidden:
 		// Toggle hidden file visibility
 		config.AppConfig.General.ShowHidden = !config.AppConfig.General.ShowHidden
 		// Toggle hidden files silently
 
 		return m, loadDirectoryCmd(m.currentPath) // Reload with new settings
-	case "refresh":
+	case actions.UIActionRefresh:
 		// Refresh current directory
 		return m, loadDirectoryCmd(m.currentPath)
+	case actions.UIActionClearLog:
+		// No log model implemented yet; ignore
+		return m, nil
+	case actions.UIActionToggleLog:
+		// No log view implemented yet; ignore
+		return m, nil
 	}
 
 	return m, nil
@@ -389,33 +395,33 @@ func (m Model) handleUIMessage(msg actions.UIMessage) (tea.Model, tea.Cmd) {
 // handleSortingMessage processes sorting actions
 func (m Model) handleSortingMessage(msg actions.SortingMessage) (tea.Model, tea.Cmd) {
 	switch msg.SortType {
-	case "name":
+	case actions.SortTypeName:
 		// Update config and reload directory
 		config.AppConfig.General.Sorting.SortType = "name"
 		// Sort by name silently
 
 		return m, loadDirectoryCmd(m.currentPath)
-	case "size":
+	case actions.SortTypeSize:
 		config.AppConfig.General.Sorting.SortType = "size"
 		// Sort by size silently
 
 		return m, loadDirectoryCmd(m.currentPath)
-	case "date":
+	case actions.SortTypeDate:
 		config.AppConfig.General.Sorting.SortType = "date_modified"
 		// Sort by date silently
 
 		return m, loadDirectoryCmd(m.currentPath)
-	case "extension":
+	case actions.SortTypeExtension:
 		config.AppConfig.General.Sorting.SortType = "extension"
 		// Sort by extension silently
 
 		return m, loadDirectoryCmd(m.currentPath)
-	case "dir_first":
+	case actions.SortTypeDirFirst:
 		config.AppConfig.General.Sorting.SortType = "dir_first"
 		// Sort by directory first silently
 
 		return m, loadDirectoryCmd(m.currentPath)
-	case "reverse":
+	case actions.SortTypeReverse:
 		// Toggle reverse sorting
 		if config.AppConfig.General.Sorting.Reverse != nil {
 			*config.AppConfig.General.Sorting.Reverse = !*config.AppConfig.General.Sorting.Reverse

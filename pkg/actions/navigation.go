@@ -42,7 +42,7 @@ func (ah *ActionHandler) executeChangeDirectory(message *config.MessageConfig) t
 		}
 
 		// Return a message to load the directory
-		return NavigationMessage{Action: "change_directory", Path: targetPath}
+		return NavigationMessage{Action: NavigationActionChangeDirectory, Path: targetPath}
 	}
 }
 
@@ -76,41 +76,41 @@ func (ah *ActionHandler) executeFocusByIndex(message *config.MessageConfig) tea.
 // executeFocusNext handles moving focus to next item
 func (ah *ActionHandler) executeFocusNext(_ *config.MessageConfig) tea.Cmd {
 	return func() tea.Msg {
-		return NavigationMessage{Action: "next"}
+		return NavigationMessage{Action: NavigationActionNext}
 	}
 }
 
 // executeFocusPrevious handles moving focus to previous item
 func (ah *ActionHandler) executeFocusPrevious(_ *config.MessageConfig) tea.Cmd {
 	return func() tea.Msg {
-		return NavigationMessage{Action: "previous"}
+		return NavigationMessage{Action: NavigationActionPrevious}
 	}
 }
 
 // executeFocusFirst handles moving focus to first item
 func (ah *ActionHandler) executeFocusFirst(_ *config.MessageConfig) tea.Cmd {
 	return func() tea.Msg {
-		return NavigationMessage{Action: "first"}
+		return NavigationMessage{Action: NavigationActionFirst}
 	}
 }
 
 // executeFocusLast handles moving focus to last item
 func (ah *ActionHandler) executeFocusLast(message *config.MessageConfig) tea.Cmd {
 	return func() tea.Msg {
-		return NavigationMessage{Action: "last"}
+		return NavigationMessage{Action: NavigationActionLast}
 	}
 }
 
 // executeEnter handles entering directories or opening files
 func (ah *ActionHandler) executeEnter(message *config.MessageConfig) tea.Cmd {
 	return func() tea.Msg {
-		return NavigationMessage{Action: "enter"}
+		return NavigationMessage{Action: NavigationActionEnter}
 	}
 }
 
 // executeBack handles going to parent directory
 func (ah *ActionHandler) executeBack(message *config.MessageConfig) tea.Cmd {
 	return func() tea.Msg {
-		return NavigationMessage{Action: "back"}
+		return NavigationMessage{Action: NavigationActionBack}
 	}
 }

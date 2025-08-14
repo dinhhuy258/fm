@@ -5,9 +5,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-// InputMode represents different input modes
-type InputMode int
-
 const inputPrompt = "> "
 
 // InputModel handles text input and buffer operations
@@ -17,7 +14,6 @@ type InputModel struct {
 
 	textInput   textinput.Model
 	inputBuffer string
-	mode        InputMode
 	isVisible   bool
 }
 
@@ -61,12 +57,12 @@ func (m *InputModel) IsVisible() bool {
 	return m.isVisible
 }
 
-// GetValue returns the current input value based on mode
+// GetValue returns the current input value
 func (m *InputModel) GetValue() string {
 	return m.inputBuffer
 }
 
-// SetBuffer sets the input buffer value (buffer mode only)
+// SetBuffer sets the input buffer value
 func (m *InputModel) SetBuffer(value string) {
 	m.inputBuffer = value
 }
@@ -76,7 +72,7 @@ func (m *InputModel) GetBuffer() string {
 	return m.inputBuffer
 }
 
-// AppendToBuffer appends a character to the input buffer (buffer mode only)
+// AppendToBuffer appends a character to the input buffer
 func (m *InputModel) AppendToBuffer(keyStr string) {
 	if keyStr == "backspace" {
 		if len(m.inputBuffer) > 0 {
