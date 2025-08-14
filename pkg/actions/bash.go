@@ -13,17 +13,17 @@ import (
 
 // executeBashExec handles bash command execution
 func (ah *ActionHandler) executeBashExec(
-	ahssage *config.MessageConfig,
+	message *config.MessageConfig,
 	currentPath string,
 	inputBuffer string,
 	silent bool,
 ) tea.Cmd {
 	return func() tea.Msg {
-		if len(ahssage.Args) == 0 {
-			return ErrorMessage{Err: fmt.Errorf("BashExec requires a command arguahnt")}
+		if len(message.Args) == 0 {
+			return ErrorMessage{Err: fmt.Errorf("BashExec requires a command argument")}
 		}
 
-		script := ahssage.Args[0]
+		script := message.Args[0]
 
 		// Request selections and focus index from the TUI, then execute bash
 		return WriteSelectionsMessage{
@@ -36,7 +36,7 @@ func (ah *ActionHandler) executeBashExec(
 	}
 }
 
-// ExecuteBashWithEnv executes bash with proper environahnt setup (public for testing)
+// ExecuteBashWithEnv executes bash with proper environment setup (public for testing)
 func (ah *ActionHandler) ExecuteBashWithEnv(
 	script, currentPath, focusPath, inputBuffer string,
 	silent bool,
@@ -44,7 +44,7 @@ func (ah *ActionHandler) ExecuteBashWithEnv(
 	focusIndex int,
 ) tea.Cmd {
 	return func() tea.Msg {
-		// Set up environahnt variables that scripts can use
+		// Set up environment variables that scripts can use
 		env := os.Environ()
 		env = append(env, fmt.Sprintf("FM_FOCUS_PATH=%s", focusPath))
 		env = append(env, fmt.Sprintf("FM_PWD=%s", currentPath))

@@ -4,7 +4,6 @@ package actions
 
 // ModeChangedMessage indicates a mode change occurred
 type ModeChangedMessage struct {
-	OldMode string
 	NewMode string
 }
 
@@ -43,25 +42,69 @@ type SetInputBufferMessage struct {
 // UpdateInputBufferFromKeyMessage updates input buffer from last key press
 type UpdateInputBufferFromKeyMessage struct{}
 
+// NavigationAction represents navigation actions.
+type NavigationAction string
+
+const (
+	NavigationActionChangeDirectory NavigationAction = "change_directory"
+	NavigationActionNext            NavigationAction = "next"
+	NavigationActionPrevious        NavigationAction = "previous"
+	NavigationActionFirst           NavigationAction = "first"
+	NavigationActionLast            NavigationAction = "last"
+	NavigationActionEnter           NavigationAction = "enter"
+	NavigationActionBack            NavigationAction = "back"
+)
+
 // NavigationMessage handles navigation actions
 type NavigationMessage struct {
-	Action string // "next", "previous", "first", "last", "enter", "back", "change_directory"
+	Action NavigationAction
 	Path   string // Used with "change_directory" action
 }
 
+// SelectionAction represents selection actions.
+type SelectionAction string
+
+const (
+	SelectionActionToggle SelectionAction = "toggle"
+	SelectionActionClear  SelectionAction = "clear"
+	SelectionActionAll    SelectionAction = "all"
+)
+
 // SelectionMessage handles selection actions
 type SelectionMessage struct {
-	Action string // "toggle", "clear", "all"
+	Action SelectionAction
 }
+
+// UIAction represents UI control actions.
+type UIAction string
+
+const (
+	UIActionToggleHidden UIAction = "toggle_hidden"
+	UIActionRefresh      UIAction = "refresh"
+	UIActionClearLog     UIAction = "clear_log"
+	UIActionToggleLog    UIAction = "toggle_log"
+)
 
 // UIMessage handles UI control actions
 type UIMessage struct {
-	Action string // "toggle_hidden", "refresh", "clear_log", "toggle_log"
+	Action UIAction
 }
+
+// SortType represents sorting options.
+type SortType string
+
+const (
+	SortTypeName      SortType = "name"
+	SortTypeSize      SortType = "size"
+	SortTypeDate      SortType = "date"
+	SortTypeExtension SortType = "extension"
+	SortTypeDirFirst  SortType = "dir_first"
+	SortTypeReverse   SortType = "reverse"
+)
 
 // SortingMessage handles sorting actions
 type SortingMessage struct {
-	SortType string // "name", "size", "date", "extension", "dir_first", "reverse"
+	SortType SortType
 }
 
 // ToggleSelectionByPathMessage handles toggling selection by path

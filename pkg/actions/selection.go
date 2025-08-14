@@ -11,21 +11,21 @@ import (
 // executeToggleSelection handles toggling selection of current item
 func (ah *ActionHandler) executeToggleSelection(_ *config.MessageConfig) tea.Cmd {
 	return func() tea.Msg {
-		return SelectionMessage{Action: "toggle"}
+		return SelectionMessage{Action: SelectionActionToggle}
 	}
 }
 
 // executeClearSelection handles clearing all selections
 func (ah *ActionHandler) executeClearSelection(_ *config.MessageConfig) tea.Cmd {
 	return func() tea.Msg {
-		return SelectionMessage{Action: "clear"}
+		return SelectionMessage{Action: SelectionActionClear}
 	}
 }
 
 // executeSelectAll handles selecting all items
 func (ah *ActionHandler) executeSelectAll(_ *config.MessageConfig) tea.Cmd {
 	return func() tea.Msg {
-		return SelectionMessage{Action: "all"}
+		return SelectionMessage{Action: SelectionActionAll}
 	}
 }
 

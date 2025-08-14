@@ -11,21 +11,13 @@ import (
 
 // ActionHandler handles execution of config messages
 type ActionHandler struct {
-	modeManager ModeManager
-	pipe        *pipe.Pipe
-}
-
-// ModeManager interface for mode management operations
-type ModeManager interface {
-	SwitchToMode(mode string) error
-	GetPreviousMode() string
+	pipe *pipe.Pipe
 }
 
 // NewActionHandler creates a new action handler
-func NewActionHandler(modeManager ModeManager, pipe *pipe.Pipe) *ActionHandler {
+func NewActionHandler(pipe *pipe.Pipe) *ActionHandler {
 	return &ActionHandler{
-		modeManager: modeManager,
-		pipe:        pipe,
+		pipe: pipe,
 	}
 }
 
