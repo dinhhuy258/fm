@@ -9,6 +9,8 @@ import (
 	"github.com/dinhhuy258/fm/pkg/config"
 )
 
+const autoClearNotificationDuration = 5 * time.Second
+
 // NotificationType represents different types of status notifications
 type NotificationType int8
 
@@ -19,8 +21,8 @@ const (
 	NotificationError
 )
 
-// StatusNotification represents a single status notification with timestamp
-type StatusNotification struct {
+// Notification represents a single status notification with timestamp
+type Notification struct {
 	Type      NotificationType
 	Message   string
 	CreatedAt time.Time
@@ -39,21 +41,25 @@ type NotificationModel struct {
 	width  int
 	height int
 
-	activeNotification *StatusNotification
+	activeNotification *Notification
 	styles             *NotificationStyles
 	isVisible          bool
 }
 
 // NewNotificationModel creates a new notification model
 func NewNotificationModel() *NotificationModel {
-	model := &NotificationModel{
-		activeNotification: nil,
-		isVisible:          true, // Default to visible
+	notificationStyle := &NotificationStyles{
+		successStyle: fromStyleConfig(config.AppConfig.General.LogInfoUI.Style),
+		infoStyle:    fromStyleConfig(config.AppConfig.General.LogInfoUI.Style),
+		warningStyle: fromStyleConfig(config.AppConfig.General.LogWarningUI.Style),
+		errorStyle:   fromStyleConfig(config.AppConfig.General.LogErrorUI.Style),
 	}
 
-	model.initStyles()
-
-	return model
+	return &NotificationModel{
+		activeNotification: nil,
+		isVisible:          true, // Default to visible
+		styles:             notificationStyle,
+	}
 }
 
 // SetSize updates the model dimensions
@@ -84,7 +90,7 @@ func (m *NotificationModel) IsVisible() bool {
 
 // ShowNotification displays a notification
 func (m *NotificationModel) ShowNotification(notificationType NotificationType, message string) tea.Cmd {
-	notification := &StatusNotification{
+	notification := &Notification{
 		Type:      notificationType,
 		Message:   message,
 		CreatedAt: time.Now(),
@@ -92,14 +98,10 @@ func (m *NotificationModel) ShowNotification(notificationType NotificationType, 
 
 	m.activeNotification = notification
 
-	// Auto-clear success notifications after 5 seconds
-	if notificationType == NotificationSuccess {
-		return tea.Tick(5*time.Second, func(t time.Time) tea.Msg {
-			return AutoClearMessage{}
-		})
-	}
-
-	return nil
+	// Auto-clear notifications
+	return tea.Tick(autoClearNotificationDuration, func(t time.Time) tea.Msg {
+		return AutoClearMessage{}
+	})
 }
 
 // ShowSuccess displays a success notification (auto-clears in 5 seconds)
@@ -123,7 +125,7 @@ func (m *NotificationModel) ShowError(message string) tea.Cmd {
 }
 
 // GetActiveNotification returns the current active notification
-func (m *NotificationModel) GetActiveNotification() *StatusNotification {
+func (m *NotificationModel) GetActiveNotification() *Notification {
 	return m.activeNotification
 }
 
@@ -149,62 +151,42 @@ func (m *NotificationModel) Update(msg tea.Msg) (*NotificationModel, tea.Cmd) {
 }
 
 // View renders the notification view
-func (m *NotificationModel) View(cfg *config.Config) string {
-	if !m.isVisible || m.activeNotification == nil {
-		return ""
-	}
-
-	width, _ := m.GetSize()
-	if width <= 0 {
+func (m *NotificationModel) View() string {
+	if !m.isVisible || m.activeNotification == nil || m.width <= 0 || m.height <= 0 {
 		return ""
 	}
 
 	var notificationStyle lipgloss.Style
 	var prefix, suffix string
+	cfg := config.AppConfig.General
 
 	// Get style and prefix/suffix based on notification type
 	switch m.activeNotification.Type {
 	case NotificationSuccess:
 		notificationStyle = m.styles.successStyle
-		prefix = cfg.General.LogInfoUI.Prefix
-		suffix = cfg.General.LogInfoUI.Suffix
+		prefix = cfg.LogInfoUI.Prefix
+		suffix = cfg.LogInfoUI.Suffix
 	case NotificationInfo:
 		notificationStyle = m.styles.infoStyle
-		prefix = cfg.General.LogInfoUI.Prefix
-		suffix = cfg.General.LogInfoUI.Suffix
+		prefix = cfg.LogInfoUI.Prefix
+		suffix = cfg.LogInfoUI.Suffix
 	case NotificationWarning:
 		notificationStyle = m.styles.warningStyle
-		prefix = cfg.General.LogWarningUI.Prefix
-		suffix = cfg.General.LogWarningUI.Suffix
+		prefix = cfg.LogWarningUI.Prefix
+		suffix = cfg.LogWarningUI.Suffix
 	case NotificationError:
 		notificationStyle = m.styles.errorStyle
-		prefix = cfg.General.LogErrorUI.Prefix
-		suffix = cfg.General.LogErrorUI.Suffix
+		prefix = cfg.LogErrorUI.Prefix
+		suffix = cfg.LogErrorUI.Suffix
 	}
 
 	// Format message with prefix and suffix
 	message := prefix + m.activeNotification.Message + suffix
 
 	// Truncate if needed
-	if len(message) > width {
-		message = message[:width-3] + "..."
+	if len(message) > m.width {
+		message = message[:m.width-3] + "..."
 	}
 
 	return notificationStyle.Render(message)
-}
-
-// initStyles initializes cached notification styles
-func (m *NotificationModel) initStyles() {
-	m.styles = &NotificationStyles{
-		successStyle: fromStyleConfig(config.AppConfig.General.LogInfoUI.Style),
-		infoStyle:    fromStyleConfig(config.AppConfig.General.LogInfoUI.Style),
-		warningStyle: fromStyleConfig(config.AppConfig.General.LogWarningUI.Style),
-		errorStyle:   fromStyleConfig(config.AppConfig.General.LogErrorUI.Style),
-	}
-}
-
-// InvalidateStyles clears cached styles (call when config changes)
-func (m *NotificationModel) InvalidateStyles() {
-	m.styles = nil
-	m.initStyles()
 }

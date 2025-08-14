@@ -13,6 +13,8 @@ const (
 	InputModeBuffer                  // Simple character accumulation
 )
 
+const inputPrompt = "> "
+
 // InputModel handles text input and buffer operations
 type InputModel struct {
 	width  int
@@ -28,7 +30,7 @@ type InputModel struct {
 func NewInputModel() *InputModel {
 	// Initialize text input
 	ti := textinput.New()
-	ti.Prompt = "> "
+	ti.Prompt = inputPrompt
 
 	return &InputModel{
 		textInput:   ti,
@@ -42,11 +44,6 @@ func NewInputModel() *InputModel {
 func (m *InputModel) SetSize(width, height int) {
 	m.width = width
 	m.height = height
-}
-
-// GetSize returns the current dimensions
-func (m *InputModel) GetSize() (int, int) {
-	return m.width, m.height
 }
 
 // Show makes the input visible and focuses it
@@ -77,21 +74,6 @@ func (m *InputModel) IsVisible() bool {
 // SetMode switches between text input and buffer modes
 func (m *InputModel) SetMode(mode InputMode) {
 	m.mode = mode
-}
-
-// GetMode returns the current input mode
-func (m *InputModel) GetMode() InputMode {
-	return m.mode
-}
-
-// IsTextMode returns whether in text input mode
-func (m *InputModel) IsTextMode() bool {
-	return m.mode == InputModeText
-}
-
-// IsBufferMode returns whether in buffer mode
-func (m *InputModel) IsBufferMode() bool {
-	return m.mode == InputModeBuffer
 }
 
 // GetValue returns the current input value based on mode
@@ -187,7 +169,7 @@ func (m *InputModel) View() string {
 		return m.textInput.View()
 	case InputModeBuffer:
 		// In buffer mode, just display the current buffer with a simple prompt
-		return "> " + m.inputBuffer
+		return inputPrompt + m.inputBuffer
 	default:
 		return ""
 	}

@@ -328,7 +328,7 @@ func (m Model) View() string {
 		}
 	case InteractiveModeNotification:
 		if m.notificationModel.IsVisible() {
-			interactiveView = m.notificationModel.View(m.config)
+			interactiveView = m.notificationModel.View()
 		}
 	}
 	if interactiveView != "" {

@@ -295,7 +295,7 @@ func (m *Model) ShowError(message string) tea.Cmd {
 }
 
 // GetActiveNotification returns the current active notification
-func (m *Model) GetActiveNotification() *StatusNotification {
+func (m *Model) GetActiveNotification() *Notification {
 	return m.notificationModel.GetActiveNotification()
 }
 
@@ -312,9 +312,4 @@ func (m *Model) GetTextInput() *textinput.Model {
 // UpdateTextInput updates the text input model
 func (m *Model) UpdateTextInput(textInput textinput.Model) {
 	m.inputModel.UpdateTextInput(textInput)
-}
-
-// InvalidateStyles clears cached styles (call when config changes)
-func (m *Model) InvalidateStyles() {
-	m.notificationModel.InvalidateStyles()
 }

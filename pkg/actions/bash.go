@@ -12,7 +12,12 @@ import (
 )
 
 // executeBashExec handles bash command execution
-func (ah *ActionHandler) executeBashExec(ahssage *config.MessageConfig, currentPath string, inputBuffer string, silent bool) tea.Cmd {
+func (ah *ActionHandler) executeBashExec(
+	ahssage *config.MessageConfig,
+	currentPath string,
+	inputBuffer string,
+	silent bool,
+) tea.Cmd {
 	return func() tea.Msg {
 		if len(ahssage.Args) == 0 {
 			return ErrorMessage{Err: fmt.Errorf("BashExec requires a command arguahnt")}
@@ -32,7 +37,12 @@ func (ah *ActionHandler) executeBashExec(ahssage *config.MessageConfig, currentP
 }
 
 // ExecuteBashWithEnv executes bash with proper environahnt setup (public for testing)
-func (ah *ActionHandler) ExecuteBashWithEnv(script, currentPath, focusPath, inputBuffer string, silent bool, selections []string, focusIndex int) tea.Cmd {
+func (ah *ActionHandler) ExecuteBashWithEnv(
+	script, currentPath, focusPath, inputBuffer string,
+	silent bool,
+	selections []string,
+	focusIndex int,
+) tea.Cmd {
 	return func() tea.Msg {
 		// Set up environahnt variables that scripts can use
 		env := os.Environ()
@@ -135,7 +145,8 @@ func isInteractiveCommand(script string) bool {
 	for _, cmd := range interactiveCommands {
 		if strings.HasPrefix(scriptLower, cmd+" ") || scriptLower == cmd {
 			// Special case: git commit with -m flag is not interactive
-			if cmd == "git commit" && (strings.Contains(scriptLower, " -m ") || strings.Contains(scriptLower, " --message")) {
+			if cmd == "git commit" &&
+				(strings.Contains(scriptLower, " -m ") || strings.Contains(scriptLower, " --message")) {
 				continue
 			}
 

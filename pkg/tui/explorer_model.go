@@ -79,17 +79,17 @@ type ExplorerModel struct {
 
 // NewExplorerModel creates a new explorer model
 func NewExplorerModel() *ExplorerModel {
-	model := &ExplorerModel{
+	viewData := &ExplorerViewData{}
+	viewData.initStyles()
+	viewData.initIcons()
+
+	return &ExplorerModel{
 		selections:  set.NewSet[string](),
 		focus:       0,
 		scrollStart: 0,
 		entries:     make([]fs.IEntry, 0),
+		viewData:    viewData,
 	}
-
-	// Initialize view data on creation
-	model.initViewData()
-
-	return model
 }
 
 // SetSize updates the model dimensions
@@ -121,6 +121,7 @@ func (m *ExplorerModel) MoveFirst() {
 	if len(m.entries) == 0 {
 		return
 	}
+
 	m.focus = 0
 	m.scrollStart = 0
 }
@@ -130,6 +131,7 @@ func (m *ExplorerModel) MoveLast() {
 	if len(m.entries) == 0 {
 		return
 	}
+
 	m.focus = len(m.entries) - 1
 	m.ensureVisible()
 }
@@ -211,27 +213,16 @@ func (m *ExplorerModel) GetStats() (total, selected int) {
 	return len(m.entries), m.selections.Cardinality()
 }
 
-// IsSelected returns whether an entry path is selected
-func (m *ExplorerModel) IsSelected(path string) bool {
-	return m.selections.Contains(path)
-}
-
 // FocusPath attempts to focus on an entry with the given path
-func (m *ExplorerModel) FocusPath(path string) bool {
-	if path == "" || len(m.entries) == 0 {
-		return false
-	}
-
+func (m *ExplorerModel) FocusPath(path string) {
 	for i, entry := range m.entries {
 		if entry.GetPath() == path {
 			m.focus = i
 			m.ensureVisible()
 
-			return true
+			return
 		}
 	}
-
-	return false
 }
 
 // getVisibleRows calculates how many rows can fit in the current height
@@ -251,13 +242,6 @@ func (m *ExplorerModel) ensureVisible() {
 	}
 
 	m.scrollStart = max(0, m.scrollStart)
-}
-
-// initViewData initializes the cached view data with styles and icons
-func (m *ExplorerModel) initViewData() {
-	m.viewData = &ExplorerViewData{}
-	m.viewData.initStyles()
-	m.viewData.initIcons()
 }
 
 // initStyles initializes lipgloss styles from config
@@ -406,7 +390,7 @@ func (m *ExplorerModel) renderEntry(entry fs.IEntry, idx int) string {
 func (m *ExplorerModel) determineEntryDisplayState(entry fs.IEntry, idx int) entryDisplayState {
 	explorerConfig := config.AppConfig.General.ExplorerTable
 	isFocused := idx == m.focus
-	isSelected := m.IsSelected(entry.GetPath())
+	isSelected := m.selections.Contains(entry.GetPath())
 
 	var prefix, suffix string
 	var style lipgloss.Style
