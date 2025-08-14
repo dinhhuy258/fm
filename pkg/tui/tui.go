@@ -56,39 +56,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.explorerModel.SetSize(msg.Width, availableHeight)
 
 	case tea.KeyMsg:
-		// If help UI is visible, let it handle the key first
+		// If help UI is visible, delegate to help model
 		if m.helpModel.IsVisible() {
-			// Handle help UI key events directly since it's now a pure model
-			switch {
-			case msg.String() == "?" || msg.String() == "esc" || msg.String() == "q":
-				m.helpModel.Hide()
-
-				return m, nil
-			case msg.String() == "k" || msg.String() == "up":
-				viewport := m.helpModel.GetViewport()
-				viewport.ScrollUp(1)
-				m.helpModel.UpdateViewport(*viewport)
-			case msg.String() == "j" || msg.String() == "down":
-				viewport := m.helpModel.GetViewport()
-				viewport.ScrollDown(1)
-				m.helpModel.UpdateViewport(*viewport)
-			case msg.String() == "pgup" || msg.String() == "ctrl+u":
-				viewport := m.helpModel.GetViewport()
-				viewport.HalfPageUp()
-				m.helpModel.UpdateViewport(*viewport)
-			case msg.String() == "pgdown" || msg.String() == "ctrl+d":
-				viewport := m.helpModel.GetViewport()
-				viewport.HalfPageDown()
-				m.helpModel.UpdateViewport(*viewport)
+			var cmd tea.Cmd
+			m.helpModel, cmd = m.helpModel.Update(msg)
+			if cmd != nil {
+				cmds = append(cmds, cmd)
 			}
 
-			// If help UI is still visible after update, don't process other keys
-			if m.helpModel.IsVisible() {
-				return m, tea.Batch(cmds...)
-			}
+			return m, tea.Batch(cmds...)
 		}
 
-		// Handle key presses using dynamic system
 		// Handle special cases like showing help
 		if msg.String() == "?" {
 			m.helpModel.Show()
@@ -96,8 +74,28 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 
-		return m.handleKeyWithDynamicSystem(msg)
+		return m.handleKeyMap(msg)
 
+	default:
+		// Delegate all other messages to handleMessage
+		return m.handleMessage(msg)
+	}
+
+	// Update child models
+	var childCmd tea.Cmd
+	m.notificationModel, childCmd = m.notificationModel.Update(msg)
+	if childCmd != nil {
+		cmds = append(cmds, childCmd)
+	}
+
+	return m, tea.Batch(cmds...)
+}
+
+// handleMessage processes incoming messages and returns updated model with commands
+func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmds []tea.Cmd
+
+	switch msg := msg.(type) {
 	case directoryLoadedMsg:
 		// Directory content loaded
 		m.currentPath = msg.path
@@ -152,15 +150,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmds = append(cmds, m.ShowInfo(msg.Message))
 		}
 
-	case actions.ErrorMessage:
-		m.err = msg.Err
-		cmds = append(cmds, m.ShowError(fmt.Sprintf("Error: %v", msg.Err)))
-
 	case actions.SetInputBufferMessage:
 		m.SetInputBuffer(msg.Value)
-		if msg.ShowInput {
-			m.ShowInput(msg.Value)
-		}
+		m.ShowInput(msg.Value)
 
 	case actions.UpdateInputBufferFromKeyMessage:
 		// This would be handled in the key press context
@@ -192,112 +184,44 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case actions.InteractiveBashMessage:
 		return m.handleInteractiveBashMessage(msg)
 	case AutoClearMessage:
-		// Auto-clear notification in the interactive model
-		if m.interactiveMode == InteractiveModeNotification {
-			m.ClearNotification()
-		}
+		m.ClearNotification()
 	case InputCompletedMessage:
 		// Input was completed - update input buffer and show success notification
-		m.SetInputBuffer(msg.Value)
-		if msg.Value != "" {
-			cmds = append(cmds, m.ShowSuccess(fmt.Sprintf("Input: %s", msg.Value)))
-		}
-	default:
-		// Handle text input updates for the interactive model
-		if m.IsInputMode() {
-			// Check for input completion or cancellation
-			if keyMsg, ok := msg.(tea.KeyMsg); ok {
-				switch keyMsg.String() {
-				case "enter":
-					// Input completed - return to notification mode and send completion message
-					inputValue := m.GetInputValue()
-					m.HideInput()
-
-					// Create completion command
-					completionCmd := func() tea.Msg {
-						return InputCompletedMessage{Value: inputValue}
-					}
-
-					cmds = append(cmds, completionCmd)
-
-					return m, tea.Batch(cmds...)
-				case "esc":
-					// Cancel input - return to notification mode
-					m.HideInput()
-
-					return m, tea.Batch(cmds...)
-				}
-			}
-
-			// Update input model directly
-			var cmd tea.Cmd
-			m.inputModel, cmd = m.inputModel.Update(msg)
-			if cmd != nil {
-				cmds = append(cmds, cmd)
-			}
-		}
-	}
-
-	// Update child models
-	var childCmd tea.Cmd
-	m.notificationModel, childCmd = m.notificationModel.Update(msg)
-	if childCmd != nil {
-		cmds = append(cmds, childCmd)
-	}
-
-	// Only update input model if not handled above
-	if !m.IsInputMode() || msg == nil {
-		m.inputModel, childCmd = m.inputModel.Update(msg)
-		if childCmd != nil {
-			cmds = append(cmds, childCmd)
-		}
+		// m.SetInputBuffer(msg.Value)
 	}
 
 	return m, tea.Batch(cmds...)
 }
 
-// handleKeyWithDynamicSystem handles key presses using the dynamic mode system
-func (m Model) handleKeyWithDynamicSystem(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+// handleKeyMap handles key presses and resolves them to actions
+func (m Model) handleKeyMap(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd
 	updatedModel := m
 
 	// First, try dynamic key mapping
-	keyStr, action, matched := m.keyManager.ResolveKeyAction(msg)
-	if matched {
+	action := m.keyManager.ResolveKeyAction(msg)
+	if action != nil {
 		// Execute the configured messages
 		executedCmds := m.messageExecutor.ExecuteMessages(action.Messages, m.currentPath, m.GetInputBuffer())
 		cmds = append(cmds, executedCmds...)
 
 		// Handle special input buffer updates
-		if m.shouldUpdateInputBufferFromKey(action, keyStr) {
-			updatedModel.UpdateInputBufferFromKey(keyStr)
+		// if m.shouldUpdateInputBufferFromKey(action) {
+		if m.inputModel.IsVisible() {
+			updatedModel.UpdateInputBufferFromKey(msg.String())
 			// Update the input model if it's in input mode
-			if updatedModel.IsInputMode() {
-				updatedModel.ShowInput(updatedModel.GetInputBuffer())
-			}
+			updatedModel.ShowInput(updatedModel.GetInputBuffer())
 		}
 
 		return updatedModel, tea.Batch(cmds...)
 	}
 
 	warnCmd := m.ShowWarning(
-		fmt.Sprintf("No action found for key: %s", m.keyManager.keyMsgToString(msg)),
+		fmt.Sprintf("No action found for key: %s", msg.String()),
 	)
 	cmds = append(cmds, warnCmd)
 
 	return m, tea.Batch(cmds...)
-}
-
-// shouldUpdateInputBufferFromKey checks if we should update input buffer from key
-func (m Model) shouldUpdateInputBufferFromKey(action *config.ActionConfig, _ string) bool {
-	// Check if any message is UpdateInputBufferFromKey
-	for _, message := range action.Messages {
-		if message.Name == "UpdateInputBufferFromKey" {
-			return true
-		}
-	}
-
-	return false
 }
 
 // View renders the UI
@@ -321,15 +245,10 @@ func (m Model) View() string {
 
 	// Interactive area (handles both input and notifications) - use the model's View method with cached styles
 	var interactiveView string
-	switch m.interactiveMode {
-	case InteractiveModeInput, InteractiveModeBuffer:
-		if m.inputModel.IsVisible() {
-			interactiveView = m.inputModel.View()
-		}
-	case InteractiveModeNotification:
-		if m.notificationModel.IsVisible() {
-			interactiveView = m.notificationModel.View()
-		}
+	if m.inputModel.IsVisible() {
+		interactiveView = m.inputModel.View()
+	} else if m.notificationModel.IsVisible() {
+		interactiveView = m.notificationModel.View()
 	}
 	if interactiveView != "" {
 		sections = append(sections, interactiveView)
@@ -382,13 +301,13 @@ func (m Model) renderHeader() string {
 // renderFooter renders the footer section
 func (m Model) renderFooter() string {
 	// Show input buffer status if not in input mode but buffer has content
-	if !m.IsInputMode() && m.GetInputBuffer() != "" {
-		inputBuffer := lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#626262")).
-			Render(fmt.Sprintf("Buffer: %s | Press ? for help, q to quit", m.GetInputBuffer()))
+	// if !m.IsInputMode() && m.GetInputBuffer() != "" {
+	// 	inputBuffer := lipgloss.NewStyle().
+	// 		Foreground(lipgloss.Color("#626262")).
+	// 		Render(fmt.Sprintf("Buffer: %s | Press ? for help, q to quit", m.GetInputBuffer()))
 
-		return inputBuffer
-	}
+	// 	return inputBuffer
+	// }
 
 	// Help hint
 	helpHint := lipgloss.NewStyle().

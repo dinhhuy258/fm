@@ -17,8 +17,7 @@ func (ah *ActionHandler) executeSetInputBuffer(message *config.MessageConfig) te
 		}
 
 		return SetInputBufferMessage{
-			Value:     value,
-			ShowInput: true, // Always show input when setting buffer
+			Value: value,
 		}
 	}
 }

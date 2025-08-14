@@ -6,6 +6,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/viewport"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/dinhhuy258/fm/pkg/config"
@@ -324,6 +325,33 @@ func getKeyDisplay(keyStr string) string {
 	}
 
 	return keyStr
+}
+
+// Update handles help model updates and key events
+func (m *HelpModel) Update(msg tea.Msg) (*HelpModel, tea.Cmd) {
+	if !m.visible {
+		return m, nil
+	}
+
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch {
+		case msg.String() == "?" || msg.String() == "esc" || msg.String() == "q":
+			m.Hide()
+
+			return m, nil
+		case msg.String() == "k" || msg.String() == "up":
+			m.viewport.ScrollUp(1)
+		case msg.String() == "j" || msg.String() == "down":
+			m.viewport.ScrollDown(1)
+		case msg.String() == "pgup" || msg.String() == "ctrl+u":
+			m.viewport.HalfPageUp()
+		case msg.String() == "pgdown" || msg.String() == "ctrl+d":
+			m.viewport.HalfPageDown()
+		}
+	}
+
+	return m, nil
 }
 
 // View renders the help UI view

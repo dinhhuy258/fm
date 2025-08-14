@@ -8,11 +8,6 @@ import (
 // InputMode represents different input modes
 type InputMode int
 
-const (
-	InputModeText   InputMode = iota // Full text input with cursor
-	InputModeBuffer                  // Simple character accumulation
-)
-
 const inputPrompt = "> "
 
 // InputModel handles text input and buffer operations
@@ -34,7 +29,6 @@ func NewInputModel() *InputModel {
 
 	return &InputModel{
 		textInput:   ti,
-		mode:        InputModeText,
 		isVisible:   false, // Default to hidden
 		inputBuffer: "",
 	}
@@ -49,20 +43,16 @@ func (m *InputModel) SetSize(width, height int) {
 // Show makes the input visible and focuses it
 func (m *InputModel) Show(initialValue string) {
 	m.isVisible = true
-	if m.mode == InputModeText {
-		m.textInput.SetValue(initialValue)
-		m.textInput.SetCursor(len(initialValue))
-		m.textInput.Focus()
-	}
+	m.textInput.SetValue(initialValue)
+	m.textInput.SetCursor(len(initialValue))
+	m.textInput.Focus()
 }
 
 // Hide makes the input invisible and clears it
 func (m *InputModel) Hide() {
 	m.isVisible = false
-	if m.mode == InputModeText {
-		m.textInput.Blur()
-		m.textInput.SetValue("")
-	}
+	m.textInput.Blur()
+	m.textInput.SetValue("")
 	m.inputBuffer = ""
 }
 
@@ -71,17 +61,8 @@ func (m *InputModel) IsVisible() bool {
 	return m.isVisible
 }
 
-// SetMode switches between text input and buffer modes
-func (m *InputModel) SetMode(mode InputMode) {
-	m.mode = mode
-}
-
 // GetValue returns the current input value based on mode
 func (m *InputModel) GetValue() string {
-	if m.mode == InputModeText {
-		return m.textInput.Value()
-	}
-
 	return m.inputBuffer
 }
 
@@ -129,31 +110,11 @@ type InputCompletedMessage struct {
 
 // Update handles Bubbletea messages
 func (m *InputModel) Update(msg tea.Msg) (*InputModel, tea.Cmd) {
-	var cmd tea.Cmd
-
-	// Only process messages when visible and in text mode
-	if m.isVisible && m.mode == InputModeText {
-		switch msg := msg.(type) {
-		case tea.KeyMsg:
-			switch msg.String() {
-			case "enter":
-				// Input completed
-				value := m.textInput.Value()
-
-				return m, func() tea.Msg {
-					return InputCompletedMessage{Value: value}
-				}
-			case "esc":
-				// Cancel input
-				return m, func() tea.Msg {
-					return InputCompletedMessage{Value: ""}
-				}
-			}
-		}
-
-		// Update text input
-		m.textInput, cmd = m.textInput.Update(msg)
+	if m.isVisible {
+		return m, nil
 	}
+
+	_, cmd := m.textInput.Update(msg)
 
 	return m, cmd
 }
@@ -164,13 +125,5 @@ func (m *InputModel) View() string {
 		return ""
 	}
 
-	switch m.mode {
-	case InputModeText:
-		return m.textInput.View()
-	case InputModeBuffer:
-		// In buffer mode, just display the current buffer with a simple prompt
-		return inputPrompt + m.inputBuffer
-	default:
-		return ""
-	}
+	return m.textInput.View()
 }

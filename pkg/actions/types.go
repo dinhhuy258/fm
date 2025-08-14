@@ -37,8 +37,7 @@ type ErrorMessage struct {
 
 // SetInputBufferMessage sets the input buffer value
 type SetInputBufferMessage struct {
-	Value     string
-	ShowInput bool // Whether to show and focus the input field
+	Value string
 }
 
 // UpdateInputBufferFromKeyMessage updates input buffer from last key press

@@ -10,15 +10,6 @@ import (
 	"github.com/dinhhuy258/fm/pkg/pipe"
 )
 
-// InteractiveAreaMode represents the current mode of the interactive area
-type InteractiveAreaMode int
-
-const (
-	InteractiveModeNotification InteractiveAreaMode = iota // Show notifications
-	InteractiveModeInput                                   // Show input field
-	InteractiveModeBuffer                                  // Buffer mode for simple character accumulation
-)
-
 // Model represents the fm application state
 type Model struct {
 	// Core application state
@@ -28,18 +19,17 @@ type Model struct {
 	ready       bool
 
 	// Models for fm components
-	explorerModel      *ExplorerModel
-	notificationModel  *NotificationModel
-	inputModel         *InputModel
-	helpModel          *HelpModel
+	explorerModel     *ExplorerModel
+	notificationModel *NotificationModel
+	inputModel        *InputModel
+	helpModel         *HelpModel
 
 	// App dependencies
 	config *config.Config
 	pipe   *pipe.Pipe
 
 	// UI state
-	err                   error
-	interactiveMode       InteractiveAreaMode // Track current interactive area mode
+	err error
 
 	// Dynamic mode and keybinding system
 	modeManager     *ModeManager
@@ -174,7 +164,6 @@ func NewModel(cfg *config.Config, pipe *pipe.Pipe) Model {
 		helpModel:         helpModel,
 		config:            cfg,
 		pipe:              pipe,
-		interactiveMode:   InteractiveModeNotification, // Default to notification mode
 		modeManager:       modeManager,
 		keyManager:        keyManager,
 		messageExecutor:   messageExecutor,
@@ -197,7 +186,6 @@ func (m *Model) SwitchMode(modeName string) error {
 	// Handle input state when switching modes
 	if modeName == "default" {
 		// Hide input and show notifications when switching to default mode
-		m.interactiveMode = InteractiveModeNotification
 		m.inputModel.Hide()
 		m.notificationModel.Show()
 		m.inputModel.ClearBuffer()
@@ -223,35 +211,14 @@ func (m *Model) UpdateInputBufferFromKey(keyStr string) {
 
 // ShowInput switches to input mode and displays the text input field
 func (m *Model) ShowInput(initialValue string) {
-	m.interactiveMode = InteractiveModeInput
 	m.notificationModel.Hide()
-	m.inputModel.SetMode(InputModeText)
 	m.inputModel.Show(initialValue)
 }
 
 // HideInput switches back to notification mode
 func (m *Model) HideInput() {
-	m.interactiveMode = InteractiveModeNotification
 	m.inputModel.Hide()
 	m.notificationModel.Show()
-}
-
-// SetBufferMode switches to buffer mode for simple character accumulation
-func (m *Model) SetBufferMode() {
-	m.interactiveMode = InteractiveModeBuffer
-	m.notificationModel.Hide()
-	m.inputModel.SetMode(InputModeBuffer)
-	m.inputModel.Show("")
-}
-
-// IsInputMode returns whether currently in input mode
-func (m *Model) IsInputMode() bool {
-	return m.interactiveMode == InteractiveModeInput
-}
-
-// IsBufferMode returns whether currently in buffer mode
-func (m *Model) IsBufferMode() bool {
-	return m.interactiveMode == InteractiveModeBuffer
 }
 
 // GetInputValue returns the current input value
@@ -263,8 +230,8 @@ func (m *Model) GetInputValue() string {
 func (m *Model) ShowNotification(notificationType NotificationType, message string) tea.Cmd {
 	cmd := m.notificationModel.ShowNotification(notificationType, message)
 
-	if m.interactiveMode == InteractiveModeInput || m.interactiveMode == InteractiveModeBuffer {
-		// In input/buffer mode, notification is stored but not displayed yet
+	if m.inputModel.IsVisible() {
+		// In input mode, notification is stored but not displayed yet
 		return cmd
 	}
 
