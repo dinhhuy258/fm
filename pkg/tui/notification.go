@@ -137,19 +137,6 @@ func (m *NotificationModel) ClearNotification() {
 // AutoClearMessage represents a message to auto-clear the notification
 type AutoClearMessage struct{}
 
-// Update handles Bubbletea messages
-func (m *NotificationModel) Update(msg tea.Msg) (*NotificationModel, tea.Cmd) {
-	switch msg.(type) {
-	case AutoClearMessage:
-		// Only clear if it's a success notification that should auto-clear
-		if m.activeNotification != nil && m.activeNotification.Type == NotificationSuccess {
-			m.ClearNotification()
-		}
-	}
-
-	return m, nil
-}
-
 // View renders the notification view
 func (m *NotificationModel) View() string {
 	if !m.isVisible || m.activeNotification == nil || m.width <= 0 || m.height <= 0 {

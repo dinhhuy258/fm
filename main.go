@@ -42,7 +42,7 @@ func main() {
 	defer pipe.StopWatcher()
 
 	// Create the Bubble Tea model
-	model := tui.NewModel(config.AppConfig, pipe)
+	model := tui.NewModel(pipe)
 
 	// Create the Bubble Tea program
 	program := tea.NewProgram(

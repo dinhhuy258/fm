@@ -328,9 +328,9 @@ func getKeyDisplay(keyStr string) string {
 }
 
 // Update handles help model updates and key events
-func (m *HelpModel) Update(msg tea.Msg) (*HelpModel, tea.Cmd) {
+func (m *HelpModel) Update(msg tea.Msg) {
 	if !m.visible {
-		return m, nil
+		return
 	}
 
 	switch msg := msg.(type) {
@@ -338,8 +338,6 @@ func (m *HelpModel) Update(msg tea.Msg) (*HelpModel, tea.Cmd) {
 		switch {
 		case msg.String() == "?" || msg.String() == "esc" || msg.String() == "q":
 			m.Hide()
-
-			return m, nil
 		case msg.String() == "k" || msg.String() == "up":
 			m.viewport.ScrollUp(1)
 		case msg.String() == "j" || msg.String() == "down":
@@ -350,8 +348,6 @@ func (m *HelpModel) Update(msg tea.Msg) (*HelpModel, tea.Cmd) {
 			m.viewport.HalfPageDown()
 		}
 	}
-
-	return m, nil
 }
 
 // View renders the help UI view
