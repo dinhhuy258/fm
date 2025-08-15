@@ -134,3 +134,8 @@ type BashExecMessage struct {
 type BashExecSilentlyMessage struct {
 	Script string
 }
+
+// ChangeDirectoryMessage handles directory change requests
+type ChangeDirectoryMessage struct {
+	Path string
+}

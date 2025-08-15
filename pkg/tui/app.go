@@ -15,6 +15,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/pipe"
+	"github.com/dinhhuy258/fm/pkg/type/optional"
 )
 
 // Model represents the fm application state
@@ -36,19 +37,14 @@ type Model struct {
 
 // Message types for Bubble Tea
 type directoryLoadedMsg struct {
-	path    string
-	entries []fs.IEntry
-}
-
-type directoryLoadedWithFocusMsg struct {
 	path      string
 	entries   []fs.IEntry
-	focusPath string
+	focusPath optional.Optional[string]
 }
 
-// ExternalMessage represents a message from external sources (pipes, etc.)
-type ExternalMessage struct {
-	Content string
+// PipeMessage represents a message from external sources (pipes, etc.)
+type PipeMessage struct {
+	Command string
 }
 
 // ============================================================================
@@ -92,7 +88,7 @@ func (m Model) Init() tea.Cmd {
 		return tea.Quit
 	}
 
-	return loadDirectoryCmd(wd)
+	return loadDirectoryCmd(wd, optional.NewEmpty[string]())
 }
 
 // Update handles incoming messages and updates the model
@@ -162,32 +158,17 @@ func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case directoryLoadedMsg:
-		// Directory content loaded
 		m.currentPath = msg.path
-
-		// Update explorer model
 		m.explorerModel.SetEntries(msg.entries)
-
-	case directoryLoadedWithFocusMsg:
-		// Directory content loaded with focus requirement
-		m.currentPath = msg.path
-
-		// Update explorer model
-		m.explorerModel.SetEntries(msg.entries)
-
-		// Focus on the specific path
-		m.explorerModel.FocusPath(msg.focusPath)
-
-	case actions.ErrorMessage:
-		cmds = append(cmds, m.ShowError(msg.Err.Error()))
-
-	case ExternalMessage:
-		// Parse and execute the pipe message (remove debug logging)
-		return m.handlePipeMessage(msg.Content)
-
+		msg.focusPath.IfPresent(func(path *string) {
+			m.explorerModel.FocusPath(*path)
+		})
+	case PipeMessage:
+		return m.handlePipeMessage(msg.Command)
 	// Handle new message types from MessageExecutor
+	case actions.ErrorMessage:
+		m.ShowNotification(NotificationError, msg.Err.Error())
 	case actions.ModeChangedMessage:
-		// Actually switch the mode in the mode manager
 		err := m.modeManager.SwitchToMode(msg.Mode)
 		if err != nil {
 			cmds = append(cmds, m.ShowError(fmt.Sprintf("Failed to switch mode: %v", err)))
@@ -198,32 +179,27 @@ func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.inputModel.ClearBuffer() // Clear input buffer when leaving input modes
 			}
 		}
-
 	case actions.LogMessage:
 		switch msg.Level {
-		case "error":
+		case actions.LogLevelError:
 			cmds = append(cmds, m.ShowError(msg.Message))
-		case "warning":
+		case actions.LogLevelWarning:
 			cmds = append(cmds, m.ShowWarning(msg.Message))
-		case "success":
+		case actions.LogLevelSuccess:
 			cmds = append(cmds, m.ShowSuccess(msg.Message))
-		case "info":
-			cmds = append(cmds, m.ShowInfo(msg.Message))
-		default:
+		case actions.LogLevelInfo:
 			cmds = append(cmds, m.ShowInfo(msg.Message))
 		}
-
 	case actions.SetInputBufferMessage:
 		m.SetInputBuffer(msg.Value)
 		m.ShowInput(msg.Value)
-
 	case actions.UpdateInputBufferFromKeyMessage:
 		// This would be handled in the key press context
 	case actions.FocusPathMessage:
 		// Load the directory containing the path and focus on it
 		dir := filepath.Dir(msg.Path)
 
-		return m, loadDirectoryWithFocusCmd(dir, msg.Path)
+		return m, loadDirectoryCmd(dir, optional.New(msg.Path))
 	case actions.BashOutputMessage:
 		// Remove debug output logging
 		// Only show user-relevant bash output as success notifications
@@ -246,6 +222,8 @@ func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleBashExecMessage(msg)
 	case actions.BashExecSilentlyMessage:
 		return m.handleBashExecSilentlyMessage(msg)
+	case actions.ChangeDirectoryMessage:
+		return m.handleChangeDirectoryMessage(msg)
 	case AutoClearMessage:
 		m.ClearNotification()
 	case InputCompletedMessage:
@@ -264,7 +242,7 @@ func (m Model) handleKeyMap(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	action := m.keyManager.ResolveKeyAction(msg)
 	if action != nil {
 		// Execute the configured messages
-		executedCmds := m.actionHandler.ExecuteMessages(action.Messages, m.currentPath, m.GetInputBuffer())
+		executedCmds := m.actionHandler.ExecuteMessages(action.Messages)
 		cmds = append(cmds, executedCmds...)
 
 		// Handle special input buffer updates
@@ -286,9 +264,9 @@ func (m Model) handleKeyMap(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 }
 
 // handlePipeMessage processes messages received from the pipe (from bash scripts)
-func (m Model) handlePipeMessage(content string) (tea.Model, tea.Cmd) {
+func (m Model) handlePipeMessage(command string) (tea.Model, tea.Cmd) {
 	// Parse the pipe message - format is usually: CommandName arg1 arg2 ...
-	commandName, args := parseShellCommand(content)
+	commandName, args := parseCommand(command)
 	if commandName == "" {
 		return m, nil
 	}
@@ -300,7 +278,7 @@ func (m Model) handlePipeMessage(content string) (tea.Model, tea.Cmd) {
 	}
 
 	// Execute the command using the message executor
-	cmd := m.actionHandler.ExecuteMessage(message, m.currentPath, m.GetInputBuffer())
+	cmd := m.actionHandler.ExecuteMessage(message)
 	if cmd != nil {
 		return m, cmd
 	}
@@ -326,18 +304,18 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 	case actions.NavigationActionEnter:
 		if entry := m.explorerModel.GetFocusedEntry(); entry != nil {
 			if entry.IsDirectory() {
-				return m, loadDirectoryCmd(entry.GetPath())
+				return m, loadDirectoryCmd(entry.GetPath(), optional.NewEmpty[string]())
 			}
 		}
 	case actions.NavigationActionBack:
 		if m.currentPath != "" && m.currentPath != "/" {
 			parentPath := filepath.Dir(m.currentPath)
 
-			return m, loadDirectoryWithFocusCmd(parentPath, m.currentPath)
+			return m, loadDirectoryCmd(parentPath, optional.New(m.currentPath))
 		}
 	case actions.NavigationActionChangeDirectory:
 		if msg.Path != "" {
-			return m, loadDirectoryCmd(msg.Path)
+			return m, loadDirectoryCmd(msg.Path, optional.NewEmpty[string]())
 		}
 	}
 
@@ -373,10 +351,10 @@ func (m Model) handleUIMessage(msg actions.UIMessage) (tea.Model, tea.Cmd) {
 		config.AppConfig.General.ShowHidden = !config.AppConfig.General.ShowHidden
 		// Toggle hidden files silently
 
-		return m, loadDirectoryCmd(m.currentPath) // Reload with new settings
+		return m, loadDirectoryCmd(m.currentPath, optional.Optional[string]{}) // Reload with new settings
 	case actions.UIActionRefresh:
 		// Refresh current directory
-		return m, loadDirectoryCmd(m.currentPath)
+		return m, loadDirectoryCmd(m.currentPath, optional.Optional[string]{})
 	}
 
 	return m, nil
@@ -390,27 +368,27 @@ func (m Model) handleSortingMessage(msg actions.SortingMessage) (tea.Model, tea.
 		config.AppConfig.General.Sorting.SortType = "name"
 		// Sort by name silently
 
-		return m, loadDirectoryCmd(m.currentPath)
+		return m, loadDirectoryCmd(m.currentPath, optional.Optional[string]{})
 	case actions.SortTypeSize:
 		config.AppConfig.General.Sorting.SortType = "size"
 		// Sort by size silently
 
-		return m, loadDirectoryCmd(m.currentPath)
+		return m, loadDirectoryCmd(m.currentPath, optional.Optional[string]{})
 	case actions.SortTypeDate:
 		config.AppConfig.General.Sorting.SortType = "date_modified"
 		// Sort by date silently
 
-		return m, loadDirectoryCmd(m.currentPath)
+		return m, loadDirectoryCmd(m.currentPath, optional.Optional[string]{})
 	case actions.SortTypeExtension:
 		config.AppConfig.General.Sorting.SortType = "extension"
 		// Sort by extension silently
 
-		return m, loadDirectoryCmd(m.currentPath)
+		return m, loadDirectoryCmd(m.currentPath, optional.Optional[string]{})
 	case actions.SortTypeDirFirst:
 		config.AppConfig.General.Sorting.SortType = "dir_first"
 		// Sort by directory first silently
 
-		return m, loadDirectoryCmd(m.currentPath)
+		return m, loadDirectoryCmd(m.currentPath, optional.Optional[string]{})
 	case actions.SortTypeReverse:
 		// Toggle reverse sorting
 		if config.AppConfig.General.Sorting.Reverse != nil {
@@ -421,7 +399,7 @@ func (m Model) handleSortingMessage(msg actions.SortingMessage) (tea.Model, tea.
 		}
 		// Sort order changed silently
 
-		return m, loadDirectoryCmd(m.currentPath)
+		return m, loadDirectoryCmd(m.currentPath, optional.Optional[string]{})
 	}
 
 	return m, nil
@@ -472,6 +450,39 @@ func (m Model) handleBashExecMessage(msg actions.BashExecMessage) (tea.Model, te
 // handleBashExecSilentlyMessage executes bash commands silently
 func (m Model) handleBashExecSilentlyMessage(msg actions.BashExecSilentlyMessage) (tea.Model, tea.Cmd) {
 	return m.handleBashExecution(msg.Script, true)
+}
+
+// handleChangeDirectoryMessage processes directory change requests with validation
+func (m Model) handleChangeDirectoryMessage(msg actions.ChangeDirectoryMessage) (tea.Model, tea.Cmd) {
+	targetPath := msg.Path
+
+	// Handle home directory expansion
+	if strings.HasPrefix(targetPath, "~") {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return m, func() tea.Msg {
+				return actions.ErrorMessage{Err: fmt.Errorf("failed to get home directory: %w", err)}
+			}
+		}
+		if targetPath == "~" {
+			targetPath = home
+		} else if strings.HasPrefix(targetPath, "~/") {
+			targetPath = filepath.Join(home, targetPath[2:])
+		}
+	}
+
+	// Expand environment variables
+	targetPath = os.ExpandEnv(targetPath)
+
+	// Check if directory exists
+	if _, err := os.Stat(targetPath); os.IsNotExist(err) {
+		return m, func() tea.Msg {
+			return actions.ErrorMessage{Err: fmt.Errorf("directory does not exist: %s", targetPath)}
+		}
+	}
+
+	// If all validation passes, change to the directory
+	return m, loadDirectoryCmd(targetPath, optional.NewEmpty[string]())
 }
 
 // handleBashExecution processes bash execution with environment setup
@@ -731,26 +742,14 @@ func (m Model) renderFooter() string {
 // ============================================================================
 
 // loadDirectoryCmd loads directory contents
-func loadDirectoryCmd(path string) tea.Cmd {
+func loadDirectoryCmd(path string, focusPath optional.Optional[string]) tea.Cmd {
 	return func() tea.Msg {
 		entries, err := loadDirectory(path)
 		if err != nil {
 			return actions.ErrorMessage{Err: err}
 		}
 
-		return directoryLoadedMsg{path: path, entries: entries}
-	}
-}
-
-// loadDirectoryWithFocusCmd loads directory contents and focuses on a specific path
-func loadDirectoryWithFocusCmd(dirPath, focusPath string) tea.Cmd {
-	return func() tea.Msg {
-		entries, err := loadDirectory(dirPath)
-		if err != nil {
-			return actions.ErrorMessage{Err: err}
-		}
-
-		return directoryLoadedWithFocusMsg{path: dirPath, entries: entries, focusPath: focusPath}
+		return directoryLoadedMsg{path: path, entries: entries, focusPath: focusPath}
 	}
 }
 
@@ -778,8 +777,8 @@ func loadDirectory(path string) ([]fs.IEntry, error) {
 	return entries, nil
 }
 
-// parseShellCommand parses a shell command line, handling quoted strings properly
-func parseShellCommand(content string) (string, []string) {
+// parseCommand parses a shell command line, handling quoted strings properly
+func parseCommand(content string) (string, []string) {
 	content = strings.TrimSpace(content)
 	if content == "" {
 		return "", nil

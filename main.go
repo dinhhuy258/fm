@@ -54,7 +54,7 @@ func main() {
 	// Start the pipe watcher (for external commands)
 	pipe.StartWatcher(func(message string) {
 		// Send external messages to the TUI
-		program.Send(tui.ExternalMessage{Content: message})
+		program.Send(tui.PipeMessage{Command: message})
 	})
 
 	// Run the program
