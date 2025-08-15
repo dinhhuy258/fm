@@ -2,6 +2,9 @@ package actions
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 
@@ -16,13 +19,6 @@ type ActionHandler struct {
 	actionMap map[string]ActionHandlerFunc
 }
 
-// wrapSimple creates a wrapper function for handlers that only need the message
-func (ah *ActionHandler) wrapSimple(handler func(*config.MessageConfig) tea.Cmd) ActionHandlerFunc {
-	return func(message *config.MessageConfig, currentPath string, inputBuffer string) tea.Cmd {
-		return handler(message)
-	}
-}
-
 // NewActionHandler creates a new action handler
 func NewActionHandler() *ActionHandler {
 	ah := &ActionHandler{}
@@ -35,57 +31,216 @@ func NewActionHandler() *ActionHandler {
 func (ah *ActionHandler) initActionMap() {
 	ah.actionMap = map[string]ActionHandlerFunc{
 		// Core messages
-		"SwitchMode": ah.wrapSimple(ah.executeSwitchMode),
-		"Quit":       ah.wrapSimple(ah.executeQuit),
-		"Null":       ah.executeNull,
+		"SwitchMode": func(message *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return ModeChangedMessage{Mode: message.Args[0]}
+			}
+		},
+		"Quit": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return tea.Quit
+		},
+		"Null": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return nil
+		},
 
 		// Navigation messages
-		"ChangeDirectory": ah.wrapSimple(ah.executeChangeDirectory),
-		"FocusPath":       ah.wrapSimple(ah.executeFocusPath),
-		"FocusByIndex":    ah.wrapSimple(ah.executeFocusByIndex),
-		"FocusNext":       ah.wrapSimple(ah.executeFocusNext),
-		"FocusPrevious":   ah.wrapSimple(ah.executeFocusPrevious),
-		"FocusFirst":      ah.wrapSimple(ah.executeFocusFirst),
-		"FocusLast":       ah.wrapSimple(ah.executeFocusLast),
-		"Enter":           ah.wrapSimple(ah.executeEnter),
-		"Back":            ah.wrapSimple(ah.executeBack),
+		"ChangeDirectory": func(message *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				if len(message.Args) == 0 {
+					return ErrorMessage{Err: fmt.Errorf("ChangeDirectory requires a path argument")}
+				}
+
+				targetPath := message.Args[0]
+
+				if strings.HasPrefix(targetPath, "~") {
+					home, err := os.UserHomeDir()
+					if err != nil {
+						return ErrorMessage{Err: fmt.Errorf("failed to get home directory: %w", err)}
+					}
+					if targetPath == "~" {
+						targetPath = home
+					} else if strings.HasPrefix(targetPath, "~/") {
+						targetPath = filepath.Join(home, targetPath[2:])
+					}
+				}
+
+				targetPath = os.ExpandEnv(targetPath)
+
+				if _, err := os.Stat(targetPath); os.IsNotExist(err) {
+					return ErrorMessage{Err: fmt.Errorf("directory does not exist: %s", targetPath)}
+				}
+
+				return NavigationMessage{Action: NavigationActionChangeDirectory, Path: targetPath}
+			}
+		},
+		"FocusPath": func(message *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				if len(message.Args) == 0 {
+					return ErrorMessage{Err: fmt.Errorf("FocusPath requires a path argument")}
+				}
+
+				return FocusPathMessage{Path: message.Args[0]}
+			}
+		},
+		"FocusByIndex": func(message *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				if len(message.Args) == 0 {
+					return ErrorMessage{Err: fmt.Errorf("FocusByIndex requires an index argument")}
+				}
+
+				return FocusByIndexMessage{IndexExpression: message.Args[0]}
+			}
+		},
+		"FocusNext": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return NavigationMessage{Action: NavigationActionNext}
+			}
+		},
+		"FocusPrevious": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return NavigationMessage{Action: NavigationActionPrevious}
+			}
+		},
+		"FocusFirst": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return NavigationMessage{Action: NavigationActionFirst}
+			}
+		},
+		"FocusLast": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return NavigationMessage{Action: NavigationActionLast}
+			}
+		},
+		"Enter": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return NavigationMessage{Action: NavigationActionEnter}
+			}
+		},
+		"Back": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return NavigationMessage{Action: NavigationActionBack}
+			}
+		},
 
 		// Selection messages
-		"ToggleSelection":       ah.wrapSimple(ah.executeToggleSelection),
-		"ClearSelection":        ah.wrapSimple(ah.executeClearSelection),
-		"SelectAll":             ah.wrapSimple(ah.executeSelectAll),
-		"ToggleSelectionByPath": ah.wrapSimple(ah.executeToggleSelectionByPath),
+		"ToggleSelection": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return SelectionMessage{Action: SelectionActionToggle}
+			}
+		},
+		"ClearSelection": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return SelectionMessage{Action: SelectionActionClear}
+			}
+		},
+		"SelectAll": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return SelectionMessage{Action: SelectionActionAll}
+			}
+		},
+		"ToggleSelectionByPath": func(message *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				if len(message.Args) == 0 {
+					return ErrorMessage{Err: fmt.Errorf("ToggleSelectionByPath requires a path argument")}
+				}
+
+				return ToggleSelectionByPathMessage{Path: message.Args[0]}
+			}
+		},
 
 		// Sorting messages
-		"SortByName":         ah.wrapSimple(ah.executeSortByName),
-		"SortBySize":         ah.wrapSimple(ah.executeSortBySize),
-		"SortByDateModified": ah.wrapSimple(ah.executeSortByDateModified),
-		"SortByExtension":    ah.wrapSimple(ah.executeSortByExtension),
-		"SortByDirFirst":     ah.wrapSimple(ah.executeSortByDirFirst),
-		"ReverseSort":        ah.wrapSimple(ah.executeReverseSort),
+		"SortByName": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return SortingMessage{SortType: SortTypeName}
+			}
+		},
+		"SortBySize": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return SortingMessage{SortType: SortTypeSize}
+			}
+		},
+		"SortByDateModified": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return SortingMessage{SortType: SortTypeDate}
+			}
+		},
+		"SortByExtension": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return SortingMessage{SortType: SortTypeExtension}
+			}
+		},
+		"SortByDirFirst": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return SortingMessage{SortType: SortTypeDirFirst}
+			}
+		},
+		"ReverseSort": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return SortingMessage{SortType: SortTypeReverse}
+			}
+		},
 
 		// Bash execution
-		"BashExec":         ah.wrapSimple(ah.executeBashExec),
-		"BashExecSilently": ah.wrapSimple(ah.executeBashExecSilently),
+		"BashExec": func(message *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return BashExecMessage{Script: message.Args[0]}
+			}
+		},
+		"BashExecSilently": func(message *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return BashExecSilentlyMessage{Script: message.Args[0]}
+			}
+		},
 
 		// Input and logging
-		"SetInputBuffer":           ah.wrapSimple(ah.executeSetInputBuffer),
-		"UpdateInputBufferFromKey": ah.wrapSimple(ah.executeUpdateInputBufferFromKey),
-		"LogSuccess":               ah.wrapSimple(ah.executeLogSuccess),
-		"LogError":                 ah.wrapSimple(ah.executeLogError),
-		"LogInfo":                  ah.wrapSimple(ah.executeLogInfo),
-		"LogWarning":               ah.wrapSimple(ah.executeLogWarning),
+		"SetInputBuffer": func(message *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				value := ""
+				if len(message.Args) > 0 {
+					value = message.Args[0]
+				}
+
+				return SetInputBufferMessage{Value: value}
+			}
+		},
+		"UpdateInputBufferFromKey": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return UpdateInputBufferFromKeyMessage{}
+			}
+		},
+		"LogSuccess": func(message *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return LogMessage{Level: LogLevelSuccess, Message: message.Args[0]}
+			}
+		},
+		"LogError": func(message *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return LogMessage{Level: LogLevelError, Message: message.Args[0]}
+			}
+		},
+		"LogInfo": func(message *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return LogMessage{Level: LogLevelInfo, Message: message.Args[0]}
+			}
+		},
+		"LogWarning": func(message *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return LogMessage{Level: LogLevelWarning, Message: message.Args[0]}
+			}
+		},
 
 		// UI control
-		"ToggleHidden": ah.wrapSimple(ah.executeToggleHidden),
-		"Refresh":      ah.wrapSimple(ah.executeRefresh),
+		"ToggleHidden": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return UIMessage{Action: UIActionToggleHidden}
+			}
+		},
+		"Refresh": func(_ *config.MessageConfig, _ string, _ string) tea.Cmd {
+			return func() tea.Msg {
+				return UIMessage{Action: UIActionRefresh}
+			}
+		},
 	}
-}
-
-// executeNull handles null operations
-func (ah *ActionHandler) executeNull(message *config.MessageConfig, currentPath string, inputBuffer string) tea.Cmd {
-	// Null operation - do nothing
-	return nil
 }
 
 // ExecuteMessages executes a list of messages from config
