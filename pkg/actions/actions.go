@@ -28,10 +28,9 @@ func (ah *ActionHandler) wrapSimple(handler func(*config.MessageConfig) tea.Cmd)
 // wrapBashExec creates a wrapper function for bash execution with specific silent flag
 func (ah *ActionHandler) wrapBashExec(silent bool) ActionHandlerFunc {
 	return func(message *config.MessageConfig, currentPath string, inputBuffer string) tea.Cmd {
-		return ah.executeBashExec(message, currentPath, inputBuffer, silent)
+		return ah.executeBashExec(message, silent)
 	}
 }
-
 
 // NewActionHandler creates a new action handler
 func NewActionHandler(pipe *pipe.Pipe) *ActionHandler {

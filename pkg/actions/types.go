@@ -127,18 +127,12 @@ type ToggleSelectionByPathMessage struct {
 	Path string
 }
 
-// WriteSelectionsMessage requests writing selections to pipe before bash execution
-type WriteSelectionsMessage struct {
-	Script        string
-	CurrentPath   string
-	InputBuffer   string
-	Silent        bool
-	SelectionPath string
+// BashExecMessage triggers bash command execution
+type BashExecMessage struct {
+	Script string
 }
 
-// InteractiveBashMessage handles interactive bash execution with TUI suspension
-type InteractiveBashMessage struct {
-	Script      string
-	Environment []string
-	WorkingDir  string
+// BashExecSilentlyMessage triggers bash command execution silently
+type BashExecSilentlyMessage struct {
+	Script string
 }

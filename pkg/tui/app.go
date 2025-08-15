@@ -242,10 +242,10 @@ func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleFocusByIndexMessage(msg)
 	case actions.ToggleSelectionByPathMessage:
 		return m.handleToggleSelectionByPathMessage(msg)
-	case actions.WriteSelectionsMessage:
-		return m.handleWriteSelectionsMessage(msg)
-	case actions.InteractiveBashMessage:
-		return m.handleInteractiveBashMessage(msg)
+	case actions.BashExecMessage:
+		return m.handleBashExecMessage(msg)
+	case actions.BashExecSilentlyMessage:
+		return m.handleBashExecSilentlyMessage(msg)
 	case AutoClearMessage:
 		m.ClearNotification()
 	case InputCompletedMessage:
@@ -470,50 +470,158 @@ func (m Model) handleToggleSelectionByPathMessage(msg actions.ToggleSelectionByP
 	return m, nil
 }
 
-// handleWriteSelectionsMessage processes selection writing and bash execution
-func (m Model) handleWriteSelectionsMessage(msg actions.WriteSelectionsMessage) (tea.Model, tea.Cmd) {
-	// Get current selections and focus index from explorer model
+// handleBashExecMessage executes bash commands
+func (m Model) handleBashExecMessage(msg actions.BashExecMessage) (tea.Model, tea.Cmd) {
+	return m.handleBashExecution(msg.Script, false)
+}
+
+// handleBashExecSilentlyMessage executes bash commands silently
+func (m Model) handleBashExecSilentlyMessage(msg actions.BashExecSilentlyMessage) (tea.Model, tea.Cmd) {
+	return m.handleBashExecution(msg.Script, true)
+}
+
+// handleBashExecution processes bash execution with environment setup
+func (m Model) handleBashExecution(script string, silent bool) (tea.Model, tea.Cmd) {
 	selectedEntries := m.explorerModel.GetSelectedEntries()
 	focusIndex := m.explorerModel.GetFocus()
 
-	// Get the focused entry's path
-	focusPath := msg.CurrentPath // Default to current directory
+	focusPath := m.currentPath
 	if focusedEntry := m.explorerModel.GetFocusedEntry(); focusedEntry != nil {
 		focusPath = focusedEntry.GetPath()
 	}
 
-	// Convert selected entries to paths
 	selections := make([]string, len(selectedEntries))
 	for i, entry := range selectedEntries {
 		selections[i] = entry.GetPath()
 	}
 
-	// Execute bash with proper environment
-	return m, m.actionHandler.ExecuteBashWithEnv(
-		msg.Script,
-		msg.CurrentPath,
-		focusPath,
-		msg.InputBuffer,
-		msg.Silent,
-		selections,
-		focusIndex,
-	)
+	env := os.Environ()
+	env = append(env, fmt.Sprintf("FM_FOCUS_PATH=%s", focusPath))
+	env = append(env, fmt.Sprintf("FM_PWD=%s", m.currentPath))
+	env = append(env, fmt.Sprintf("FM_FOCUS_IDX=%d", focusIndex))
+	env = append(env, fmt.Sprintf("FM_INPUT_BUFFER=%s", m.GetInputBuffer()))
+
+	if m.pipe != nil {
+		if len(selections) > 0 {
+			selectionPath := m.pipe.GetSelectionPath()
+			if err := writeSelectionsToFile(selectionPath, selections); err != nil {
+				return m, func() tea.Msg {
+					return actions.ErrorMessage{Err: fmt.Errorf("failed to write selections to pipe: %w", err)}
+				}
+			}
+		}
+
+		env = append(env, fmt.Sprintf("FM_PIPE_MSG_IN=%s", m.pipe.GetMessageInPath()))
+		env = append(env, fmt.Sprintf("FM_PIPE_SELECTION=%s", m.pipe.GetSelectionPath()))
+		env = append(env, fmt.Sprintf("FM_SESSION_PATH=%s", m.pipe.GetSessionPath()))
+	}
+
+	cmd := exec.Command("bash", "-c", script)
+	cmd.Env = env
+	cmd.Dir = m.currentPath
+
+	if silent {
+		if err := cmd.Start(); err != nil {
+			return m, func() tea.Msg {
+				return actions.ErrorMessage{Err: fmt.Errorf("failed to start bash command: %w", err)}
+			}
+		}
+
+		go func() { _ = cmd.Wait() }()
+
+		return m, nil
+	}
+
+	if isInteractiveCommand(script) {
+		return m, m.execInteractiveBash(script, env, m.currentPath)
+	}
+
+	return m, func() tea.Msg {
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return actions.ErrorMessage{Err: fmt.Errorf("bash command failed: %w", err)}
+		}
+
+		return actions.BashOutputMessage{Output: string(output), Silent: false}
+	}
 }
 
-// handleInteractiveBashMessage processes interactive bash execution with TUI suspension
-func (m Model) handleInteractiveBashMessage(msg actions.InteractiveBashMessage) (tea.Model, tea.Cmd) {
-	return m, tea.ExecProcess(&exec.Cmd{
+// execInteractiveBash runs interactive bash commands with TUI suspension
+func (m Model) execInteractiveBash(script string, env []string, dir string) tea.Cmd {
+	return tea.ExecProcess(&exec.Cmd{
 		Path: "/bin/bash",
-		Args: []string{"bash", "-c", "clear && " + msg.Script},
-		Env:  msg.Environment,
-		Dir:  msg.WorkingDir,
+		Args: []string{"bash", "-c", "clear && " + script},
+		Env:  env,
+		Dir:  dir,
 	}, func(err error) tea.Msg {
 		if err != nil {
 			return actions.ErrorMessage{Err: fmt.Errorf("interactive bash command failed: %w", err)}
 		}
-		// After interactive command completes, refresh the directory
-		return loadDirectoryCmd(m.currentPath)()
+
+		return loadDirectoryCmd(dir)()
 	})
+}
+
+// writeSelectionsToFile writes selected file paths to the selection pipe file
+func writeSelectionsToFile(path string, selections []string) error {
+	const perm = 0600
+
+	if len(selections) == 0 {
+		return os.WriteFile(path, []byte(""), perm)
+	}
+
+	content := strings.Join(selections, "\n") + "\n"
+
+	return os.WriteFile(path, []byte(content), perm)
+}
+
+// isInteractiveCommand determines if a command is likely to be interactive
+func isInteractiveCommand(script string) bool {
+	interactiveCommands := []string{
+		"vim", "nvim", "nano", "emacs", "vi",
+		"less", "more", "man", "pager",
+		"sudo", "ssh", "ftp", "telnet",
+		"top", "htop", "watch",
+		"git commit", "git add -p", "git rebase -i",
+		"fzf", "sk", "selecta",
+	}
+
+	scriptLower := strings.ToLower(strings.TrimSpace(script))
+
+	for _, cmd := range interactiveCommands {
+		if strings.HasPrefix(scriptLower, cmd+" ") || scriptLower == cmd {
+			if cmd == "git commit" && (strings.Contains(scriptLower, " -m ") || strings.Contains(scriptLower, " --message")) {
+				continue
+			}
+
+			return true
+		}
+	}
+
+	interactivePatterns := []string{
+		"python -i", "python3 -i",
+		"bash -i", "sh -i",
+		"read ", "select ",
+		"$EDITOR", "${EDITOR}",
+	}
+
+	for _, pattern := range interactivePatterns {
+		if strings.Contains(scriptLower, pattern) {
+			return true
+		}
+	}
+
+	if strings.Contains(script, "|") {
+		parts := strings.Split(script, "|")
+		for _, part := range parts {
+			part = strings.TrimSpace(part)
+			if isInteractiveCommand(part) {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 // ============================================================================
