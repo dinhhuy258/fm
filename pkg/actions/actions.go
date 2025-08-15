@@ -6,7 +6,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/dinhhuy258/fm/pkg/config"
-	"github.com/dinhhuy258/fm/pkg/pipe"
 )
 
 // ActionHandlerFunc defines the signature for action handlers
@@ -14,7 +13,6 @@ type ActionHandlerFunc func(message *config.MessageConfig, currentPath string, i
 
 // ActionHandler handles execution of config messages
 type ActionHandler struct {
-	pipe      *pipe.Pipe
 	actionMap map[string]ActionHandlerFunc
 }
 
@@ -25,18 +23,9 @@ func (ah *ActionHandler) wrapSimple(handler func(*config.MessageConfig) tea.Cmd)
 	}
 }
 
-// wrapBashExec creates a wrapper function for bash execution with specific silent flag
-func (ah *ActionHandler) wrapBashExec(silent bool) ActionHandlerFunc {
-	return func(message *config.MessageConfig, currentPath string, inputBuffer string) tea.Cmd {
-		return ah.executeBashExec(message, silent)
-	}
-}
-
 // NewActionHandler creates a new action handler
-func NewActionHandler(pipe *pipe.Pipe) *ActionHandler {
-	ah := &ActionHandler{
-		pipe: pipe,
-	}
+func NewActionHandler() *ActionHandler {
+	ah := &ActionHandler{}
 	ah.initActionMap()
 
 	return ah
@@ -76,8 +65,8 @@ func (ah *ActionHandler) initActionMap() {
 		"ReverseSort":        ah.wrapSimple(ah.executeReverseSort),
 
 		// Bash execution
-		"BashExec":         ah.wrapBashExec(false),
-		"BashExecSilently": ah.wrapBashExec(true),
+		"BashExec":         ah.wrapSimple(ah.executeBashExec),
+		"BashExecSilently": ah.wrapSimple(ah.executeBashExecSilently),
 
 		// Input and logging
 		"SetInputBuffer":           ah.wrapSimple(ah.executeSetInputBuffer),
@@ -90,8 +79,6 @@ func (ah *ActionHandler) initActionMap() {
 		// UI control
 		"ToggleHidden": ah.wrapSimple(ah.executeToggleHidden),
 		"Refresh":      ah.wrapSimple(ah.executeRefresh),
-		"ClearLog":     ah.wrapSimple(ah.executeClearLog),
-		"ToggleLog":    ah.wrapSimple(ah.executeToggleLog),
 	}
 }
 
@@ -118,7 +105,7 @@ func (ah *ActionHandler) ExecuteMessages(
 	return cmds
 }
 
-// ExecuteMessage executes a single message (public method for pipe messages)
+// ExecuteMessage executes a single message
 func (ah *ActionHandler) ExecuteMessage(
 	message *config.MessageConfig,
 	currentPath string,

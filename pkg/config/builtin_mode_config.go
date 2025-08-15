@@ -13,22 +13,6 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
-			"C": {
-				Help: "clear log",
-				Messages: []*MessageConfig{
-					{
-						Name: "ClearLog",
-					},
-				},
-			},
-			"L": {
-				Help: "toggle log",
-				Messages: []*MessageConfig{
-					{
-						Name: "ToggleLog",
-					},
-				},
-			},
 			"j": {
 				Help: "down",
 				Messages: []*MessageConfig{

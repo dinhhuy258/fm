@@ -65,7 +65,7 @@ func NewModel(pipe *pipe.Pipe) Model {
 	modeManager := NewModeManager()
 	keyManager := NewKeyManager(modeManager)
 
-	actionHandler := actions.NewActionHandler(pipe)
+	actionHandler := actions.NewActionHandler()
 
 	return Model{
 		currentPath:       "",
@@ -188,12 +188,12 @@ func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// Handle new message types from MessageExecutor
 	case actions.ModeChangedMessage:
 		// Actually switch the mode in the mode manager
-		err := m.modeManager.SwitchToMode(msg.NewMode)
+		err := m.modeManager.SwitchToMode(msg.Mode)
 		if err != nil {
 			cmds = append(cmds, m.ShowError(fmt.Sprintf("Failed to switch mode: %v", err)))
 		} else {
 			// Hide input when switching to default mode
-			if msg.NewMode == "default" {
+			if msg.Mode == "default" {
 				m.HideInput()
 				m.inputModel.ClearBuffer() // Clear input buffer when leaving input modes
 			}
@@ -377,12 +377,6 @@ func (m Model) handleUIMessage(msg actions.UIMessage) (tea.Model, tea.Cmd) {
 	case actions.UIActionRefresh:
 		// Refresh current directory
 		return m, loadDirectoryCmd(m.currentPath)
-	case actions.UIActionClearLog:
-		// No log model implemented yet; ignore
-		return m, nil
-	case actions.UIActionToggleLog:
-		// No log view implemented yet; ignore
-		return m, nil
 	}
 
 	return m, nil
@@ -532,33 +526,17 @@ func (m Model) handleBashExecution(script string, silent bool) (tea.Model, tea.C
 		return m, nil
 	}
 
-	if isInteractiveCommand(script) {
-		return m, m.execInteractiveBash(script, env, m.currentPath)
-	}
-
-	return m, func() tea.Msg {
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			return actions.ErrorMessage{Err: fmt.Errorf("bash command failed: %w", err)}
-		}
-
-		return actions.BashOutputMessage{Output: string(output), Silent: false}
-	}
-}
-
-// execInteractiveBash runs interactive bash commands with TUI suspension
-func (m Model) execInteractiveBash(script string, env []string, dir string) tea.Cmd {
-	return tea.ExecProcess(&exec.Cmd{
+	return m, tea.ExecProcess(&exec.Cmd{
 		Path: "/bin/bash",
 		Args: []string{"bash", "-c", "clear && " + script},
 		Env:  env,
-		Dir:  dir,
+		Dir:  m.currentPath,
 	}, func(err error) tea.Msg {
 		if err != nil {
-			return actions.ErrorMessage{Err: fmt.Errorf("interactive bash command failed: %w", err)}
+			return actions.ErrorMessage{Err: fmt.Errorf("failed to execute bash %v", err)}
 		}
 
-		return loadDirectoryCmd(dir)()
+		return nil
 	})
 }
 
@@ -573,55 +551,6 @@ func writeSelectionsToFile(path string, selections []string) error {
 	content := strings.Join(selections, "\n") + "\n"
 
 	return os.WriteFile(path, []byte(content), perm)
-}
-
-// isInteractiveCommand determines if a command is likely to be interactive
-func isInteractiveCommand(script string) bool {
-	interactiveCommands := []string{
-		"vim", "nvim", "nano", "emacs", "vi",
-		"less", "more", "man", "pager",
-		"sudo", "ssh", "ftp", "telnet",
-		"top", "htop", "watch",
-		"git commit", "git add -p", "git rebase -i",
-		"fzf", "sk", "selecta",
-	}
-
-	scriptLower := strings.ToLower(strings.TrimSpace(script))
-
-	for _, cmd := range interactiveCommands {
-		if strings.HasPrefix(scriptLower, cmd+" ") || scriptLower == cmd {
-			if cmd == "git commit" && (strings.Contains(scriptLower, " -m ") || strings.Contains(scriptLower, " --message")) {
-				continue
-			}
-
-			return true
-		}
-	}
-
-	interactivePatterns := []string{
-		"python -i", "python3 -i",
-		"bash -i", "sh -i",
-		"read ", "select ",
-		"$EDITOR", "${EDITOR}",
-	}
-
-	for _, pattern := range interactivePatterns {
-		if strings.Contains(scriptLower, pattern) {
-			return true
-		}
-	}
-
-	if strings.Contains(script, "|") {
-		parts := strings.Split(script, "|")
-		for _, part := range parts {
-			part = strings.TrimSpace(part)
-			if isInteractiveCommand(part) {
-				return true
-			}
-		}
-	}
-
-	return false
 }
 
 // ============================================================================

@@ -4,7 +4,7 @@ package actions
 
 // ModeChangedMessage indicates a mode change occurred
 type ModeChangedMessage struct {
-	NewMode string
+	Mode string
 }
 
 // FocusPathMessage requests focusing on a specific path
@@ -96,8 +96,6 @@ type UIAction string
 const (
 	UIActionToggleHidden UIAction = "toggle_hidden"
 	UIActionRefresh      UIAction = "refresh"
-	UIActionClearLog     UIAction = "clear_log"
-	UIActionToggleLog    UIAction = "toggle_log"
 )
 
 // UIMessage handles UI control actions

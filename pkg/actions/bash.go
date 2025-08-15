@@ -9,14 +9,25 @@ import (
 // executeBashExec handles bash command execution
 func (ah *ActionHandler) executeBashExec(
 	message *config.MessageConfig,
-	silent bool,
 ) tea.Cmd {
 	return func() tea.Msg {
 		script := message.Args[0]
-		if silent {
-			return BashExecSilentlyMessage{Script: script}
-		}
 
-		return BashExecMessage{Script: script}
+		return BashExecMessage{
+			Script: script,
+		}
+	}
+}
+
+// executeBashExec handles bash command execution
+func (ah *ActionHandler) executeBashExecSilently(
+	message *config.MessageConfig,
+) tea.Cmd {
+	return func() tea.Msg {
+		script := message.Args[0]
+
+		return BashExecSilentlyMessage{
+			Script: script,
+		}
 	}
 }
