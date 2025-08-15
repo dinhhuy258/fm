@@ -19,13 +19,8 @@ func (ah *ActionHandler) executeBashExec(
 	silent bool,
 ) tea.Cmd {
 	return func() tea.Msg {
-		if len(message.Args) == 0 {
-			return ErrorMessage{Err: fmt.Errorf("BashExec requires a command argument")}
-		}
-
 		script := message.Args[0]
 
-		// Request selections and focus index from the TUI, then execute bash
 		return WriteSelectionsMessage{
 			Script:        script,
 			CurrentPath:   currentPath,

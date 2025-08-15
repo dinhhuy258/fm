@@ -23,9 +23,24 @@ type BashOutputMessage struct {
 	Silent bool
 }
 
+// LogLevel represents different log levels
+type LogLevel string
+
+const (
+	LogLevelInfo    LogLevel = "info"
+	LogLevelWarning LogLevel = "warning"
+	LogLevelError   LogLevel = "error"
+	LogLevelSuccess LogLevel = "success"
+)
+
+// String returns the string representation of the log level
+func (l LogLevel) String() string {
+	return string(l)
+}
+
 // LogMessage contains a log message
 type LogMessage struct {
-	Level   string // "info", "warning", "error", "success"
+	Level   LogLevel
 	Message string
 }
 

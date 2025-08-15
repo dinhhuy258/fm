@@ -1,8 +1,6 @@
 package actions
 
 import (
-	"fmt"
-
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/dinhhuy258/fm/pkg/config"
@@ -29,18 +27,41 @@ func (ah *ActionHandler) executeUpdateInputBufferFromKey(message *config.Message
 	}
 }
 
-// executeLog handles logging messages
-func (ah *ActionHandler) executeLog(message *config.MessageConfig, level string) tea.Cmd {
+// executeLogSuccess handles success logging messages
+func (ah *ActionHandler) executeLogSuccess(message *config.MessageConfig) tea.Cmd {
 	return func() tea.Msg {
-		if len(message.Args) == 0 {
-			return LogMessage{
-				Level:   level,
-				Message: fmt.Sprintf("Empty %s message", level),
-			}
-		}
-
 		return LogMessage{
-			Level:   level,
+			Level:   LogLevelSuccess,
+			Message: message.Args[0],
+		}
+	}
+}
+
+// executeLogError handles error logging messages
+func (ah *ActionHandler) executeLogError(message *config.MessageConfig) tea.Cmd {
+	return func() tea.Msg {
+		return LogMessage{
+			Level:   LogLevelError,
+			Message: message.Args[0],
+		}
+	}
+}
+
+// executeLogInfo handles info logging messages
+func (ah *ActionHandler) executeLogInfo(message *config.MessageConfig) tea.Cmd {
+	return func() tea.Msg {
+		return LogMessage{
+			Level:   LogLevelInfo,
+			Message: message.Args[0],
+		}
+	}
+}
+
+// executeLogWarning handles warning logging messages
+func (ah *ActionHandler) executeLogWarning(message *config.MessageConfig) tea.Cmd {
+	return func() tea.Msg {
+		return LogMessage{
+			Level:   LogLevelWarning,
 			Message: message.Args[0],
 		}
 	}

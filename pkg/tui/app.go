@@ -46,10 +46,6 @@ type directoryLoadedWithFocusMsg struct {
 	focusPath string
 }
 
-type errorMsg struct {
-	err error
-}
-
 // ExternalMessage represents a message from external sources (pipes, etc.)
 type ExternalMessage struct {
 	Content string
@@ -182,8 +178,8 @@ func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Focus on the specific path
 		m.explorerModel.FocusPath(msg.focusPath)
 
-	case errorMsg:
-		cmds = append(cmds, m.ShowError(msg.err.Error()))
+	case actions.ErrorMessage:
+		cmds = append(cmds, m.ShowError(msg.Err.Error()))
 
 	case ExternalMessage:
 		// Parse and execute the pipe message (remove debug logging)
@@ -702,7 +698,7 @@ func loadDirectoryCmd(path string) tea.Cmd {
 	return func() tea.Msg {
 		entries, err := loadDirectory(path)
 		if err != nil {
-			return errorMsg{err: err}
+			return actions.ErrorMessage{Err: err}
 		}
 
 		return directoryLoadedMsg{path: path, entries: entries}
@@ -714,7 +710,7 @@ func loadDirectoryWithFocusCmd(dirPath, focusPath string) tea.Cmd {
 	return func() tea.Msg {
 		entries, err := loadDirectory(dirPath)
 		if err != nil {
-			return errorMsg{err: err}
+			return actions.ErrorMessage{Err: err}
 		}
 
 		return directoryLoadedWithFocusMsg{path: dirPath, entries: entries, focusPath: focusPath}

@@ -9,24 +9,109 @@ import (
 	"github.com/dinhhuy258/fm/pkg/pipe"
 )
 
+// ActionHandlerFunc defines the signature for action handlers
+type ActionHandlerFunc func(message *config.MessageConfig, currentPath string, inputBuffer string) tea.Cmd
+
 // ActionHandler handles execution of config messages
 type ActionHandler struct {
-	pipe *pipe.Pipe
+	pipe      *pipe.Pipe
+	actionMap map[string]ActionHandlerFunc
 }
 
-// NewActionHandler creates a new action handler
-func NewActionHandler(pipe *pipe.Pipe) *ActionHandler {
-	return &ActionHandler{
-		pipe: pipe,
+// wrapSimple creates a wrapper function for handlers that only need the message
+func (ah *ActionHandler) wrapSimple(handler func(*config.MessageConfig) tea.Cmd) ActionHandlerFunc {
+	return func(message *config.MessageConfig, currentPath string, inputBuffer string) tea.Cmd {
+		return handler(message)
 	}
 }
 
+// wrapBashExec creates a wrapper function for bash execution with specific silent flag
+func (ah *ActionHandler) wrapBashExec(silent bool) ActionHandlerFunc {
+	return func(message *config.MessageConfig, currentPath string, inputBuffer string) tea.Cmd {
+		return ah.executeBashExec(message, currentPath, inputBuffer, silent)
+	}
+}
+
+
+// NewActionHandler creates a new action handler
+func NewActionHandler(pipe *pipe.Pipe) *ActionHandler {
+	ah := &ActionHandler{
+		pipe: pipe,
+	}
+	ah.initActionMap()
+
+	return ah
+}
+
+// initActionMap initializes the action handler map
+func (ah *ActionHandler) initActionMap() {
+	ah.actionMap = map[string]ActionHandlerFunc{
+		// Core messages
+		"SwitchMode": ah.wrapSimple(ah.executeSwitchMode),
+		"Quit":       ah.wrapSimple(ah.executeQuit),
+		"Null":       ah.executeNull,
+
+		// Navigation messages
+		"ChangeDirectory": ah.wrapSimple(ah.executeChangeDirectory),
+		"FocusPath":       ah.wrapSimple(ah.executeFocusPath),
+		"FocusByIndex":    ah.wrapSimple(ah.executeFocusByIndex),
+		"FocusNext":       ah.wrapSimple(ah.executeFocusNext),
+		"FocusPrevious":   ah.wrapSimple(ah.executeFocusPrevious),
+		"FocusFirst":      ah.wrapSimple(ah.executeFocusFirst),
+		"FocusLast":       ah.wrapSimple(ah.executeFocusLast),
+		"Enter":           ah.wrapSimple(ah.executeEnter),
+		"Back":            ah.wrapSimple(ah.executeBack),
+
+		// Selection messages
+		"ToggleSelection":       ah.wrapSimple(ah.executeToggleSelection),
+		"ClearSelection":        ah.wrapSimple(ah.executeClearSelection),
+		"SelectAll":             ah.wrapSimple(ah.executeSelectAll),
+		"ToggleSelectionByPath": ah.wrapSimple(ah.executeToggleSelectionByPath),
+
+		// Sorting messages
+		"SortByName":         ah.wrapSimple(ah.executeSortByName),
+		"SortBySize":         ah.wrapSimple(ah.executeSortBySize),
+		"SortByDateModified": ah.wrapSimple(ah.executeSortByDateModified),
+		"SortByExtension":    ah.wrapSimple(ah.executeSortByExtension),
+		"SortByDirFirst":     ah.wrapSimple(ah.executeSortByDirFirst),
+		"ReverseSort":        ah.wrapSimple(ah.executeReverseSort),
+
+		// Bash execution
+		"BashExec":         ah.wrapBashExec(false),
+		"BashExecSilently": ah.wrapBashExec(true),
+
+		// Input and logging
+		"SetInputBuffer":           ah.wrapSimple(ah.executeSetInputBuffer),
+		"UpdateInputBufferFromKey": ah.wrapSimple(ah.executeUpdateInputBufferFromKey),
+		"LogSuccess":               ah.wrapSimple(ah.executeLogSuccess),
+		"LogError":                 ah.wrapSimple(ah.executeLogError),
+		"LogInfo":                  ah.wrapSimple(ah.executeLogInfo),
+		"LogWarning":               ah.wrapSimple(ah.executeLogWarning),
+
+		// UI control
+		"ToggleHidden": ah.wrapSimple(ah.executeToggleHidden),
+		"Refresh":      ah.wrapSimple(ah.executeRefresh),
+		"ClearLog":     ah.wrapSimple(ah.executeClearLog),
+		"ToggleLog":    ah.wrapSimple(ah.executeToggleLog),
+	}
+}
+
+// executeNull handles null operations
+func (ah *ActionHandler) executeNull(message *config.MessageConfig, currentPath string, inputBuffer string) tea.Cmd {
+	// Null operation - do nothing
+	return nil
+}
+
 // ExecuteMessages executes a list of messages from config
-func (ah *ActionHandler) ExecuteMessages(messages []*config.MessageConfig, currentPath string, inputBuffer string) []tea.Cmd {
+func (ah *ActionHandler) ExecuteMessages(
+	messages []*config.MessageConfig,
+	currentPath string,
+	inputBuffer string,
+) []tea.Cmd {
 	var cmds []tea.Cmd
 
 	for _, message := range messages {
-		if cmd := ah.executeMessage(message, currentPath, inputBuffer); cmd != nil {
+		if cmd := ah.ExecuteMessage(message, currentPath, inputBuffer); cmd != nil {
 			cmds = append(cmds, cmd)
 		}
 	}
@@ -35,103 +120,19 @@ func (ah *ActionHandler) ExecuteMessages(messages []*config.MessageConfig, curre
 }
 
 // ExecuteMessage executes a single message (public method for pipe messages)
-func (ah *ActionHandler) ExecuteMessage(message *config.MessageConfig, currentPath string, inputBuffer string) tea.Cmd {
-	return ah.executeMessage(message, currentPath, inputBuffer)
-}
+func (ah *ActionHandler) ExecuteMessage(
+	message *config.MessageConfig,
+	currentPath string,
+	inputBuffer string,
+) tea.Cmd {
+	if handler, exists := ah.actionMap[message.Name]; exists {
+		return handler(message, currentPath, inputBuffer)
+	}
 
-// executeMessage executes a single message and returns a tea.Cmd if needed
-func (ah *ActionHandler) executeMessage(message *config.MessageConfig, currentPath string, inputBuffer string) tea.Cmd {
-	switch message.Name {
-	// Core messages
-	case "SwitchMode":
-		return ah.executeSwitchMode(message)
-	case "Quit":
-		return ah.executeQuit(message)
-	case "Null":
-		// Null operation - do nothing
-		return nil
-
-	// Navigation messages
-	case "ChangeDirectory":
-		return ah.executeChangeDirectory(message)
-	case "FocusPath":
-		return ah.executeFocusPath(message)
-	case "FocusByIndex":
-		return ah.executeFocusByIndex(message)
-	case "FocusNext":
-		return ah.executeFocusNext(message)
-	case "FocusPrevious":
-		return ah.executeFocusPrevious(message)
-	case "FocusFirst":
-		return ah.executeFocusFirst(message)
-	case "FocusLast":
-		return ah.executeFocusLast(message)
-	case "Enter":
-		return ah.executeEnter(message)
-	case "Back":
-		return ah.executeBack(message)
-
-	// Selection messages
-	case "ToggleSelection":
-		return ah.executeToggleSelection(message)
-	case "ClearSelection":
-		return ah.executeClearSelection(message)
-	case "SelectAll":
-		return ah.executeSelectAll(message)
-	case "ToggleSelectionByPath":
-		return ah.executeToggleSelectionByPath(message)
-
-	// Sorting messages
-	case "SortByName":
-		return ah.executeSortByName(message)
-	case "SortBySize":
-		return ah.executeSortBySize(message)
-	case "SortByDateModified":
-		return ah.executeSortByDateModified(message)
-	case "SortByExtension":
-		return ah.executeSortByExtension(message)
-	case "SortByDirFirst":
-		return ah.executeSortByDirFirst(message)
-	case "ReverseSort":
-		return ah.executeReverseSort(message)
-
-	// Bash execution
-	case "BashExec":
-		return ah.executeBashExec(message, currentPath, inputBuffer, false)
-	case "BashExecSilently":
-		return ah.executeBashExec(message, currentPath, inputBuffer, true)
-
-	// Input and logging
-	case "SetInputBuffer":
-		return ah.executeSetInputBuffer(message)
-	case "UpdateInputBufferFromKey":
-		return ah.executeUpdateInputBufferFromKey(message)
-	case "LogSuccess":
-		return ah.executeLog(message, "success")
-	case "LogError":
-		return ah.executeLog(message, "error")
-	case "LogInfo":
-		return ah.executeLog(message, "info")
-	case "LogWarning":
-		return ah.executeLog(message, "warning")
-
-	// UI control
-	case "ToggleHidden":
-		return ah.executeToggleHidden(message)
-	case "Refresh":
-		return ah.executeRefresh(message)
-	case "ClearLog":
-		return ah.executeClearLog(message)
-	case "ToggleLog":
-		return ah.executeToggleLog(message)
-
-	default:
-		// Log unknown message types
-		return func() tea.Msg {
-			return LogMessage{
-				Level:   "warning",
-				Message: fmt.Sprintf("Unknown message type: %s", message.Name),
-			}
+	return func() tea.Msg {
+		return LogMessage{
+			Level:   LogLevelWarning,
+			Message: fmt.Sprintf("Unknown message type: %s", message.Name),
 		}
 	}
 }
