@@ -2,6 +2,7 @@ package actions
 
 import (
 	"fmt"
+	"strconv"
 
 	tea "github.com/charmbracelet/bubbletea"
 
@@ -53,7 +54,9 @@ func (ah *ActionHandler) initActionMap() {
 		},
 		"FocusByIndex": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
-				return FocusByIndexMessage{IndexExpression: message.Args[0]}
+				index, _ := strconv.Atoi(message.Args[0])
+
+				return FocusByIndexMessage{Index: index}
 			}
 		},
 		"FocusNext": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
@@ -200,7 +203,10 @@ func (ah *ActionHandler) initActionMap() {
 }
 
 // ExecuteMessages executes a list of messages from config sequentially
-func (ah *ActionHandler) ExecuteMessages(messages []*config.MessageConfig, originalKey tea.KeyMsg) tea.Cmd {
+func (ah *ActionHandler) ExecuteMessages(
+	messages []*config.MessageConfig,
+	originalKey tea.KeyMsg,
+) tea.Cmd {
 	var cmds []tea.Cmd
 
 	for _, message := range messages {
@@ -217,9 +223,12 @@ func (ah *ActionHandler) ExecuteMessages(messages []*config.MessageConfig, origi
 }
 
 // ExecuteMessage executes a single message
-func (ah *ActionHandler) ExecuteMessage(message *config.MessageConfig, originalKey tea.KeyMsg) tea.Cmd {
-	if handler, exists := ah.actionMap[message.Name]; exists {
-		return handler(message, originalKey)
+func (ah *ActionHandler) ExecuteMessage(
+	message *config.MessageConfig,
+	originalKey tea.KeyMsg,
+) tea.Cmd {
+	if action, exists := ah.actionMap[message.Name]; exists {
+		return action(message, originalKey)
 	}
 
 	return func() tea.Msg {

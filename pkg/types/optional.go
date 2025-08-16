@@ -5,13 +5,13 @@ type Optional[T any] struct {
 	value *T
 }
 
-// New creates an Optional with the given value.
-func New[T any](value T) Optional[T] {
+// NewOptional creates an Optional with the given value.
+func NewOptional[T any](value T) Optional[T] {
 	return Optional[T]{&value}
 }
 
-// NewEmpty creates an Optional with no value.
-func NewEmpty[T any]() Optional[T] {
+// NewEmptyOptional creates an Optional with no value.
+func NewEmptyOptional[T any]() Optional[T] {
 	return Optional[T]{}
 }
 

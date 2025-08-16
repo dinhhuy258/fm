@@ -23,8 +23,8 @@ func (km *KeyManager) ResolveKeyAction(msg tea.KeyMsg) *config.ActionConfig {
 	keyStr := msg.String()
 
 	currentMode := km.modeManager.GetCurrentMode()
-	modeConfig, err := km.modeManager.GetModeConfig(currentMode)
-	if err != nil {
+	modeConfig := km.modeManager.GetModeConfig(currentMode)
+	if modeConfig == nil {
 		return nil
 	}
 

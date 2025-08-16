@@ -90,21 +90,16 @@ func (m Model) handleOtherMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case PipeMessage:
 		return m.handlePipeMessage(msg.Command)
 	case actions.ModeChangedMessage:
-		err := m.modeManager.SwitchToMode(msg.Mode)
-		if err != nil {
-			return m, func() tea.Msg {
-				return errorMessage{
-					Message: fmt.Sprintf("Failed to switch mode: %v", err),
-				}
-			}
-		}
-
-		m.inputModel.Hide()
+		m.modeManager.SwitchToMode(msg.Mode)
+		// Notification is always shown by default
 		m.notificationModel.Show()
+		m.inputModel.Hide()
 
 		return m, nil
 	case AutoClearMessage:
 		m.notificationModel.ClearNotification()
+
+		return m, nil
 	case actions.LogMessage:
 		switch msg.Level {
 		case actions.LogLevelError:
@@ -209,22 +204,19 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 				return m, m.loadDirectoryCmd(entry.GetPath())
 			}
 		}
-	case actions.NavigationActionBack:
-		if m.currentPath != "" && m.currentPath != "/" {
-			parentPath := filepath.Dir(m.currentPath)
-			currentPath := m.currentPath
 
-			return m, tea.Sequence(
-				m.loadDirectoryCmd(parentPath),
-				func() tea.Msg {
-					return actions.FocusPathMessage{Path: currentPath}
-				},
-			)
-		}
+		return m, nil
+	case actions.NavigationActionBack:
+		parentPath := filepath.Dir(m.currentPath)
+
+		return m, tea.Sequence(
+			m.loadDirectoryCmd(parentPath),
+			func() tea.Msg {
+				return actions.FocusPathMessage{Path: m.currentPath}
+			},
+		)
 	case actions.NavigationActionChangeDirectory:
-		if msg.Path != "" {
-			return m, m.loadDirectoryCmd(msg.Path)
-		}
+		return m, m.loadDirectoryCmd(msg.Path)
 	}
 
 	return m, nil
@@ -234,17 +226,12 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 func (m Model) handleSelectionMessage(msg actions.SelectionMessage) (tea.Model, tea.Cmd) {
 	switch msg.Action {
 	case actions.SelectionActionToggle:
-		// Toggle selection of current item using direct method
 		m.explorerModel.ToggleSelection()
 	case actions.SelectionActionClear:
-		// Clear all selections
 		m.explorerModel.ClearSelections()
 	case actions.SelectionActionAll:
-		// Select all items
 		m.explorerModel.SelectAll()
 	}
-
-	// Selection count is automatically updated via GetStats() in renderHeader()
 
 	return m, nil
 }
@@ -253,13 +240,10 @@ func (m Model) handleSelectionMessage(msg actions.SelectionMessage) (tea.Model, 
 func (m Model) handleUIMessage(msg actions.UIMessage) (tea.Model, tea.Cmd) {
 	switch msg.Action {
 	case actions.UIActionToggleHidden:
-		// Toggle hidden file visibility
 		m.showHidden = !m.showHidden
-		// Toggle hidden files silently
 
 		return m, m.loadDirectoryCmd(m.currentPath) // Reload with new settings
 	case actions.UIActionRefresh:
-		// Refresh current directory
 		return m, m.loadDirectoryCmd(m.currentPath)
 	}
 
@@ -270,10 +254,8 @@ func (m Model) handleUIMessage(msg actions.UIMessage) (tea.Model, tea.Cmd) {
 func (m Model) handleSortingMessage(msg actions.SortingMessage) (tea.Model, tea.Cmd) {
 	switch msg.SortType {
 	case actions.SortTypeReverse:
-		// Toggle reverse sorting
 		m.reverse = !m.reverse
 	default:
-		// Direct assignment since action types now match fs types
 		m.sortType = types.SortType(msg.SortType)
 	}
 
@@ -283,25 +265,7 @@ func (m Model) handleSortingMessage(msg actions.SortingMessage) (tea.Model, tea.
 
 // handleFocusByIndexMessage processes focus by index actions
 func (m Model) handleFocusByIndexMessage(msg actions.FocusByIndexMessage) (tea.Model, tea.Cmd) {
-	// Parse index from expression
-	var index int
-	var err error
-
-	indexStr := msg.IndexExpression
-	if indexStr == "" {
-		// Invalid index expression - handle silently
-		return m, nil
-	}
-
-	// Handle simple numeric index
-	_, err = fmt.Sscanf(indexStr, "%d", &index)
-	if err != nil {
-		// Invalid index format - handle silently
-		return m, nil
-	}
-
-	// Update focus through explorer model (silently)
-	m.explorerModel.SetFocusByIndex(index)
+	m.explorerModel.SetFocusByIndex(msg.Index)
 
 	return m, nil
 }
@@ -310,12 +274,7 @@ func (m Model) handleFocusByIndexMessage(msg actions.FocusByIndexMessage) (tea.M
 func (m Model) handleToggleSelectionByPathMessage(
 	msg actions.ToggleSelectionByPathMessage,
 ) (tea.Model, tea.Cmd) {
-	path := msg.Path
-
-	// Toggle selection in explorer model (silently)
-	m.explorerModel.ToggleSelectionByPath(path)
-
-	// Selection count is automatically updated via GetStats() in renderHeader()
+	m.explorerModel.ToggleSelectionByPath(msg.Path)
 
 	return m, nil
 }
@@ -336,39 +295,7 @@ func (m Model) handleBashExecSilentlyMessage(
 func (m Model) handleChangeDirectoryMessage(
 	msg actions.ChangeDirectoryMessage,
 ) (tea.Model, tea.Cmd) {
-	targetPath := msg.Path
-
-	// Handle home directory expansion
-	if strings.HasPrefix(targetPath, "~") {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return m, func() tea.Msg {
-				return errorMessage{
-					Message: fmt.Sprintf("Failed to get home directory: %v", err),
-				}
-			}
-		}
-		if targetPath == "~" {
-			targetPath = home
-		} else if strings.HasPrefix(targetPath, "~/") {
-			targetPath = filepath.Join(home, targetPath[2:])
-		}
-	}
-
-	// Expand environment variables
-	targetPath = os.ExpandEnv(targetPath)
-
-	// Check if directory exists
-	if _, err := os.Stat(targetPath); os.IsNotExist(err) {
-		return m, func() tea.Msg {
-			return errorMessage{
-				Message: fmt.Sprintf("Directory does not exist: %s", targetPath),
-			}
-		}
-	}
-
-	// If all validation passes, change to the directory
-	return m, m.loadDirectoryCmd(targetPath)
+	return m, m.loadDirectoryCmd(msg.Path)
 }
 
 // handleBashExecution processes bash execution with environment setup
@@ -466,57 +393,72 @@ func (m Model) loadDirectoryCmd(path string) tea.Cmd {
 	}
 }
 
-// parseCommand parses a shell command line, handling quoted strings properly
+// parseCommand parses a shell command line, properly handling:
+// - Single quotes: preserve all characters literally (no variable expansion)
+// - Double quotes: preserve spaces but allow variable expansion
+// - Unquoted spaces: act as token separators
+// Returns the command name and its arguments as separate values
 func parseCommand(content string) (string, []string) {
+	const (
+		singleQuote = '\''
+		doubleQuote = '"'
+		space       = ' '
+		tab         = '\t'
+		newline     = '\n'
+	)
+
 	content = strings.TrimSpace(content)
 	if content == "" {
 		return "", nil
 	}
 
 	var tokens []string
-	var current strings.Builder
-	inSingleQuote := false
-	inDoubleQuote := false
+	var tokenBuilder strings.Builder
+	insideSingleQuotes := false
+	insideDoubleQuotes := false
 
-	for _, r := range content {
-		switch r {
-		case '\'':
-			if !inDoubleQuote {
-				inSingleQuote = !inSingleQuote
+	for _, char := range content {
+		switch char {
+		case singleQuote:
+			if !insideDoubleQuotes {
+				insideSingleQuotes = !insideSingleQuotes
 				// Don't include the quotes in the token
 			} else {
-				current.WriteRune(r)
+				tokenBuilder.WriteRune(char)
 			}
-		case '"':
-			if !inSingleQuote {
-				inDoubleQuote = !inDoubleQuote
+		case doubleQuote:
+			if !insideSingleQuotes {
+				insideDoubleQuotes = !insideDoubleQuotes
 				// Don't include the quotes in the token
 			} else {
-				current.WriteRune(r)
+				tokenBuilder.WriteRune(char)
 			}
-		case ' ', '\t', '\n':
-			if inSingleQuote || inDoubleQuote {
-				current.WriteRune(r)
+		case space, tab, newline:
+			insideAnyQuotes := insideSingleQuotes || insideDoubleQuotes
+			if insideAnyQuotes {
+				// Preserve whitespace inside quotes
+				tokenBuilder.WriteRune(char)
 			} else {
-				// End of token
-				if current.Len() > 0 {
-					tokens = append(tokens, current.String())
-					current.Reset()
+				// End of token - whitespace acts as separator
+				if tokenBuilder.Len() > 0 {
+					tokens = append(tokens, tokenBuilder.String())
+					tokenBuilder.Reset()
 				}
 			}
 		default:
-			current.WriteRune(r)
+			tokenBuilder.WriteRune(char)
 		}
 	}
 
-	// Add the last token if any
-	if current.Len() > 0 {
-		tokens = append(tokens, current.String())
+	// Add the last token if any remains
+	if tokenBuilder.Len() > 0 {
+		tokens = append(tokens, tokenBuilder.String())
 	}
 
 	if len(tokens) == 0 {
 		return "", nil
 	}
 
+	// Return command name and arguments separately
 	return tokens[0], tokens[1:]
 }

@@ -25,7 +25,7 @@ func getConfigFilePath() types.Optional[string] {
 		homeDir := os.Getenv("HOME")
 
 		if homeDir == "" {
-			return types.NewEmpty[string]()
+			return types.NewEmptyOptional[string]()
 		}
 
 		configDir = homeDir + "/.config"
@@ -33,10 +33,10 @@ func getConfigFilePath() types.Optional[string] {
 
 	configFilePath := filepath.Join(configDir, AppDir, ConfigFileName)
 	if fs.IsPathExists(configFilePath) {
-		return types.New(configFilePath)
+		return types.NewOptional(configFilePath)
 	}
 
-	return types.NewEmpty[string]()
+	return types.NewEmptyOptional[string]()
 }
 
 // loadConfigFromFile loads the config file from the given path.

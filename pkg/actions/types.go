@@ -2,6 +2,8 @@ package actions
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
+
+	"github.com/dinhhuy258/fm/pkg/types"
 )
 
 // Message types for the executor
@@ -18,7 +20,7 @@ type FocusPathMessage struct {
 
 // FocusByIndexMessage requests focusing by index
 type FocusByIndexMessage struct {
-	IndexExpression string
+	Index int
 }
 
 // LogLevel represents different log levels
@@ -98,21 +100,19 @@ type UIMessage struct {
 	Action UIAction
 }
 
-// SortType represents sorting options.
-type SortType string
-
+// Sorting action constants that map to the unified sort types
 const (
-	SortTypeName      SortType = "name"
-	SortTypeSize      SortType = "size"
-	SortTypeDate      SortType = "dateModified"
-	SortTypeExtension SortType = "extension"
-	SortTypeDirFirst  SortType = "dirFirst"
-	SortTypeReverse   SortType = "reverse"
+	SortTypeName      = string(types.SortTypeName)
+	SortTypeSize      = string(types.SortTypeSize)
+	SortTypeDate      = string(types.SortTypeDate)
+	SortTypeExtension = string(types.SortTypeExtension)
+	SortTypeDirFirst  = string(types.SortTypeDirFirst)
+	SortTypeReverse   = "reverse" // Special action for toggling reverse
 )
 
 // SortingMessage handles sorting actions
 type SortingMessage struct {
-	SortType SortType
+	SortType string // Can be a types.SortType value or "reverse"
 }
 
 // ToggleSelectionByPathMessage handles toggling selection by path
