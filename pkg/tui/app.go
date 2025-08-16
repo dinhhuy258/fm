@@ -12,12 +12,18 @@ import (
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/pipe"
+	"github.com/dinhhuy258/fm/pkg/types"
 )
 
 // Model represents the fm application state
 type Model struct {
 	// Core application state
 	currentPath string
+
+	// Display and sorting settings
+	showHidden bool
+	sortType   types.SortType
+	reverse    bool
 
 	// Models for fm components
 	explorerModel     *ExplorerModel
@@ -43,8 +49,19 @@ func NewModel(pipe *pipe.Pipe) Model {
 
 	actionHandler := actions.NewActionHandler()
 
+	// Initialize sorting and display settings from config
+	showHidden := config.AppConfig.General.ShowHidden
+	sortType := types.SortType(config.AppConfig.General.Sorting.SortType)
+	reverse := false
+	if config.AppConfig.General.Sorting.Reverse != nil {
+		reverse = *config.AppConfig.General.Sorting.Reverse
+	}
+
 	return Model{
 		currentPath:       "",
+		showHidden:        showHidden,
+		sortType:          sortType,
+		reverse:           reverse,
 		explorerModel:     explorerModel,
 		notificationModel: notificationModel,
 		inputModel:        inputModel,
@@ -64,7 +81,7 @@ func (m Model) Init() tea.Cmd {
 		return tea.Quit
 	}
 
-	return loadDirectoryCmd(wd)
+	return m.loadDirectoryCmd(wd)
 }
 
 // Update handles incoming messages and updates the model
@@ -141,18 +158,9 @@ func (m Model) renderFooter() string {
 }
 
 // loadDirectory loads and returns directory entries
-func loadDirectory(path string) ([]fs.IEntry, error) {
-	// Get configuration values
-	cfg := config.AppConfig.General
-	showHidden := cfg.ShowHidden
-	sortType := cfg.Sorting.SortType
-	reverse := false
-	if cfg.Sorting.Reverse != nil {
-		reverse = *cfg.Sorting.Reverse
-	}
-
-	// Use the existing fs.LoadEntries function with config values
-	entries, err := fs.LoadEntries(path, showHidden, sortType, reverse, false, false)
+func loadDirectory(path string, showHidden bool, sortType types.SortType, reverse bool) ([]fs.IEntry, error) {
+	// Use the existing fs.LoadEntries function with provided values
+	entries, err := fs.LoadEntries(path, showHidden, sortType.String(), reverse, false, false)
 	if err != nil {
 		return nil, err
 	}

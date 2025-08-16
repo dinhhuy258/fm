@@ -12,6 +12,7 @@ import (
 	"github.com/dinhhuy258/fm/pkg/actions"
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
+	"github.com/dinhhuy258/fm/pkg/types"
 )
 
 // PipeMessage represents a message from pipe
@@ -131,7 +132,7 @@ func (m Model) handleOtherMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		return m, tea.Sequence(
-			loadDirectoryCmd(dir),
+			m.loadDirectoryCmd(dir),
 			func() tea.Msg {
 				return actions.FocusPathMessage{Path: msg.Path}
 			},
@@ -205,7 +206,7 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 	case actions.NavigationActionEnter:
 		if entry := m.explorerModel.GetFocusedEntry(); entry != nil {
 			if entry.IsDirectory() {
-				return m, loadDirectoryCmd(entry.GetPath())
+				return m, m.loadDirectoryCmd(entry.GetPath())
 			}
 		}
 	case actions.NavigationActionBack:
@@ -214,7 +215,7 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 			currentPath := m.currentPath
 
 			return m, tea.Sequence(
-				loadDirectoryCmd(parentPath),
+				m.loadDirectoryCmd(parentPath),
 				func() tea.Msg {
 					return actions.FocusPathMessage{Path: currentPath}
 				},
@@ -222,7 +223,7 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 		}
 	case actions.NavigationActionChangeDirectory:
 		if msg.Path != "" {
-			return m, loadDirectoryCmd(msg.Path)
+			return m, m.loadDirectoryCmd(msg.Path)
 		}
 	}
 
@@ -253,13 +254,13 @@ func (m Model) handleUIMessage(msg actions.UIMessage) (tea.Model, tea.Cmd) {
 	switch msg.Action {
 	case actions.UIActionToggleHidden:
 		// Toggle hidden file visibility
-		config.AppConfig.General.ShowHidden = !config.AppConfig.General.ShowHidden
+		m.showHidden = !m.showHidden
 		// Toggle hidden files silently
 
-		return m, loadDirectoryCmd(m.currentPath) // Reload with new settings
+		return m, m.loadDirectoryCmd(m.currentPath) // Reload with new settings
 	case actions.UIActionRefresh:
 		// Refresh current directory
-		return m, loadDirectoryCmd(m.currentPath)
+		return m, m.loadDirectoryCmd(m.currentPath)
 	}
 
 	return m, nil
@@ -268,46 +269,16 @@ func (m Model) handleUIMessage(msg actions.UIMessage) (tea.Model, tea.Cmd) {
 // handleSortingMessage processes sorting actions
 func (m Model) handleSortingMessage(msg actions.SortingMessage) (tea.Model, tea.Cmd) {
 	switch msg.SortType {
-	case actions.SortTypeName:
-		// Update config and reload directory
-		config.AppConfig.General.Sorting.SortType = "name"
-		// Sort by name silently
-
-		return m, loadDirectoryCmd(m.currentPath)
-	case actions.SortTypeSize:
-		config.AppConfig.General.Sorting.SortType = "size"
-		// Sort by size silently
-
-		return m, loadDirectoryCmd(m.currentPath)
-	case actions.SortTypeDate:
-		config.AppConfig.General.Sorting.SortType = "date_modified"
-		// Sort by date silently
-
-		return m, loadDirectoryCmd(m.currentPath)
-	case actions.SortTypeExtension:
-		config.AppConfig.General.Sorting.SortType = "extension"
-		// Sort by extension silently
-
-		return m, loadDirectoryCmd(m.currentPath)
-	case actions.SortTypeDirFirst:
-		config.AppConfig.General.Sorting.SortType = "dir_first"
-		// Sort by directory first silently
-
-		return m, loadDirectoryCmd(m.currentPath)
 	case actions.SortTypeReverse:
 		// Toggle reverse sorting
-		if config.AppConfig.General.Sorting.Reverse != nil {
-			*config.AppConfig.General.Sorting.Reverse = !*config.AppConfig.General.Sorting.Reverse
-		} else {
-			reverse := true
-			config.AppConfig.General.Sorting.Reverse = &reverse
-		}
-		// Sort order changed silently
-
-		return m, loadDirectoryCmd(m.currentPath)
+		m.reverse = !m.reverse
+	default:
+		// Direct assignment since action types now match fs types
+		m.sortType = types.SortType(msg.SortType)
 	}
 
-	return m, nil
+	// Reload directory with new sorting
+	return m, m.loadDirectoryCmd(m.currentPath)
 }
 
 // handleFocusByIndexMessage processes focus by index actions
@@ -397,7 +368,7 @@ func (m Model) handleChangeDirectoryMessage(
 	}
 
 	// If all validation passes, change to the directory
-	return m, loadDirectoryCmd(targetPath)
+	return m, m.loadDirectoryCmd(targetPath)
 }
 
 // handleBashExecution processes bash execution with environment setup
@@ -482,9 +453,9 @@ func writeSelectionsToFile(path string, selections []string) error {
 }
 
 // loadDirectoryCmd loads directory contents
-func loadDirectoryCmd(path string) tea.Cmd {
+func (m Model) loadDirectoryCmd(path string) tea.Cmd {
 	return func() tea.Msg {
-		entries, err := loadDirectory(path)
+		entries, err := loadDirectory(path, m.showHidden, m.sortType, m.reverse)
 		if err != nil {
 			return errorMessage{
 				Message: fmt.Sprintf("Failed to load directory %s: %v", path, err),

@@ -1,4 +1,4 @@
-package optional
+package types
 
 // Optional represents an optional value.
 type Optional[T any] struct {

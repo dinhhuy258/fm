@@ -104,9 +104,9 @@ type SortType string
 const (
 	SortTypeName      SortType = "name"
 	SortTypeSize      SortType = "size"
-	SortTypeDate      SortType = "date"
+	SortTypeDate      SortType = "dateModified"
 	SortTypeExtension SortType = "extension"
-	SortTypeDirFirst  SortType = "dir_first"
+	SortTypeDirFirst  SortType = "dirFirst"
 	SortTypeReverse   SortType = "reverse"
 )
 
