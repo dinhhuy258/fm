@@ -21,12 +21,6 @@ type FocusByIndexMessage struct {
 	IndexExpression string
 }
 
-// BashOutputMessage contains output from bash command execution
-type BashOutputMessage struct {
-	Output string
-	Silent bool
-}
-
 // LogLevel represents different log levels
 type LogLevel string
 
@@ -46,11 +40,6 @@ func (l LogLevel) String() string {
 type LogMessage struct {
 	Level   LogLevel
 	Message string
-}
-
-// ErrorMessage contains an error
-type ErrorMessage struct {
-	Err error
 }
 
 // SetInputBufferMessage sets the input buffer value

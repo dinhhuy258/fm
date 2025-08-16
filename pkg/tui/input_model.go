@@ -16,11 +16,6 @@ type InputModel struct {
 	isVisible bool
 }
 
-// InputCompletedMessage indicates that input has been completed
-type InputCompletedMessage struct {
-	Value string // The final input value
-}
-
 // NewInputModel creates a new input model
 func NewInputModel() *InputModel {
 	// Initialize text input

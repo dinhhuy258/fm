@@ -12,7 +12,6 @@ import (
 	"github.com/dinhhuy258/fm/pkg/config"
 	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/pipe"
-	"github.com/dinhhuy258/fm/pkg/type/optional"
 )
 
 // Model represents the fm application state
@@ -30,18 +29,6 @@ type Model struct {
 	actionHandler *actions.ActionHandler
 	modeManager   *ModeManager
 	keyManager    *KeyManager
-}
-
-// directoryLoadedMsg indicates that a directory has been loaded
-type directoryLoadedMsg struct {
-	path      string
-	entries   []fs.IEntry
-	focusPath optional.Optional[string]
-}
-
-// PipeMessage represents a message from pipe
-type PipeMessage struct {
-	Command string
 }
 
 // NewModel creates a new root model
@@ -77,7 +64,7 @@ func (m Model) Init() tea.Cmd {
 		return tea.Quit
 	}
 
-	return loadDirectoryCmd(wd, optional.NewEmpty[string]())
+	return loadDirectoryCmd(wd)
 }
 
 // Update handles incoming messages and updates the model
@@ -151,18 +138,6 @@ func (m Model) renderFooter() string {
 		Render("Press ? for help, q to quit")
 
 	return helpHint
-}
-
-// loadDirectoryCmd loads directory contents
-func loadDirectoryCmd(path string, focusPath optional.Optional[string]) tea.Cmd {
-	return func() tea.Msg {
-		entries, err := loadDirectory(path)
-		if err != nil {
-			return actions.ErrorMessage{Err: err}
-		}
-
-		return directoryLoadedMsg{path: path, entries: entries, focusPath: focusPath}
-	}
 }
 
 // loadDirectory loads and returns directory entries
