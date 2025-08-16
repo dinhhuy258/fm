@@ -104,26 +104,6 @@ func (m *NotificationModel) ShowNotification(notificationType NotificationType, 
 	})
 }
 
-// ShowSuccess displays a success notification (auto-clears in 5 seconds)
-func (m *NotificationModel) ShowSuccess(message string) tea.Cmd {
-	return m.ShowNotification(NotificationSuccess, message)
-}
-
-// ShowInfo displays an info notification
-func (m *NotificationModel) ShowInfo(message string) tea.Cmd {
-	return m.ShowNotification(NotificationInfo, message)
-}
-
-// ShowWarning displays a warning notification
-func (m *NotificationModel) ShowWarning(message string) tea.Cmd {
-	return m.ShowNotification(NotificationWarning, message)
-}
-
-// ShowError displays an error notification
-func (m *NotificationModel) ShowError(message string) tea.Cmd {
-	return m.ShowNotification(NotificationError, message)
-}
-
 // GetActiveNotification returns the current active notification
 func (m *NotificationModel) GetActiveNotification() *Notification {
 	return m.activeNotification

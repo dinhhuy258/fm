@@ -1,5 +1,9 @@
 package actions
 
+import (
+	tea "github.com/charmbracelet/bubbletea"
+)
+
 // Message types for the executor
 
 // ModeChangedMessage indicates a mode change occurred
@@ -55,7 +59,9 @@ type SetInputBufferMessage struct {
 }
 
 // UpdateInputBufferFromKeyMessage updates input buffer from last key press
-type UpdateInputBufferFromKeyMessage struct{}
+type UpdateInputBufferFromKeyMessage struct {
+	Key tea.KeyMsg
+}
 
 // NavigationAction represents navigation actions.
 type NavigationAction string

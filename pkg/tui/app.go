@@ -30,26 +30,22 @@ type Model struct {
 	helpModel         *HelpModel
 
 	pipe          *pipe.Pipe
+	actionHandler *actions.ActionHandler
 	modeManager   *ModeManager
 	keyManager    *KeyManager
-	actionHandler *actions.ActionHandler
 }
 
-// Message types for Bubble Tea
+// directoryLoadedMsg indicates that a directory has been loaded
 type directoryLoadedMsg struct {
 	path      string
 	entries   []fs.IEntry
 	focusPath optional.Optional[string]
 }
 
-// PipeMessage represents a message from external sources (pipes, etc.)
+// PipeMessage represents a message from pipe
 type PipeMessage struct {
 	Command string
 }
-
-// ============================================================================
-// CONSTRUCTOR
-// ============================================================================
 
 // NewModel creates a new root model
 func NewModel(pipe *pipe.Pipe) Model {
@@ -76,10 +72,6 @@ func NewModel(pipe *pipe.Pipe) Model {
 	}
 }
 
-// ============================================================================
-// BUBBLETEA LIFECYCLE METHODS
-// ============================================================================
-
 // Init initializes the model
 func (m Model) Init() tea.Cmd {
 	// Get current working directory and load files
@@ -105,6 +97,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.notificationModel.SetSize(msg.Width, 1)
 		m.explorerModel.SetSize(msg.Width, availableExplorerHeight)
 	case tea.KeyMsg:
+		// if m.inputModel.IsVisible() {
+		// 	m.inputModel.Update(msg)
+
+		// 	return m, nil
+		// }
+
 		if m.helpModel.IsVisible() {
 			m.helpModel.Update(msg)
 
@@ -117,8 +115,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		return m.handleKeyMap(msg)
-	case AutoClearMessage:
-		m.notificationModel.ClearNotification()
 	default:
 		return m.handleMessage(msg)
 	}
@@ -135,7 +131,6 @@ func (m Model) View() string {
 
 	var sections []string
 
-	// Header
 	sections = append(sections, m.renderHeader())
 	sections = append(sections, m.explorerModel.View())
 	if m.inputModel.IsVisible() {
@@ -148,10 +143,6 @@ func (m Model) View() string {
 	return strings.Join(sections, "\n")
 }
 
-// ============================================================================
-// MESSAGE HANDLING
-// ============================================================================
-
 // handleMessage processes incoming messages and returns updated model with commands
 func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd
@@ -163,22 +154,23 @@ func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 		msg.focusPath.IfPresent(func(path *string) {
 			m.explorerModel.FocusPath(*path)
 		})
+
+		return m, nil
 	case PipeMessage:
 		return m.handlePipeMessage(msg.Command)
-	// Handle new message types from MessageExecutor
 	case actions.ErrorMessage:
-		m.ShowNotification(NotificationError, msg.Err.Error())
+		m.notificationModel.ShowNotification(NotificationError, msg.Err.Error())
+
+		return m, nil
 	case actions.ModeChangedMessage:
 		err := m.modeManager.SwitchToMode(msg.Mode)
 		if err != nil {
 			cmds = append(cmds, m.ShowError(fmt.Sprintf("Failed to switch mode: %v", err)))
-		} else {
-			// Hide input when switching to default mode
-			if msg.Mode == "default" {
-				m.HideInput()
-				m.inputModel.ClearBuffer() // Clear input buffer when leaving input modes
-			}
 		}
+		m.inputModel.Hide()
+		m.notificationModel.Show()
+
+		return m, tea.Batch(cmds...)
 	case actions.LogMessage:
 		switch msg.Level {
 		case actions.LogLevelError:
@@ -191,10 +183,12 @@ func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmds = append(cmds, m.ShowInfo(msg.Message))
 		}
 	case actions.SetInputBufferMessage:
-		m.SetInputBuffer(msg.Value)
-		m.ShowInput(msg.Value)
+		// m.SetInputBuffer(msg.Value)
+		// m.ShowInput(msg.Value)
+		m.notificationModel.Hide()
+		m.inputModel.Show(msg.Value)
 	case actions.UpdateInputBufferFromKeyMessage:
-		// This would be handled in the key press context
+		return m, m.inputModel.Update(msg.Key)
 	case actions.FocusPathMessage:
 		// Load the directory containing the path and focus on it
 		dir := filepath.Dir(msg.Path)
@@ -236,34 +230,17 @@ func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // handleKeyMap handles key presses and resolves them to actions
 func (m Model) handleKeyMap(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	var cmds []tea.Cmd
-
-	// First, try dynamic key mapping
 	action := m.keyManager.ResolveKeyAction(msg)
 	if action != nil {
-		// Execute the configured messages
-		executedCmds := m.actionHandler.ExecuteMessages(action.Messages)
-		cmds = append(cmds, executedCmds...)
-
-		// Handle special input buffer updates
-		// if m.shouldUpdateInputBufferFromKey(action) {
-		if m.inputModel.IsVisible() {
-			m.UpdateInputBufferFromKey(msg.String())
-			// Update the input model if it's in input mode
-			m.ShowInput(m.GetInputBuffer())
-		}
-
-		return m, tea.Batch(cmds...)
+		return m, m.actionHandler.ExecuteMessages(action.Messages, msg)
 	}
 
-	cmds = append(cmds, m.ShowWarning(
+	return m, m.ShowWarning(
 		fmt.Sprintf("No action found for key: %s", msg.String()),
-	))
-
-	return m, tea.Batch(cmds...)
+	)
 }
 
-// handlePipeMessage processes messages received from the pipe (from bash scripts)
+// handlePipeMessage processes messages received from the pipe
 func (m Model) handlePipeMessage(command string) (tea.Model, tea.Cmd) {
 	// Parse the pipe message - format is usually: CommandName arg1 arg2 ...
 	commandName, args := parseCommand(command)
@@ -271,24 +248,17 @@ func (m Model) handlePipeMessage(command string) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-	// Create a synthetic MessageConfig from the pipe command
 	message := &config.MessageConfig{
 		Name: commandName,
 		Args: args,
 	}
-
-	// Execute the command using the message executor
-	cmd := m.actionHandler.ExecuteMessage(message)
+	cmd := m.actionHandler.ExecuteMessage(message, tea.KeyMsg{})
 	if cmd != nil {
 		return m, cmd
 	}
 
 	return m, nil
 }
-
-// ============================================================================
-// SPECIFIC MESSAGE HANDLERS
-// ============================================================================
 
 // handleNavigationMessage processes navigation actions
 func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model, tea.Cmd) {
@@ -318,8 +288,6 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 			return m, loadDirectoryCmd(msg.Path, optional.NewEmpty[string]())
 		}
 	}
-
-	// Selection count is automatically updated via GetStats() in renderHeader()
 
 	return m, nil
 }
@@ -585,7 +553,6 @@ func (m *Model) SwitchMode(modeName string) error {
 		// Hide input and show notifications when switching to default mode
 		m.inputModel.Hide()
 		m.notificationModel.Show()
-		m.inputModel.ClearBuffer()
 	}
 
 	return nil
@@ -593,17 +560,12 @@ func (m *Model) SwitchMode(modeName string) error {
 
 // SetInputBuffer sets the input buffer value
 func (m *Model) SetInputBuffer(value string) {
-	m.inputModel.SetBuffer(value)
+	m.inputModel.GetTextInput().SetValue(value)
 }
 
 // GetInputBuffer returns the current input buffer value
 func (m Model) GetInputBuffer() string {
-	return m.inputModel.GetBuffer()
-}
-
-// UpdateInputBufferFromKey updates the input buffer with the last key press
-func (m *Model) UpdateInputBufferFromKey(keyStr string) {
-	m.inputModel.AppendToBuffer(keyStr)
+	return m.inputModel.GetTextInput().Value()
 }
 
 // ShowInput switches to input mode and displays the text input field
@@ -673,11 +635,6 @@ func (m *Model) GetTextInput() *textinput.Model {
 	return m.inputModel.GetTextInput()
 }
 
-// UpdateTextInput updates the text input model
-func (m *Model) UpdateTextInput(textInput textinput.Model) {
-	m.inputModel.UpdateTextInput(textInput)
-}
-
 // ============================================================================
 // RENDERING FUNCTIONS
 // ============================================================================
@@ -720,15 +677,6 @@ func (m Model) renderHeader() string {
 
 // renderFooter renders the footer section
 func (m Model) renderFooter() string {
-	// Show input buffer status if not in input mode but buffer has content
-	// if !m.IsInputMode() && m.GetInputBuffer() != "" {
-	// 	inputBuffer := lipgloss.NewStyle().
-	// 		Foreground(lipgloss.Color("#626262")).
-	// 		Render(fmt.Sprintf("Buffer: %s | Press ? for help, q to quit", m.GetInputBuffer()))
-
-	// 	return inputBuffer
-	// }
-
 	// Help hint
 	helpHint := lipgloss.NewStyle().
 		Foreground(lipgloss.Color("#626262")).
@@ -736,10 +684,6 @@ func (m Model) renderFooter() string {
 
 	return helpHint
 }
-
-// ============================================================================
-// COMMAND FUNCTIONS
-// ============================================================================
 
 // loadDirectoryCmd loads directory contents
 func loadDirectoryCmd(path string, focusPath optional.Optional[string]) tea.Cmd {
@@ -752,10 +696,6 @@ func loadDirectoryCmd(path string, focusPath optional.Optional[string]) tea.Cmd 
 		return directoryLoadedMsg{path: path, entries: entries, focusPath: focusPath}
 	}
 }
-
-// ============================================================================
-// UTILITY FUNCTIONS
-// ============================================================================
 
 // loadDirectory loads and returns directory entries
 func loadDirectory(path string) ([]fs.IEntry, error) {

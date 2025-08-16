@@ -9,7 +9,7 @@ import (
 )
 
 // ActionHandlerFunc defines the signature for action handlers
-type ActionHandlerFunc func(message *config.MessageConfig) tea.Cmd
+type ActionHandlerFunc func(message *config.MessageConfig, originalKey tea.KeyMsg) tea.Cmd
 
 // ActionHandler handles execution of config messages
 type ActionHandler struct {
@@ -28,170 +28,170 @@ func NewActionHandler() *ActionHandler {
 func (ah *ActionHandler) initActionMap() {
 	ah.actionMap = map[string]ActionHandlerFunc{
 		// Core messages
-		"SwitchMode": func(message *config.MessageConfig) tea.Cmd {
+		"SwitchMode": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return ModeChangedMessage{Mode: message.Args[0]}
 			}
 		},
-		"Quit": func(_ *config.MessageConfig) tea.Cmd {
+		"Quit": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return tea.Quit
 		},
-		"Null": func(_ *config.MessageConfig) tea.Cmd {
+		"Null": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return nil
 		},
 
 		// Navigation messages
-		"ChangeDirectory": func(message *config.MessageConfig) tea.Cmd {
+		"ChangeDirectory": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return ChangeDirectoryMessage{Path: message.Args[0]}
 			}
 		},
-		"FocusPath": func(message *config.MessageConfig) tea.Cmd {
+		"FocusPath": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return FocusPathMessage{Path: message.Args[0]}
 			}
 		},
-		"FocusByIndex": func(message *config.MessageConfig) tea.Cmd {
+		"FocusByIndex": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return FocusByIndexMessage{IndexExpression: message.Args[0]}
 			}
 		},
-		"FocusNext": func(_ *config.MessageConfig) tea.Cmd {
+		"FocusNext": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return NavigationMessage{Action: NavigationActionNext}
 			}
 		},
-		"FocusPrevious": func(_ *config.MessageConfig) tea.Cmd {
+		"FocusPrevious": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return NavigationMessage{Action: NavigationActionPrevious}
 			}
 		},
-		"FocusFirst": func(_ *config.MessageConfig) tea.Cmd {
+		"FocusFirst": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return NavigationMessage{Action: NavigationActionFirst}
 			}
 		},
-		"FocusLast": func(_ *config.MessageConfig) tea.Cmd {
+		"FocusLast": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return NavigationMessage{Action: NavigationActionLast}
 			}
 		},
-		"Enter": func(_ *config.MessageConfig) tea.Cmd {
+		"Enter": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return NavigationMessage{Action: NavigationActionEnter}
 			}
 		},
-		"Back": func(_ *config.MessageConfig) tea.Cmd {
+		"Back": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return NavigationMessage{Action: NavigationActionBack}
 			}
 		},
 
 		// Selection messages
-		"ToggleSelection": func(_ *config.MessageConfig) tea.Cmd {
+		"ToggleSelection": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return SelectionMessage{Action: SelectionActionToggle}
 			}
 		},
-		"ClearSelection": func(_ *config.MessageConfig) tea.Cmd {
+		"ClearSelection": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return SelectionMessage{Action: SelectionActionClear}
 			}
 		},
-		"SelectAll": func(_ *config.MessageConfig) tea.Cmd {
+		"SelectAll": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return SelectionMessage{Action: SelectionActionAll}
 			}
 		},
-		"ToggleSelectionByPath": func(message *config.MessageConfig) tea.Cmd {
+		"ToggleSelectionByPath": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return ToggleSelectionByPathMessage{Path: message.Args[0]}
 			}
 		},
 
 		// Sorting messages
-		"SortByName": func(_ *config.MessageConfig) tea.Cmd {
+		"SortByName": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return SortingMessage{SortType: SortTypeName}
 			}
 		},
-		"SortBySize": func(_ *config.MessageConfig) tea.Cmd {
+		"SortBySize": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return SortingMessage{SortType: SortTypeSize}
 			}
 		},
-		"SortByDateModified": func(_ *config.MessageConfig) tea.Cmd {
+		"SortByDateModified": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return SortingMessage{SortType: SortTypeDate}
 			}
 		},
-		"SortByExtension": func(_ *config.MessageConfig) tea.Cmd {
+		"SortByExtension": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return SortingMessage{SortType: SortTypeExtension}
 			}
 		},
-		"SortByDirFirst": func(_ *config.MessageConfig) tea.Cmd {
+		"SortByDirFirst": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return SortingMessage{SortType: SortTypeDirFirst}
 			}
 		},
-		"ReverseSort": func(_ *config.MessageConfig) tea.Cmd {
+		"ReverseSort": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return SortingMessage{SortType: SortTypeReverse}
 			}
 		},
 
 		// Bash execution
-		"BashExec": func(message *config.MessageConfig) tea.Cmd {
+		"BashExec": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return BashExecMessage{Script: message.Args[0]}
 			}
 		},
-		"BashExecSilently": func(message *config.MessageConfig) tea.Cmd {
+		"BashExecSilently": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return BashExecSilentlyMessage{Script: message.Args[0]}
 			}
 		},
 
 		// Input and logging
-		"SetInputBuffer": func(message *config.MessageConfig) tea.Cmd {
+		"SetInputBuffer": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return SetInputBufferMessage{Value: message.Args[0]}
 			}
 		},
-		"UpdateInputBufferFromKey": func(_ *config.MessageConfig) tea.Cmd {
+		"UpdateInputBufferFromKey": func(_ *config.MessageConfig, originalKey tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
-				return UpdateInputBufferFromKeyMessage{}
+				return UpdateInputBufferFromKeyMessage{Key: originalKey}
 			}
 		},
-		"LogSuccess": func(message *config.MessageConfig) tea.Cmd {
+		"LogSuccess": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return LogMessage{Level: LogLevelSuccess, Message: message.Args[0]}
 			}
 		},
-		"LogError": func(message *config.MessageConfig) tea.Cmd {
+		"LogError": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return LogMessage{Level: LogLevelError, Message: message.Args[0]}
 			}
 		},
-		"LogInfo": func(message *config.MessageConfig) tea.Cmd {
+		"LogInfo": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return LogMessage{Level: LogLevelInfo, Message: message.Args[0]}
 			}
 		},
-		"LogWarning": func(message *config.MessageConfig) tea.Cmd {
+		"LogWarning": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return LogMessage{Level: LogLevelWarning, Message: message.Args[0]}
 			}
 		},
 
 		// UI control
-		"ToggleHidden": func(_ *config.MessageConfig) tea.Cmd {
+		"ToggleHidden": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return UIMessage{Action: UIActionToggleHidden}
 			}
 		},
-		"Refresh": func(_ *config.MessageConfig) tea.Cmd {
+		"Refresh": func(_ *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return UIMessage{Action: UIActionRefresh}
 			}
@@ -199,23 +199,27 @@ func (ah *ActionHandler) initActionMap() {
 	}
 }
 
-// ExecuteMessages executes a list of messages from config
-func (ah *ActionHandler) ExecuteMessages(messages []*config.MessageConfig) []tea.Cmd {
+// ExecuteMessages executes a list of messages from config sequentially
+func (ah *ActionHandler) ExecuteMessages(messages []*config.MessageConfig, originalKey tea.KeyMsg) tea.Cmd {
 	var cmds []tea.Cmd
 
 	for _, message := range messages {
-		if cmd := ah.ExecuteMessage(message); cmd != nil {
+		if cmd := ah.ExecuteMessage(message, originalKey); cmd != nil {
 			cmds = append(cmds, cmd)
 		}
 	}
 
-	return cmds
+	if len(cmds) == 0 {
+		return nil
+	}
+
+	return tea.Sequence(cmds...)
 }
 
 // ExecuteMessage executes a single message
-func (ah *ActionHandler) ExecuteMessage(message *config.MessageConfig) tea.Cmd {
+func (ah *ActionHandler) ExecuteMessage(message *config.MessageConfig, originalKey tea.KeyMsg) tea.Cmd {
 	if handler, exists := ah.actionMap[message.Name]; exists {
-		return handler(message)
+		return handler(message, originalKey)
 	}
 
 	return func() tea.Msg {
