@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
@@ -107,60 +106,6 @@ func (m Model) View() string {
 	return strings.Join(sections, "\n")
 }
 
-// ShowNotification displays a notification
-func (m *Model) ShowNotification(notificationType NotificationType, message string) tea.Cmd {
-	cmd := m.notificationModel.ShowNotification(notificationType, message)
-
-	if m.inputModel.IsVisible() {
-		// In input mode, notification is stored but not displayed yet
-		return cmd
-	}
-
-	// In notification mode, ensure notification is visible
-	m.notificationModel.Show()
-
-	return cmd
-}
-
-// ShowSuccess displays a success notification (auto-clears in 5 seconds)
-func (m *Model) ShowSuccess(message string) tea.Cmd {
-	return m.ShowNotification(NotificationSuccess, message)
-}
-
-// ShowInfo displays an info notification
-func (m *Model) ShowInfo(message string) tea.Cmd {
-	return m.ShowNotification(NotificationInfo, message)
-}
-
-// ShowWarning displays a warning notification
-func (m *Model) ShowWarning(message string) tea.Cmd {
-	return m.ShowNotification(NotificationWarning, message)
-}
-
-// ShowError displays an error notification
-func (m *Model) ShowError(message string) tea.Cmd {
-	return m.ShowNotification(NotificationError, message)
-}
-
-// GetActiveNotification returns the current active notification
-func (m *Model) GetActiveNotification() *Notification {
-	return m.notificationModel.GetActiveNotification()
-}
-
-// ClearNotification clears the active notification
-func (m *Model) ClearNotification() {
-	m.notificationModel.ClearNotification()
-}
-
-// GetTextInput returns the text input model for direct manipulation
-func (m *Model) GetTextInput() *textinput.Model {
-	return m.inputModel.GetTextInput()
-}
-
-// ============================================================================
-// RENDERING FUNCTIONS
-// ============================================================================
-
 // renderHeader renders the header section
 func (m Model) renderHeader() string {
 	title := lipgloss.NewStyle().
@@ -238,59 +183,4 @@ func loadDirectory(path string) ([]fs.IEntry, error) {
 	}
 
 	return entries, nil
-}
-
-// parseCommand parses a shell command line, handling quoted strings properly
-func parseCommand(content string) (string, []string) {
-	content = strings.TrimSpace(content)
-	if content == "" {
-		return "", nil
-	}
-
-	var tokens []string
-	var current strings.Builder
-	inSingleQuote := false
-	inDoubleQuote := false
-
-	for _, r := range content {
-		switch r {
-		case '\'':
-			if !inDoubleQuote {
-				inSingleQuote = !inSingleQuote
-				// Don't include the quotes in the token
-			} else {
-				current.WriteRune(r)
-			}
-		case '"':
-			if !inSingleQuote {
-				inDoubleQuote = !inDoubleQuote
-				// Don't include the quotes in the token
-			} else {
-				current.WriteRune(r)
-			}
-		case ' ', '\t', '\n':
-			if inSingleQuote || inDoubleQuote {
-				current.WriteRune(r)
-			} else {
-				// End of token
-				if current.Len() > 0 {
-					tokens = append(tokens, current.String())
-					current.Reset()
-				}
-			}
-		default:
-			current.WriteRune(r)
-		}
-	}
-
-	// Add the last token if any
-	if current.Len() > 0 {
-		tokens = append(tokens, current.String())
-	}
-
-	if len(tokens) == 0 {
-		return "", nil
-	}
-
-	return tokens[0], tokens[1:]
 }

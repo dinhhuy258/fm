@@ -79,7 +79,7 @@ func (m Model) handleOtherMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case actions.ModeChangedMessage:
 		err := m.modeManager.SwitchToMode(msg.Mode)
 		if err != nil {
-			cmds = append(cmds, m.ShowError(fmt.Sprintf("Failed to switch mode: %v", err)))
+			cmds = append(cmds, m.notificationModel.ShowNotification(NotificationError, fmt.Sprintf("Failed to switch mode: %v", err)))
 		}
 		m.inputModel.Hide()
 		m.notificationModel.Show()
@@ -88,13 +88,13 @@ func (m Model) handleOtherMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case actions.LogMessage:
 		switch msg.Level {
 		case actions.LogLevelError:
-			cmds = append(cmds, m.ShowError(msg.Message))
+			cmds = append(cmds, m.notificationModel.ShowNotification(NotificationError, msg.Message))
 		case actions.LogLevelWarning:
-			cmds = append(cmds, m.ShowWarning(msg.Message))
+			cmds = append(cmds, m.notificationModel.ShowNotification(NotificationWarning, msg.Message))
 		case actions.LogLevelSuccess:
-			cmds = append(cmds, m.ShowSuccess(msg.Message))
+			cmds = append(cmds, m.notificationModel.ShowNotification(NotificationSuccess, msg.Message))
 		case actions.LogLevelInfo:
-			cmds = append(cmds, m.ShowInfo(msg.Message))
+			cmds = append(cmds, m.notificationModel.ShowNotification(NotificationInfo, msg.Message))
 		}
 	case actions.SetInputBufferMessage:
 		m.notificationModel.Hide()
@@ -107,7 +107,7 @@ func (m Model) handleOtherMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, loadDirectoryCmd(dir, optional.New(msg.Path))
 	case actions.BashOutputMessage:
 		if !msg.Silent && strings.TrimSpace(msg.Output) != "" {
-			cmds = append(cmds, m.ShowInfo(strings.TrimSpace(msg.Output)))
+			cmds = append(cmds, m.notificationModel.ShowNotification(NotificationInfo, strings.TrimSpace(msg.Output)))
 		}
 	case actions.NavigationMessage:
 		return m.handleNavigationMessage(msg)
@@ -128,7 +128,7 @@ func (m Model) handleOtherMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case actions.ChangeDirectoryMessage:
 		return m.handleChangeDirectoryMessage(msg)
 	case AutoClearMessage:
-		m.ClearNotification()
+		m.notificationModel.ClearNotification()
 	case InputCompletedMessage:
 		// Input was completed - update input buffer and show success notification
 	}
@@ -143,7 +143,7 @@ func (m Model) handleKeyMap(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, m.actionHandler.ExecuteMessages(action.Messages, msg)
 	}
 
-	return m, m.ShowWarning(
+	return m, m.notificationModel.ShowNotification(NotificationWarning,
 		fmt.Sprintf("No action found for key: %s", msg.String()),
 	)
 }
@@ -377,7 +377,7 @@ func (m Model) handleBashExecution(script string, silent bool) (tea.Model, tea.C
 	}
 
 	env := os.Environ()
-	inputBuffer := m.inputModel.GetTextInput().Value()
+	inputBuffer := m.inputModel.GetValue()
 	env = append(env, fmt.Sprintf("FM_FOCUS_PATH=%s", focusPath))
 	env = append(env, fmt.Sprintf("FM_PWD=%s", m.currentPath))
 	env = append(env, fmt.Sprintf("FM_FOCUS_IDX=%d", focusIndex))
@@ -439,4 +439,59 @@ func writeSelectionsToFile(path string, selections []string) error {
 	content := strings.Join(selections, "\n") + "\n"
 
 	return os.WriteFile(path, []byte(content), perm)
+}
+
+// parseCommand parses a shell command line, handling quoted strings properly
+func parseCommand(content string) (string, []string) {
+	content = strings.TrimSpace(content)
+	if content == "" {
+		return "", nil
+	}
+
+	var tokens []string
+	var current strings.Builder
+	inSingleQuote := false
+	inDoubleQuote := false
+
+	for _, r := range content {
+		switch r {
+		case '\'':
+			if !inDoubleQuote {
+				inSingleQuote = !inSingleQuote
+				// Don't include the quotes in the token
+			} else {
+				current.WriteRune(r)
+			}
+		case '"':
+			if !inSingleQuote {
+				inDoubleQuote = !inDoubleQuote
+				// Don't include the quotes in the token
+			} else {
+				current.WriteRune(r)
+			}
+		case ' ', '\t', '\n':
+			if inSingleQuote || inDoubleQuote {
+				current.WriteRune(r)
+			} else {
+				// End of token
+				if current.Len() > 0 {
+					tokens = append(tokens, current.String())
+					current.Reset()
+				}
+			}
+		default:
+			current.WriteRune(r)
+		}
+	}
+
+	// Add the last token if any
+	if current.Len() > 0 {
+		tokens = append(tokens, current.String())
+	}
+
+	if len(tokens) == 0 {
+		return "", nil
+	}
+
+	return tokens[0], tokens[1:]
 }

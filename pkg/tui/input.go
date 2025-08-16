@@ -16,6 +16,11 @@ type InputModel struct {
 	isVisible bool
 }
 
+// InputCompletedMessage indicates that input has been completed
+type InputCompletedMessage struct {
+	Value string // The final input value
+}
+
 // NewInputModel creates a new input model
 func NewInputModel() *InputModel {
 	// Initialize text input
@@ -57,16 +62,6 @@ func (m *InputModel) IsVisible() bool {
 // GetValue returns the current input value
 func (m *InputModel) GetValue() string {
 	return m.textInput.Value()
-}
-
-// GetTextInput returns the text input model for direct manipulation
-func (m *InputModel) GetTextInput() *textinput.Model {
-	return &m.textInput
-}
-
-// InputCompletedMessage indicates that input has been completed
-type InputCompletedMessage struct {
-	Value string // The final input value
 }
 
 // Update handles Bubbletea messages
