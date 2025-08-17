@@ -10,7 +10,6 @@ import (
 
 	"github.com/dinhhuy258/fm/pkg/actions"
 	"github.com/dinhhuy258/fm/pkg/config"
-	"github.com/dinhhuy258/fm/pkg/fs"
 	"github.com/dinhhuy258/fm/pkg/pipe"
 	"github.com/dinhhuy258/fm/pkg/types"
 )
@@ -157,15 +156,4 @@ func (m Model) renderFooter() string {
 		Render("Press ? for help, q to quit")
 
 	return helpHint
-}
-
-// loadDirectory loads and returns directory entries
-func loadDirectory(path string, showHidden bool, sortType types.SortType, reverse bool) ([]fs.IEntry, error) {
-	// Use the existing fs.LoadEntries function with provided values
-	entries, err := fs.LoadEntries(path, showHidden, sortType.String(), reverse, false, false)
-	if err != nil {
-		return nil, err
-	}
-
-	return entries, nil
 }

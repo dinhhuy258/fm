@@ -126,7 +126,7 @@ func (m Model) handleOtherMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 
-		if err := m.loadDirectorySync(dir); err != nil {
+		if err := m.loadDirectory(dir); err != nil {
 			return m, func() tea.Msg {
 				return errorMessage{
 					Message: err.Error(),
@@ -205,7 +205,7 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 	case actions.NavigationActionEnter:
 		if entry := m.explorerModel.GetFocusedEntry(); entry != nil {
 			if entry.IsDirectory() {
-				if err := m.loadDirectorySync(entry.GetPath()); err != nil {
+				if err := m.loadDirectory(entry.GetPath()); err != nil {
 					return m, func() tea.Msg {
 						return errorMessage{
 							Message: err.Error(),
@@ -220,20 +220,20 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 		return m, nil
 	case actions.NavigationActionBack:
 		parentPath := filepath.Dir(m.currentPath)
-		oldPath := m.currentPath
+		lastPath := m.currentPath
 
-		if err := m.loadDirectorySync(parentPath); err != nil {
+		if err := m.loadDirectory(parentPath); err != nil {
 			return m, func() tea.Msg {
 				return errorMessage{
 					Message: err.Error(),
 				}
 			}
 		}
-		m.explorerModel.FocusPath(oldPath)
+		m.explorerModel.FocusPath(lastPath)
 
 		return m, nil
 	case actions.NavigationActionChangeDirectory:
-		if err := m.loadDirectorySync(msg.Path); err != nil {
+		if err := m.loadDirectory(msg.Path); err != nil {
 			return m, func() tea.Msg {
 				return errorMessage{
 					Message: err.Error(),
@@ -266,7 +266,7 @@ func (m Model) handleUIMessage(msg actions.UIMessage) (tea.Model, tea.Cmd) {
 	switch msg.Action {
 	case actions.UIActionToggleHidden:
 		m.showHidden = !m.showHidden
-		if err := m.loadDirectorySync(m.currentPath); err != nil {
+		if err := m.loadDirectory(m.currentPath); err != nil {
 			return m, func() tea.Msg {
 				return errorMessage{
 					Message: err.Error(),
@@ -276,7 +276,7 @@ func (m Model) handleUIMessage(msg actions.UIMessage) (tea.Model, tea.Cmd) {
 
 		return m, nil
 	case actions.UIActionRefresh:
-		if err := m.loadDirectorySync(m.currentPath); err != nil {
+		if err := m.loadDirectory(m.currentPath); err != nil {
 			return m, func() tea.Msg {
 				return errorMessage{
 					Message: err.Error(),
@@ -300,7 +300,7 @@ func (m Model) handleSortingMessage(msg actions.SortingMessage) (tea.Model, tea.
 	}
 
 	// Reload directory with new sorting
-	if err := m.loadDirectorySync(m.currentPath); err != nil {
+	if err := m.loadDirectory(m.currentPath); err != nil {
 		return m, func() tea.Msg {
 			return errorMessage{
 				Message: err.Error(),
@@ -343,7 +343,7 @@ func (m Model) handleBashExecSilentlyMessage(
 func (m Model) handleChangeDirectoryMessage(
 	msg actions.ChangeDirectoryMessage,
 ) (tea.Model, tea.Cmd) {
-	if err := m.loadDirectorySync(msg.Path); err != nil {
+	if err := m.loadDirectory(msg.Path); err != nil {
 		return m, func() tea.Msg {
 			return errorMessage{
 				Message: err.Error(),
@@ -435,9 +435,10 @@ func writeSelectionsToFile(path string, selections []string) error {
 	return os.WriteFile(path, []byte(content), perm)
 }
 
-// loadDirectorySync loads directory contents synchronously and updates model state
-func (m *Model) loadDirectorySync(path string) error {
-	entries, err := loadDirectory(path, m.showHidden, m.sortType, m.reverse)
+// loadDirectory loads directory contents synchronously and updates model state
+func (m *Model) loadDirectory(path string) error {
+	// Use the existing fs.LoadEntries function with provided values
+	entries, err := fs.LoadEntries(path, m.showHidden, m.sortType.String(), m.reverse, false, false)
 	if err != nil {
 		return fmt.Errorf("failed to load directory %s: %w", path, err)
 	}
