@@ -82,7 +82,7 @@ func (m Model) Init() tea.Cmd {
 	}
 
 	return func() tea.Msg {
-		return actions.LoadDirectoryMessage{Path: wd}
+		return actions.ChangeDirectoryMessage{Path: wd}
 	}
 }
 
