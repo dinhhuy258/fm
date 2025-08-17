@@ -1,16 +1,15 @@
+version: 2
+
 run:
   timeout: 120s
 linters:
   disable-all: true
   enable:
     - errcheck
-    - goimports
-    - revive # replacement for golint
     - govet
     - staticcheck
     - nlreturn
     - whitespace
-    - wsl
     - unparam
     - bodyclose
     - contextcheck
@@ -19,3 +18,16 @@ linters:
     - durationcheck
     - errname
     - nilerr
+
+linters-settings:
+  revive:
+    rules:
+      - name: exported
+        disabled: true
+      - name: package-comments
+        disabled: true
+      - name: unused-parameter
+      - name: empty-block
+        disabled: true
+      - name: indent-error-flow
+        disabled: true

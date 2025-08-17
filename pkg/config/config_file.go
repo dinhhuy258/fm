@@ -8,7 +8,7 @@ import (
 	gopher_lua "github.com/yuin/gopher-lua"
 
 	"github.com/dinhhuy258/fm/pkg/fs"
-	"github.com/dinhhuy258/fm/pkg/type/optional"
+	"github.com/dinhhuy258/fm/pkg/types"
 )
 
 // AppDir is the name of the directory where the config file is stored.
@@ -18,14 +18,14 @@ const AppDir = "fm"
 const ConfigFileName = "config.lua"
 
 // getConfigFilePath returns the user config file
-func getConfigFilePath() optional.Optional[string] {
+func getConfigFilePath() types.Optional[string] {
 	configDir := os.Getenv("XDG_CONFIG_HOME")
 
 	if configDir == "" {
 		homeDir := os.Getenv("HOME")
 
 		if homeDir == "" {
-			return optional.NewEmpty[string]()
+			return types.NewEmptyOptional[string]()
 		}
 
 		configDir = homeDir + "/.config"
@@ -33,10 +33,10 @@ func getConfigFilePath() optional.Optional[string] {
 
 	configFilePath := filepath.Join(configDir, AppDir, ConfigFileName)
 	if fs.IsPathExists(configFilePath) {
-		return optional.New(configFilePath)
+		return types.NewOptional(configFilePath)
 	}
 
-	return optional.NewEmpty[string]()
+	return types.NewEmptyOptional[string]()
 }
 
 // loadConfigFromFile loads the config file from the given path.

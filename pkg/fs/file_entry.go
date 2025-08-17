@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/djherbis/times"
+
+	"github.com/dinhhuy258/fm/pkg/types"
 )
 
 var errFileNotFound = errors.New("file not found")
@@ -128,7 +130,7 @@ func LoadEntries(path string,
 		entries = append(entries, entry)
 	}
 
-	getEntrySort(sortType(sortAlgorithm)).sort(entries, sortReverse, sortIgnoreCase, sortIgnoreDiacritics)
+	getEntrySort(types.SortType(sortAlgorithm)).sort(entries, sortReverse, sortIgnoreCase, sortIgnoreDiacritics)
 
 	return entries, nil
 }

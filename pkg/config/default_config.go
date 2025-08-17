@@ -69,19 +69,11 @@ func getDefaultConfig() *Config {
 				},
 				IndexHeader: &ExplorerTableHeaderConfig{
 					Name:       "index",
-					Percentage: 10,
+					Percentage: 15,
 				},
 				NameHeader: &ExplorerTableHeaderConfig{
 					Name:       "┌──── name",
-					Percentage: 65,
-				},
-				PermissionsHeader: &ExplorerTableHeaderConfig{
-					Name:       "permissions",
-					Percentage: 15,
-				},
-				SizeHeader: &ExplorerTableHeaderConfig{
-					Name:       "size",
-					Percentage: 10,
+					Percentage: 85,
 				},
 				FirstEntryPrefix: "├─",
 				EntryPrefix:      "├─",

@@ -7,6 +7,8 @@ import (
 	"golang.org/x/text/runes"
 	"golang.org/x/text/transform"
 	"golang.org/x/text/unicode/norm"
+
+	"github.com/dinhhuy258/fm/pkg/types"
 )
 
 // entrySort an interface for entry sorting algorithm
@@ -14,32 +16,21 @@ type entrySort interface {
 	sort([]IEntry, bool, bool, bool)
 }
 
-// sortType is the type of sorting algorithm
-type sortType string
-
-const (
-	DirFirst     sortType = "dirFirst"
-	DateModified sortType = "dateModified"
-	Name         sortType = "name"
-	Size         sortType = "size"
-	Extension    sortType = "extension"
-)
-
 // entrySortFactories contains list of supported entry sort algorithm
-var entrySortFactories = map[sortType]entrySort{
-	DirFirst:     dirFirstEntrySort{},
-	DateModified: dateModifiedEntrySort{},
-	Name:         nameEntrySort{},
-	Size:         sizeEntrySort{},
-	Extension:    extensionEntrySort{},
+var entrySortFactories = map[types.SortType]entrySort{
+	types.SortTypeDirFirst:  dirFirstEntrySort{},
+	types.SortTypeDate:      dateModifiedEntrySort{},
+	types.SortTypeName:      nameEntrySort{},
+	types.SortTypeSize:      sizeEntrySort{},
+	types.SortTypeExtension: extensionEntrySort{},
 }
 
 // getEntrySort returns entry sort algorithm for the given sortType
-func getEntrySort(t sortType) entrySort {
+func getEntrySort(t types.SortType) entrySort {
 	entrySort, hashEntrySort := entrySortFactories[t]
 	if !hashEntrySort {
 		// fallback to DirFirst
-		entrySort = entrySortFactories[DirFirst]
+		entrySort = entrySortFactories[types.SortTypeDirFirst]
 	}
 
 	return entrySort

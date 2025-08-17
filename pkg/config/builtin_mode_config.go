@@ -13,14 +13,6 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
-			"C": {
-				Help: "clear log",
-				Messages: []*MessageConfig{
-					{
-						Name: "ClearLog",
-					},
-				},
-			},
 			"j": {
 				Help: "down",
 				Messages: []*MessageConfig{
@@ -155,7 +147,7 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
-			"space": {
+			" ": {
 				Help: "toggle selection",
 				Messages: []*MessageConfig{
 					{
@@ -163,7 +155,7 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
-			"ctrl+space": {
+			"ctrl+@": {
 				Help: "clear selection",
 				Messages: []*MessageConfig{
 					{
@@ -248,18 +240,18 @@ var newFileModeConfig = ModeConfig{
 									echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
 								else
 									mkdir -p -- "${name:?}" \
+									&& echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}" \
 									&& echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
 									&& echo LogSuccess "'"${name} created"'" >> "${FM_PIPE_MSG_IN:?}" \
-									&& echo FocusPath "'"${forcus_dir}/${name}"'" >> "${FM_PIPE_MSG_IN:?}" \
-									&& echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
+									&& echo FocusPath "'"${forcus_dir}/${name}"'" >> "${FM_PIPE_MSG_IN:?}"
 								fi
 							elif [[ "${name}" ]] ; then
 								mkdir -p -- "$(dirname ${name})" \
 								&& touch -- "${name}" \
+								&& echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}" \
 								&& echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
 								&& echo LogSuccess "'"${name} created"'" >> "${FM_PIPE_MSG_IN:?}" \
-								&& echo FocusPath "'"${forcus_dir}/${name}"'" >> "${FM_PIPE_MSG_IN:?}" \
-								&& echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
+								&& echo FocusPath "'"${forcus_dir}/${name}"'" >> "${FM_PIPE_MSG_IN:?}"
 							else
 								echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
               fi
@@ -312,14 +304,14 @@ var renameModeConfig = ModeConfig{
 							if [ -z "${new_name}" ]; then
 								echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
 							elif [ -e "${new_name:?}" ]; then
-                echo LogError "'"${new_name} already exists"'" >> "${FM_PIPE_MSG_IN:?}"
 								echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
+                echo LogError "'"${new_name} already exists"'" >> "${FM_PIPE_MSG_IN:?}"
               else
                 mv -- "${focus_path:?}" "${new_name:?}" \
+                  && echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}" \
                   && echo Refresh >> "${FM_PIPE_MSG_IN:?}" \
                   && echo FocusPath "'"$(dirname "${focus_path}")/${new_name}"'" >> "${FM_PIPE_MSG_IN:?}" \
-                  && echo LogSuccess "'"$(basename "${focus_path}") renamed to ${new_name}"'" >> "${FM_PIPE_MSG_IN:?}" \
-									&& echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
+                  && echo LogSuccess "'"$(basename "${focus_path}") renamed to ${new_name}"'" >> "${FM_PIPE_MSG_IN:?}"
               fi
 						`},
 					},
