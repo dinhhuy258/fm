@@ -47,6 +47,11 @@ func (ah *ActionHandler) initActionMap() {
 				return ChangeDirectoryMessage{Path: message.Args[0]}
 			}
 		},
+		"LoadDirectory": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
+			return func() tea.Msg {
+				return LoadDirectoryMessage{Path: message.Args[0]}
+			}
+		},
 		"FocusPath": func(message *config.MessageConfig, _ tea.KeyMsg) tea.Cmd {
 			return func() tea.Msg {
 				return FocusPathMessage{Path: message.Args[0]}

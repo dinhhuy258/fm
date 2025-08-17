@@ -81,7 +81,9 @@ func (m Model) Init() tea.Cmd {
 		return tea.Quit
 	}
 
-	return m.loadDirectoryCmd(wd)
+	return func() tea.Msg {
+		return actions.LoadDirectoryMessage{Path: wd}
+	}
 }
 
 // Update handles incoming messages and updates the model

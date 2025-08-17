@@ -134,3 +134,8 @@ type BashExecSilentlyMessage struct {
 type ChangeDirectoryMessage struct {
 	Path string
 }
+
+// LoadDirectoryMessage handles immediate directory loading requests
+type LoadDirectoryMessage struct {
+	Path string
+}
