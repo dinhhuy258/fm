@@ -45,15 +45,20 @@ func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // handleWindowSize handles window resize events
 func (m Model) handleWindowSize(msg tea.WindowSizeMsg) (tea.Model, tea.Cmd) {
+	// Account for border: 4 characters width (2 border + 2 padding), 4 characters height
+	borderPadding := 4
+	availableWidth := max(msg.Width-borderPadding, 1)
+	availableHeight := max(msg.Height-borderPadding, 1)
+
 	headerHeight := 3
 	footerHeight := 1
 	interactiveHeight := 1
-	availableExplorerHeight := msg.Height - headerHeight - footerHeight - interactiveHeight
+	availableExplorerHeight := availableHeight - headerHeight - footerHeight - interactiveHeight
 
 	m.helpModel.SetSize(msg.Width, msg.Height)
-	m.inputModel.SetSize(msg.Width, 1)
-	m.notificationModel.SetSize(msg.Width, 1)
-	m.explorerModel.SetSize(msg.Width, availableExplorerHeight)
+	m.inputModel.SetSize(availableWidth, 1)
+	m.notificationModel.SetSize(availableWidth, 1)
+	m.explorerModel.SetSize(availableWidth, availableExplorerHeight)
 
 	return m, nil
 }
@@ -66,7 +71,7 @@ func (m Model) handleKeyMsg(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-	if msg.String() == "?" {
+	if msg.String() == HelpToggleKey {
 		m.helpModel.Show()
 
 		return m, nil

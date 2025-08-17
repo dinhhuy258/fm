@@ -34,6 +34,12 @@ type Model struct {
 	actionHandler *actions.ActionHandler
 	modeManager   *ModeManager
 	keyManager    *KeyManager
+
+	// Styles for header and footer
+	titleStyle    lipgloss.Style
+	modeStyle     lipgloss.Style
+	helpHintStyle lipgloss.Style
+	borderStyle   lipgloss.Style
 }
 
 // NewModel creates a new root model
@@ -41,9 +47,9 @@ func NewModel(pipe *pipe.Pipe) Model {
 	explorerModel := NewExplorerModel()
 	notificationModel := NewNotificationModel()
 	inputModel := NewInputModel()
-	helpModel := NewHelpModel()
 
 	modeManager := NewModeManager()
+	helpModel := NewHelpModel(modeManager)
 	keyManager := NewKeyManager(modeManager)
 
 	actionHandler := actions.NewActionHandler()
@@ -55,6 +61,16 @@ func NewModel(pipe *pipe.Pipe) Model {
 	if config.AppConfig.General.Sorting.Reverse != nil {
 		reverse = *config.AppConfig.General.Sorting.Reverse
 	}
+
+	titleStyle := lipgloss.NewStyle()
+	modeStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color(SecondaryTextColor))
+	helpHintStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color(SecondaryTextColor))
+	borderStyle := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		PaddingLeft(1).
+		PaddingRight(1)
 
 	return Model{
 		currentPath:       "",
@@ -69,6 +85,10 @@ func NewModel(pipe *pipe.Pipe) Model {
 		modeManager:       modeManager,
 		keyManager:        keyManager,
 		actionHandler:     actionHandler,
+		titleStyle:        titleStyle,
+		modeStyle:         modeStyle,
+		helpHintStyle:     helpHintStyle,
+		borderStyle:       borderStyle,
 	}
 }
 
@@ -108,22 +128,13 @@ func (m Model) View() string {
 	}
 	sections = append(sections, m.renderFooter())
 
-	return strings.Join(sections, "\n")
+	content := strings.Join(sections, "\n")
+
+	return m.borderStyle.Render(content)
 }
 
 // renderHeader renders the header section
 func (m Model) renderHeader() string {
-	title := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("#FAFAFA")).
-		Background(lipgloss.Color("#7D56F4")).
-		Padding(0, 1).
-		Render("File Manager")
-
-	path := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#7D56F4")).
-		Render(m.currentPath)
-
 	// Combine mode and items information
 	var modeInfo string
 	totalCount, selectedCount := m.explorerModel.GetStats()
@@ -136,24 +147,18 @@ func (m Model) renderHeader() string {
 			currentMode, totalCount)
 	}
 
-	mode := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#626262")).
-		Render(modeInfo)
+	title := lipgloss.JoinHorizontal(
+		lipgloss.Left,
+		m.titleStyle.Render(ExplorerTitle),
+		": ",
+		m.titleStyle.Render(m.currentPath),
+	)
+	mode := m.modeStyle.Render(modeInfo)
 
-	line1 := lipgloss.JoinHorizontal(lipgloss.Left, title, " ", path)
-	line2 := mode
-
-	header := lipgloss.JoinVertical(lipgloss.Left, line1, line2, "")
-
-	return header
+	return lipgloss.JoinVertical(lipgloss.Left, title, mode, "")
 }
 
 // renderFooter renders the footer section
 func (m Model) renderFooter() string {
-	// Help hint
-	helpHint := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#626262")).
-		Render("Press ? for help, q to quit")
-
-	return helpHint
+	return m.helpHintStyle.Render("Press " + HelpToggleKey + " for help")
 }

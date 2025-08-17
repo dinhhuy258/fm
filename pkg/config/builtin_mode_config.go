@@ -147,7 +147,7 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
-			"space": {
+			" ": {
 				Help: "toggle selection",
 				Messages: []*MessageConfig{
 					{
@@ -155,7 +155,7 @@ var defaultModeConfig = ModeConfig{
 					},
 				},
 			},
-			"ctrl+space": {
+			"ctrl+@": {
 				Help: "clear selection",
 				Messages: []*MessageConfig{
 					{
