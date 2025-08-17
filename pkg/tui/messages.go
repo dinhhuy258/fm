@@ -126,12 +126,16 @@ func (m Model) handleOtherMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 
-		return m, tea.Sequence(
-			m.loadDirectoryCmd(dir),
-			func() tea.Msg {
-				return actions.FocusPathMessage{Path: msg.Path}
-			},
-		)
+		if err := m.loadDirectory(dir); err != nil {
+			return m, func() tea.Msg {
+				return errorMessage{
+					Message: err.Error(),
+				}
+			}
+		}
+		m.explorerModel.FocusPath(msg.Path)
+
+		return m, nil
 	case actions.NavigationMessage:
 		return m.handleNavigationMessage(msg)
 	case actions.FocusByIndexMessage:
@@ -201,22 +205,43 @@ func (m Model) handleNavigationMessage(msg actions.NavigationMessage) (tea.Model
 	case actions.NavigationActionEnter:
 		if entry := m.explorerModel.GetFocusedEntry(); entry != nil {
 			if entry.IsDirectory() {
-				return m, m.loadDirectoryCmd(entry.GetPath())
+				if err := m.loadDirectory(entry.GetPath()); err != nil {
+					return m, func() tea.Msg {
+						return errorMessage{
+							Message: err.Error(),
+						}
+					}
+				}
+
+				return m, nil
 			}
 		}
 
 		return m, nil
 	case actions.NavigationActionBack:
 		parentPath := filepath.Dir(m.currentPath)
+		lastPath := m.currentPath
 
-		return m, tea.Sequence(
-			m.loadDirectoryCmd(parentPath),
-			func() tea.Msg {
-				return actions.FocusPathMessage{Path: m.currentPath}
-			},
-		)
+		if err := m.loadDirectory(parentPath); err != nil {
+			return m, func() tea.Msg {
+				return errorMessage{
+					Message: err.Error(),
+				}
+			}
+		}
+		m.explorerModel.FocusPath(lastPath)
+
+		return m, nil
 	case actions.NavigationActionChangeDirectory:
-		return m, m.loadDirectoryCmd(msg.Path)
+		if err := m.loadDirectory(msg.Path); err != nil {
+			return m, func() tea.Msg {
+				return errorMessage{
+					Message: err.Error(),
+				}
+			}
+		}
+
+		return m, nil
 	}
 
 	return m, nil
@@ -241,10 +266,25 @@ func (m Model) handleUIMessage(msg actions.UIMessage) (tea.Model, tea.Cmd) {
 	switch msg.Action {
 	case actions.UIActionToggleHidden:
 		m.showHidden = !m.showHidden
+		if err := m.loadDirectory(m.currentPath); err != nil {
+			return m, func() tea.Msg {
+				return errorMessage{
+					Message: err.Error(),
+				}
+			}
+		}
 
-		return m, m.loadDirectoryCmd(m.currentPath) // Reload with new settings
+		return m, nil
 	case actions.UIActionRefresh:
-		return m, m.loadDirectoryCmd(m.currentPath)
+		if err := m.loadDirectory(m.currentPath); err != nil {
+			return m, func() tea.Msg {
+				return errorMessage{
+					Message: err.Error(),
+				}
+			}
+		}
+
+		return m, nil
 	}
 
 	return m, nil
@@ -260,7 +300,15 @@ func (m Model) handleSortingMessage(msg actions.SortingMessage) (tea.Model, tea.
 	}
 
 	// Reload directory with new sorting
-	return m, m.loadDirectoryCmd(m.currentPath)
+	if err := m.loadDirectory(m.currentPath); err != nil {
+		return m, func() tea.Msg {
+			return errorMessage{
+				Message: err.Error(),
+			}
+		}
+	}
+
+	return m, nil
 }
 
 // handleFocusByIndexMessage processes focus by index actions
@@ -295,7 +343,15 @@ func (m Model) handleBashExecSilentlyMessage(
 func (m Model) handleChangeDirectoryMessage(
 	msg actions.ChangeDirectoryMessage,
 ) (tea.Model, tea.Cmd) {
-	return m, m.loadDirectoryCmd(msg.Path)
+	if err := m.loadDirectory(msg.Path); err != nil {
+		return m, func() tea.Msg {
+			return errorMessage{
+				Message: err.Error(),
+			}
+		}
+	}
+
+	return m, nil
 }
 
 // handleBashExecution processes bash execution with environment setup
@@ -379,18 +435,18 @@ func writeSelectionsToFile(path string, selections []string) error {
 	return os.WriteFile(path, []byte(content), perm)
 }
 
-// loadDirectoryCmd loads directory contents
-func (m Model) loadDirectoryCmd(path string) tea.Cmd {
-	return func() tea.Msg {
-		entries, err := loadDirectory(path, m.showHidden, m.sortType, m.reverse)
-		if err != nil {
-			return errorMessage{
-				Message: fmt.Sprintf("Failed to load directory %s: %v", path, err),
-			}
-		}
-
-		return directoryLoadedMessage{path: path, entries: entries}
+// loadDirectory loads directory contents synchronously and updates model state
+func (m *Model) loadDirectory(path string) error {
+	// Use the existing fs.LoadEntries function with provided values
+	entries, err := fs.LoadEntries(path, m.showHidden, m.sortType.String(), m.reverse, false, false)
+	if err != nil {
+		return fmt.Errorf("failed to load directory %s: %w", path, err)
 	}
+
+	m.currentPath = path
+	m.explorerModel.SetEntries(entries)
+
+	return nil
 }
 
 // parseCommand parses a shell command line, properly handling:
