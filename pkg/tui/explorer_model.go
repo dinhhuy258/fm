@@ -383,7 +383,10 @@ func (m *ExplorerModel) renderEntry(entry fs.IEntry, idx int) string {
 	entryIcon := m.getEntryIcon(entry, state.isFocused, state.isSelected)
 	nameColumn := m.buildEntryDisplayName(entry, entryIcon, state)
 
-	return m.formatEntryRow(idx, nameColumn, state.style)
+	// nameColumn already contains styled segments (icon, prefix, filename, etc.)
+	// so we pass an empty style to avoid reapplying styles which would override
+	// the icon's styling.
+	return m.formatEntryRow(idx, nameColumn, lipgloss.NewStyle())
 }
 
 // determineEntryDisplayState calculates the display state for an entry based on focus/selection
@@ -447,20 +450,24 @@ func (m *ExplorerModel) buildEntryDisplayName(
 	entryIcon nodeType,
 	state entryDisplayState,
 ) string {
-	iconText := entryIcon.icon
 	fileName := strings.TrimSpace(entry.GetName())
 
-	// Apply styling to just the icon if needed (but keep it simple)
-	var styledIcon string
-	if state.isFocused || state.isSelected {
-		// For focused/selected items, apply same style to icon as text
-		styledIcon = iconText
-	} else {
-		// For normal items, use icon's default style
-		styledIcon = entryIcon.style.Render(iconText)
-	}
+	// Style each component individually to avoid conflicts when applying
+	// different styles to the icon and the filename.
+	styledIcon := entryIcon.style.Render(entryIcon.icon)
+	styledTree := state.style.Render(state.treePrefix)
+	styledPrefix := state.style.Render(state.prefix)
+	styledFileName := state.style.Render(" " + fileName)
+	styledSuffix := state.style.Render(state.suffix)
 
-	return state.treePrefix + state.prefix + styledIcon + " " + fileName + state.suffix
+	return lipgloss.JoinHorizontal(
+		lipgloss.Left,
+		styledTree,
+		styledPrefix,
+		styledIcon,
+		styledFileName,
+		styledSuffix,
+	)
 }
 
 // formatEntryRow formats the complete row with index and name columns
