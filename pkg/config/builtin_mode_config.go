@@ -430,58 +430,6 @@ var renameModeConfig = ModeConfig{
 	},
 }
 
-// deleteModeConfig is the configuration for the delete builtin mode.
-var deleteModeConfig = ModeConfig{
-	Name: "delete",
-	KeyBindings: KeyBindingsConfig{
-		OnKeys: map[string]*ActionConfig{
-			"ctrl+c": {
-				Help: "quit",
-				Messages: []*MessageConfig{
-					{
-						Name: "Quit",
-					},
-				},
-			},
-			"d": {
-				Help: "delete current",
-				Messages: []*MessageConfig{
-					{
-						Name: "SwitchMode",
-						Args: []string{"delete-current"},
-					},
-					{
-						Name: "SetInputBuffer",
-						Args: []string{"Do you want to delete this file? (y/n) "},
-					},
-				},
-			},
-			"s": {
-				Help: "delete selections",
-				Messages: []*MessageConfig{
-					{
-						Name: "SwitchMode",
-						Args: []string{"delete-selections"},
-					},
-					{
-						Name: "SetInputBuffer",
-						Args: []string{"Do you want to delete selected files? (y/n) "},
-					},
-				},
-			},
-			"esc": {
-				Help: "cancel",
-				Messages: []*MessageConfig{
-					{
-						Name: "SwitchMode",
-						Args: []string{"default"},
-					},
-				},
-			},
-		},
-	},
-}
-
 // sortModeConfig is the configuration for the sort builtin mode.
 var sortModeConfig = ModeConfig{
 	Name: "sort",
