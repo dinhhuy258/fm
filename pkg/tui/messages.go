@@ -361,17 +361,12 @@ func (m Model) handleChangeDirectoryMessage(
 
 // handleBashExecution processes bash execution with environment setup
 func (m Model) handleBashExecution(script string, silent bool) (tea.Model, tea.Cmd) {
-	selectedEntries := m.explorerModel.GetSelectedEntries()
+	selections := m.explorerModel.GetSelectedPaths()
 	focusIndex := m.explorerModel.GetFocus()
 
 	focusPath := m.currentPath
 	if focusedEntry := m.explorerModel.GetFocusedEntry(); focusedEntry != nil {
 		focusPath = focusedEntry.GetPath()
-	}
-
-	selections := make([]string, len(selectedEntries))
-	for i, entry := range selectedEntries {
-		selections[i] = entry.GetPath()
 	}
 
 	if len(selections) > 0 {

@@ -170,11 +170,28 @@ var defaultModeConfig = ModeConfig{
 				Help: "copy",
 				Messages: []*MessageConfig{
 					{
-						Name: "BashExecSilently",
+						Name: "BashExec",
 						Args: []string{`
 							if [ -s "${FM_PIPE_SELECTION:?}" ]; then
-								echo SwitchMode "'"copy"'" >> "${FM_PIPE_MSG_IN:?}"
-                echo SetInputBuffer "'"Do you want to copy the selections file here? \(y/n\) "'" >> "${FM_PIPE_MSG_IN:?}"
+								# Handle selection copy
+								read -n 1 -p "Do you want to copy selected files here? (y/n) " confirmation
+								echo  # move to a new line after keypress
+								if [ "$confirmation" = "y" ]; then
+									copied_count=0
+									while IFS= read -r line; do
+										if cp -r -- "${line:?}" ./; then
+											copied_count=$((copied_count + 1))
+										fi
+									done < "${FM_PIPE_SELECTION:?}"
+
+									echo Refresh >> "${FM_PIPE_MSG_IN:?}"
+									echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
+
+									if [ "$copied_count" -gt 0 ]; then
+										success_msg="$copied_count file(s) copied successfully"
+										echo LogSuccess "'"$success_msg"'" >> "${FM_PIPE_MSG_IN:?}"
+									fi
+								fi
 							else
 								echo LogWarning "'"Select nothing"'" >> "${FM_PIPE_MSG_IN:?}"
 							fi
@@ -186,11 +203,28 @@ var defaultModeConfig = ModeConfig{
 				Help: "move",
 				Messages: []*MessageConfig{
 					{
-						Name: "BashExecSilently",
+						Name: "BashExec",
 						Args: []string{`
 							if [ -s "${FM_PIPE_SELECTION:?}" ]; then
-								echo SwitchMode "'"move"'" >> "${FM_PIPE_MSG_IN:?}"
-                echo SetInputBuffer "'"Do you want to move the selections file here? \(y/n\) "'" >> "${FM_PIPE_MSG_IN:?}"
+								# Handle selection move
+								read -n 1 -p "Do you want to move selected files here? (y/n) " confirmation
+								echo  # move to a new line after keypress
+								if [ "$confirmation" = "y" ]; then
+									moved_count=0
+									while IFS= read -r line; do
+										if mv -- "${line:?}" ./; then
+											moved_count=$((moved_count + 1))
+										fi
+									done < "${FM_PIPE_SELECTION:?}"
+
+									echo Refresh >> "${FM_PIPE_MSG_IN:?}"
+									echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
+
+									if [ "$moved_count" -gt 0 ]; then
+										success_msg="$moved_count file(s) moved successfully"
+										echo LogSuccess "'"$success_msg"'" >> "${FM_PIPE_MSG_IN:?}"
+									fi
+								fi
 							else
 								echo LogWarning "'"Select nothing"'" >> "${FM_PIPE_MSG_IN:?}"
 							fi
@@ -390,104 +424,6 @@ var renameModeConfig = ModeConfig{
 			Messages: []*MessageConfig{
 				{
 					Name: "UpdateInputBufferFromKey",
-				},
-			},
-		},
-	},
-}
-
-// copyModeConfig is the configuration for copying the selection files to the current destination
-var copyModeConfig = ModeConfig{
-	Name: "copy",
-	KeyBindings: KeyBindingsConfig{
-		OnKeys: map[string]*ActionConfig{
-			"ctrl+c": {
-				Help: "quit",
-				Messages: []*MessageConfig{
-					{
-						Name: "Quit",
-					},
-				},
-			},
-			"y": {
-				Help: "copy",
-				Messages: []*MessageConfig{
-					{
-						Name: "BashExec",
-						Args: []string{`
-							(while IFS= read -r line; do
-								if cp -r -- "${line:?}" ./; then
-									echo "${line:?}" copied to $PWD
-								else
-									echo Failed to copy "${line:?}" to $PWD
-								fi
-              done < "${FM_PIPE_SELECTION:?}")
-
-							read -p "[Press enter to continue]"
-
-							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
-							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
-							echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
-						`},
-					},
-				},
-			},
-		},
-		Default: &ActionConfig{
-			Help: "cancel",
-			Messages: []*MessageConfig{
-				{
-					Name: "SwitchMode",
-					Args: []string{"default"},
-				},
-			},
-		},
-	},
-}
-
-// moveModeConfig is the configuration for moving the selection files to the current destination
-var moveModeConfig = ModeConfig{
-	Name: "move",
-	KeyBindings: KeyBindingsConfig{
-		OnKeys: map[string]*ActionConfig{
-			"ctrl+c": {
-				Help: "quit",
-				Messages: []*MessageConfig{
-					{
-						Name: "Quit",
-					},
-				},
-			},
-			"y": {
-				Help: "move",
-				Messages: []*MessageConfig{
-					{
-						Name: "BashExec",
-						Args: []string{`
-							(while IFS= read -r line; do
-								if mv -- "${line:?}" ./; then
-									echo "${line:?}" moved to $PWD
-								else
-									echo Failed to move "${line:?}" to $PWD
-								fi
-              done < "${FM_PIPE_SELECTION:?}")
-
-							read -p "[Press enter to continue]"
-
-							echo ClearSelection >> "${FM_PIPE_MSG_IN:?}"
-							echo Refresh >> "${FM_PIPE_MSG_IN:?}"
-							echo SwitchMode "'"default"'" >> "${FM_PIPE_MSG_IN:?}"
-						`},
-					},
-				},
-			},
-		},
-		Default: &ActionConfig{
-			Help: "cancel",
-			Messages: []*MessageConfig{
-				{
-					Name: "SwitchMode",
-					Args: []string{"default"},
 				},
 			},
 		},
@@ -761,8 +697,6 @@ var builtinModeConfigs = map[string]*ModeConfig{
 	"default":     &defaultModeConfig,
 	"new-file":    &newFileModeConfig,
 	"rename":      &renameModeConfig,
-	"copy":        &copyModeConfig,
-	"move":        &moveModeConfig,
 	"sort":        &sortModeConfig,
 	"command":     &commandModeConfig,
 	"go-to-index": &goToIndexModeConfig,

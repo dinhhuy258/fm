@@ -196,16 +196,9 @@ func (m *ExplorerModel) SelectAll() {
 	}
 }
 
-// GetSelectedEntries returns all selected entries
-func (m *ExplorerModel) GetSelectedEntries() []fs.IEntry {
-	var selected []fs.IEntry
-	for _, entry := range m.entries {
-		if m.selections.Contains(entry.GetPath()) {
-			selected = append(selected, entry)
-		}
-	}
-
-	return selected
+// GetSelectedPaths returns all selected paths
+func (m *ExplorerModel) GetSelectedPaths() []string {
+	return m.selections.ToSlice()
 }
 
 // GetStats returns total and selected entry counts

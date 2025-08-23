@@ -22,17 +22,26 @@ type ColorEntry struct {
 	Background string
 }
 
+// ensureHexPrefix adds # prefix to hex color if not present
+func ensureHexPrefix(hexColor string) string {
+	if strings.HasPrefix(hexColor, hexPrefix) {
+		return hexPrefix + hexColor
+	}
+
+	return hexPrefix + hexColor
+}
+
 // colorMap maps color names to their hex values
 var colorMap = map[string]ColorEntry{
-	"default": {color.FgWhite.RGB().Hex(), color.BgBlack.RGB().Hex()},
-	"black":   {color.FgBlack.RGB().Hex(), color.BgBlack.RGB().Hex()},
-	"red":     {color.FgRed.RGB().Hex(), color.BgRed.RGB().Hex()},
-	"green":   {color.FgGreen.RGB().Hex(), color.BgGreen.RGB().Hex()},
-	"yellow":  {color.FgYellow.RGB().Hex(), color.BgYellow.RGB().Hex()},
-	"blue":    {color.FgBlue.RGB().Hex(), color.BgBlue.RGB().Hex()},
-	"magenta": {color.FgMagenta.RGB().Hex(), color.BgMagenta.RGB().Hex()},
-	"cyan":    {color.FgCyan.RGB().Hex(), color.BgCyan.RGB().Hex()},
-	"white":   {color.FgWhite.RGB().Hex(), color.BgWhite.RGB().Hex()},
+	"default": {ensureHexPrefix(color.FgWhite.RGB().Hex()), ensureHexPrefix(color.BgBlack.RGB().Hex())},
+	"black":   {ensureHexPrefix(color.FgBlack.RGB().Hex()), ensureHexPrefix(color.BgBlack.RGB().Hex())},
+	"red":     {ensureHexPrefix(color.FgRed.RGB().Hex()), ensureHexPrefix(color.BgRed.RGB().Hex())},
+	"green":   {ensureHexPrefix(color.FgGreen.RGB().Hex()), ensureHexPrefix(color.BgGreen.RGB().Hex())},
+	"yellow":  {ensureHexPrefix(color.FgYellow.RGB().Hex()), ensureHexPrefix(color.BgYellow.RGB().Hex())},
+	"blue":    {ensureHexPrefix(color.FgBlue.RGB().Hex()), ensureHexPrefix(color.BgBlue.RGB().Hex())},
+	"magenta": {ensureHexPrefix(color.FgMagenta.RGB().Hex()), ensureHexPrefix(color.BgMagenta.RGB().Hex())},
+	"cyan":    {ensureHexPrefix(color.FgCyan.RGB().Hex()), ensureHexPrefix(color.BgCyan.RGB().Hex())},
+	"white":   {ensureHexPrefix(color.FgWhite.RGB().Hex()), ensureHexPrefix(color.BgWhite.RGB().Hex())},
 }
 
 // isValidHexValue validates if a string is a valid hex color value.
