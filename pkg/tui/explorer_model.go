@@ -3,7 +3,6 @@ package tui
 import (
 	"strconv"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/charmbracelet/lipgloss"
 	set "github.com/deckarep/golang-set/v2"
@@ -547,27 +546,10 @@ func (m *ExplorerModel) formatColumn(value styledValue, columnWidth int, leftAli
 		return ""
 	}
 
-	text := value.text
+	// Truncate the string if it's wider than the column.
+	// We truncate the original string, then apply styling.
+	text := Truncate(value.text, columnWidth, "...")
 	displayWidth := uniseg.StringWidth(text)
-
-	// Truncate if too long
-	if displayWidth > columnWidth {
-		truncated := ""
-		currentWidth := 0
-		for _, r := range text {
-			runeWidth := utf8.RuneLen(r)
-			if runeWidth < 0 {
-				runeWidth = 1 // fallback for invalid runes
-			}
-			if currentWidth+runeWidth > columnWidth {
-				break
-			}
-			truncated += string(r)
-			currentWidth += runeWidth
-		}
-		text = truncated
-		displayWidth = currentWidth
-	}
 
 	// Calculate padding
 	padding := max(columnWidth-displayWidth, 0)

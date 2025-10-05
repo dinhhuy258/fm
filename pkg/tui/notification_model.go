@@ -150,10 +150,8 @@ func (m *NotificationModel) View() string {
 	// Format message with prefix and suffix
 	message := prefix + m.activeNotification.Message + suffix
 
-	// Truncate if needed
-	if len(message) > m.width {
-		message = message[:m.width-3] + "..."
-	}
+	// Truncate the message if it's wider than the view.
+	message = Truncate(message, m.width, "...")
 
 	return notificationStyle.Render(message)
 }
