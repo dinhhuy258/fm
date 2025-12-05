@@ -118,11 +118,15 @@ func fromStyleConfig(styleConfig *config.StyleConfig) lipgloss.Style {
 
 	// Parse and store colors before applying decorations
 	fgColor := parseColor(styleConfig.Fg, false)
-	bgColor := parseColor(styleConfig.Bg, true)
 
-	// Set foreground and background colors
+	// Set foreground color
 	style = style.Foreground(lipgloss.Color(fgColor))
-	style = style.Background(lipgloss.Color(bgColor))
+
+	// Only set background if explicitly specified (to keep terminal background)
+	if styleConfig.Bg != "" {
+		bgColor := parseColor(styleConfig.Bg, true)
+		style = style.Background(lipgloss.Color(bgColor))
+	}
 
 	// Apply decorations
 	for _, decoration := range styleConfig.Decorations {
@@ -134,7 +138,8 @@ func fromStyleConfig(styleConfig *config.StyleConfig) lipgloss.Style {
 		case "underline", "underscore":
 			style = style.Underline(true)
 		case "reverse":
-			// For reverse, swap the already-parsed foreground and background colors
+			// For reverse, swap foreground and background colors
+			bgColor := parseColor(styleConfig.Bg, true)
 			style = style.Foreground(lipgloss.Color(bgColor))
 			style = style.Background(lipgloss.Color(fgColor))
 		}
