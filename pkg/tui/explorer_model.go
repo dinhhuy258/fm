@@ -375,7 +375,7 @@ func (m *ExplorerModel) renderEntry(entry fs.IEntry, idx int) string {
 	entryIcon := m.getEntryIcon(entry, state.isFocused, state.isSelected)
 	nameColumn := m.buildEntryDisplayName(entry, entryIcon, state)
 
-	return m.formatEntryRow(idx, nameColumn, state.style)
+	return m.formatEntryRow(idx, state.treePrefix, nameColumn, state.style)
 }
 
 // determineEntryDisplayState calculates the display state for an entry based on focus/selection
@@ -452,23 +452,32 @@ func (m *ExplorerModel) buildEntryDisplayName(
 		styledIcon = entryIcon.style.Render(iconText)
 	}
 
-	return state.treePrefix + state.prefix + styledIcon + " " + fileName + state.suffix
+	// Don't include tree prefix here - it will be added later after styling to preserve header color
+	return state.prefix + styledIcon + " " + fileName + state.suffix
 }
 
 // formatEntryRow formats the complete row with index and name columns
-func (m *ExplorerModel) formatEntryRow(idx int, nameColumn string, entryStyle lipgloss.Style) string {
+func (m *ExplorerModel) formatEntryRow(idx int, treePrefix string, nameColumn string, entryStyle lipgloss.Style) string {
 	explorerConfig := config.AppConfig.General.ExplorerTable
-	columns := []columnConfig{
-		{percentage: explorerConfig.IndexHeader.Percentage, leftAlign: true},
-		{percentage: explorerConfig.NameHeader.Percentage, leftAlign: true},
-	}
 
-	values := []styledValue{
-		{text: strconv.Itoa(idx + 1)},
-		{text: nameColumn, style: entryStyle},
-	}
+	// Calculate column widths
+	indexColumnWidth := int(float32(explorerConfig.IndexHeader.Percentage) / 100.0 * float32(m.width))
+	nameColumnWidth := m.width - indexColumnWidth
 
-	return m.formatRow(columns, values)
+	// Format index column
+	indexValue := styledValue{text: strconv.Itoa(idx + 1)}
+	indexColumn := m.formatColumn(indexValue, indexColumnWidth, true)
+
+	// Style the tree prefix with header style
+	styledTreePrefix := m.viewData.headerStyles.nameHeader.Render(treePrefix)
+	treePrefixWidth := uniseg.StringWidth(treePrefix)
+
+	// Format name column with reduced width to account for tree prefix
+	nameValue := styledValue{text: nameColumn, style: entryStyle}
+	formattedNameColumn := m.formatColumn(nameValue, nameColumnWidth-treePrefixWidth, true)
+
+	// Prepend the styled tree prefix to the name column
+	return indexColumn + styledTreePrefix + formattedNameColumn
 }
 
 // getEntryIcon returns the appropriate icon for an entry with state-based styling
