@@ -24,6 +24,10 @@ type Model struct {
 	sortType   types.SortType
 	reverse    bool
 
+	// Terminal dimensions
+	terminalWidth  int
+	terminalHeight int
+
 	// Models for fm components
 	explorerModel     *ExplorerModel
 	notificationModel *NotificationModel
@@ -130,7 +134,13 @@ func (m Model) View() string {
 
 	content := strings.Join(sections, "\n")
 
-	return m.borderStyle.Render(content)
+	// Apply terminal dimensions to border style if available
+	borderStyle := m.borderStyle
+	if m.terminalWidth > 0 && m.terminalHeight > 0 {
+		borderStyle = borderStyle.Width(m.terminalWidth).Height(m.terminalHeight)
+	}
+
+	return borderStyle.Render(content)
 }
 
 // renderHeader renders the header section

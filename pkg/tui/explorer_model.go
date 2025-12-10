@@ -348,20 +348,18 @@ func (m *ExplorerModel) renderHeader() string {
 
 // renderEntries renders the visible file entries
 func (m *ExplorerModel) renderEntries() string {
-	if len(m.entries) == 0 {
-		return ""
-	}
-
 	visibleRows := m.getVisibleRows()
-	lastVisibleIndex := min(m.scrollStart+visibleRows, len(m.entries))
+	lines := make([]string, 0, visibleRows)
 
-	lines := make([]string, 0, lastVisibleIndex-m.scrollStart)
+	if len(m.entries) > 0 {
+		lastVisibleIndex := min(m.scrollStart+visibleRows, len(m.entries))
 
-	for i := m.scrollStart; i < lastVisibleIndex; i++ {
-		lines = append(lines, m.renderEntry(m.entries[i], i))
+		for i := m.scrollStart; i < lastVisibleIndex; i++ {
+			lines = append(lines, m.renderEntry(m.entries[i], i))
+		}
 	}
 
-	// Pad with empty lines if needed
+	// Pad with empty lines if needed to maintain consistent height
 	for len(lines) < visibleRows {
 		lines = append(lines, strings.Repeat(" ", m.width))
 	}

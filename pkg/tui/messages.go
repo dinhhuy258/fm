@@ -45,6 +45,10 @@ func (m Model) handleMessage(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // handleWindowSize handles window resize events
 func (m Model) handleWindowSize(msg tea.WindowSizeMsg) (tea.Model, tea.Cmd) {
+	// Store terminal dimensions
+	m.terminalWidth = msg.Width
+	m.terminalHeight = msg.Height
+
 	// Account for border: 4 characters width (2 border + 2 padding), 4 characters height
 	borderPadding := 4
 	availableWidth := max(msg.Width-borderPadding, 1)
